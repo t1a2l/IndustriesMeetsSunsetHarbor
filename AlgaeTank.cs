@@ -1,12 +1,15 @@
 ﻿using ColossalFramework;
 using UnityEngine;
-using System.Reflection;
 
 namespace FishIndustryEnhanced
 {
     public class AlgaeTank : FishFarmAI
     {
-		internal PlayerBuildingAI BuildingProduceGoods()  => (PlayerBuildingAI)typeof(PlayerBuildingAI).GetMethod(nameof(ProduceGoods), BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, null);
+		void Start()
+        {
+			var Algae_Tank = PrefabCollection<BuildingInfo>.FindLoaded("Algae Tank");
+			Algae_Tank.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+        }
 
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
@@ -31,14 +34,12 @@ namespace FishIndustryEnhanced
 				}
 				if(this.m_info.name == "Algae Tank")
                 {
-					this.m_info.m_placementMode = BuildingInfo.PlacementMode.Roadside;
 					num2 = 0;
 					num3 = 1;
                 } else
                 {
 					num2 = num / this.m_extractionPositions.Length;
-                }
-					
+                }		
 			}
 			else
 			{
@@ -146,12 +147,24 @@ namespace FishIndustryEnhanced
 			}
 			buildingData.m_problems = problem;
 			buildingData.m_education3 = (byte)Mathf.Clamp(finalProductionRate * this.m_productionRate / Mathf.Max(1, this.m_productionRate), 0, 255);
-			this.BuildingProduceGoods();
+			this.BuildingProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
 		}
 
-		
+		protected virtual void BuildingProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
+		{
+			if (finalProductionRate != 0)
+			{
+				buildingData.m_flags |= Building.Flags.Active;
+				if (this.m_supportEvents != (EventManager.EventType)0 || buildingData.m_eventIndex != 0)
+				{
+					this.CheckEvents(buildingID, ref buildingData);
+				}
+			}
+			else
+			{
+				buildingData.m_flags &= ~Building.Flags.Active;
+			}
+		}
+
     }
 }
-
-// Algae_Tank (Crops)
-// Fish Hatcheries - Long or Wide (Fish)

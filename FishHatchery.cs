@@ -1,14 +1,16 @@
 ﻿using ColossalFramework;
 using UnityEngine;
 using FishIndustryEnhanced.FishPark;
-using System.Reflection;
 
 namespace FishIndustryEnhanced
 {
     class FishHatchery : ProcessingFacilityAI
     {
-		internal PlayerBuildingAI BuildingProduceGoods()  => (PlayerBuildingAI)typeof(PlayerBuildingAI).GetMethod(nameof(ProduceGoods), BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, null);
-
+		void Start()
+        {
+			var Fish_Hatchery = PrefabCollection<BuildingInfo>.FindLoaded("Fish Hatchery");
+			Fish_Hatchery.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+        }
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
 			DistrictManager instance = Singleton<DistrictManager>.instance;
@@ -404,7 +406,7 @@ namespace FishIndustryEnhanced
 					Singleton<BuildingManager>.instance.m_industryBuildingOutsideIndustryArea.Activate(properties2.m_industryBuildingOutsideIndustryArea, buildingID);
 				}
 			}
-			this.BuildingProduceGoods();
+			this.BuildingProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
 		}
 
 		private int GetInputBufferSize1(DistrictPolicies.Park policies, int storageDelta)
@@ -480,8 +482,21 @@ namespace FishIndustryEnhanced
 				return false;
 			}
 		}
-
-
+		protected virtual void BuildingProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
+		{
+			if (finalProductionRate != 0)
+			{
+				buildingData.m_flags |= Building.Flags.Active;
+				if (this.m_supportEvents != (EventManager.EventType)0 || buildingData.m_eventIndex != 0)
+				{
+					this.CheckEvents(buildingID, ref buildingData);
+				}
+			}
+			else
+			{
+				buildingData.m_flags &= ~Building.Flags.Active;
+			}
+		}
     }
 		
 }
