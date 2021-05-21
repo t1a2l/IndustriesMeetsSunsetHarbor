@@ -7,7 +7,7 @@ namespace FishIndustryEnhanced
     {
 		void Start()
         {
-			var Algae_Tank = PrefabCollection<BuildingInfo>.FindLoaded("Algae Tank");
+			var Algae_Tank = PrefabCollection<BuildingInfo>.FindLoaded("Aquaculture Farm - Algae Tanks");
 			Algae_Tank.m_placementMode = BuildingInfo.PlacementMode.Roadside;
         }
 
@@ -32,7 +32,7 @@ namespace FishIndustryEnhanced
 					num += Mathf.Clamp(value, 0, 128);
 					num3 = Mathf.Max(num3, b);
 				}
-				if(this.m_info.name == "Algae Tank")
+				if(this.m_info.name == "Aquaculture Farm - Algae Tanks")
                 {
 					num2 = 0;
 					num3 = 1;
