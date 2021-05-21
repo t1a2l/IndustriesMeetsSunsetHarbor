@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections;
-using ColossalFramework;
-using ColossalFramework.Globalization;
+﻿using ColossalFramework.Globalization;
 using ColossalFramework.UI;
-using ICities;
-using UnityEngine;
+using System.Reflection;
 
 namespace FishIndustryEnhanced
 {
 
     public class WarehousePanelExtender : WarehouseWorldInfoPanel
     {
-        private bool _initialized;
-		private UIDropDown m_dropdownResource;
-        private UIDropDown m_dropdownMode;
-
-		protected override void Start(){
-			  base.Start(); // big base start method.
-		}
+		internal UIDropDown m_dropdownResource  => (UIDropDown)typeof(WarehouseWorldInfoPanel).GetField("m_dropdownResource", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+		internal UIDropDown m_dropdownMode  => (UIDropDown)typeof(WarehouseWorldInfoPanel).GetField("m_dropdownMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
    
+		protected override void Start()
+        {
+			base.Start();
+			this.MyRefreshDropdownLists();
+			LocaleManager.eventLocaleChanged += this.MyRefreshDropdownLists;
+        }
+
+
         private TransferManager.TransferReason[] m_transferReasons = new TransferManager.TransferReason[16]
         {
             TransferManager.TransferReason.None,
@@ -54,8 +53,9 @@ namespace FishIndustryEnhanced
 	    };
 
 
-        private void RefreshDropdownLists()
+        private void MyRefreshDropdownLists()
 	    {
+			
 		    string[] array = new string[m_transferReasons.Length];
 		    for (int i = 0; i < m_transferReasons.Length; i++)
 		    {
@@ -72,72 +72,6 @@ namespace FishIndustryEnhanced
 		    this.m_dropdownMode.items = array;
 	    }
 
-		
-
-        public void Update()
-        {
-            if (!_initialized)
-            {
-                RefreshDropdownLists();
-                this.m_dropdownResource.eventSelectedIndexChanged += OnDropdownResourceChanged;
-                this.m_dropdownMode.eventSelectedIndexChanged += OnDropdownModeChanged;
-                _initialized = true;
-            }
-        }
-
-        private void OnDropdownResourceChanged(UIComponent component, int index)
-	    {
-		    WarehouseAI ai = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI as WarehouseAI;
-		    Singleton<SimulationManager>.instance.AddAction(delegate()
-		    {
-			    ai.SetTransferReason(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], this.m_transferReasons[index]);
-		    });
-	    }
-
-        private void OnDropdownModeChanged(UIComponent component, int index)
-	    {
-		    this.warehouseMode = this.m_warehouseModes[index];
-	    }
-
-        private WarehousePanelExtender.WarehouseMode warehouseMode
-		{
-			get
-			{
-				if ((Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].m_flags & Building.Flags.Filling) == Building.Flags.None && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].m_flags & Building.Flags.Downgrading) == Building.Flags.None)
-				{
-					return WarehousePanelExtender.WarehouseMode.Balanced;
-				}
-				if ((Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].m_flags & Building.Flags.Downgrading) != Building.Flags.None)
-				{
-					return WarehousePanelExtender.WarehouseMode.Export;
-				}
-				return WarehousePanelExtender.WarehouseMode.Import;
-			}
-			set
-			{
-				if (value != WarehousePanelExtender.WarehouseMode.Balanced)
-				{
-					if (value != WarehousePanelExtender.WarehouseMode.Export)
-					{
-						if (value == WarehousePanelExtender.WarehouseMode.Import)
-						{
-							Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI.SetEmptying(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], false);
-							Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI.SetFilling(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], true);
-						}
-					}
-					else
-					{
-						Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI.SetEmptying(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], true);
-						Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI.SetFilling(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], false);
-					}
-				}
-				else
-				{
-					Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI.SetEmptying(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], false);
-					Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building].Info.m_buildingAI.SetFilling(this.m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)this.m_InstanceID.Building], false);
-				}
-			}
-		}
     }
     
 }

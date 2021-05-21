@@ -1,10 +1,12 @@
 ﻿using ColossalFramework;
 using UnityEngine;
+using System.Reflection;
 
 namespace FishIndustryEnhanced
 {
     public class AlgaeTank : FishFarmAI
     {
+		internal PlayerBuildingAI BuildingProduceGoods()  => (PlayerBuildingAI)typeof(PlayerBuildingAI).GetMethod(nameof(ProduceGoods), BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, null);
 
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
@@ -144,8 +146,9 @@ namespace FishIndustryEnhanced
 			}
 			buildingData.m_problems = problem;
 			buildingData.m_education3 = (byte)Mathf.Clamp(finalProductionRate * this.m_productionRate / Mathf.Max(1, this.m_productionRate), 0, 255);
-			base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+			this.BuildingProduceGoods();
 		}
+
 		
     }
 }

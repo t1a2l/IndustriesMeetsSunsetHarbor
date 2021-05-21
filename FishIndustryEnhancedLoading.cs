@@ -7,14 +7,6 @@ namespace FishIndustryEnhanced
     {
         private static GameObject _gameObject;
         
-        public override void OnCreated(ILoading loading)
-        {
-            base.OnCreated(loading);
-            if (loading.currentMode != AppMode.Game)
-            {
-                return;
-            }
-        }
 
         public override void OnLevelLoaded(LoadMode mode)
         {
@@ -23,11 +15,11 @@ namespace FishIndustryEnhanced
             {
                 return;
             }
-            if (_gameObject != null)
+            if (!_gameObject)
             {
                 return;
             }
-            _gameObject = new GameObject("CargoFerries");
+            _gameObject = new GameObject("Warehouse");
             _gameObject.AddComponent<WarehousePanelExtender>();
         }
 
@@ -41,10 +33,5 @@ namespace FishIndustryEnhanced
             Object.Destroy(_gameObject);
             _gameObject = null;
         } 
-
-        public override void OnReleased()
-        {
-            base.OnReleased();
-        }
     }
 }

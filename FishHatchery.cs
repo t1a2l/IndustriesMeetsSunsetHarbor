@@ -1,11 +1,14 @@
 ﻿using ColossalFramework;
 using UnityEngine;
 using FishIndustryEnhanced.FishPark;
+using System.Reflection;
 
 namespace FishIndustryEnhanced
 {
     class FishHatchery : ProcessingFacilityAI
     {
+		internal PlayerBuildingAI BuildingProduceGoods()  => (PlayerBuildingAI)typeof(PlayerBuildingAI).GetMethod(nameof(ProduceGoods), BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, null);
+
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
 			DistrictManager instance = Singleton<DistrictManager>.instance;
@@ -401,7 +404,7 @@ namespace FishIndustryEnhanced
 					Singleton<BuildingManager>.instance.m_industryBuildingOutsideIndustryArea.Activate(properties2.m_industryBuildingOutsideIndustryArea, buildingID);
 				}
 			}
-			base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+			this.BuildingProduceGoods();
 		}
 
 		private int GetInputBufferSize1(DistrictPolicies.Park policies, int storageDelta)
@@ -477,6 +480,8 @@ namespace FishIndustryEnhanced
 				return false;
 			}
 		}
+
+
     }
 		
 }
