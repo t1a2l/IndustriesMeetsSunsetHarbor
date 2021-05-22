@@ -4,7 +4,7 @@ using ColossalFramework.Globalization;
 
 namespace FishIndustryEnhanced
 {
-    class AlgaeBioreactor : PowerPlantAI
+    class AlgaeBioreactorAI : PowerPlantAI
     {
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
 		{

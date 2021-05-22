@@ -51,13 +51,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlgaeBioreactor.cs" />
+    <Compile Include="AIHelper.cs" />
+    <Compile Include="AlgaeBioreactorAI.cs" />
     <Compile Include="AlgaeTank.cs" />
     <Compile Include="FishDistrictPark.cs" />
     <Compile Include="FishHatchery.cs" />
-    <Compile Include="WarehousePanelExtender.cs" />
-    <Compile Include="FishIndustryEnhancedLoading.cs" />
     <Compile Include="FishIndustryEnhancedMod.cs" />
+    <Compile Include="LogHelper.cs" />
+    <Compile Include="ThreadingExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

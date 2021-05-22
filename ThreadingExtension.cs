@@ -1,26 +1,25 @@
 ﻿using ColossalFramework;
 using ICities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 
 namespace FishIndustryEnhanced
 {
-    public class FishIndustryEnhanced : IUserMod
+    public class ThreadingExtension : ThreadingExtensionBase
     {
+        int b = Singleton<SimulationManager>.instance.m_randomizer.Int32(10000u);
+        int a = 0;
 
-        string IUserMod.Name => "Fish Industry Enhanced Mod";
-
-        string IUserMod.Description => "Enhance the fishing Industry";
-
-    }
-
-    public class LoadingExtension : LoadingExtensionBase
-    {
-
-        public override void OnLevelLoaded(LoadMode mode)
+        public override void OnAfterSimulationTick()
         {
+            ReloadIfRequired();
+        }
+
+        private void ReloadIfRequired()
+        {
+            if (a == b) return;
+            a = b;
+
             try
             {
                 Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
@@ -49,13 +48,6 @@ namespace FishIndustryEnhanced
             {
                 LogHelper.Information(e.ToString());
             }
-
-            LogHelper.Information("Loaded Mod");
         }
-
-        public override void OnLevelUnloading()
-        {
-            base.OnLevelUnloading();
-        } 
-    }
+    } 
 }
