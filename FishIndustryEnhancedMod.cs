@@ -26,9 +26,9 @@ namespace FishIndustryEnhanced
                 Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
                 for (ushort i = 0; i < buffer.Length; i++)
                 {
-
+                    
                     if (buffer[i].Info == null) continue;
-
+                    LogHelper.Information("name of asset:" + buffer[i].Info.m_class.name);
                     if (buffer[i].Info.m_class.name.Equals("Algae Bioreactor"))
                     {
                         AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);

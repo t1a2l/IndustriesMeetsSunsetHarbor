@@ -218,6 +218,7 @@ namespace FishIndustryEnhanced
 					int num38 = (num13 * finalProductionRate + 99) / 100;
 					num32 = Mathf.Min(num31, num32 + num38);
 					buildingData.m_customBuffer1 = (ushort)num32;
+					LogHelper.Information("FishHatchery production amount output resource:" + this.m_outputResource.ToString());
 					instance.m_parks.m_buffer[(int)b].AddProductionAmountFish(this.m_outputResource, num38);
 				}
 				num16 = (finalProductionRate * num16 + 50) / 100;
@@ -342,6 +343,7 @@ namespace FishIndustryEnhanced
 								Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num60, this.m_info.m_class);
 								if (b != 0)
 								{
+									LogHelper.Information("FishHatchery export amount output resource:" + this.m_outputResource.ToString());
 									instance.m_parks.m_buffer[(int)b].AddExportAmountFish(this.m_outputResource, num32);
 								}
 								num32 = 0;
@@ -372,6 +374,7 @@ namespace FishIndustryEnhanced
 								Singleton<TransferManager>.instance.AddOutgoingOffer(this.m_outputResource, offer5);
 							}
 						}
+						LogHelper.Information("FishHatchery buffer output resource:" + this.m_outputResource.ToString());
 						instance.m_parks.m_buffer[(int)b].AddBufferStatusFish(this.m_outputResource, num32, 0, num31);
 					}
 				}

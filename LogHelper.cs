@@ -5,7 +5,7 @@ namespace FishIndustryEnhanced
 {
     internal static class LogHelper
     {
-        private const string Prefix = "AlgaeBioreactorAI: ";
+        private const string Prefix = "FishIndustryEnhanced: ";
 
         public static void Information(string message, params object[] args)
         {

@@ -8,6 +8,8 @@ namespace FishIndustryEnhanced
     {
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
 		{
+			var msg = this.m_resourceType.ToString();
+			LogHelper.Information("AlgaeBioreactorAI transfer reason:" + msg);
 			int electricityRate = this.GetElectricityRate(buildingID, ref data);
 			string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
 			{

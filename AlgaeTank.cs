@@ -27,6 +27,7 @@ namespace FishIndustryEnhanced
 					num += Mathf.Clamp(value, 0, 128);
 					num3 = Mathf.Max(num3, b);
 				}
+				LogHelper.Information("AlgaeTank Name:" + this.m_info.name);
 				if(this.m_info.name == "Aquaculture Farm - Algae Tanks")
                 {
 					num2 = 0;
