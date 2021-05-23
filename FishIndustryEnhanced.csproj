@@ -54,12 +54,10 @@
     <Compile Include="AIHelper.cs" />
     <Compile Include="AlgaeBioreactorAI.cs" />
     <Compile Include="AlgaeTank.cs" />
-    <Compile Include="BuildingExtension.cs" />
     <Compile Include="FishDistrictPark.cs" />
     <Compile Include="FishHatchery.cs" />
     <Compile Include="FishIndustryEnhancedMod.cs" />
     <Compile Include="LogHelper.cs" />
-    <Compile Include="ThreadingExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

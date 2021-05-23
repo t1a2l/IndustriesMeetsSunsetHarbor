@@ -23,26 +23,18 @@ namespace FishIndustryEnhanced
         {
             try
             {
-                Building[] buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
-                for (ushort i = 0; i < buffer.Length; i++)
+                var loadedBuildingInfoCount = PrefabCollection<BuildingInfo>.LoadedCount();
+                for (uint i = 0; i < loadedBuildingInfoCount; i++)
                 {
-                    
-                    if (buffer[i].Info == null) continue;
-                    LogHelper.Information("name of asset:" + buffer[i].Info.name);
-                    if (buffer[i].Info.name.Equals("Algae Bioreactor"))
+                    var bi = PrefabCollection<BuildingInfo>.GetLoaded(i);
+                    if (bi is null) continue;
+                    LogHelper.Information(bi.name);
+                    if (bi.name.Equals("Algae Bioreactor") || bi.name.Equals("Aquaculture Farm - Algae Tanks")
+                        || bi.name.Equals("Fish Hatchery - Long") || bi.name.Equals("Fish Hatchery - Wide"))
                     {
-                        AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);
-                    }
-                    else if (buffer[i].Info.name.Equals("Aquaculture Farm - Algae Tanks"))
-                    {
-                        AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);
-                    }
-                    else if (buffer[i].Info.name.Equals("Fish Hatchery - Long") || buffer[i].Info.name.Equals("Fish Hatchery - Wide"))
-                    {
-                        AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);
+                        AIHelper.ApplyNewAIToBuilding(bi);
                     }
                 }
-
                 LogHelper.Information("Reloaded Mod");
             }
             catch (Exception e)

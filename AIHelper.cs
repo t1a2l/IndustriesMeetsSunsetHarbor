@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace FishIndustryEnhanced
 {
     public static class AIHelper
     {
 
-        public static void ApplyNewAIToBuilding(Building b)
+        public static void ApplyNewAIToBuilding(BuildingInfo b)
         {
             try
             {
-                if (b.Info.m_class.name.Equals("Algae Bioreactor"))
+                if (b.name.Equals("Algae Bioreactor"))
                 {
                     ChangeBuildingAI(b, typeof(AlgaeBioreactorAI));
                     return;
                 }
-                else if (b.Info.m_class.name.Equals("Aquaculture Farm - Algae Tanks"))
+                else if (b.name.Equals("Aquaculture Farm - Algae Tanks"))
                 {
                     ChangeBuildingAI(b, typeof(AlgaeTank));
                     return;
                 }
-                else if (b.Info.m_class.name.Equals("Fish Hatchery - Long") || b.Info.m_class.name.Equals("Fish Hatchery - Wide"))
+                else if (b.name.Equals("Fish Hatchery - Long") || b.name.Equals("Fish Hatchery - Wide"))
                 {
                     ChangeBuildingAI(b, typeof(FishHatchery));
                     return;
@@ -35,16 +33,16 @@ namespace FishIndustryEnhanced
             }
         }
 
-        private static void ChangeBuildingAI(Building b, Type AIType)
+        private static void ChangeBuildingAI(BuildingInfo b, Type AIType)
         {
             //Delete old AI
-            var oldAI = b.Info.gameObject.GetComponent<PrefabAI>();
+            var oldAI = b.gameObject.GetComponent<PrefabAI>();
             UnityEngine.Object.DestroyImmediate(oldAI);
 
             //Add new AI
-            var newAI = (PrefabAI)b.Info.gameObject.AddComponent(AIType);
+            var newAI = (PrefabAI)b.gameObject.AddComponent(AIType);
             TryCopyAttributes(oldAI, newAI, false);
-            b.Info.InitializePrefab();
+            b.InitializePrefab();
         }
 
         private static void TryCopyAttributes(PrefabAI src, PrefabAI dst, bool safe = true)

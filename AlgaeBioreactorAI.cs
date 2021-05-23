@@ -1,6 +1,4 @@
 ﻿using System;
-using ColossalFramework.Globalization;
-
 
 namespace FishIndustryEnhanced
 {
