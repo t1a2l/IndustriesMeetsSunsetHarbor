@@ -16,8 +16,9 @@ namespace FishIndustryEnhanced
             try
             {
                 var b = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id];
-                if (!b.Info.m_class.name.Equals("Algae Bioreactor") && !b.Info.m_class.name.Equals("Aquaculture Farm - Algae Tanks") 
-                    && !b.Info.m_class.name.Equals("Fish Hatchery - Long") && !b.Info.m_class.name.Equals("Fish Hatchery - Wide"))
+                var asset_name = b.Info.name;
+                if (!asset_name.Equals("Algae Bioreactor") && !asset_name.Equals("Aquaculture Farm - Algae Tanks") 
+                    && !asset_name.Equals("Fish Hatchery - Long") && !asset_name.Equals("Fish Hatchery - Wide"))
                 return;
 
                 AIHelper.ApplyNewAIToBuilding(b);

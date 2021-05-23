@@ -28,16 +28,16 @@ namespace FishIndustryEnhanced
                 {
                     
                     if (buffer[i].Info == null) continue;
-                    LogHelper.Information("name of asset:" + buffer[i].Info.m_class.name);
-                    if (buffer[i].Info.m_class.name.Equals("Algae Bioreactor"))
+                    LogHelper.Information("name of asset:" + buffer[i].Info.name);
+                    if (buffer[i].Info.name.Equals("Algae Bioreactor"))
                     {
                         AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);
                     }
-                    else if (buffer[i].Info.m_class.name.Equals("Aquaculture Farm - Algae Tanks"))
+                    else if (buffer[i].Info.name.Equals("Aquaculture Farm - Algae Tanks"))
                     {
                         AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);
                     }
-                    else if (buffer[i].Info.m_class.name.Equals("Fish Hatchery - Long") || buffer[i].Info.m_class.name.Equals("Fish Hatchery - Wide"))
+                    else if (buffer[i].Info.name.Equals("Fish Hatchery - Long") || buffer[i].Info.name.Equals("Fish Hatchery - Wide"))
                     {
                         AIHelper.ApplyNewAIToBuilding(Singleton<BuildingManager>.instance.m_buildings.m_buffer[i]);
                     }
