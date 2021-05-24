@@ -5,7 +5,7 @@ namespace FishIndustryEnhanced
 {
     public class AlgaeTanksAI : FishFarmAI
     {
-		public new TransferManager.TransferReason m_outputResource = TransferManager.TransferReason.None;
+		public new TransferManager.TransferReason m_outputResource = TransferManager.TransferReason.Grain;
 
 		void Start()
 		{
@@ -13,46 +13,8 @@ namespace FishIndustryEnhanced
 			Algae_Tanks.m_placementMode = BuildingInfo.PlacementMode.Roadside;
 		}
 
-		public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)
-		{
-			if (infoMode == InfoManager.InfoMode.NoisePollution)
-			{
-				int noiseAccumulation = this.m_noiseAccumulation;
-				return CommonBuildingAI.GetNoisePollutionColor((float)noiseAccumulation);
-			}
-			if (infoMode != InfoManager.InfoMode.Connections)
-			{
-				if (infoMode != InfoManager.InfoMode.Fishing)
-				{
-					return base.GetColor(buildingID, ref data, infoMode);
-				}
-				if ((data.m_flags & Building.Flags.Active) != Building.Flags.None)
-				{
-					return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
-				}
-				return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
-			}
-			else
-			{
-				InfoManager.SubInfoMode currentSubMode = Singleton<InfoManager>.instance.CurrentSubMode;
-				if (currentSubMode != InfoManager.SubInfoMode.WaterPower)
-				{
-					return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-				}
-				if (this.m_outputResource != TransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
-				{
-					return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)this.m_outputResource];
-				}
-				return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-			}
-		}
-
-
-
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
-			
-
             DistrictManager instance = Singleton<DistrictManager>.instance;
 			byte district = instance.GetDistrict(buildingData.m_position);
 			DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;

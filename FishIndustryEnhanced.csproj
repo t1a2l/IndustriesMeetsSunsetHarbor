@@ -58,6 +58,7 @@
     <Compile Include="UniqueFactoryOutputAI.cs" />
     <Compile Include="FishIndustryEnhancedMod.cs" />
     <Compile Include="LogHelper.cs" />
+    <Compile Include="UniqueFactoryWorldInfoPanelExtended.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
