@@ -11,19 +11,19 @@ namespace FishIndustryEnhanced
         {
             try
             {
-                if (b.name.Equals("Algae Bioreactor"))
+                if (b.name.Equals("(Fish) Algae Bioreactor.Algae Bioreactor_Data"))
                 {
                     ChangeBuildingAI(b, typeof(AlgaeBioreactorAI));
                     return;
                 }
-                else if (b.name.Equals("Aquaculture Farm - Algae Tanks") || b.name.Equals("Aquaculture Dock - Algae") || b.name.Equals("Aquaculture Dock - Seaweed"))
+                else if (b.name.Equals("(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data") || b.name.Equals("(Fish) Farm Dock - Algae.Aquaculture Dock - Algae_Data") || b.name.Equals("(Fish) Farm Dock - Seaweed.Aquaculture Dock - Seaweed_Data"))
                 {
                     ChangeBuildingAI(b, typeof(AlgaeTanksAI));
                     return;
                 }
-                else if (b.name.Equals("Bioplastics Plant") || b.name.Equals("Fishmeal Factory"))
+                else if (b.name.Equals("(Factory) Bioplastics Plant.Bioplastics Plant_Data") || b.name.Equals("(Fish) Factory - Fishmeal.Fishmeal Factory_Data"))
                 {
-                    ChangeBuildingAI(b, typeof(ProcessingOutputAI));
+                    ChangeBuildingAI(b, typeof(UniqueFactoryOutputAI));
                     return;
                 }
             }

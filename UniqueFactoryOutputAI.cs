@@ -4,8 +4,15 @@ using FishIndustryEnhanced.FishPark;
 
 namespace FishIndustryEnhanced
 {
-    class ProcessingOutputAI : ProcessingFacilityAI
+    class UniqueFactoryOutputAI : UniqueFactoryAI
     {
+		void Start()
+		{
+			var Bioplastics_Plant = PrefabCollection<BuildingInfo>.FindLoaded("(Factory) Bioplastics Plant.Bioplastics Plant_Data");
+			Bioplastics_Plant.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+			var Fishmeal_Factory = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Factory - Fishmeal.Fishmeal Factory_Data");
+			Fishmeal_Factory.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+		}
 
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{

@@ -7,8 +7,51 @@ namespace FishIndustryEnhanced
     {
 		public new TransferManager.TransferReason m_outputResource = TransferManager.TransferReason.None;
 
+		void Start()
+		{
+			var Algae_Tanks = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data");
+			Algae_Tanks.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+		}
+
+		public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)
+		{
+			if (infoMode == InfoManager.InfoMode.NoisePollution)
+			{
+				int noiseAccumulation = this.m_noiseAccumulation;
+				return CommonBuildingAI.GetNoisePollutionColor((float)noiseAccumulation);
+			}
+			if (infoMode != InfoManager.InfoMode.Connections)
+			{
+				if (infoMode != InfoManager.InfoMode.Fishing)
+				{
+					return base.GetColor(buildingID, ref data, infoMode);
+				}
+				if ((data.m_flags & Building.Flags.Active) != Building.Flags.None)
+				{
+					return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+				}
+				return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
+			}
+			else
+			{
+				InfoManager.SubInfoMode currentSubMode = Singleton<InfoManager>.instance.CurrentSubMode;
+				if (currentSubMode != InfoManager.SubInfoMode.WaterPower)
+				{
+					return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+				}
+				if (this.m_outputResource != TransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
+				{
+					return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)this.m_outputResource];
+				}
+				return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+			}
+		}
+
+
+
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
+			
 
             DistrictManager instance = Singleton<DistrictManager>.instance;
 			byte district = instance.GetDistrict(buildingData.m_position);
@@ -29,7 +72,7 @@ namespace FishIndustryEnhanced
 					num += Mathf.Clamp(value, 0, 128);
 					num3 = Mathf.Max(num3, b);
 				}
-				if(this.m_info.name == "Aquaculture Farm - Algae Tanks")
+				if(this.m_info.name == "(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data")
                 {
 					num2 = 0;
 					num3 = 1;

@@ -55,7 +55,7 @@
     <Compile Include="AlgaeBioreactorAI.cs" />
     <Compile Include="AlgaeTanksAI.cs" />
     <Compile Include="FishDistrictPark.cs" />
-    <Compile Include="ProcessingOutputAI.cs" />
+    <Compile Include="UniqueFactoryOutputAI.cs" />
     <Compile Include="FishIndustryEnhancedMod.cs" />
     <Compile Include="LogHelper.cs" />
   </ItemGroup>

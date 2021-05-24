@@ -29,7 +29,7 @@ namespace FishIndustryEnhanced
                     var bi = PrefabCollection<BuildingInfo>.GetLoaded(i);
                     if (bi is null) continue;
                     LogHelper.Information(bi.name);
-                    if (bi.name.Equals("Algae Bioreactor") || bi.name.Equals("Aquaculture Farm - Algae Tanks") || bi.name.Equals("Aquaculture Dock - Algae") || bi.name.Equals("Aquaculture Dock - Seaweed") || bi.name.Equals("Aquaculture Dock - Algae") || bi.name.Equals("Aquaculture Dock - Seaweed"))
+                    if (bi.name.Equals("(Fish) Algae Bioreactor.Algae Bioreactor_Data") || bi.name.Equals("(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data") || bi.name.Equals("(Fish) Farm Dock - Algae.Aquaculture Dock - Algae_Data") || bi.name.Equals("(Fish) Farm Dock - Seaweed.Aquaculture Dock - Seaweed_Data") || bi.name.Equals("(Factory) Bioplastics Plant.Bioplastics Plant_Data") || bi.name.Equals("(Fish) Factory - Fishmeal.Fishmeal Factory_Data"))
                     {
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }

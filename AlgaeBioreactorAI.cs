@@ -4,10 +4,14 @@ namespace FishIndustryEnhanced
 {
     class AlgaeBioreactorAI : PowerPlantAI
     {
+		void Start()
+		{
+			var Algae_Bioreactor = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Algae Bioreactor.Algae Bioreactor_Data");
+			Algae_Bioreactor.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+		}
+
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
 		{
-			var msg = this.m_resourceType.ToString();
-			LogHelper.Information("AlgaeBioreactorAI transfer reason:" + msg);
 			int electricityRate = this.GetElectricityRate(buildingID, ref data);
 			string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
 			{
