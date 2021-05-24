@@ -16,14 +16,14 @@ namespace FishIndustryEnhanced
                     ChangeBuildingAI(b, typeof(AlgaeBioreactorAI));
                     return;
                 }
-                else if (b.name.Equals("Aquaculture Farm - Algae Tanks"))
+                else if (b.name.Equals("Aquaculture Farm - Algae Tanks") || b.name.Equals("Aquaculture Dock - Algae") || b.name.Equals("Aquaculture Dock - Seaweed"))
                 {
-                    ChangeBuildingAI(b, typeof(AlgaeTank));
+                    ChangeBuildingAI(b, typeof(AlgaeTanksAI));
                     return;
                 }
-                else if (b.name.Equals("Fish Hatchery - Long") || b.name.Equals("Fish Hatchery - Wide"))
+                else if (b.name.Equals("Bioplastics Plant") || b.name.Equals("Fishmeal Factory"))
                 {
-                    ChangeBuildingAI(b, typeof(FishHatchery));
+                    ChangeBuildingAI(b, typeof(ProcessingOutputAI));
                     return;
                 }
             }

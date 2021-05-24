@@ -3,11 +3,13 @@ using UnityEngine;
 
 namespace FishIndustryEnhanced
 {
-    public class AlgaeTank : FishFarmAI
+    public class AlgaeTanksAI : FishFarmAI
     {
+		public new TransferManager.TransferReason m_outputResource = TransferManager.TransferReason.None;
 
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
+
             DistrictManager instance = Singleton<DistrictManager>.instance;
 			byte district = instance.GetDistrict(buildingData.m_position);
 			DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
@@ -27,7 +29,6 @@ namespace FishIndustryEnhanced
 					num += Mathf.Clamp(value, 0, 128);
 					num3 = Mathf.Max(num3, b);
 				}
-				LogHelper.Information("AlgaeTank Name:" + this.m_info.name);
 				if(this.m_info.name == "Aquaculture Farm - Algae Tanks")
                 {
 					num2 = 0;

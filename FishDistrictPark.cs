@@ -16,6 +16,7 @@ namespace FishIndustryEnhanced.FishPark
 		public static DistrictAreaResourceData m_plasticsData;
 		public static DistrictAreaResourceData m_glassData;
 		public static DistrictAreaResourceData m_metalsData;
+		public static DistrictAreaResourceData m_goodsData;
 		public static DistrictAreaResourceData m_luxuryProductsData;
 		public static void AddProductionAmountFish(this DistrictPark districtPark, TransferManager.TransferReason material, int amount)
 		{
@@ -50,6 +51,9 @@ namespace FishIndustryEnhanced.FishPark
 				break;
 			case TransferManager.TransferReason.Fish:
 				m_fishData.m_tempConsumption = m_fishData.m_tempConsumption + (uint)amount;
+				break;
+			case TransferManager.TransferReason.Goods:
+				m_goodsData.m_tempConsumption = m_goodsData.m_tempConsumption + (uint)amount;
 				break;
 			default:
 				switch (material)
@@ -105,6 +109,9 @@ namespace FishIndustryEnhanced.FishPark
 			case TransferManager.TransferReason.Fish:
 				m_fishData.m_tempExport = m_fishData.m_tempExport + (uint)amount;
 				break;
+			case TransferManager.TransferReason.Goods:
+				m_goodsData.m_tempExport = m_goodsData.m_tempExport + (uint)amount;
+				break;
 			default:
 				switch (material)
 				{
@@ -158,6 +165,9 @@ namespace FishIndustryEnhanced.FishPark
 				break;
 			case TransferManager.TransferReason.Fish:
 				m_fishData.Add(amount, incoming, capacity);
+				break;
+			case TransferManager.TransferReason.Goods:
+				m_goodsData.Add(amount, incoming, capacity);
 				break;
 			default:
 				switch (material)

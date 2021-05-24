@@ -53,9 +53,9 @@
   <ItemGroup>
     <Compile Include="AIHelper.cs" />
     <Compile Include="AlgaeBioreactorAI.cs" />
-    <Compile Include="AlgaeTank.cs" />
+    <Compile Include="AlgaeTanksAI.cs" />
     <Compile Include="FishDistrictPark.cs" />
-    <Compile Include="FishHatchery.cs" />
+    <Compile Include="ProcessingOutputAI.cs" />
     <Compile Include="FishIndustryEnhancedMod.cs" />
     <Compile Include="LogHelper.cs" />
   </ItemGroup>

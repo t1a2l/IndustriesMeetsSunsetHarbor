@@ -4,15 +4,9 @@ using FishIndustryEnhanced.FishPark;
 
 namespace FishIndustryEnhanced
 {
-    class FishHatchery : ProcessingFacilityAI
+    class ProcessingOutputAI : ProcessingFacilityAI
     {
-		void Start()
-        {
-			var Fish_Hatchery_Long = PrefabCollection<BuildingInfo>.FindLoaded("Fish Hatchery - Long");
-			Fish_Hatchery_Long.m_placementMode = BuildingInfo.PlacementMode.Roadside;
-			var Fish_Hatchery_Wide = PrefabCollection<BuildingInfo>.FindLoaded("Fish Hatchery - Wide");
-			Fish_Hatchery_Wide.m_placementMode = BuildingInfo.PlacementMode.Roadside;
-        }
+
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
 			DistrictManager instance = Singleton<DistrictManager>.instance;
