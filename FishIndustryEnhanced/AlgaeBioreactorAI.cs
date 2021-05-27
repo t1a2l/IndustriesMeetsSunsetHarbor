@@ -1,44 +1,48 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 
 namespace FishIndustryEnhanced
 {
-    class AlgaeBioreactorAI : PowerPlantAI
+    public static class AlgaeBioreactorAI
     {
-		void Start()
-		{
+		[HarmonyPrefix]
+		public static bool Prefix()
+        {
 			var Algae_Bioreactor = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Algae Bioreactor.Algae Bioreactor_Data");
 			Algae_Bioreactor.m_placementMode = BuildingInfo.PlacementMode.Roadside;
+			return false;
 		}
 
-        public override string GetLocalizedStats(ushort buildingID, ref Building data)
+		[HarmonyPostfix]
+        public static string Postfix(PowerPlantAI __instance, ushort buildingID, ref Building data)
 		{
-			int electricityRate = this.GetElectricityRate(buildingID, ref data);
+			int electricityRate = __instance.GetElectricityRate(buildingID, ref data);
 			string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
 			{
 				(electricityRate * 16 + 500) / 1000
 			});
-			if (this.m_resourceType == TransferManager.TransferReason.Coal)
+			if (__instance.m_resourceType == TransferManager.TransferReason.Coal)
 			{
 				text += Environment.NewLine;
-				int resourceDuration = this.GetResourceDuration(buildingID, ref data);
+				int resourceDuration = __instance.GetResourceDuration(buildingID, ref data);
 				text += LocaleFormatter.FormatGeneric("AIINFO_COAL_STORED", new object[]
 				{
 					resourceDuration
 				});
 			}
-			else if (this.m_resourceType == TransferManager.TransferReason.Petrol)
+			else if (__instance.m_resourceType == TransferManager.TransferReason.Petrol)
 			{
 				text += Environment.NewLine;
-				int resourceDuration2 = this.GetResourceDuration(buildingID, ref data);
+				int resourceDuration2 = __instance.GetResourceDuration(buildingID, ref data);
 				text += LocaleFormatter.FormatGeneric("AIINFO_OIL_STORED", new object[]
 				{
 					resourceDuration2
 				});
 			}
-			else if (this.m_resourceType == TransferManager.TransferReason.Grain)
+			else if (__instance.m_resourceType == TransferManager.TransferReason.Grain)
 			{
 				text += Environment.NewLine;
-				int resourceDuration3 = this.GetResourceDuration(buildingID, ref data);
+				int resourceDuration3 = __instance.GetResourceDuration(buildingID, ref data);
 				text += "Crops stored for " + resourceDuration3 + "weeks";
 			}
 			return text;

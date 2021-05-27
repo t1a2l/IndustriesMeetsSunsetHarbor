@@ -1,6 +1,6 @@
 ﻿using ICities;
 using System;
-using UnityEngine;
+using CitiesHarmony.API;
 
 namespace FishIndustryEnhanced
 {
@@ -10,17 +10,41 @@ namespace FishIndustryEnhanced
         string IUserMod.Name => "Fish Industry Enhanced Mod";
 
         string IUserMod.Description => "Enhance the fishing Industry";
+        
+        public void OnEnabled() {
+             HarmonyHelper.DoOnHarmonyReady(() => Patcher.PatchAll());
+        }
+
+        public void OnDisabled() {
+            if (HarmonyHelper.IsHarmonyInstalled) Patcher.UnpatchAll();
+        }
     }
 
     public class LoadingExtension : LoadingExtensionBase
     {
-        private static GameObject _gameObject;
+
+        public override void OnCreated(ILoading loading)
+        {
+            base.OnCreated(loading);
+            if (loading.currentMode != AppMode.Game)
+            {
+                return;
+            }
+            if (!HarmonyHelper.IsHarmonyInstalled)
+            {
+                return;
+            }
+ 
+        }
         public override void OnLevelLoaded(LoadMode mode)
         {
+            //base.OnLevelLoaded(mode);
+            if (mode != LoadMode.NewGame && mode != LoadMode.LoadGame)
+            {
+                return;
+            }
             try
             {
-                _gameObject = new GameObject("UniqueFactoryFish");
-                _gameObject.AddComponent<UniqueFactoryWorldInfoPanelExtended>();
                 var loadedBuildingInfoCount = PrefabCollection<BuildingInfo>.LoadedCount();
                 for (uint i = 0; i < loadedBuildingInfoCount; i++)
                 {
@@ -45,5 +69,14 @@ namespace FishIndustryEnhanced
         {
             base.OnLevelUnloading();
         } 
+
+        public override void OnReleased()
+        {
+            base.OnReleased();
+            if (!HarmonyHelper.IsHarmonyInstalled)
+            {
+                return;
+            }
+        }
     }
 }
