@@ -43,25 +43,6 @@ namespace FishIndustryEnhanced
             {
                 return;
             }
-            try
-            {
-                var loadedBuildingInfoCount = PrefabCollection<BuildingInfo>.LoadedCount();
-                for (uint i = 0; i < loadedBuildingInfoCount; i++)
-                {
-                    var bi = PrefabCollection<BuildingInfo>.GetLoaded(i);
-                    if (bi is null) continue;
-                    if (bi.name.Equals("(Fish) Algae Bioreactor.Algae Bioreactor_Data") || bi.name.Equals("(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data") || bi.name.Equals("(Fish) Farm Dock - Algae.Aquaculture Dock - Algae_Data") || bi.name.Equals("(Fish) Farm Dock - Seaweed.Aquaculture Dock - Seaweed_Data") || bi.name.Equals("(Factory) Bioplastics Plant.Bioplastics Plant_Data") || bi.name.Equals("(Fish) Factory - Fishmeal.Fishmeal Factory_Data"))
-                    {
-                        AIHelper.ApplyNewAIToBuilding(bi);
-                    }
-                }
-                LogHelper.Information("Reloaded Mod");
-            }
-            catch (Exception e)
-            {
-                LogHelper.Information(e.ToString());
-            }
-
             LogHelper.Information("Loaded Mod");
         }
 

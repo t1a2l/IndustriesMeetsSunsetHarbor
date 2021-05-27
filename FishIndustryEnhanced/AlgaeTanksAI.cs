@@ -19,6 +19,7 @@ namespace FishIndustryEnhanced
 		[HarmonyPrefix]
 		public static bool Prefix()
         {
+			Debug.Log("prefix works!!!!");
 			var Algae_Tanks = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data");
 			Algae_Tanks.m_placementMode = BuildingInfo.PlacementMode.Roadside;
 			return false;
@@ -27,7 +28,17 @@ namespace FishIndustryEnhanced
 		[HarmonyPostfix]
         public static void Postfix(FishFarmAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
-			__instance.m_outputResource = TransferManager.TransferReason.Grain;
+			Debug.Log("postfix works!!!!");
+			if(__instance.m_info.name == "(Fish) Farm Dock - Algae.Aquaculture Dock - Algae_Data" || __instance.m_info.name == "(Fish) Farm Dock - Seaweed.Aquaculture Dock - Seaweed_Data" 
+				|| __instance.m_info.name == "(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data")
+            {
+				__instance.m_outputResource = TransferManager.TransferReason.Grain;
+            } 
+			else
+            {
+				__instance.m_outputResource = TransferManager.TransferReason.Fish;
+            }
+				
 			DistrictManager instance = Singleton<DistrictManager>.instance;
 			byte district = instance.GetDistrict(buildingData.m_position);
 			DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
