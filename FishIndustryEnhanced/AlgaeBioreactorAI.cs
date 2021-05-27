@@ -3,9 +3,10 @@ using System;
 
 namespace FishIndustryEnhanced
 {
+	[HarmonyPatch(typeof(PowerPlantAI), "GetLocalizedStats")]
     public static class AlgaeBioreactorAI
     {
-		[HarmonyPrefix]
+		
 		public static bool Prefix()
         {
 			var Algae_Bioreactor = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Algae Bioreactor.Algae Bioreactor_Data");

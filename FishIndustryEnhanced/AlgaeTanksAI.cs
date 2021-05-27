@@ -5,6 +5,7 @@ using HarmonyLib;
 
 namespace FishIndustryEnhanced
 {
+	[HarmonyPatch(typeof(FishFarmAI), "ProduceGoods")]
     public static class AlgaeTanksAI
     {
 		private delegate void HandleDeadDelegate(CommonBuildingAI instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount);
@@ -16,7 +17,6 @@ namespace FishIndustryEnhanced
 		private delegate void ProduceGoodsDelegate(PlayerBuildingAI instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount);
 		private static ProduceGoodsDelegate BaseProduceGoods = AccessTools.MethodDelegate<ProduceGoodsDelegate>(typeof(PlayerBuildingAI).GetMethod("ProduceGoods", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-		[HarmonyPrefix]
 		public static bool Prefix()
         {
 			Debug.Log("prefix works!!!!");
@@ -25,7 +25,6 @@ namespace FishIndustryEnhanced
 			return false;
 		}
 
-		[HarmonyPostfix]
         public static void Postfix(FishFarmAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
 			Debug.Log("postfix works!!!!");
