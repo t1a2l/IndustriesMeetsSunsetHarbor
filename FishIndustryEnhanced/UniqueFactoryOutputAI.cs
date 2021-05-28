@@ -6,10 +6,9 @@ using FishIndustryEnhanced.FishPark;
 
 namespace FishIndustryEnhanced
 {
-	[HarmonyPatch(typeof(UniqueFactoryWorldInfoPanel), "OnSetTarget")]
+	[HarmonyPatch(typeof(ProcessingFacilityAI), "ProduceGoods")]
     public static class UniqueFactoryOutputAI
     {
-
 		private delegate void CalculateGuestVehiclesDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside);
 		private static CalculateGuestVehiclesDelegate BaseCalculateGuestVehicles = AccessTools.MethodDelegate<CalculateGuestVehiclesDelegate>(typeof(CommonBuildingAI).GetMethod("CalculateGuestVehicles", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
@@ -22,15 +21,7 @@ namespace FishIndustryEnhanced
 		private delegate void ProduceGoodsDelegate(PlayerBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount);
 		private static ProduceGoodsDelegate BaseProduceGoods = AccessTools.MethodDelegate<ProduceGoodsDelegate>(typeof(PlayerBuildingAI).GetMethod("ProduceGoods", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-		public static bool Prefix()
-        {
-			var Bioplastics_Plant = PrefabCollection<BuildingInfo>.FindLoaded("(Factory) Bioplastics Plant.Bioplastics Plant_Data");
-			Bioplastics_Plant.m_placementMode = BuildingInfo.PlacementMode.Roadside;
-			var Fishmeal_Factory = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Factory - Fishmeal.Fishmeal Factory_Data");
-			Fishmeal_Factory.m_placementMode = BuildingInfo.PlacementMode.Roadside;
-			return false;
-		}
-
+		[HarmonyPostfix]
         public static void Postfix(UniqueFactoryAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
 			var IsRawMaterial = typeof(ProcessingFacilityAI).GetMethod("IsRawMaterial", BindingFlags.NonPublic | BindingFlags.Instance);

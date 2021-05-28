@@ -6,16 +6,8 @@ namespace FishIndustryEnhanced
 	[HarmonyPatch(typeof(PowerPlantAI), "GetLocalizedStats")]
     public static class AlgaeBioreactorAI
     {
-		
-		public static bool Prefix()
-        {
-			var Algae_Bioreactor = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Algae Bioreactor.Algae Bioreactor_Data");
-			Algae_Bioreactor.m_placementMode = BuildingInfo.PlacementMode.Roadside;
-			return false;
-		}
-
 		[HarmonyPostfix]
-        public static string Postfix(PowerPlantAI __instance, ushort buildingID, ref Building data)
+        public static void Postfix(PowerPlantAI __instance, ushort buildingID, ref Building data, ref string __result)
 		{
 			int electricityRate = __instance.GetElectricityRate(buildingID, ref data);
 			string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
@@ -46,7 +38,7 @@ namespace FishIndustryEnhanced
 				int resourceDuration3 = __instance.GetResourceDuration(buildingID, ref data);
 				text += "Crops stored for " + resourceDuration3 + "weeks";
 			}
-			return text;
+			__result = text;
 		}
     }
 }

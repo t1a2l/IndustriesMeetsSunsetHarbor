@@ -17,14 +17,7 @@ namespace FishIndustryEnhanced
 		private delegate void ProduceGoodsDelegate(PlayerBuildingAI instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount);
 		private static ProduceGoodsDelegate BaseProduceGoods = AccessTools.MethodDelegate<ProduceGoodsDelegate>(typeof(PlayerBuildingAI).GetMethod("ProduceGoods", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-		public static bool Prefix()
-        {
-			Debug.Log("prefix works!!!!");
-			var Algae_Tanks = PrefabCollection<BuildingInfo>.FindLoaded("(Fish) Farm Tanks - Algae.Aquaculture Farm - Algae Tanks_Data");
-			Algae_Tanks.m_placementMode = BuildingInfo.PlacementMode.Roadside;
-			return false;
-		}
-
+		[HarmonyPostfix]
         public static void Postfix(FishFarmAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
 			Debug.Log("postfix works!!!!");
