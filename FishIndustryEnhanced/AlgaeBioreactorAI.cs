@@ -36,7 +36,7 @@ namespace FishIndustryEnhanced
 			{
 				text += Environment.NewLine;
 				int resourceDuration3 = __instance.GetResourceDuration(buildingID, ref data);
-				text += "Crops stored for " + resourceDuration3 + "weeks";
+				text += "Crops stored for " + resourceDuration3 + " weeks";
 			}
 			__result = text;
 		}
