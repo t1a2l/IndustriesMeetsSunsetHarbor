@@ -21,7 +21,10 @@ namespace IndustriesSunsetHarborMerged
 				(electricityRate * 16 + 500) / 1000
 			});
 			text += Environment.NewLine;
-			String name = IndustryWorldInfoPanel.ResourceSpriteName(__instance.m_resourceType, false);
+			string name = __instance.m_resourceType.ToString();
+			name = name.Replace("Grain", "Crops");
+			name = name.Replace("Flours", "Flour");
+			name = name.Replace("Metals", "Metal");
 			int resourceDuration = __instance.GetResourceDuration(buildingID, ref data);
 			text += name + " stored for " + resourceDuration + " weeks";
 			__result = text;
