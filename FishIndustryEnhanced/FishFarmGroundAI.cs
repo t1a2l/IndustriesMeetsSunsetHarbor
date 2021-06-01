@@ -3,10 +3,10 @@ using UnityEngine;
 using System.Reflection;
 using HarmonyLib;
 
-namespace FishIndustryEnhanced
+namespace IndustriesSunsetHarborMerged
 {
 	[HarmonyPatch(typeof(FishFarmAI), "ProduceGoods")]
-    public static class AlgaeTanksAI
+    public static class FishFarmGroundAI
     {
         private delegate void HandleDeadDelegate(CommonBuildingAI instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount);
         private static HandleDeadDelegate BaseHandleDead = AccessTools.MethodDelegate<HandleDeadDelegate>(typeof(CommonBuildingAI).GetMethod("HandleDead", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
@@ -32,25 +32,33 @@ namespace FishIndustryEnhanced
             Notification.Problem problem = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem.WaterNotConnected | Notification.Problem.NoResources | Notification.Problem.NoNaturalResources | Notification.Problem.FishFarmWaterDirty | Notification.Problem.NoPlaceForFishingGoods);
             int num = 0;
             int num2 = 0;
+            int num3 = 0;
+            bool shoreLineFishFarm = false;
+            if(buildingData.Info.m_placementMode == BuildingInfo.PlacementMode.Shoreline)
+            {
+                shoreLineFishFarm = true;
+            }
             if (__instance.m_extractionPositions != null && __instance.m_extractionPositions.Length > 0)
             {
                 for (int i = 0; i < __instance.m_extractionPositions.Length; i++)
                 {
                     Vector3 position = buildingData.CalculatePosition(__instance.m_extractionPositions[i]);
+                    int b;
+                    int num4;
+                    int value;
                     byte groundPollution;
-                    byte waterPollution;
-                    bool water;
-                    bool sewage;
-                    Singleton<WaterManager>.instance.CheckWater(position, out water, out sewage, out waterPollution);
-                    Singleton<NaturalResourceManager>.instance.CheckPollution(position, out groundPollution);
-                    if (waterPollution == 0)
+                    if(shoreLineFishFarm)
                     {
-                        num += Mathf.Clamp((int)groundPollution, 0, 128); // check if pollution is in range
-                    }
+                        Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out b, out num4, out value);
+                        num += Mathf.Clamp(value, 0, 128); // check if pollution is in range
+                        num3 = Mathf.Max(num3, b);
+                    } 
                     else
                     {
-                        num += Mathf.Clamp(waterPollution, 0, 128); // check if pollution is in range
-                    }                    
+                        Singleton<NaturalResourceManager>.instance.CheckPollution(position, out groundPollution);
+                        num += Mathf.Clamp((int)groundPollution, 0, 128); // check if pollution is in range
+                        num3 = 1;
+                    }                 
                 }
                 num2 = num / __instance.m_extractionPositions.Length;
             }
@@ -66,6 +74,10 @@ namespace FishIndustryEnhanced
                     Singleton<BuildingManager>.instance.m_fishingPollutionDetected.Activate(properties.m_fishingPollutionDetected, buildingID);
                 }
             }
+            if (num3 == 0)
+	        {
+		        finalProductionRate = 0;
+	        }
             if (finalProductionRate != 0)
             {
                 int num5 = finalProductionRate;

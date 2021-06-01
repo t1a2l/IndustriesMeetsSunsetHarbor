@@ -1,13 +1,9 @@
 ﻿using ICities;
-using System.Reflection;
 using CitiesHarmony.API;
-using ColossalFramework;
-using ColossalFramework.UI;
-using UnityEngine;
 
-namespace FishIndustryEnhanced
+namespace IndustriesSunsetHarborMerged
 {
-    public class FishIndustryEnhanced : IUserMod
+    public class IndustriesSunsetHarborMerged : IUserMod
     {
 
         string IUserMod.Name => "Fish Industry Enhanced Mod";
@@ -41,7 +37,6 @@ namespace FishIndustryEnhanced
         }
         public override void OnLevelLoaded(LoadMode mode)
         {
-            //base.OnLevelLoaded(mode);
             if (mode != LoadMode.NewGame && mode != LoadMode.LoadGame)
             {
                 return;

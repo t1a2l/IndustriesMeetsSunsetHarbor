@@ -1,11 +1,9 @@
-﻿using ColossalFramework.Plugins;
-using System;
-
-namespace FishIndustryEnhanced
+﻿
+namespace IndustriesSunsetHarborMerged
 {
     internal static class LogHelper
     {
-        private const string Prefix = "FishIndustryEnhanced: ";
+        private const string Prefix = "Industries SunsetHarbor Merged: ";
 
         public static void Information(string message, params object[] args)
         {

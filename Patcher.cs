@@ -1,22 +1,22 @@
 ﻿using System.Reflection;
 using HarmonyLib;
 
-namespace FishIndustryEnhanced {
+namespace IndustriesSunsetHarborMerged {
     public static class Patcher {
-        private const string HarmonyId = "t1a2l.FishIndustryEnhanced";
+        private const string HarmonyId = "t1a2l.IndustriesSunsetHarborMerged";
 
         private static bool patched = false;
 
         public static void PatchAll() {
             if (patched) return;
 
-            UnityEngine.Debug.Log("Fish Industry Enhanced: Patching...");
+            UnityEngine.Debug.Log("Industries SunsetHarbor Merged: Patching...");
 
             patched = true;
 
             // Apply your patches here!
             // Harmony.DEBUG = true;
-            var harmony = new Harmony("t1a2l.FishIndustryEnhanced");
+            var harmony = new Harmony("t1a2l.IndustriesSunsetHarborMerged");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
@@ -28,7 +28,7 @@ namespace FishIndustryEnhanced {
 
             patched = false;
 
-            UnityEngine.Debug.Log("Fish Industry Enhanced: Reverted...");
+            UnityEngine.Debug.Log("Industries SunsetHarbor Merged: Reverted...");
         }
     }
 
