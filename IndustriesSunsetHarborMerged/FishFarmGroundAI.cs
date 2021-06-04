@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Reflection;
 using HarmonyLib;
 
-namespace IndustriesSunsetHarborMerged
+namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 {
 	[HarmonyPatch(typeof(FishFarmAI), "ProduceGoods")]
     public static class FishFarmGroundAI
@@ -42,21 +42,21 @@ namespace IndustriesSunsetHarborMerged
             {
                 for (int i = 0; i < __instance.m_extractionPositions.Length; i++)
                 {
-                    Vector3 position = buildingData.CalculatePosition(__instance.m_extractionPositions[i]);
-                    int b;
-                    int num4;
-                    int value;
-                    byte groundPollution;
                     if(shoreLineFishFarm)
                     {
+                        Vector3 position = buildingData.CalculatePosition(__instance.m_extractionPositions[i]);
+                        int b;
+                        int num4;
+                        int value;
                         Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out b, out num4, out value);
                         num += Mathf.Clamp(value, 0, 128); // check if pollution is in range
                         num3 = Mathf.Max(num3, b);
                     } 
                     else
                     {
-                        Singleton<NaturalResourceManager>.instance.CheckPollution(position, out groundPollution);
-                        num += Mathf.Clamp((int)groundPollution, 0, 128); // check if pollution is in range
+                        byte buildingGroundPollution;
+                        Singleton<NaturalResourceManager>.instance.CheckPollution(buildingData.m_position, out buildingGroundPollution);
+                        num += Mathf.Clamp((int)buildingGroundPollution, 0, 128); // check if pollution is in range
                         num3 = 1;
                     }                 
                 }

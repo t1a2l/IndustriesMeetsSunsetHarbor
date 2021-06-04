@@ -3,7 +3,7 @@ using CitiesHarmony.API;
 
 namespace IndustriesSunsetHarborMerged
 {
-    public class IndustriesSunsetHarborMerged : IUserMod
+    public class Mod : IUserMod
     {
 
         string IUserMod.Name => "Fish Industry Enhanced Mod";
