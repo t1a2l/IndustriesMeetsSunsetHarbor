@@ -11,7 +11,7 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
         {
             try
             {
-                if (b.name.Equals("Fish Market"))
+                if (b.name.Equals("Fish Market 01"))
                 {
                     ChangeBuildingAI(b, typeof(ResourceMarketAI));
                     return;
