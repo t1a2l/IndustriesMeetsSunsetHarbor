@@ -2,6 +2,7 @@
 using ColossalFramework;
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 {
@@ -18,6 +19,16 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 			TransferManager.TransferReason.AnimalProducts,
 			TransferManager.TransferReason.Flours
         };
+		
+		bool isMaterial = false;
+
+		byte[] amountSold;
+
+		public ResourceMarketAI()
+        {
+			amountSold = new byte[m_incomingResources.Length];
+        }
+
 
 		public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)
 		{
@@ -150,6 +161,13 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 
 		public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
 		{
+			int index = -1;
+			int[] amountDeltaArr = new int[m_incomingResources.Length];
+			for(int j = 0; j < m_incomingResources.Length; j++)
+            {
+				amountDeltaArr[j] = 0;
+				amountSold[j] = 0;
+            }
 			switch (material)
 			{
 			case TransferManager.TransferReason.ShoppingB:
@@ -163,10 +181,14 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 			default:
 				if (material != TransferManager.TransferReason.Shopping)
 				{
+					var found = false;
 					for(int i = 0; i < m_incomingResources.Length; i++)
                     {
 						if (material == m_incomingResources[i])
 						{
+							isMaterial = true;
+							index = i;
+							amountDeltaArr[i] = amountDelta;
                             if (!marketBuffers.ContainsKey(buildingID))
                             {
 									ushort[] customBuffer = new ushort[m_incomingResources.Length];
@@ -178,26 +200,45 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
                             }
 							var m_customBuffer = marketBuffers[buildingID];
 							int goodsCapacity = this.m_goodsCapacity;
-							amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)m_customBuffer[i]);
-							m_customBuffer[i] = (ushort)((int)m_customBuffer[i] + amountDelta);
+							amountDeltaArr[i] = Mathf.Clamp(amountDeltaArr[i], 0, goodsCapacity - (int)m_customBuffer[i]);
+							m_customBuffer[i] = (ushort)((int)m_customBuffer[i] + amountDeltaArr[i]);
 							marketBuffers[buildingID] = m_customBuffer;
-							return;
+							found = true;
+							break;
 						}
                     }
-					base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);	
+                    if (!found)
+                    {
+						base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);	
+                    }
 				}
 				break;
 			}
 			int customBuffer2 = (int)data.m_customBuffer2;
-			amountDelta = Mathf.Clamp(amountDelta, -customBuffer2, 0);
-			data.m_customBuffer2 = (ushort)(customBuffer2 + amountDelta);
-			data.m_outgoingProblemTimer = 0;
-			data.m_education1 = (byte)Mathf.Clamp((int)data.m_education1 + (-amountDelta + 99) / 100, 0, 255);
-			int num = (-amountDelta * this.m_goodsSellPrice + 50) / 100;
-			if (num != 0)
-			{
-				Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num, this.m_info.m_class);
-			}
+			if(index == -1)
+            {
+				amountDelta = Mathf.Clamp(amountDelta, -customBuffer2, 0);
+				data.m_customBuffer2 = (ushort)(customBuffer2 + amountDelta);
+				data.m_education1 = (byte)Mathf.Clamp((int)data.m_education1 + (-amountDelta + 99) / 100, 0, 255);
+				data.m_outgoingProblemTimer = 0;
+				int num = (-amountDelta * this.m_goodsSellPrice + 50) / 100;
+				if (num != 0)
+				{
+					Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num, this.m_info.m_class);
+				}
+            } 
+			else
+            {
+				amountDeltaArr[index] = Mathf.Clamp(amountDeltaArr[index], -customBuffer2, 0);
+				data.m_customBuffer2 = (ushort)(customBuffer2 + amountDeltaArr[index]);
+				amountSold[index] = (byte)Mathf.Clamp((int)amountSold[index] + (-amountDeltaArr[index] + 99) / 100, 0, 255);
+				data.m_outgoingProblemTimer = 0;
+				int num = (-amountDeltaArr[index] * this.m_goodsSellPrice + 50) / 100;
+				if (num != 0)
+				{
+					Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num, this.m_info.m_class);
+				}
+            }	
 		}
 
 		public override void BuildingDeactivated(ushort buildingID, ref Building data)
@@ -232,8 +273,17 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 	
 		protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
 		{
-			var GetOutgoingTransferReason = this.GetType().GetMethod("GetOutgoingTransferReason", BindingFlags.NonPublic | BindingFlags.Instance);
+			var GetOutgoingTransferReason = typeof(MarketAI).GetMethod("GetOutgoingTransferReason", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(ushort)  }, null);
 			base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+			if (!marketBuffers.ContainsKey(buildingID))
+            {
+					ushort[] customBuffer = new ushort[m_incomingResources.Length];
+					for(int j = 0; j < customBuffer.Length; j++)
+                    {
+						customBuffer[j] = buildingData.m_customBuffer1;
+                    }
+					marketBuffers.Add(buildingID, customBuffer);
+            }
 			float num = (float)buildingData.Width * -4f;
 			float num2 = (float)buildingData.Width * 4f;
 			float num3 = (float)buildingData.Length * -4f;
@@ -415,6 +465,60 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 				}
 			}
 			buildingData.m_problems = problem;
+		}
+
+		public override string GetLocalizedStats(ushort buildingID, ref Building data)
+		{
+			string str = "";
+			for(int i = 0; i < m_incomingResources.Length; i++)
+            {
+				string name = m_incomingResources[i].ToString();
+				name = name.Replace("Grain", "Crops");
+				name = name.Replace("Flours", "Flour");
+				name = name.Replace("AnimalProducts", "Meat");
+				int num;
+				if(isMaterial)
+                {
+					num = (int)(amountSold[i] * 10);
+					amountSold[i] = 0;
+                }
+				else
+                {
+					num = (int)(data.m_education2 * 10);
+                }
+				str += name + " sold last week: " + num;
+				str += Environment.NewLine;
+            }
+			isMaterial = false;
+			int finalExport = (int)data.m_finalExport;
+			return str + LocaleFormatter.FormatGeneric("AIINFO_TOURISTS", new object[]
+			{
+				finalExport
+			});
+		}
+
+		public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+		{
+			base.SimulationStep(buildingID, ref buildingData, ref frameData);
+			SimulationManager instance = Singleton<SimulationManager>.instance;
+			uint num = (instance.m_currentFrameIndex & 3840U) >> 8;
+			if (num == 15U)
+			{
+				buildingData.m_finalImport = buildingData.m_tempImport;
+				buildingData.m_finalExport = buildingData.m_tempExport;
+				buildingData.m_education2 = buildingData.m_education1;
+				buildingData.m_tempImport = 0;
+				buildingData.m_tempExport = 0;
+				buildingData.m_education1 = 0;
+			}
+			if (this.m_info != null && this.m_info.m_class != null && this.m_info.m_class.m_service == ItemClass.Service.Fishing)
+			{
+				GuideController properties = Singleton<GuideManager>.instance.m_properties;
+				if (properties != null && Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt != null)
+				{
+					Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt.Activate(properties.m_fishFactoryMarketBuilt, buildingID);
+				}
+			}
 		}
 	}
 }
