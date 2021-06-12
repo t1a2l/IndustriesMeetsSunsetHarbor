@@ -19,12 +19,19 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 			TransferManager.TransferReason.Flours
         };
 
-		private class MarketBuffer
+		public class MarketBuffer
 		{
+			private static MarketBuffer Instance;
+			public static MarketBuffer getInstance() {
+				return Instance;
+			}
 			public ushort[] inputAmountBuffer;
 			public ushort[] outputAmountBuffer;
 			public ushort[] amountSold1;
 			public ushort[] amountSold2;
+			public byte [] Serialize() => Convert.FromBase64String(XMLSerializerUtil.Serialize(this));
+            public static MarketBuffer Deserialize(byte [] data) =>
+              Instance = XMLSerializerUtil.Deserialize<MarketBuffer>(Convert.ToBase64String(data));
 		}
 
 		Dictionary<ushort, MarketBuffer> marketBuffers = new Dictionary<ushort, MarketBuffer>();
@@ -480,6 +487,18 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 				str += name + " sold last week: " + num;
 				str += Environment.NewLine;
 			}
+			str += Environment.NewLine;
+			for(int i = 0; i < m_incomingResources.Length; i++)
+			{
+				string name = m_incomingResources[i].ToString();
+				name = name.Replace("Grain", "Crops");
+				name = name.Replace("Flours", "Flour");
+				name = name.Replace("AnimalProducts", "Meat");
+				num = (int)(marketBuffer.inputAmountBuffer[i]);
+				str += name + " stored in market: " + num + "/" + this.m_goodsCapacity;
+				str += Environment.NewLine;
+			}
+			str += Environment.NewLine;
 			marketBuffers[buildingID] = marketBuffer;
 			int finalExport = (int)data.m_finalExport;
 			return str + LocaleFormatter.FormatGeneric("AIINFO_TOURISTS", new object[]
