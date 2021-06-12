@@ -53,9 +53,9 @@ namespace IndustriesSunsetHarborMerged
                 {
                     var bi = PrefabCollection<BuildingInfo>.GetLoaded(i);
                     if (bi is null) continue;
-                    LogHelper.Information(bi.name);
                     if (bi.name.Equals("Fish Market 01"))
                     {
+                        LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
                 }
@@ -95,7 +95,7 @@ namespace IndustriesSunsetHarborMerged
                 byte[] data = serializableDataManager.LoadData(DATA_ID);
                 ResourceMarketAI.MarketBuffer.Deserialize(data); //check for null
             } catch (Exception ex) {
-                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.ToString());
             }
         }
 
@@ -105,7 +105,7 @@ namespace IndustriesSunsetHarborMerged
                 byte[] data = marketBuffer.Serialize();
                 serializableDataManager.SaveData(DATA_ID, data);
             } catch (Exception ex) {
-                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.ToString());
             }
         }
     }
@@ -123,7 +123,7 @@ namespace IndustriesSunsetHarborMerged
                     return writer.ToString();
                 }
             } catch (Exception ex) {
-                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.ToString());
                 return null;
             }
         }
@@ -135,7 +135,7 @@ namespace IndustriesSunsetHarborMerged
                 }
             } catch (Exception ex) {
                 LogHelper.Information("data=" + data);
-                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.ToString());
                 return default;
             }
         }
