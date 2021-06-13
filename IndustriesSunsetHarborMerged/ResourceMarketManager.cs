@@ -1,49 +1,46 @@
 ﻿using ColossalFramework;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
-namespace IndustriesSunsetHarborMerged
-{
-    public class ResourceMarketManager { 
-    
-        public class MarketData
-		{
-			public ushort[] inputAmountBuffer;
-			public ushort[] outputAmountBuffer;
-			public ushort[] amountSold1;
-			public ushort[] amountSold2;
-		}
+namespace IndustriesSunsetHarborMerged {
+    public class ResourceMarketManager {
 
-		public byte[] Serialize()
-		{
-			return Convert.FromBase64String(XMLSerializerUtil.Serialize(this));
-		}
-        public static MarketData Deserialize(byte [] data) {
-			return XMLSerializerUtil.Deserialize<MarketData>(Convert.ToBase64String(data));
-		}
+        public class MarketData {
+            public ushort[] inputAmountBuffer;
+            public ushort[] outputAmountBuffer;
+            public ushort[] amountSold1;
+            public ushort[] amountSold2;
+        }
 
-		public Dictionary<ushort, MarketData> marketBuffers = new Dictionary<ushort, MarketData>();
+        public byte[] Serialize() {
+            var xml = XMLSerializerUtil.Serialize(this);
+            LogHelper.Information(xml);
+            return Convert.FromBase64String(xml);
+        }
+        public static MarketData Deserialize(byte[] data) {
+            var info = Convert.ToBase64String(data);
+            LogHelper.Information(info);
+            return XMLSerializerUtil.Deserialize<MarketData>(info);
+        }
 
-		protected  static ResourceMarketManager sInstance;
+        public Dictionary<ushort, MarketData> marketBuffers = new Dictionary<ushort, MarketData>();
 
-		public static ResourceMarketManager instance
-		{
-			get
-			{
-				if (sInstance == null)
-				{
-					sInstance = new ResourceMarketManager();
-					CODebugBase<InternalLogChannel>.VerboseLog(InternalLogChannel.System, "Creating singleton of type " + typeof(ResourceMarketManager).Name);
-				}
-				return sInstance;
-			}
-		}
+        protected static ResourceMarketManager sInstance;
 
-		public static bool exists => sInstance != null;
+        public static ResourceMarketManager instance {
+            get {
+                if (sInstance == null) {
+                    sInstance = new ResourceMarketManager();
+                    CODebugBase<InternalLogChannel>.VerboseLog(InternalLogChannel.System, "Creating singleton of type " + typeof(ResourceMarketManager).Name);
+                }
+                return sInstance;
+            }
+        }
 
-		public static void Ensure()
-		{
-			_ = instance;
-		}
-	}
+        public static bool exists => sInstance != null;
+
+        public static void Ensure() {
+            _ = instance;
+        }
+    }
 }
