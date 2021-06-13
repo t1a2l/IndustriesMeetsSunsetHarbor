@@ -4,7 +4,7 @@ using System;
 
 namespace IndustriesSunsetHarborMerged
 {
-    public class ResourceMarketManager: SingletonLite<ResourceMarketManager>{ 
+    public class ResourceMarketManager { 
     
         public class MarketData
 		{
@@ -26,7 +26,7 @@ namespace IndustriesSunsetHarborMerged
 
 		protected  static ResourceMarketManager sInstance;
 
-		public static new ResourceMarketManager instance
+		public static ResourceMarketManager instance
 		{
 			get
 			{
@@ -39,9 +39,9 @@ namespace IndustriesSunsetHarborMerged
 			}
 		}
 
-		public static new bool exists => sInstance != null;
+		public static bool exists => sInstance != null;
 
-		public static new void Ensure()
+		public static void Ensure()
 		{
 			_ = instance;
 		}
