@@ -1,4 +1,4 @@
-﻿using ColossalFramework;
+using ColossalFramework;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -16,20 +16,20 @@ namespace IndustriesSunsetHarborMerged {
                         TransferManager.TransferReason.LuxuryProducts,
                         TransferManager.TransferReason.AnimalProducts,
                         TransferManager.TransferReason.Flours
-};
+        };
 
-        Dictionary<ushort, ResourceMarketManager.MarketData> marketBuffers => ResourceMarketManager.instance.marketBuffers;
+        Dictionary<ushort, ResourceMarketManager.MarketData> MarketBuffers => ResourceMarketManager.Instance.marketBuffers;
 
         int index = 0;
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode) {
-            int attractivenessAccumulation = this.GetAttractivenessAccumulation(buildingID, ref data);
+            int attractivenessAccumulation = GetAttractivenessAccumulation(buildingID, ref data);
             switch (infoMode) {
                 case InfoManager.InfoMode.Tours:
                     return CommonBuildingAI.GetAttractivenessColor(attractivenessAccumulation * 15);
                 default:
                     if (infoMode == InfoManager.InfoMode.NoisePollution) {
-                        int noiseAccumulation = this.m_noiseAccumulation;
+                        int noiseAccumulation = m_noiseAccumulation;
                         return CommonBuildingAI.GetNoisePollutionColor((float)noiseAccumulation);
                     }
                     if (infoMode != InfoManager.InfoMode.Connections) {
@@ -44,7 +44,7 @@ namespace IndustriesSunsetHarborMerged {
                         }
                         return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                     } else {
-                        if (!this.ShowConsumption(buildingID, ref data)) {
+                        if (!ShowConsumption(buildingID, ref data)) {
                             return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                         }
                         if (Singleton<InfoManager>.instance.CurrentSubMode != InfoManager.SubInfoMode.Default) {
@@ -95,7 +95,7 @@ namespace IndustriesSunsetHarborMerged {
             string text = base.GetDebugString(buildingID, ref data);
             TransferManager.TransferReason[] incomingResources = m_incomingResources;
             TransferManager.TransferReason transferReason = TransferManager.TransferReason.Shopping;
-            var marketBuffer = marketBuffers[buildingID];
+            var marketBuffer = MarketBuffers[buildingID];
             for (int i = 0; i < incomingResources.Length; i++) {
                 int num = 0;
                 int num2 = 0;
@@ -123,12 +123,13 @@ namespace IndustriesSunsetHarborMerged {
             return text;
         }
 
-        private void addMarketBufferToBuildingData(ushort buildingID) {
-            ResourceMarketManager.MarketData newMarketData = new ResourceMarketManager.MarketData();
-            newMarketData.inputAmountBuffer = new ushort[m_incomingResources.Length];
-            newMarketData.outputAmountBuffer = new ushort[m_incomingResources.Length];
-            newMarketData.amountSold1 = new ushort[m_incomingResources.Length];
-            newMarketData.amountSold2 = new ushort[m_incomingResources.Length];
+        private void AddMarketBufferToBuildingData(ushort buildingID) {
+            ResourceMarketManager.MarketData newMarketData = new() {
+                inputAmountBuffer = new ushort[m_incomingResources.Length],
+                outputAmountBuffer = new ushort[m_incomingResources.Length],
+                amountSold1 = new ushort[m_incomingResources.Length],
+                amountSold2 = new ushort[m_incomingResources.Length]
+            };
             for (int j = 0; j < m_incomingResources.Length; j++) {
                 newMarketData.inputAmountBuffer[j] = 0;
                 newMarketData.outputAmountBuffer[j] = 0;
@@ -136,11 +137,11 @@ namespace IndustriesSunsetHarborMerged {
                 newMarketData.amountSold2[j] = 0;
             }
 
-            ResourceMarketManager.instance.marketBuffers.Add(buildingID, newMarketData);
+            MarketBuffers.Add(buildingID, newMarketData);
         }
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta) {
-            System.Random rnd = new System.Random();
+            System.Random rnd = new();
             index = rnd.Next(0, m_incomingResources.Length);
             switch (material) {
                 case TransferManager.TransferReason.Shopping:
@@ -151,14 +152,14 @@ namespace IndustriesSunsetHarborMerged {
                 case TransferManager.TransferReason.ShoppingF:
                 case TransferManager.TransferReason.ShoppingG:
                 case TransferManager.TransferReason.ShoppingH: {
-                        int outputAmountBuffer = marketBuffers[buildingID].outputAmountBuffer[index];
+                        int outputAmountBuffer = MarketBuffers[buildingID].outputAmountBuffer[index];
                         amountDelta = Mathf.Clamp(amountDelta, -outputAmountBuffer, 0);
-                        marketBuffers[buildingID].outputAmountBuffer[index] = (ushort)(outputAmountBuffer + amountDelta);
-                        marketBuffers[buildingID].amountSold1[index] = (byte)Mathf.Clamp((int)marketBuffers[buildingID].amountSold1[index] + (-amountDelta + 99) / 100, 0, 255);
+                        MarketBuffers[buildingID].outputAmountBuffer[index] = (ushort)(outputAmountBuffer + amountDelta);
+                        MarketBuffers[buildingID].amountSold1[index] = (byte)Mathf.Clamp((int)MarketBuffers[buildingID].amountSold1[index] + (-amountDelta + 99) / 100, 0, 255);
                         data.m_outgoingProblemTimer = 0;
-                        int num = (-amountDelta * this.m_goodsSellPrice + 50) / 100;
+                        int num = (-amountDelta * m_goodsSellPrice + 50) / 100;
                         if (num != 0) {
-                            Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num, this.m_info.m_class);
+                            Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num, m_info.m_class);
                         }
                         break;
                     }
@@ -168,14 +169,14 @@ namespace IndustriesSunsetHarborMerged {
                         for (int i = 0; i < m_incomingResources.Length; i++) {
                             if (material == m_incomingResources[i]) {
                                 index = i;
-                                if (!marketBuffers.ContainsKey(buildingID)) {
-                                    addMarketBufferToBuildingData(buildingID);
+                                if (!MarketBuffers.ContainsKey(buildingID)) {
+                                    AddMarketBufferToBuildingData(buildingID);
                                 }
-                                var marketBuffer = marketBuffers[buildingID];
-                                int goodsCapacity = this.m_goodsCapacity;
+                                var marketBuffer = MarketBuffers[buildingID];
+                                int goodsCapacity = m_goodsCapacity;
                                 amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)marketBuffer.inputAmountBuffer[i]);
                                 marketBuffer.inputAmountBuffer[i] = (ushort)((int)marketBuffer.inputAmountBuffer[i] + amountDelta);
-                                marketBuffers[buildingID] = marketBuffer;
+                                MarketBuffers[buildingID] = marketBuffer;
                                 found = true;
                                 break;
                             }
@@ -222,17 +223,17 @@ namespace IndustriesSunsetHarborMerged {
             float num2 = (float)buildingData.Width * 4f;
             float num3 = (float)buildingData.Length * -4f;
             float num4 = (float)buildingData.Length * 4f;
-            if (!marketBuffers.ContainsKey(buildingID)) {
-                addMarketBufferToBuildingData(buildingID);
+            if (!MarketBuffers.ContainsKey(buildingID)) {
+                AddMarketBufferToBuildingData(buildingID);
             }
-            var marketBuffer = marketBuffers[buildingID];
-            if (this.m_info.m_subBuildings != null) {
-                for (int i = 0; i < this.m_info.m_subBuildings.Length; i++) {
-                    if (this.m_info.m_subBuildings[i].m_buildingInfo != null) {
-                        float num5 = (float)this.m_info.m_subBuildings[i].m_buildingInfo.m_cellWidth;
-                        float num6 = (float)this.m_info.m_subBuildings[i].m_buildingInfo.m_cellLength;
-                        float x = this.m_info.m_subBuildings[i].m_position.x;
-                        float num7 = -this.m_info.m_subBuildings[i].m_position.z;
+            var marketBuffer = MarketBuffers[buildingID];
+            if (m_info.m_subBuildings != null) {
+                for (int i = 0; i < m_info.m_subBuildings.Length; i++) {
+                    if (m_info.m_subBuildings[i].m_buildingInfo != null) {
+                        float num5 = (float)m_info.m_subBuildings[i].m_buildingInfo.m_cellWidth;
+                        float num6 = (float)m_info.m_subBuildings[i].m_buildingInfo.m_cellLength;
+                        float x = m_info.m_subBuildings[i].m_position.x;
+                        float num7 = -m_info.m_subBuildings[i].m_position.z;
                         num = Mathf.Min(num, x - num5 * 4f);
                         num2 = Mathf.Max(num2, x + num5 * 4f);
                         num3 = Mathf.Min(num3, num7 - num6 * 4f);
@@ -249,28 +250,28 @@ namespace IndustriesSunsetHarborMerged {
             float num13 = Mathf.Cos(angle);
             Vector3 position = buildingData.m_position - new Vector3(num13 * num9 + num12 * num10, 0f, num12 * num9 - num13 * num10);
             Vector3 position2 = buildingData.m_position - new Vector3(num13 * num9 + num12 * num11, 0f, num12 * num9 - num13 * num11);
-            float currentRange = this.GetCurrentRange(buildingID, ref buildingData);
+            float currentRange = GetCurrentRange(buildingID, ref buildingData);
             Notification.Problem problem = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem.NoCustomers | Notification.Problem.NoGoods | Notification.Problem.NoFishingGoods);
-            int num14 = productionRate * this.m_healthCareAccumulation / 100;
+            int num14 = productionRate * m_healthCareAccumulation / 100;
             if (num14 != 0) {
-                Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.HealthCare, num14, buildingData.m_position, this.m_healthCareRadius);
+                Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.HealthCare, num14, buildingData.m_position, m_healthCareRadius);
             }
             if (finalProductionRate != 0) {
-                if (this.m_entertainmentAccumulation != 0) {
-                    int rate = productionRate * this.GetEntertainmentAccumulation(buildingID, ref buildingData) / 100;
+                if (m_entertainmentAccumulation != 0) {
+                    int rate = productionRate * GetEntertainmentAccumulation(buildingID, ref buildingData) / 100;
                     Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Entertainment, rate, position, currentRange);
                 }
-                if (this.m_attractivenessAccumulation != 0) {
-                    int num15 = this.GetAttractivenessAccumulation(buildingID, ref buildingData);
+                if (m_attractivenessAccumulation != 0) {
+                    int num15 = GetAttractivenessAccumulation(buildingID, ref buildingData);
                     Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Attractiveness, num15);
                     num15 = productionRate * num15 * 15 / 100;
                     Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Attractiveness, num15, position2, num8);
                 }
-                if (this.m_noiseAccumulation != 0) {
-                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, this.m_noiseAccumulation, buildingData.m_position, this.m_noiseRadius);
+                if (m_noiseAccumulation != 0) {
+                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, m_noiseAccumulation, buildingData.m_position, m_noiseRadius);
                 }
                 base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
-                int goodsCapacity = this.m_goodsCapacity;
+                int goodsCapacity = m_goodsCapacity;
                 TransferManager.TransferReason outgoingTransferReason = (TransferManager.TransferReason)GetOutgoingTransferReason.Invoke(this, new object[] { buildingID });
                 int[] productionRateArr = new int[m_incomingResources.Length];
                 if (productionRate != 0) {
@@ -339,7 +340,7 @@ namespace IndustriesSunsetHarborMerged {
                 for (int i = 0; i < m_incomingResources.Length; i++) {
                     if (buildingData.m_fireIntensity == 0 && m_incomingResources[i] != TransferManager.TransferReason.None) {
                         int num22 = goodsCapacity - (int)marketBuffer.inputAmountBuffer[i] - num20;
-                        int num23 = this.m_goodsCapacity / 4;
+                        int num23 = m_goodsCapacity / 4;
                         num22 -= num23 >> 1;
                         if (num22 >= 0) {
                             TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
@@ -368,16 +369,16 @@ namespace IndustriesSunsetHarborMerged {
                         }
                     }
                 }
-                marketBuffers[buildingID] = marketBuffer;
+                MarketBuffers[buildingID] = marketBuffer;
             }
             buildingData.m_problems = problem;
         }
 
         public override string GetLocalizedStats(ushort buildingID, ref Building data) {
-            if (!marketBuffers.ContainsKey(buildingID)) {
-                addMarketBufferToBuildingData(buildingID);
+            if (!MarketBuffers.ContainsKey(buildingID)) {
+                AddMarketBufferToBuildingData(buildingID);
             }
-            var marketBuffer = marketBuffers[buildingID];
+            var marketBuffer = MarketBuffers[buildingID];
             string str = "";
             int num;
             for (int i = 0; i < m_incomingResources.Length; i++) {
@@ -396,11 +397,11 @@ namespace IndustriesSunsetHarborMerged {
                 name = name.Replace("Flours", "Flour");
                 name = name.Replace("AnimalProducts", "Meat");
                 num = (int)(marketBuffer.inputAmountBuffer[i]);
-                str += name + " stored in market: " + num + "/" + this.m_goodsCapacity;
+                str += name + " stored in market: " + num + "/" + m_goodsCapacity;
                 str += Environment.NewLine;
             }
             str += Environment.NewLine;
-            marketBuffers[buildingID] = marketBuffer;
+            MarketBuffers[buildingID] = marketBuffer;
             int finalExport = (int)data.m_finalExport;
             return str + LocaleFormatter.FormatGeneric("AIINFO_TOURISTS", new object[]
             {
@@ -410,10 +411,10 @@ namespace IndustriesSunsetHarborMerged {
 
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData) {
             base.SimulationStep(buildingID, ref buildingData, ref frameData);
-            if (!marketBuffers.ContainsKey(buildingID)) {
-                addMarketBufferToBuildingData(buildingID);
+            if (!MarketBuffers.ContainsKey(buildingID)) {
+                AddMarketBufferToBuildingData(buildingID);
             }
-            var marketBuffer = marketBuffers[buildingID];
+            var marketBuffer = MarketBuffers[buildingID];
             SimulationManager instance = Singleton<SimulationManager>.instance;
             uint num = (instance.m_currentFrameIndex & 3840U) >> 8;
             if (num == 15U) {
@@ -424,7 +425,7 @@ namespace IndustriesSunsetHarborMerged {
                 buildingData.m_tempExport = 0;
                 marketBuffer.amountSold1[index] = 0;
             }
-            if (this.m_info != null && this.m_info.m_class != null && this.m_info.m_class.m_service == ItemClass.Service.Fishing) {
+            if (m_info != null && m_info.m_class != null && m_info.m_class.m_service == ItemClass.Service.Fishing) {
                 GuideController properties = Singleton<GuideManager>.instance.m_properties;
                 if (properties != null && Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt != null) {
                     Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt.Activate(properties.m_fishFactoryMarketBuilt, buildingID);

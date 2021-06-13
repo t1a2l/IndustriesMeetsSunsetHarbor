@@ -1,4 +1,4 @@
-﻿using CitiesHarmony.API;
+using CitiesHarmony.API;
 using ICities;
 using System;
 using System.IO;
@@ -62,7 +62,7 @@ namespace IndustriesSunsetHarborMerged {
 
         public override void OnSaveData() {
             try {
-                byte[] data = ResourceMarketManager.instance.Serialize();
+                byte[] data = ResourceMarketManager.Instance.Serialize();
                 serializableDataManager.SaveData(DATA_ID, data);
             }
             catch (Exception ex) {
