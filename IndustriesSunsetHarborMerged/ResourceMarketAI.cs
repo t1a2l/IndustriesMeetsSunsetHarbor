@@ -4,7 +4,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
+
+namespace IndustriesSunsetHarborMerged
 {
     public class ResourceMarketAI : MarketAI
     {
@@ -19,23 +20,8 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 			TransferManager.TransferReason.Flours
         };
 
-		public class MarketBuffer
-		{
-			private static MarketBuffer Instance;
-			public static MarketBuffer getInstance() {
-				return Instance;
-			}
-			public ushort[] inputAmountBuffer;
-			public ushort[] outputAmountBuffer;
-			public ushort[] amountSold1;
-			public ushort[] amountSold2;
-			public byte [] Serialize() => Convert.FromBase64String(XMLSerializerUtil.Serialize(this));
-            public static MarketBuffer Deserialize(byte [] data) =>
-              Instance = XMLSerializerUtil.Deserialize<MarketBuffer>(Convert.ToBase64String(data));
-		}
+		Dictionary<ushort, ResourceMarketManager.MarketData> marketBuffers => ResourceMarketManager.instance.marketBuffers;
 
-		Dictionary<ushort, MarketBuffer> marketBuffers = new Dictionary<ushort, MarketBuffer>();
-		
 		int index = 0;
 
 		public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)
@@ -170,23 +156,26 @@ namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
 
 		private void addMarketBufferToBuildingData(ushort buildingID)
         {
-			MarketBuffer newMarketBuffer = new MarketBuffer();
-			newMarketBuffer.inputAmountBuffer = new ushort[m_incomingResources.Length];
-			newMarketBuffer.outputAmountBuffer = new ushort[m_incomingResources.Length];
-			newMarketBuffer.amountSold1 = new ushort[m_incomingResources.Length];
-			newMarketBuffer.amountSold2 = new ushort[m_incomingResources.Length];
+			ResourceMarketManager.MarketData newMarketData = new ResourceMarketManager.MarketData();
+			newMarketData.inputAmountBuffer = new ushort[m_incomingResources.Length];
+			newMarketData.outputAmountBuffer = new ushort[m_incomingResources.Length];
+			newMarketData.amountSold1 = new ushort[m_incomingResources.Length];
+			newMarketData.amountSold2 = new ushort[m_incomingResources.Length];
 			for(int j = 0; j < m_incomingResources.Length; j++)
             {
-				newMarketBuffer.inputAmountBuffer[j] = 0;
-				newMarketBuffer.outputAmountBuffer[j] = 0;
-				newMarketBuffer.amountSold1[j] = 0;
-				newMarketBuffer.amountSold2[j] = 0;
+				newMarketData.inputAmountBuffer[j] = 0;
+				newMarketData.outputAmountBuffer[j] = 0;
+				newMarketData.amountSold1[j] = 0;
+				newMarketData.amountSold2[j] = 0;
             }
-			marketBuffers.Add(buildingID, newMarketBuffer);
+
+			ResourceMarketManager.instance.marketBuffers.Add(buildingID, newMarketData);
         }
 
 		public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
 		{
+			System.Random rnd = new System.Random();
+			index = rnd.Next(0, m_incomingResources.Length);
 			switch (material)
 			{
 				case TransferManager.TransferReason.Shopping:

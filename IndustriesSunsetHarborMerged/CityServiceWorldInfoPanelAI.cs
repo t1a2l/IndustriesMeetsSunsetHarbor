@@ -3,7 +3,7 @@ using System.Reflection;
 using HarmonyLib;
 using ColossalFramework.Globalization;
 
-namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
+namespace IndustriesSunsetHarborMerged
 {
 	[HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
     public static class CityServiceWorldInfoPanelAI

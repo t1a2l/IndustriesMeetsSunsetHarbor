@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
+namespace IndustriesSunsetHarborMerged
 {
     public static class AIHelper
     {

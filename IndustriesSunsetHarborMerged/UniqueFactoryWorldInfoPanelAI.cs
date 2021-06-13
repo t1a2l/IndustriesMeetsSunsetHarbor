@@ -4,7 +4,7 @@ using ColossalFramework.Globalization;
 using System.Reflection;
 using HarmonyLib;
 
-namespace IndustriesSunsetHarborMerged.IndustriesSunsetHarborMerged
+namespace IndustriesSunsetHarborMerged
 {
 	[HarmonyPatch(typeof(UniqueFactoryWorldInfoPanel), "OnSetTarget")]
     public static class UniqueFactoryWorldInfoPanelNameAI
