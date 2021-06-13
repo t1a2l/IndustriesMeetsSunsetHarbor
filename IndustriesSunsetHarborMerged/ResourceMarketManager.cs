@@ -1,6 +1,8 @@
 using ColossalFramework;
+using ColossalFramework.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IndustriesSunsetHarborMerged {
     public class ResourceMarketManager {
@@ -12,22 +14,34 @@ namespace IndustriesSunsetHarborMerged {
             public ushort[] amountSold2;
         }
 
-        public byte[] Serialize() {
-            LogHelper.Information("Serialize this is: ", this);
-            var xml = XMLSerializerUtil.Serialize(this);
-            LogHelper.Information("XML is: ", xml);
-            return Convert.FromBase64String(xml);
-        }
-        public static MarketData Deserialize(byte[] data) {
-            LogHelper.Information("Deserialize data is: ", data.ToString());
-            var info = Convert.ToBase64String(data);
-            LogHelper.Information("info is: ", info);
-            return XMLSerializerUtil.Deserialize<MarketData>(info);
-        }
+        public class TempKeyValue {
+            public ushort key;
+            public MarketData value;
+
+            public TempKeyValue(ushort buildingId, MarketData marketdata) {
+                key = buildingId;
+                value = marketdata;
+            }
+}
+
+        protected static ResourceMarketManager sInstance;
 
         public Dictionary<ushort, MarketData> marketBuffers = new();
 
-        protected static ResourceMarketManager sInstance;
+        public byte[] Serialize() {
+            var result = ResourceMarketManager.Instance.marketBuffers.Select(kv => new TempKeyValue(kv.Key, kv.Value)).ToArray();
+            var xml = XMLSerializerUtil.Serialize(result);
+            return Convert.FromBase64String(xml);
+        }
+        public static void Deserialize(byte[] data) {
+            var str = Convert.ToBase64String(data);
+            var result = XMLSerializerUtil.Deserialize<TempKeyValue[]>(str);
+            result.ForEach(item => ResourceMarketManager.Instance.marketBuffers[item.key]=item.value); 
+        }
+
+        
+
+        
 
         public static ResourceMarketManager Instance {
             get {
