@@ -22,7 +22,7 @@ namespace IndustriesSunsetHarborMerged {
                 key = buildingId;
                 value = marketdata;
             }
-}
+        }
 
         protected static ResourceMarketManager sInstance;
 
@@ -34,14 +34,15 @@ namespace IndustriesSunsetHarborMerged {
             return Convert.FromBase64String(xml);
         }
         public static void Deserialize(byte[] data) {
+            if(data == null)
+            {
+                LogHelper.Information("No data to load!");
+                return;
+            }
             var str = Convert.ToBase64String(data);
             var result = XMLSerializerUtil.Deserialize<TempKeyValue[]>(str);
             result.ForEach(item => ResourceMarketManager.Instance.marketBuffers[item.key]=item.value); 
         }
-
-        
-
-        
 
         public static ResourceMarketManager Instance {
             get {
