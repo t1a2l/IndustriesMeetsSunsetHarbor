@@ -1,8 +1,7 @@
 using ColossalFramework;
-using ColossalFramework.UI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace IndustriesSunsetHarborMerged {
     public class ResourceMarketManager {
@@ -18,6 +17,8 @@ namespace IndustriesSunsetHarborMerged {
             public ushort key;
             public MarketData value;
 
+            internal TempKeyValue() {}
+
             public TempKeyValue(ushort buildingId, MarketData marketdata) {
                 key = buildingId;
                 value = marketdata;
@@ -31,7 +32,7 @@ namespace IndustriesSunsetHarborMerged {
         public byte[] Serialize() {
             var result = ResourceMarketManager.Instance.marketBuffers.Select(kv => new TempKeyValue(kv.Key, kv.Value)).ToArray();
             var xml = XMLSerializerUtil.Serialize(result);
-            return Convert.FromBase64String(xml);
+            return Encoding.UTF8.GetBytes(xml);
         }
         public static void Deserialize(byte[] data) {
             if(data == null)
@@ -39,9 +40,9 @@ namespace IndustriesSunsetHarborMerged {
                 LogHelper.Information("No data to load!");
                 return;
             }
-            var str = Convert.ToBase64String(data);
-            var result = XMLSerializerUtil.Deserialize<TempKeyValue[]>(str);
-            result.ForEach(item => ResourceMarketManager.Instance.marketBuffers[item.key]=item.value); 
+            var xml = Encoding.UTF8.GetString(data);
+            var result = XMLSerializerUtil.Deserialize<TempKeyValue[]>(xml);
+            result.ToList().ForEach(item => ResourceMarketManager.Instance.marketBuffers[item.key]=item.value); 
         }
 
         public static ResourceMarketManager Instance {
@@ -54,7 +55,7 @@ namespace IndustriesSunsetHarborMerged {
             }
         }
 
-        public static bool exists => sInstance != null;
+        public static bool Exists => sInstance != null;
 
         public static void Ensure() {
             _ = Instance;
