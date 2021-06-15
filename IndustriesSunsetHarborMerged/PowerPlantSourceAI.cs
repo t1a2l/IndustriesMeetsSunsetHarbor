@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 
 namespace IndustriesSunsetHarborMerged {
@@ -17,15 +17,18 @@ namespace IndustriesSunsetHarborMerged {
                                 (electricityRate * 16 + 500) / 1000
             });
             text += Environment.NewLine;
-            string name = __instance.m_resourceType.ToString();
-            name = name.Replace("Grain", "Crops");
-            name = name.Replace("Flours", "Flour");
-            name = name.Replace("Metals", "Metal");
-            name = name.Replace("Petroleum", "Petroleum");
-            name = name.Replace("Logs", "Raw Forest Products");
-            name = name.Replace("Lumber", "Zoned Forest Goods");
-            int resourceDuration = __instance.GetResourceDuration(buildingID, ref data);
-            text += name + " stored for " + resourceDuration + " weeks";
+            if(__instance.m_resourceType != TransferManager.TransferReason.None)
+            {
+                string name = __instance.m_resourceType.ToString();
+                name = name.Replace("Grain", "Crops");
+                name = name.Replace("Flours", "Flour");
+                name = name.Replace("Metals", "Metal");
+                name = name.Replace("Petroleum", "Petroleum");
+                name = name.Replace("Logs", "Raw Forest Products");
+                name = name.Replace("Lumber", "Zoned Forest Goods");
+                int resourceDuration = __instance.GetResourceDuration(buildingID, ref data);
+                text += name + " stored for " + resourceDuration + " weeks";
+            }
             __result = text;
         }
     }
