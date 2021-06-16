@@ -2,6 +2,7 @@ using ColossalFramework;
 using UnityEngine;
 using ColossalFramework.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IndustriesSunsetHarborMerged {
     class FishExtractorAI : FishFarmAI {
@@ -81,7 +82,11 @@ namespace IndustriesSunsetHarborMerged {
                 _fishFarmDropDown.Text = "No fish farm found.";
             else
                 _fishFarmDropDown.SelectedItem = fishFarmID;
-            
+            Vector3[] extractor_pos_arr = new Vector3[BuildingExtension._extractorData.Length];
+            BuildingExtension._extractorData.ForEach<BuildingExtension.ExtractorData>(item => {
+                extractor_pos_arr = extractor_pos_arr.Concat<Vector3>(new Vector3[] {item.Position}).ToArray();
+            });
+            m_extractionPositions = extractor_pos_arr;           
         }
 
         private void CreateDropDownPanel()

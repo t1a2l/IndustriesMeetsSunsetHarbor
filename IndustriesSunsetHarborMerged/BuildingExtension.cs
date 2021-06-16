@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICities;
 using System.Reflection;
+using UnityEngine;
 
 namespace IndustriesSunsetHarborMerged
 {
@@ -14,6 +15,8 @@ namespace IndustriesSunsetHarborMerged
         public struct ExtractorData
         {
             public ushort FishFarm { get; set; }
+
+            public Vector3 Position { get; set; }
         }
 
         public struct FishItemClass
@@ -114,7 +117,6 @@ namespace IndustriesSunsetHarborMerged
 
         public static ushort[] GetFishFarms(BuildingInfo extractorInfo, BuildingInfo fishFarmInfo)
         {
-            
             if (fishFarmInfo == null)
             {
                 return new ushort[0];
@@ -135,7 +137,9 @@ namespace IndustriesSunsetHarborMerged
 
         public static void SetFishFarm(ushort extractorId, ushort fishFarmId)
         {
-             _extractorData[(int) extractorId].FishFarm = fishFarmId;
+            var extractorPosition = BuildingManager.instance.m_buildings.m_buffer[extractorId].m_position;
+            _extractorData[(int) extractorId].FishFarm = fishFarmId;
+            _extractorData[(int) extractorId].Position = extractorPosition;
         }
 
         public delegate void FishFarmAdded(ItemClass.Service service);
