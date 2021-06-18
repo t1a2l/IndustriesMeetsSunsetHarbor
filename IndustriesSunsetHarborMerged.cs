@@ -9,8 +9,6 @@ namespace IndustriesSunsetHarborMerged {
     public class Mod : LoadingExtensionBase, IUserMod {
 
         public static bool inGame = false;
-
-        private GameObject _ishmGameObject;
         string IUserMod.Name => "Industries Sunset Harbor Merged Mod";
 
         string IUserMod.Description => "Mix Industries and Sunset Harbor together";
@@ -30,13 +28,15 @@ namespace IndustriesSunsetHarborMerged {
             }
             try {
                 inGame = true;
-                _ishmGameObject = new GameObject("IshmGameObject");
-                _ishmGameObject.AddComponent<FishExtractorAI>();
                 var loadedBuildingInfoCount = PrefabCollection<BuildingInfo>.LoadedCount();
                 for (uint i = 0; i < loadedBuildingInfoCount; i++) {
                     var bi = PrefabCollection<BuildingInfo>.GetLoaded(i);
                     if (bi is null) continue;
                     if (bi.name.Equals("Fish Market 01")) {
+                        LogHelper.Information(bi.name);
+                        AIHelper.ApplyNewAIToBuilding(bi);
+                    }
+                    else if (bi.name.Contains("Extractor") && bi.m_class.m_service.Equals("Fishing")) {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
@@ -61,8 +61,6 @@ namespace IndustriesSunsetHarborMerged {
         private void Deinit()
         {
           BuildingExtension.Deinit();
-          if (_ishmGameObject != null)
-            UnityEngine.Object.Destroy(_ishmGameObject);
         }
 
     }

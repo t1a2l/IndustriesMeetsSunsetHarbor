@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -9,6 +9,10 @@ namespace IndustriesSunsetHarborMerged {
             try {
                 if (b.name.Equals("Fish Market 01")) {
                     ChangeBuildingAI(b, typeof(ResourceMarketAI));
+                    return;
+                }
+                else if (b.name.Contains("Extractor") && b.m_class.m_service.Equals("Fishing")) {
+                    ChangeBuildingAI(b, typeof(FishExtractorAI));
                     return;
                 }
 
