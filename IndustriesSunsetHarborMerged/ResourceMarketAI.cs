@@ -18,6 +18,8 @@ namespace IndustriesSunsetHarborMerged {
                         TransferManager.TransferReason.Flours
         };
 
+        public Boolean isAmount = false;
+
         Dictionary<ushort, ResourceMarketManager.MarketData> MarketBuffers => ResourceMarketManager.Instance.marketBuffers;
 
         int index = 0;
@@ -304,6 +306,16 @@ namespace IndustriesSunsetHarborMerged {
                 int num20 = 0;
                 int value = 0;
                 for (int i = 0; i < m_incomingResources.Length; i++) {
+                    if(marketBuffer.inputAmountBuffer[i] > 0) {
+                        isAmount = true;
+                        break;
+                    }
+                    if(i == m_incomingResources.Length - 1 && isAmount)
+                    {
+                        isAmount = false;
+                    }
+                }
+                for (int i = 0; i < m_incomingResources.Length; i++) {
                     if (m_incomingResources[i] != TransferManager.TransferReason.None) {
                         base.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingResources[i], ref num18, ref num19, ref num20, ref value);
                         buildingData.m_tempImport = (byte)Mathf.Clamp(value, (int)buildingData.m_tempImport, 255);
@@ -325,7 +337,7 @@ namespace IndustriesSunsetHarborMerged {
                     }
                 }
                 for (int i = 0; i < m_incomingResources.Length; i++) {
-                    if (marketBuffer.inputAmountBuffer[i] == 0 && m_incomingResources[i] != TransferManager.TransferReason.None) {
+                    if (marketBuffer.inputAmountBuffer[i] == 0 && !isAmount && m_incomingResources[i] != TransferManager.TransferReason.None) {
                         buildingData.m_incomingProblemTimer = (byte)Mathf.Min(255, (int)(buildingData.m_incomingProblemTimer + 1));
                         Notification.Problem problem2 = (m_incomingResources[i] != TransferManager.TransferReason.Fish) ? Notification.Problem.NoGoods : Notification.Problem.NoFishingGoods;
                         if (buildingData.m_incomingProblemTimer < 64) {
