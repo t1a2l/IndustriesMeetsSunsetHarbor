@@ -1,11 +1,10 @@
 using ColossalFramework;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged
-{ 
-    public static class FishFarmUtil
+namespace IndustriesSunsetHarborMerged.Utils.FishFarmUtils { 
+    public static class FishFarmUtils
     {
-        public static void GetStats(ref Building building,out BuildingInfo primatyInfo)
+        public static void GetStats(ref Building building, out BuildingInfo primatyInfo)
         {
             var fishFarmAi = building.Info?.m_buildingAI as FishFarmAI;
             if (fishFarmAi == null)
@@ -28,7 +27,9 @@ namespace IndustriesSunsetHarborMerged
             }
             var building = BuildingManager.instance.m_buildings.m_buffer[fishFarmID];
             if (building.Info?.m_class == null || (building.m_flags & Building.Flags.Created) == Building.Flags.None)
+            {
                 return false;
+            }   
             GetStats(ref building, out BuildingInfo primaryInfo);
             if (primaryInfo == null)
             {
@@ -42,9 +43,9 @@ namespace IndustriesSunsetHarborMerged
             return false;
         }
 
-        public static bool ValidateDepotAndFindNewIfNeeded(ushort extractorID, ref ushort fishFarmID, BuildingInfo buildingInfo)
+        public static bool ValidateFishFarmAndFindNewIfNeeded(ushort extractorID, ref ushort fishFarmID, BuildingInfo extractorInfo)
         {
-            if (buildingInfo == null)
+            if (extractorInfo == null)
             {
                 return false;
             }
@@ -62,7 +63,7 @@ namespace IndustriesSunsetHarborMerged
             ushort closestFishFarm = GetClosestFishFarm(extractorID, fishFarmID, position);
             if ((int) closestFishFarm != 0)
             {
-                BuildingExtension.SetFishFarm(extractorID, closestFishFarm);
+                BuildingExtension.BuildingExtension.SetFishFarm(extractorID, closestFishFarm);
                 LogHelper.Information($"auto assigned fish farm {closestFishFarm} to extractor {extractorID}");
             }
             return closestFishFarm;
@@ -75,7 +76,7 @@ namespace IndustriesSunsetHarborMerged
             var instance = Singleton<BuildingManager>.instance;
             var extractorInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[extractorID].Info;
             var fishFarmInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[fishFarmID].Info;
-            var fishFarmsIds = BuildingExtension.GetFishFarms(extractorInfo, fishFarmInfo);
+            var fishFarmsIds = BuildingExtension.BuildingExtension.GetFishFarms(extractorInfo, fishFarmInfo);
             foreach (var fishFarmId in fishFarmsIds)
             {
                 var distance = Vector3.Distance(position, instance.m_buildings.m_buffer[fishFarmId].m_position);

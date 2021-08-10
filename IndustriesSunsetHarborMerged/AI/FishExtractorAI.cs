@@ -3,8 +3,10 @@ using UnityEngine;
 using ColossalFramework.UI;
 using System.Collections.Generic;
 using System.Linq;
+using IndustriesSunsetHarborMerged.Utils.BuildingExtension;
+using IndustriesSunsetHarborMerged.Utils.FishFarmUtils;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.AI.FishExtractorAI {
     class FishExtractorAI : FishFarmAI {
 
         private UILabel _fishAmount;
@@ -13,7 +15,7 @@ namespace IndustriesSunsetHarborMerged {
         private bool _initialized;
         private UIComponent _mainSubPanel;
         private Dictionary<BuildingExtension.FishItemClass, bool> _updateFishFarms;
-        private BuildingWorldInfoPanel _buildingWorldInfoPanel;
+        private CityServiceWorldInfoPanel _cityWorldInfoPanel;
 
 
         public FishExtractorAI()
@@ -23,42 +25,41 @@ namespace IndustriesSunsetHarborMerged {
              _updateFishFarms = dictionary;
         }
 
-    private void Update()
-    {
-      if (!_initialized)
-      {
-        Init();
-      }
-      else
-      {
-        if (!_initialized)
-          return;
-        UpdateBindings();
-      }
-    }
+        private void Update()
+        {
+            if (!_initialized)
+            {
+                Init();
+            }
+            else
+            {
+                if (!_initialized)
+                    return;
+                UpdateBindings();
+            }
+        }
 
-    private void Init()
-    {
-        _buildingWorldInfoPanel = GameObject.Find("(Library) BuildingWorldInfoPanel").GetComponent<BuildingWorldInfoPanel>();      
-        UIComponent fishExtractorPanel = _buildingWorldInfoPanel.Find("FishFarmPanel");
-        _fishAmount = BuildingExtension.GetPrivate<UILabel>((object) _buildingWorldInfoPanel, "m_incomingResources");
-        _mainSubPanel = fishExtractorPanel.parent;
-        UIPanel uiPanel = _mainSubPanel.AddUIComponent<UIPanel>();
-        uiPanel.name = "IshmContainer";
-        uiPanel.width = 301f;
-        uiPanel.height = 166f;
-        uiPanel.autoLayoutDirection = LayoutDirection.Vertical;
-        uiPanel.autoLayoutStart = LayoutStart.TopLeft;
-        uiPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
-        uiPanel.autoLayout = true;
-        uiPanel.relativePosition = new Vector3(10f, 224.0f);
-        _ishmContainer = uiPanel;          
-        CreateDropDownPanel(); 
-        BuildingExtension.OnFishFarmAdded += OnFishFarmChanged;
-        BuildingExtension.OnFishFarmRemoved += OnFishFarmChanged;
-        _initialized = true;
-    }
-
+        private void Init()
+        {
+            _cityWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();      
+            UIComponent fishExtractorPanel = _cityWorldInfoPanel.Find("FishFarmPanel");
+            _fishAmount = BuildingExtension.GetPrivate<UILabel>((object) _cityWorldInfoPanel, "m_incomingResources");
+            _mainSubPanel = fishExtractorPanel.parent;
+            UIPanel uiPanel = _mainSubPanel.AddUIComponent<UIPanel>();
+            uiPanel.name = "IshmContainer";
+            uiPanel.width = 301f;
+            uiPanel.height = 166f;
+            uiPanel.autoLayoutDirection = LayoutDirection.Vertical;
+            uiPanel.autoLayoutStart = LayoutStart.TopLeft;
+            uiPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
+            uiPanel.autoLayout = true;
+            uiPanel.relativePosition = new Vector3(10f, 224.0f);
+            _ishmContainer = uiPanel;          
+            CreateDropDownPanel(); 
+            BuildingExtension.OnFishFarmAdded += OnFishFarmChanged;
+            BuildingExtension.OnFishFarmRemoved += OnFishFarmChanged;
+            _initialized = true;
+        }
 
         private void UpdateBindings()
         {
@@ -66,10 +67,14 @@ namespace IndustriesSunsetHarborMerged {
             ushort extractorID = GetFishExtractorID();
             ushort fishFarmID = BuildingExtension.GetFishFarm(extractorID);
             BuildingInfo extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorID].Info;
+            if(!FishFarmUtils.ValidateFishFarmAndFindNewIfNeeded(extractorID, ref fishFarmID, extractorInfo))
+            {
+                return;
+            }
             BuildingInfo fishFarmInfo = BuildingManager.instance.m_buildings.m_buffer[fishFarmID].Info;
             ItemClass.Service service = fishFarmInfo.GetService();
             BuildingExtension.FishItemClass fishfarm = new BuildingExtension.FishItemClass(service);
-            if (!FishFarmUtil.IsValidFishFarm(fishFarmID))
+            if (!FishFarmUtils.IsValidFishFarm(fishFarmID))
             {
                 flag1 = true;
             }
@@ -79,7 +84,7 @@ namespace IndustriesSunsetHarborMerged {
                 _updateFishFarms[fishfarm] = false;
             }
             if (_fishFarmDropDown.Items.Length == 0)
-                _fishFarmDropDown.Text = "No fish farm found.";
+                _fishFarmDropDown.Text = "No fish farms found.";
             else
                 _fishFarmDropDown.SelectedItem = fishFarmID;
             Vector3[] extractor_pos_arr = new Vector3[BuildingExtension._extractorData.Length];
@@ -149,14 +154,14 @@ namespace IndustriesSunsetHarborMerged {
             BuildingExtension.OnFishFarmRemoved -= OnFishFarmChanged;
             if (_updateFishFarms != null)
                 _updateFishFarms.Clear();
-            if ((Object) _ishmContainer != (Object) null)
-            Object.Destroy((Object) _ishmContainer.gameObject);
+            if (_ishmContainer != null)
+                Object.Destroy((Object) _ishmContainer.gameObject);
         }
 
         private void OnFishFarmMarkerClicked(UIComponent component, UIMouseEventParameter eventParam)
         {
           component.Unfocus();
-          if ((int) _fishFarmDropDown.SelectedItem == 0)
+          if (_fishFarmDropDown.SelectedItem == 0)
             return;
           InstanceID id = new InstanceID();
           id.Building = _fishFarmDropDown.SelectedItem;

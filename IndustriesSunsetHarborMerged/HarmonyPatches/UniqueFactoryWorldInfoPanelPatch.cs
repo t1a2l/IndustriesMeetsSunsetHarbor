@@ -1,12 +1,14 @@
-﻿using ColossalFramework;
+using ColossalFramework;
 using ColossalFramework.Globalization;
 using ColossalFramework.UI;
 using HarmonyLib;
 using System.Reflection;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.HarmonyPatches.UniqueFactoryWorldInfoPanelPatch {
+
     [HarmonyPatch(typeof(UniqueFactoryWorldInfoPanel), "OnSetTarget")]
-    public static class UniqueFactoryWorldInfoPanelNameAI {
+    public static class UniqueFactoryWorldInfoPanelPatch {
+
         public static UISprite luxuryProductIcon;
 
         [HarmonyPostfix]

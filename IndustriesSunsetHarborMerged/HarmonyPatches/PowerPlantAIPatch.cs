@@ -1,9 +1,11 @@
 using HarmonyLib;
 using System;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.HarmonyPatches.PowerPlantAIPatch {
+
     [HarmonyPatch(typeof(PowerPlantAI), "GetLocalizedStats")]
-    public static class PowerPlantSourceAI {
+    public static class PowerPlantAIPatch {
+
         [HarmonyPrefix]
         public static bool Prefix() {
             return false;

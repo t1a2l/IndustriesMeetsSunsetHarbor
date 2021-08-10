@@ -1,11 +1,12 @@
-﻿using ColossalFramework.Globalization;
+using ColossalFramework.Globalization;
 using ColossalFramework.UI;
 using HarmonyLib;
 using System.Reflection;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.HarmonyPatches.CityServiceWorldInfoPanelPatch {
+
     [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
-    public static class CityServiceWorldInfoPanelAI {
+    public static class CityServiceWorldInfoPanelPatch {
         [HarmonyPostfix]
         public static void Postfix(CityServiceWorldInfoPanel __instance) {
             var m_fishFarmAI = (FishFarmAI)typeof(CityServiceWorldInfoPanel).GetField("m_fishFarmAI", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);

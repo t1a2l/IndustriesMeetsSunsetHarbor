@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using IndustriesSunsetHarborMerged.AI.ResourceMarketAI;
+using IndustriesSunsetHarborMerged.AI.FishExtractorAI;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.Utils.AIHelper {
+
     public static class AIHelper {
 
         public static void ApplyNewAIToBuilding(BuildingInfo b) {

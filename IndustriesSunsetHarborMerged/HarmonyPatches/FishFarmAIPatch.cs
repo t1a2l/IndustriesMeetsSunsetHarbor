@@ -1,11 +1,12 @@
-﻿using ColossalFramework;
+using ColossalFramework;
 using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.HarmonyPatches.FishFarmAIPatch {
+
     [HarmonyPatch(typeof(FishFarmAI), "ProduceGoods")]
-    public static class FishFarmGroundAI {
+    public static class FishFarmAIPatch {
         private delegate void HandleDeadDelegate(CommonBuildingAI instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount);
         private static HandleDeadDelegate BaseHandleDead = AccessTools.MethodDelegate<HandleDeadDelegate>(typeof(CommonBuildingAI).GetMethod("HandleDead", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 

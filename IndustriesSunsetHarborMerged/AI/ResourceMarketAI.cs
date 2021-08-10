@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using IndustriesSunsetHarborMerged.Utils.ResourceMarketManager;
 
-
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.AI.ResourceMarketAI {
     public class ResourceMarketAI : MarketAI {
 
         public TransferManager.TransferReason[] m_incomingResources = new TransferManager.TransferReason[]

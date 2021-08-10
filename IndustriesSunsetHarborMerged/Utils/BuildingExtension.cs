@@ -3,9 +3,10 @@ using System.Linq;
 using ICities;
 using System.Reflection;
 using UnityEngine;
+using IndustriesSunsetHarborMerged.Utils.FishFarmUtils;
 
-namespace IndustriesSunsetHarborMerged
-{
+namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
+
     public class BuildingExtension : BuildingExtensionBase
     {
         public static event FishFarmAdded OnFishFarmAdded;
@@ -75,7 +76,7 @@ namespace IndustriesSunsetHarborMerged
                 {
                     continue;
                 }
-                FishFarmUtil.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[id], out BuildingInfo primaryInfo);
+                FishFarmUtils.FishFarmUtils.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[id], out BuildingInfo primaryInfo);
                 OnReleasedForInfo(id, primaryInfo);
             }
         }
@@ -91,13 +92,13 @@ namespace IndustriesSunsetHarborMerged
 
         private static void ObserveBuilding(ushort buildingId)
         {
-            FishFarmUtil.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[buildingId], out BuildingInfo primaryInfo);
+            FishFarmUtils.FishFarmUtils.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[buildingId], out BuildingInfo primaryInfo);
             ObserveForInfo(buildingId, primaryInfo);
         }
 
         private static void ObserveForInfo(ushort buildingId, BuildingInfo fishFarmInfo)
         {
-            if (fishFarmInfo == null || !FishFarmUtil.IsValidFishFarm(buildingId))
+            if (fishFarmInfo == null || !FishFarmUtils.FishFarmUtils.IsValidFishFarm(buildingId))
             {
                 return;
             }
@@ -126,7 +127,7 @@ namespace IndustriesSunsetHarborMerged
             var ExtractorNames = extractorInfo.name.Split('_');
             var ExtractorType = ExtractorNames[0];
             return _fishFarmMap.TryGetValue(new FishItemClass(fishFarmInfo.GetService()),out HashSet<ushort> source)
-                ? source.Where(d => FishFarmUtil.IsValidFishFarm(d)).Where(d => FarmType == ExtractorType).ToArray()
+                ? source.Where(d => FishFarmUtils.FishFarmUtils.IsValidFishFarm(d)).Where(d => FarmType == ExtractorType).ToArray()
                 : new ushort [0];
         }
 

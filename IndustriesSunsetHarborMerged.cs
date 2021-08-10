@@ -4,11 +4,18 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
+using ColossalFramework.UI;
+using IndustriesSunsetHarborMerged.Utils.AIHelper;
+using IndustriesSunsetHarborMerged.Utils.BuildingExtension;
+using IndustriesSunsetHarborMerged.Utils.ResourceMarketManager;
+using IndustriesSunsetHarborMerged.AI.FishExtractorAI;
 
 namespace IndustriesSunsetHarborMerged {
     public class Mod : LoadingExtensionBase, IUserMod {
 
         public static bool inGame = false;
+        private GameObject _ishmGameObject;
+        private GameObject _worldInfoPanel;
         string IUserMod.Name => "Industries Sunset Harbor Merged Mod";
 
         string IUserMod.Description => "Mix Industries and Sunset Harbor together";
@@ -36,12 +43,28 @@ namespace IndustriesSunsetHarborMerged {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
-                    else if (bi.name.Contains("Extractor") && bi.m_class.m_service.Equals("Fishing")) {
+                    else if (bi.name.Contains("Extractor") && bi.name.Contains("(Fish)")) {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
                 }
-                LogHelper.Information("Reloaded Mod");
+
+                UIView objectOfType = UnityEngine.Object.FindObjectOfType<UIView>();
+                if (objectOfType != null)
+                {
+                    _ishmGameObject = new GameObject("IsmhGameObject");
+                    _ishmGameObject.transform.parent = objectOfType.transform;
+                    _worldInfoPanel = new GameObject("BuildingWorldInfoPanel");
+                    _worldInfoPanel.transform.parent = objectOfType.transform;
+                    _worldInfoPanel.AddComponent<BuildingWorldInfoPanel>();
+                    BuildingExtension.Init();
+                    _ishmGameObject.AddComponent<FishExtractorAI>();
+                }
+                else
+                {
+                    LogHelper.Error("UIView not found, aborting!");
+                }
+                        
             }
             catch (Exception e) {
                 LogHelper.Information(e.ToString());

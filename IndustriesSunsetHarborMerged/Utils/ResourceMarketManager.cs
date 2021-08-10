@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesSunsetHarborMerged.Utils.ResourceMarketManager {
     public class ResourceMarketManager {
 
         public class MarketData {

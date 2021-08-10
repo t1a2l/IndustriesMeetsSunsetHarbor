@@ -12,7 +12,7 @@ namespace IndustriesSunsetHarborMerged
       get
       {
         if ((Object) UIUtils._font == (Object) null)
-          UIUtils._font = GameObject.Find("(Library) PublicTransportInfoViewPanel").GetComponent<PublicTransportInfoViewPanel>().Find<UILabel>("Label").font;
+          UIUtils._font = GameObject.Find("(Library) FishingInfoViewPanel").GetComponent<FishingInfoViewPanel>().Find<UILabel>("Label").font;
         return UIUtils._font;
       }
     }
