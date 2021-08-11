@@ -39,11 +39,12 @@ namespace IndustriesSunsetHarborMerged {
                 for (uint i = 0; i < loadedBuildingInfoCount; i++) {
                     var bi = PrefabCollection<BuildingInfo>.GetLoaded(i);
                     if (bi is null) continue;
+                    LogHelper.Information(bi.name);
                     if (bi.name.Equals("Fish Market 01")) {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
-                    else if (bi.name.Contains("Extractor") && bi.name.Contains("(Fish)")) {
+                    else if (bi.name.Contains("Farm_Data")) {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }

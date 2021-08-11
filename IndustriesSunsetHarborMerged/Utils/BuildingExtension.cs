@@ -150,15 +150,16 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
         public static Q GetPrivate<Q>(object o, string fieldName)
         {
             FieldInfo[] fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            FieldInfo fieldInfo1 = (FieldInfo) null;
+            FieldInfo fieldInfo1 = null;
             foreach (FieldInfo fieldInfo2 in fields)
             {
-            if (fieldInfo2.Name == fieldName)
-            {
-                fieldInfo1 = fieldInfo2;
-                break;
+                if (fieldInfo2.Name == fieldName)
+                {
+                    fieldInfo1 = fieldInfo2;
+                    break;
+                }
             }
-            }
+
             return (Q) fieldInfo1.GetValue(o);
         }
     }
