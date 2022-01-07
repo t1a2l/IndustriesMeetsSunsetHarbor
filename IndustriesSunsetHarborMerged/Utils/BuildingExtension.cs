@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICities;
-using System.Reflection;
-using UnityEngine;
-using IndustriesSunsetHarborMerged.Utils.FishFarmUtils;
 
 namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
 
@@ -12,36 +9,11 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
         public static event FishFarmAdded OnFishFarmAdded;
         public static event FishFarmRemoved OnFishFarmRemoved;
 
-        public static ExtractorData[] _extractorData;
-        public struct ExtractorData
-        {
-            public ushort FishFarm { get; set; }
-
-            public Vector3 Position { get; set; }
-        }
-
-        public struct FishItemClass
-        {
-
-            public FishItemClass(ItemClass.Service service)
-            {
-                Service = service;
-            }
-
-
-            public ItemClass.Service Service { get; }
-
-            public bool IsValid()
-            {
-                return Service != ItemClass.Service.None;
-            }
-        }
-
-        private static Dictionary<FishItemClass, HashSet<ushort>> _fishFarmMap;
+        private static Dictionary<ItemClassFishFarm.ItemClassFishFarm, HashSet<ushort>> _fishFarmMap;
 
         public static void Init()
         {
-            _fishFarmMap = new Dictionary<FishItemClass, HashSet<ushort>>();
+            _fishFarmMap = new Dictionary<ItemClassFishFarm.ItemClassFishFarm, HashSet<ushort>>();
             for (ushort index = 0; index < BuildingManager.instance.m_buildings.m_buffer.Length; ++index)
             {
                 ObserveBuilding(index);
@@ -50,7 +22,7 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
 
         public static void Deinit()
         {
-            _fishFarmMap = new Dictionary<FishItemClass, HashSet<ushort>>();
+            _fishFarmMap = new Dictionary<ItemClassFishFarm.ItemClassFishFarm, HashSet<ushort>>();
         }
 
         public override void OnBuildingCreated(ushort id)
@@ -81,13 +53,13 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
             }
         }
 
-        private void OnReleasedForInfo(ushort id, BuildingInfo fishFarmInfo)
+        private void OnReleasedForInfo(ushort id, BuildingInfo buildingInfo)
         {
-            if (fishFarmInfo == null)
+            if (buildingInfo == null)
             {
                 return;
             }
-            OnFishFarmRemoved?.Invoke(fishFarmInfo.GetService());
+            OnFishFarmRemoved?.Invoke(buildingInfo.GetService());
         }
 
         private static void ObserveBuilding(ushort buildingId)
@@ -96,13 +68,13 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
             ObserveForInfo(buildingId, primaryInfo);
         }
 
-        private static void ObserveForInfo(ushort buildingId, BuildingInfo fishFarmInfo)
+        private static void ObserveForInfo(ushort buildingId, BuildingInfo buildingInfo)
         {
-            if (fishFarmInfo == null || !FishFarmUtils.FishFarmUtils.IsValidFishFarm(buildingId))
+            if (buildingInfo == null || !FishFarmUtils.FishFarmUtils.IsValidFishFarm(buildingId, buildingInfo))
             {
                 return;
             }
-            var fishItemClass = new FishItemClass(fishFarmInfo.GetService());
+            var fishItemClass = new ItemClassFishFarm.ItemClassFishFarm(buildingInfo.GetService());
             if (!_fishFarmMap.TryGetValue(fishItemClass, out HashSet<ushort> fishFarms))
             {
                 fishFarms = new HashSet<ushort>();
@@ -116,51 +88,26 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
             OnFishFarmAdded?.Invoke(fishItemClass.Service);
         }
 
-        public static ushort[] GetFishFarms(BuildingInfo extractorInfo, BuildingInfo fishFarmInfo)
+
+        public static ushort[] GetFishFarms(BuildingInfo buildingInfo)
         {
-            if (fishFarmInfo == null)
+            if (buildingInfo == null)
             {
                 return new ushort[0];
             }
-            var FarmNames = fishFarmInfo.name.Split('_');
-            var FarmType = FarmNames[0];
-            var ExtractorNames = extractorInfo.name.Split('_');
-            var ExtractorType = ExtractorNames[0];
-            return _fishFarmMap.TryGetValue(new FishItemClass(fishFarmInfo.GetService()),out HashSet<ushort> source)
-                ? source.Where(d => FishFarmUtils.FishFarmUtils.IsValidFishFarm(d)).Where(d => FarmType == ExtractorType).ToArray()
+
+            return _fishFarmMap.TryGetValue(
+                new ItemClassFishFarm.ItemClassFishFarm(buildingInfo.GetService()),
+                out HashSet<ushort> source)
+                ? source.Where(d => FishFarmUtils.FishFarmUtils.IsValidFishFarm(d, buildingInfo))
+                    .ToArray()
                 : new ushort [0];
         }
 
-        public static ushort GetFishFarm(ushort extractorId)
-        {
-            return _extractorData[(int) extractorId].FishFarm;
-        }
 
-        public static void SetFishFarm(ushort extractorId, ushort fishFarmId)
-        {
-            var extractorPosition = BuildingManager.instance.m_buildings.m_buffer[extractorId].m_position;
-            _extractorData[(int) extractorId].FishFarm = fishFarmId;
-            _extractorData[(int) extractorId].Position = extractorPosition;
-        }
 
         public delegate void FishFarmAdded(ItemClass.Service service);
 
         public delegate void FishFarmRemoved(ItemClass.Service service);
-
-        public static Q GetPrivate<Q>(object o, string fieldName)
-        {
-            FieldInfo[] fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            FieldInfo fieldInfo1 = null;
-            foreach (FieldInfo fieldInfo2 in fields)
-            {
-                if (fieldInfo2.Name == fieldName)
-                {
-                    fieldInfo1 = fieldInfo2;
-                    break;
-                }
-            }
-
-            return (Q) fieldInfo1.GetValue(o);
-        }
     }
 }

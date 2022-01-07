@@ -16,7 +16,7 @@ namespace IndustriesSunsetHarborMerged.HarmonyPatches.PowerPlantAIPatch {
             int electricityRate = __instance.GetElectricityRate(buildingID, ref data);
             string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
             {
-                                (electricityRate * 16 + 500) / 1000
+                (electricityRate * 16 + 500) / 1000
             });
             text += Environment.NewLine;
             if(__instance.m_resourceType != TransferManager.TransferReason.None)

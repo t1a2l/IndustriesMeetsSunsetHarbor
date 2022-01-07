@@ -1,213 +1,56 @@
 using ColossalFramework;
 using UnityEngine;
-using ColossalFramework.UI;
-using System.Collections.Generic;
-using System.Linq;
-using IndustriesSunsetHarborMerged.Utils.BuildingExtension;
-using IndustriesSunsetHarborMerged.Utils.FishFarmUtils;
 
 namespace IndustriesSunsetHarborMerged.AI.FishExtractorAI {
-    class FishExtractorAI : FishFarmAI {
+    class FishExtractorAI :  PlayerBuildingAI {
 
-        private UILabel _fishAmount;
-        private DropDown _fishFarmDropDown;
-        private UIPanel _ishmContainer;
-        private bool _initialized;
-        private UIComponent _mainSubPanel;
-        private Dictionary<BuildingExtension.FishItemClass, bool> _updateFishFarms;
-        private CityServiceWorldInfoPanel _cityWorldInfoPanel;
+        public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)
+	{
+	    switch (infoMode)
+	    {
+	        case InfoManager.InfoMode.Fishing:
+		    if ((data.m_flags & Building.Flags.Active) != 0)
+		    {
+			    return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+		    }
+		    return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
+	        default:
+		        return base.GetColor(buildingID, ref data, infoMode);
+	    }
+	}
 
+        public override void GetPlacementInfoMode(out InfoManager.InfoMode mode, out InfoManager.SubInfoMode subMode, float elevation)
+	{
+	    mode = InfoManager.InfoMode.Fishing;
+	    subMode = InfoManager.SubInfoMode.WaterPower;
+	}
 
-        public FishExtractorAI()
-        {
-             Dictionary<BuildingExtension.FishItemClass, bool> dictionary = new Dictionary<BuildingExtension.FishItemClass, bool>();
-             dictionary.Add(new BuildingExtension.FishItemClass(ItemClass.Service.Fishing), true);
-             _updateFishFarms = dictionary;
-        }
+        protected override string GetLocalizedStatusActive(ushort buildingID, ref Building data)
+	{
+	    if ((data.m_flags & Building.Flags.RateReduced) != 0)
+	    {
+		return ColossalFramework.Globalization.Locale.Get("BUILDING_STATUS_REDUCED");
+	    }
+	    return ColossalFramework.Globalization.Locale.Get("BUILDING_STATUS_DEFAULT");
+	}
 
-        private void Update()
-        {
-            if (!_initialized)
-            {
-                Init();
-            }
-            else
-            {
-                if (!_initialized)
-                    return;
-                UpdateBindings();
-            }
-        }
+        public override void ReleaseBuilding(ushort buildingID, ref Building data)
+	{
+	    base.ReleaseBuilding(buildingID, ref data);
+	    if (!Singleton<UnlockManager>.instance.m_properties.m_ServicePolicyMilestones[28].IsPassed() && m_info.m_class.m_service == ItemClass.Service.Fishing && m_info.m_class.m_subService == ItemClass.SubService.None && m_info.m_class.m_level == ItemClass.Level.Level3)
+	    {
+		DistrictManager instance = Singleton<DistrictManager>.instance;
+		for (int i = 0; i < instance.m_districts.m_size; i++)
+		{
+		    instance.m_districts.m_buffer[i].m_servicePolicies &= ~DistrictPolicies.Services.AlgaeBasedWaterFiltering;
+		}
+		instance.NamesModified();
+	    }
+	}
 
-        private void Init()
-        {
-            _cityWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();      
-            UIComponent fishExtractorPanel = _cityWorldInfoPanel.Find("FishFarmPanel");
-            _fishAmount = BuildingExtension.GetPrivate<UILabel>((object) _cityWorldInfoPanel, "m_incomingResources");
-            _mainSubPanel = fishExtractorPanel.parent;
-            UIPanel uiPanel = _mainSubPanel.AddUIComponent<UIPanel>();
-            uiPanel.name = "IshmContainer";
-            uiPanel.width = 301f;
-            uiPanel.height = 166f;
-            uiPanel.autoLayoutDirection = LayoutDirection.Vertical;
-            uiPanel.autoLayoutStart = LayoutStart.TopLeft;
-            uiPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
-            uiPanel.autoLayout = true;
-            uiPanel.relativePosition = new Vector3(10f, 224.0f);
-            _ishmContainer = uiPanel;          
-            CreateDropDownPanel(); 
-            BuildingExtension.OnFishFarmAdded += OnFishFarmChanged;
-            BuildingExtension.OnFishFarmRemoved += OnFishFarmChanged;
-            _initialized = true;
-        }
-
-        private void UpdateBindings()
-        {
-            bool flag1 = false;
-            ushort extractorID = GetFishExtractorID();
-            ushort fishFarmID = BuildingExtension.GetFishFarm(extractorID);
-            BuildingInfo extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorID].Info;
-            if(!FishFarmUtils.ValidateFishFarmAndFindNewIfNeeded(extractorID, ref fishFarmID, extractorInfo))
-            {
-                return;
-            }
-            BuildingInfo fishFarmInfo = BuildingManager.instance.m_buildings.m_buffer[fishFarmID].Info;
-            ItemClass.Service service = fishFarmInfo.GetService();
-            BuildingExtension.FishItemClass fishfarm = new BuildingExtension.FishItemClass(service);
-            if (!FishFarmUtils.IsValidFishFarm(fishFarmID))
-            {
-                flag1 = true;
-            }
-            if (flag1 || _updateFishFarms[fishfarm])
-            {
-                PopulateFishFarmDropDown(extractorInfo, fishFarmInfo);
-                _updateFishFarms[fishfarm] = false;
-            }
-            if (_fishFarmDropDown.Items.Length == 0)
-                _fishFarmDropDown.Text = "No fish farms found.";
-            else
-                _fishFarmDropDown.SelectedItem = fishFarmID;
-            Vector3[] extractor_pos_arr = new Vector3[BuildingExtension._extractorData.Length];
-            BuildingExtension._extractorData.ForEach<BuildingExtension.ExtractorData>(item => {
-                extractor_pos_arr = extractor_pos_arr.Concat<Vector3>(new Vector3[] {item.Position}).ToArray();
-            });
-            m_extractionPositions = extractor_pos_arr;           
-        }
-
-        private void CreateDropDownPanel()
-        {
-            UIPanel uiPanel = _ishmContainer.AddUIComponent<UIPanel>();
-            uiPanel.width = uiPanel.parent.width;
-            uiPanel.height = 27f;
-            uiPanel.autoLayoutDirection = LayoutDirection.Horizontal;
-            uiPanel.autoLayoutStart = LayoutStart.TopLeft;
-            uiPanel.autoLayoutPadding = new RectOffset(0, 6, 0, 0);
-            uiPanel.autoLayout = true;
-            UILabel uiLabel = uiPanel.AddUIComponent<UILabel>();
-            string str1 = "Fish Farm:";
-            uiLabel.text = str1;
-            UIFont font = _fishAmount.font;
-            uiLabel.font = font;
-            Color32 textColor = _fishAmount.textColor;
-            uiLabel.textColor = textColor;
-            double textScale = (double) _fishAmount.textScale;
-            uiLabel.textScale = (float) textScale;
-            int num1 = 0;
-            uiLabel.autoSize = num1 != 0;
-            double num2 = 27.0;
-            uiLabel.height = (float) num2;
-            double num3 = 97.0;
-            uiLabel.width = (float) num3;
-            int num4 = 1;
-            uiLabel.verticalAlignment = (UIVerticalAlignment) num4;
-            _fishFarmDropDown = DropDown.Create((UIComponent) uiPanel);
-            _fishFarmDropDown.name = "FishFarmDropDown";
-            _fishFarmDropDown.Font = _fishAmount.font;
-            _fishFarmDropDown.height = 27f;
-            _fishFarmDropDown.width = 167f;
-            _fishFarmDropDown.eventSelectedItemChanged += new PropertyChangedEventHandler<ushort>(OnSelectedFishFarmChanged);
-            UIButton uiButton = uiPanel.AddUIComponent<UIButton>();
-            string str2 = "FishFarmMarker";
-            uiButton.name = str2;
-            string str3 = "LocationMarkerNormal";
-            uiButton.normalBgSprite = str3;
-            string str4 = "LocationMarkerDisabled";
-            uiButton.disabledBgSprite = str4;
-            string str5 = "LocationMarkerHovered";
-            uiButton.hoveredBgSprite = str5;
-            string str6 = "LocationMarkerFocused";
-            uiButton.focusedBgSprite = str6;
-            string str7 = "LocationMarkerPressed";
-            uiButton.pressedBgSprite = str7;
-            Vector2 vector2 = new Vector2(27f, 27f);
-            uiButton.size = vector2;
-            string str8 = "Jump towards the selected fish farm.\nHolding down a shift key when clicking will also zoom in.";
-            uiButton.tooltip = str8;
-            MouseEventHandler mouseEventHandler = new MouseEventHandler(OnFishFarmMarkerClicked);
-            uiButton.eventClick += mouseEventHandler;
-        }
-
-        private void OnDestroy()
-        {
-            _initialized = false;
-            BuildingExtension.OnFishFarmAdded -= OnFishFarmChanged;
-            BuildingExtension.OnFishFarmRemoved -= OnFishFarmChanged;
-            if (_updateFishFarms != null)
-                _updateFishFarms.Clear();
-            if (_ishmContainer != null)
-                Object.Destroy((Object) _ishmContainer.gameObject);
-        }
-
-        private void OnFishFarmMarkerClicked(UIComponent component, UIMouseEventParameter eventParam)
-        {
-          component.Unfocus();
-          if (_fishFarmDropDown.SelectedItem == 0)
-            return;
-          InstanceID id = new InstanceID();
-          id.Building = _fishFarmDropDown.SelectedItem;
-          ToolsModifierControl.cameraController.SetTarget(id, ToolsModifierControl.cameraController.transform.position, Input.GetKey(KeyCode.LeftShift) | Input.GetKey(KeyCode.RightShift));
-          DefaultTool.OpenWorldInfoPanel(id, ToolsModifierControl.cameraController.transform.position);
-        }
-
-        private void OnFishFarmChanged(ItemClass.Service service)
-        {
-            _updateFishFarms[new BuildingExtension.FishItemClass(service)] = true;
-        }
-
-        private void PopulateFishFarmDropDown(BuildingInfo extractorInfo, BuildingInfo fishFarmInfo)
-        {
-            _fishFarmDropDown.ClearItems();
-            if (extractorInfo == null || fishFarmInfo == null)
-            {
-                return;
-            }
-            _fishFarmDropDown.AddItems(BuildingExtension.GetFishFarms(extractorInfo, fishFarmInfo), IDToName);
-        }
-
-        private string IDToName(ushort buildingID)
-        {
-            BuildingManager instance = Singleton<BuildingManager>.instance;
-            if ((instance.m_buildings.m_buffer[(int) buildingID].m_flags & Building.Flags.Untouchable) != Building.Flags.None)
-            {
-                buildingID = instance.FindBuilding(instance.m_buildings.m_buffer[(int) buildingID].m_position, 100f, ItemClass.Service.None, ItemClass.SubService.None, Building.Flags.Active, Building.Flags.Untouchable);
-            }
-            return instance.GetBuildingName(buildingID, InstanceID.Empty) ?? "";
-        }
-
-        public ushort GetFishExtractorID()
-        {
-          InstanceID currentInstanceId = WorldInfoPanel.GetCurrentInstanceID();
-          if (currentInstanceId.Type == InstanceType.Building)
-            return currentInstanceId.Building;
-          return 0;
-        }
-
-        private void OnSelectedFishFarmChanged(UIComponent component, ushort selectedItem)
-        {
-            ushort ExtractorId = GetFishExtractorID();
-            if ((int) ExtractorId == 0) return;
-            BuildingExtension.SetFishFarm(ExtractorId, selectedItem);
-        }
-
+        public override bool RequireRoadAccess()
+	{
+	    return false;
+	}
     }
 }

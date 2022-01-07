@@ -1,7 +1,10 @@
 using ColossalFramework;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace IndustriesSunsetHarborMerged.Utils.ResourceMarketManager {
     public class ResourceMarketManager {
@@ -59,6 +62,38 @@ namespace IndustriesSunsetHarborMerged.Utils.ResourceMarketManager {
 
         public static void Ensure() {
             _ = Instance;
+        }
+    }
+
+    internal static class XMLSerializerUtil {
+        static XmlSerializer Serilizer<T>() => new XmlSerializer(typeof(T));
+        static void Serialize<T>(TextWriter writer, T value) => Serilizer<T>().Serialize(writer, value);
+        static T Deserialize<T>(TextReader reader) => (T)Serilizer<T>().Deserialize(reader);
+
+        public static string Serialize<T>(T value) {
+            try {
+                using (TextWriter writer = new StringWriter()) {
+                    Serialize<T>(writer, value);
+                    return writer.ToString();
+                }
+            }
+            catch (Exception ex) {
+                LogHelper.Error(ex.ToString());
+                return null;
+            }
+        }
+
+        public static T Deserialize<T>(string data) {
+            try {
+                using (TextReader reader = new StringReader(data)) {
+                    return Deserialize<T>(reader);
+                }
+            }
+            catch (Exception ex) {
+                LogHelper.Information("data=" + data);
+                LogHelper.Error(ex.ToString());
+                return default;
+            }
         }
     }
 }

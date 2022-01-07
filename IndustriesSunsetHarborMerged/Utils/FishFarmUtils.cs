@@ -1,6 +1,7 @@
 using ColossalFramework;
 using UnityEngine;
 
+
 namespace IndustriesSunsetHarborMerged.Utils.FishFarmUtils { 
     public static class FishFarmUtils
     {
@@ -18,10 +19,9 @@ namespace IndustriesSunsetHarborMerged.Utils.FishFarmUtils {
         }
 
 
-        public static bool IsValidFishFarm(ushort fishFarmID)
+        public static bool IsValidFishFarm(ushort fishFarmID, BuildingInfo buildingInfo)
         {
-            var fishFarmInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[fishFarmID].Info;
-            if (fishFarmInfo == null || fishFarmID == 0)
+             if (buildingInfo == null || fishFarmID == 0)
             {
                 return false;
             }
@@ -43,43 +43,42 @@ namespace IndustriesSunsetHarborMerged.Utils.FishFarmUtils {
             return false;
         }
 
-        public static bool ValidateFishFarmAndFindNewIfNeeded(ushort extractorID, ref ushort fishFarmID, BuildingInfo extractorInfo)
+        public static bool ValidateFishFarmAndFindNewIfNeeded(ushort fishExtractorID, ref ushort fishFarmID, BuildingInfo buildingInfo)
         {
-            if (extractorInfo == null)
+            if (buildingInfo == null)
             {
                 return false;
             }
-            if (extractorID != 0 && IsValidFishFarm(fishFarmID))
+            if (fishFarmID != 0 && IsValidFishFarm(fishFarmID, buildingInfo))
             {
                 return true;
             }
-            fishFarmID = AutoAssignExtractorFishFarm(extractorID, fishFarmID, out _);
+            fishFarmID = AutoAssignFishExtractorToFishFarm(fishExtractorID, fishFarmID, out _);
             return fishFarmID != 0;
         }
         
-        public static ushort AutoAssignExtractorFishFarm(ushort extractorID, ushort fishFarmID, out Vector3 position)
+        public static ushort AutoAssignFishExtractorToFishFarm(ushort fishExtractorID, ushort fishFarmID, out Vector3 fishExtractoPosition)
         {
-            position = BuildingManager.instance.m_buildings.m_buffer[extractorID].m_position;
-            ushort closestFishFarm = GetClosestFishFarm(extractorID, fishFarmID, position);
-            if ((int) closestFishFarm != 0)
+            fishExtractoPosition = BuildingManager.instance.m_buildings.m_buffer[fishExtractorID].m_position;
+            ushort closestFishFarm = GetClosestFishFarm(fishExtractorID, fishExtractoPosition);
+            if (closestFishFarm != 0)
             {
-                BuildingExtension.BuildingExtension.SetFishFarm(extractorID, closestFishFarm);
-                LogHelper.Information($"auto assigned fish farm {closestFishFarm} to extractor {extractorID}");
+                CachedFishExtractorData.CachedFishExtractorData.SetFishFarm(fishExtractorID, closestFishFarm);
+                LogHelper.Information($"auto assigned fish farm {closestFishFarm} to fish extractor {fishExtractorID}");
             }
             return closestFishFarm;
         }
 
-        public static ushort GetClosestFishFarm(ushort extractorID, ushort fishFarmID, Vector3 position)
+        public static ushort GetClosestFishFarm(ushort fishExtractorID, Vector3 fishExtractoPosition)
         {
             ushort result = 0;
             var previousDistance = float.MaxValue;
             var instance = Singleton<BuildingManager>.instance;
-            var extractorInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[extractorID].Info;
-            var fishFarmInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[fishFarmID].Info;
-            var fishFarmsIds = BuildingExtension.BuildingExtension.GetFishFarms(extractorInfo, fishFarmInfo);
-            foreach (var fishFarmId in fishFarmsIds)
+            var Info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[fishExtractorID].Info;
+            var fishFarmIds = BuildingExtension.BuildingExtension.GetFishFarms(Info);
+            foreach (var fishFarmId in fishFarmIds)
             {
-                var distance = Vector3.Distance(position, instance.m_buildings.m_buffer[fishFarmId].m_position);
+                var distance = Vector3.Distance(fishExtractoPosition, instance.m_buildings.m_buffer[fishFarmId].m_position);
                 if (!(distance < (double) previousDistance))
                 {
                     continue;
