@@ -26,7 +26,7 @@ namespace IndustriesSunsetHarborMerged.HarmonyPatches.FishFarmAIPatch {
             DistrictManager instance = Singleton<DistrictManager>.instance;
             byte district = instance.GetDistrict(buildingData.m_position);
             DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
-            Notification.Problem problem = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem.WaterNotConnected | Notification.Problem.NoResources | Notification.Problem.NoNaturalResources | Notification.Problem.FishFarmWaterDirty | Notification.Problem.NoPlaceForFishingGoods);
+            Notification.Problem1 problem = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.WaterNotConnected | Notification.Problem1.NoResources | Notification.Problem1.NoNaturalResources | Notification.Problem1.FishFarmWaterDirty | Notification.Problem1.NoPlaceForFishingGoods);
             int num = 0;
             int num2 = 0;
             int num3 = 0;
@@ -67,11 +67,11 @@ namespace IndustriesSunsetHarborMerged.HarmonyPatches.FishFarmAIPatch {
             if (finalProductionRate != 0) {
                 int num5 = finalProductionRate;
                 if (num2 > 96) {
-                    problem = (Notification.Problem.FishFarmWaterDirty | Notification.Problem.FatalProblem);
+                    problem = (Notification.Problem1.FishFarmWaterDirty | Notification.Problem1.FatalProblem);
                 } else if (num2 > 64) {
-                    problem = Notification.AddProblems(problem, Notification.Problem.FishFarmWaterDirty | Notification.Problem.MajorProblem);
+                    problem = Notification.AddProblems(problem, Notification.Problem1.FishFarmWaterDirty | Notification.Problem1.MajorProblem);
                 } else if (num2 > 32) {
-                    problem = Notification.AddProblems(problem, Notification.Problem.FishFarmWaterDirty);
+                    problem = Notification.AddProblems(problem, Notification.Problem1.FishFarmWaterDirty);
                 }
                 finalProductionRate = finalProductionRate * Mathf.Clamp(255 - num2 * 2, 0, 255) / 255;
                 int num6 = finalProductionRate * __instance.m_noiseAccumulation / 100;
@@ -98,7 +98,7 @@ namespace IndustriesSunsetHarborMerged.HarmonyPatches.FishFarmAIPatch {
                         if (cycleBufferSize > num7 - num8) {
                             num9 = cycleBufferSize - num10;
                             num10 = cycleBufferSize;
-                            problem = Notification.AddProblems(problem, Notification.Problem.NoPlaceForFishingGoods);
+                            problem = Notification.AddProblems(problem, Notification.Problem1.NoPlaceForFishingGoods);
                         } else {
                             num10 = num10 + num9 - cycleBufferSize;
                             num8 += cycleBufferSize;

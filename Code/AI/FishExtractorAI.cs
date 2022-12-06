@@ -1,7 +1,7 @@
 using ColossalFramework;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged.AI.FishExtractorAI {
+namespace IndustriesSunsetHarborMerged {
     class FishExtractorAI :  PlayerBuildingAI {
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)

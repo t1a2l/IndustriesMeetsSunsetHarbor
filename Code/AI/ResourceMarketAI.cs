@@ -3,19 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using IndustriesSunsetHarborMerged.Utils.ResourceMarketManager;
 
-namespace IndustriesSunsetHarborMerged.AI.ResourceMarketAI {
+namespace IndustriesSunsetHarborMerged {
     public class ResourceMarketAI : MarketAI {
 
         public TransferManager.TransferReason[] m_incomingResources = new TransferManager.TransferReason[]
         {
-                        TransferManager.TransferReason.Fish,
-                        TransferManager.TransferReason.Grain,
-                        TransferManager.TransferReason.Food,
-                        TransferManager.TransferReason.LuxuryProducts,
-                        TransferManager.TransferReason.AnimalProducts,
-                        TransferManager.TransferReason.Flours
+            TransferManager.TransferReason.Fish,
+            TransferManager.TransferReason.Grain,
+            TransferManager.TransferReason.Food,
+            TransferManager.TransferReason.LuxuryProducts,
+            TransferManager.TransferReason.AnimalProducts,
+            TransferManager.TransferReason.Flours
         };
 
         public Boolean isAmount = false;
@@ -253,7 +252,7 @@ namespace IndustriesSunsetHarborMerged.AI.ResourceMarketAI {
             Vector3 position = buildingData.m_position - new Vector3(num13 * num9 + num12 * num10, 0f, num12 * num9 - num13 * num10);
             Vector3 position2 = buildingData.m_position - new Vector3(num13 * num9 + num12 * num11, 0f, num12 * num9 - num13 * num11);
             float currentRange = GetCurrentRange(buildingID, ref buildingData);
-            Notification.Problem problem = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem.NoCustomers | Notification.Problem.NoGoods | Notification.Problem.NoFishingGoods);
+            Notification.Problem1 problem = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoCustomers | Notification.Problem1.NoGoods | Notification.Problem1.NoFishingGoods);
             int num14 = productionRate * m_healthCareAccumulation / 100;
             if (num14 != 0) {
                 Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.HealthCare, num14, buildingData.m_position, m_healthCareRadius);
@@ -328,9 +327,9 @@ namespace IndustriesSunsetHarborMerged.AI.ResourceMarketAI {
                     if ((int)marketBuffer.outputAmountBuffer[k] > goodsCapacity - (num21 >> 1) && aliveVisitorCount <= visitPlaceCount >> 1) {
                         buildingData.m_outgoingProblemTimer = (byte)Mathf.Min(255, (int)(buildingData.m_outgoingProblemTimer + 1));
                         if (buildingData.m_outgoingProblemTimer >= 192) {
-                            problem = Notification.AddProblems(problem, Notification.Problem.NoCustomers | Notification.Problem.MajorProblem);
+                            problem = Notification.AddProblems(problem, Notification.Problem1.NoCustomers | Notification.Problem1.MajorProblem);
                         } else if (buildingData.m_outgoingProblemTimer >= 128) {
-                            problem = Notification.AddProblems(problem, Notification.Problem.NoCustomers);
+                            problem = Notification.AddProblems(problem, Notification.Problem1.NoCustomers);
                         }
                     } else {
                         buildingData.m_outgoingProblemTimer = 0;
@@ -339,11 +338,11 @@ namespace IndustriesSunsetHarborMerged.AI.ResourceMarketAI {
                 for (int i = 0; i < m_incomingResources.Length; i++) {
                     if (marketBuffer.inputAmountBuffer[i] == 0 && !isAmount && m_incomingResources[i] != TransferManager.TransferReason.None) {
                         buildingData.m_incomingProblemTimer = (byte)Mathf.Min(255, (int)(buildingData.m_incomingProblemTimer + 1));
-                        Notification.Problem problem2 = (m_incomingResources[i] != TransferManager.TransferReason.Fish) ? Notification.Problem.NoGoods : Notification.Problem.NoFishingGoods;
+                        Notification.Problem1 problem2 = (m_incomingResources[i] != TransferManager.TransferReason.Fish) ? Notification.Problem1.NoGoods : Notification.Problem1.NoFishingGoods;
                         if (buildingData.m_incomingProblemTimer < 64) {
                             problem = Notification.AddProblems(problem, problem2);
                         } else {
-                            problem = Notification.AddProblems(problem, Notification.Problem.MajorProblem | problem2);
+                            problem = Notification.AddProblems(problem, Notification.Problem1.MajorProblem | problem2);
                         }
                     } else {
                         buildingData.m_incomingProblemTimer = 0;

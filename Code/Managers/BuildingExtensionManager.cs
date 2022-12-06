@@ -1,19 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
+using ColossalFramework;
 using ICities;
 
-namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
+namespace IndustriesSunsetHarborMerged {
 
-    public class BuildingExtension : BuildingExtensionBase
+    public class BuildingExtensionManager : BuildingExtensionBase
     {
         public static event FishFarmAdded OnFishFarmAdded;
         public static event FishFarmRemoved OnFishFarmRemoved;
 
-        private static Dictionary<ItemClassFishFarm.ItemClassFishFarm, HashSet<ushort>> _fishFarmMap;
+        private static Dictionary<ushort, HashSet<ushort>> FishFarms;
 
         public static void Init()
         {
-            _fishFarmMap = new Dictionary<ItemClassFishFarm.ItemClassFishFarm, HashSet<ushort>>();
+            FishFarms = new Dictionary<ushort, HashSet<ushort>>();
             for (ushort index = 0; index < BuildingManager.instance.m_buildings.m_buffer.Length; ++index)
             {
                 ObserveBuilding(index);
@@ -22,7 +22,7 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
 
         public static void Deinit()
         {
-            _fishFarmMap = new Dictionary<ItemClassFishFarm.ItemClassFishFarm, HashSet<ushort>>();
+            FishFarms = new Dictionary<ushort, HashSet<ushort>>();
         }
 
         public override void OnBuildingCreated(ushort id)
@@ -42,13 +42,13 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
             {
                 return;
             }
-            foreach (var fishFarms in _fishFarmMap)
+            foreach (var fishFarm in FishFarms)
             {
-                if (!fishFarms.Value.Remove(id))
+                if (!fishFarm.Value.Remove(id))
                 {
                     continue;
                 }
-                FishFarmUtils.FishFarmUtils.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[id], out BuildingInfo primaryInfo);
+                FishFarmManager.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[id], out BuildingInfo primaryInfo);
                 OnReleasedForInfo(id, primaryInfo);
             }
         }
@@ -64,47 +64,47 @@ namespace IndustriesSunsetHarborMerged.Utils.BuildingExtension {
 
         private static void ObserveBuilding(ushort buildingId)
         {
-            FishFarmUtils.FishFarmUtils.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[buildingId], out BuildingInfo primaryInfo);
+            FishFarmManager.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[buildingId], out BuildingInfo primaryInfo);
             ObserveForInfo(buildingId, primaryInfo);
         }
 
         private static void ObserveForInfo(ushort buildingId, BuildingInfo buildingInfo)
         {
-            if (buildingInfo == null || !FishFarmUtils.FishFarmUtils.IsValidFishFarm(buildingId, buildingInfo))
+            if (buildingInfo == null || !FishFarmManager.IsValidFishFarm(buildingId))
             {
                 return;
             }
-            var fishItemClass = new ItemClassFishFarm.ItemClassFishFarm(buildingInfo.GetService());
-            if (!_fishFarmMap.TryGetValue(fishItemClass, out HashSet<ushort> fishFarms))
+            if (!FishFarms.TryGetValue(buildingId, out HashSet<ushort> fishExtractors))
             {
-                fishFarms = new HashSet<ushort>();
-                _fishFarmMap.Add(fishItemClass, fishFarms);
+                fishExtractors = new HashSet<ushort>();
+                FishFarms.Add(buildingId, fishExtractors);
             }
-            if (fishFarms.Contains(buildingId))
+            if (FishFarms.ContainsKey(buildingId))
             {
                 return;
             }
-            fishFarms.Add(buildingId);
-            OnFishFarmAdded?.Invoke(fishItemClass.Service);
+            fishExtractors.Add(buildingId);
+            OnFishFarmAdded?.Invoke(buildingInfo.GetService());
         }
 
 
-        public static ushort[] GetFishFarms(BuildingInfo buildingInfo)
+        public static ushort[] GetFishFarmsIds()
         {
-            if (buildingInfo == null)
+            List<ushort> fishFarms = new List<ushort>();
+            BuildingManager instance2 = Singleton<BuildingManager>.instance;
+            int length = instance2.m_buildings.m_buffer.Length;
+            for (ushort index = 0; index < length; ++index)
             {
-                return new ushort[0];
+                var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
+                if(buildingInfo.GetAI() is FishFarmAI) {
+                    if(FishFarmManager.IsValidFishFarm(index)) {
+                        fishFarms.Add(index);
+                    }
+                }
             }
 
-            return _fishFarmMap.TryGetValue(
-                new ItemClassFishFarm.ItemClassFishFarm(buildingInfo.GetService()),
-                out HashSet<ushort> source)
-                ? source.Where(d => FishFarmUtils.FishFarmUtils.IsValidFishFarm(d, buildingInfo))
-                    .ToArray()
-                : new ushort [0];
+            return fishFarms.ToArray();
         }
-
-
 
         public delegate void FishFarmAdded(ItemClass.Service service);
 

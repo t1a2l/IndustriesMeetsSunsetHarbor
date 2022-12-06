@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged.FishExtractorData {
+namespace IndustriesSunsetHarborMerged {
     public struct FishExtractorData
     {
         public ushort FishFarm { get; set; }

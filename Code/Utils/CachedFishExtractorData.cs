@@ -2,31 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ColossalFramework;
-using IndustriesSunsetHarborMerged.Utils.FishFarmUtils;
 
-namespace IndustriesSunsetHarborMerged.CachedFishExtractorData
+namespace IndustriesSunsetHarborMerged
 {
     public static class CachedFishExtractorData
     {
         private static readonly string _dataID = "IndustriesSunsetHarborMerged";
-        private static readonly string _dataVersion = "v004";
+        private static readonly string _dataVersion = "v001";
 
         public static bool _init = false;
-        public static FishExtractorData.FishExtractorData[] _fishExtractorData;
+        public static FishExtractorData[] _fishExtractorData;
         
         public static void Init()
         {
             if (!TryLoadData(out _fishExtractorData))
             {
-                LogHelper.Information("Loading default transport line data.");
-                NetManager instance1 = Singleton<NetManager>.instance;
-                TransportManager instance2 = Singleton<TransportManager>.instance;
-                int length = instance2.m_lines.m_buffer.Length;
+                LogHelper.Information("Loading default fish extractor data.");
+                BuildingManager instance2 = Singleton<BuildingManager>.instance;
+                int length = instance2.m_buildings.m_buffer.Length;
                 for (ushort index = 0; index < length; ++index)
                 {
-                    _fishExtractorData[index].FishFarm = FishFarmUtils.GetClosestFishFarm((ushort) index,
-                        BuildingManager.instance.m_buildings.m_buffer[index].m_position);
-
+                    var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
+                    var buildingPosition = BuildingManager.instance.m_buildings.m_buffer[index].m_position;
+                    if(buildingInfo.GetAI() is FishExtractorAI) {
+                        _fishExtractorData[index].FishFarm = FishFarmManager.GetClosestFishFarm(buildingPosition);
+                    }
                 }
             }
             SerializableDataExtension.instance.EventSaveData += new SerializableDataExtension.SaveDataEventHandler(OnSaveData);
@@ -41,15 +41,14 @@ namespace IndustriesSunsetHarborMerged.CachedFishExtractorData
             _init = false;
         }
 
-        public static bool TryLoadData(out FishExtractorData.FishExtractorData[] data)
+        public static bool TryLoadData(out FishExtractorData[] data)
         {
-            data = new FishExtractorData.FishExtractorData[256];
+            data = new FishExtractorData[256];
             byte[] data1 = SerializableDataExtension.instance.SerializableData.LoadData(_dataID);
             if (data1 == null)
                 return false;
             int index1 = 0;
             ushort fishExtractorID = 0;
-            string empty = string.Empty;
             try
             {
                 LogHelper.Information("Try to load fish extractor data.");
@@ -60,8 +59,6 @@ namespace IndustriesSunsetHarborMerged.CachedFishExtractorData
                     return false;
                 }
                 LogHelper.Information("Found fish extractor data version: " + str);
-                NetManager instance1 = Singleton<NetManager>.instance;
-                TransportManager instance2 = Singleton<TransportManager>.instance;
                 while (index1 < data1.Length)
                 {
                     index1 += 4;
@@ -71,7 +68,7 @@ namespace IndustriesSunsetHarborMerged.CachedFishExtractorData
                     ushort uint16 = BitConverter.ToUInt16(data1, index1);
                     data[(int) fishExtractorID].FishFarm = (int) uint16 != 0
                         ? uint16
-                        : FishFarmUtils.GetClosestFishFarm(fishExtractorID, BuildingManager.instance.m_buildings.m_buffer[fishExtractorID].m_position);
+                        : FishFarmManager.GetClosestFishFarm(BuildingManager.instance.m_buildings.m_buffer[fishExtractorID].m_position);
                     index1 += 2;
                     if (str == "v003")
                         ++index1;
@@ -82,7 +79,7 @@ namespace IndustriesSunsetHarborMerged.CachedFishExtractorData
             catch (Exception ex)
             {
                 LogHelper.Error("Could not load fish extractor data. " + ex.Message);
-                data = new FishExtractorData.FishExtractorData[256];
+                data = new FishExtractorData[256];
                 return false;
             }
         }
@@ -116,8 +113,7 @@ namespace IndustriesSunsetHarborMerged.CachedFishExtractorData
                 CODebugBase<LogChannel>.Log(LogChannel.Modding, msg, ErrorLevel.Error);
             }
         }
-        
-               
+            
         public static ushort GetFishFarm(ushort fishExtractorID)
         {
             return CachedFishExtractorData._fishExtractorData[fishExtractorID].FishFarm;

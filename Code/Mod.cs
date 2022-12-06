@@ -3,8 +3,6 @@ using ICities;
 using System;
 using UnityEngine;
 using ColossalFramework.UI;
-using IndustriesSunsetHarborMerged.Utils.AIHelper;
-using IndustriesSunsetHarborMerged.Utils.BuildingExtension;
 
 namespace IndustriesSunsetHarborMerged {
     public class Mod : LoadingExtensionBase, IUserMod {
@@ -39,7 +37,7 @@ namespace IndustriesSunsetHarborMerged {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
-                    else if (bi.name.Contains("Farm_Data")) {
+                    else if (bi.name.Contains("FishExtractor_Data")) {
                         LogHelper.Information(bi.name);
                         AIHelper.ApplyNewAIToBuilding(bi);
                     }
@@ -53,8 +51,8 @@ namespace IndustriesSunsetHarborMerged {
                     _worldInfoPanel = new GameObject("CityServiceWorldInfoPanel");
                     _worldInfoPanel.transform.parent = objectOfType.transform;
                     _worldInfoPanel.AddComponent<CityServiceWorldInfoPanel>();
-                    BuildingExtension.Init();
-                    _ishmGameObject.AddComponent<PanelExtenderFishExtractor.PanelExtenderFishExtractor>();
+                    BuildingExtensionManager.Init();
+                    _ishmGameObject.AddComponent<PanelExtenderFishExtractor>();
                 }
                 else
                 {
@@ -79,7 +77,7 @@ namespace IndustriesSunsetHarborMerged {
 
         private void Deinit()
         {
-          BuildingExtension.Deinit();
+          BuildingExtensionManager.Deinit();
         }
 
     }
