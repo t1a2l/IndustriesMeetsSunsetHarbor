@@ -8,7 +8,6 @@ namespace IndustriesSunsetHarborMerged {
         private bool _initialized;
         private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
         private UIPanel _ishmContainer;
-        private UIComponent _mainSubPanel;
         private DropDown _fishFarmDropDown;
 
         private void Update()
@@ -22,11 +21,6 @@ namespace IndustriesSunsetHarborMerged {
                 if (!_initialized || !_cityServiceWorldInfoPanel.component.isVisible)
                     return;
                 UpdateBindings();
-                var fishFarmModelSelector = _cityServiceWorldInfoPanel.Find<UIPanel>("fishFarmModelSelectorContainer");
-                if (fishFarmModelSelector != null)
-                {
-                  fishFarmModelSelector.isVisible = false;
-                }
             }
         }
 
@@ -34,21 +28,25 @@ namespace IndustriesSunsetHarborMerged {
         {
             _cityServiceWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();
             if (!(_cityServiceWorldInfoPanel != null)) return;
-            UIComponent agePanel = _cityServiceWorldInfoPanel.Find("FishPanel");
-            agePanel.relativePosition = new Vector3(0.0f, 84.0f, agePanel.relativePosition.z);
-            _mainSubPanel = agePanel.parent;
-            UIPanel uiPanel = _mainSubPanel.AddUIComponent<UIPanel>();
-            uiPanel.name = "IshmContainer";
-            uiPanel.width = 301f;
-            uiPanel.height = 166f;
-            uiPanel.autoLayoutDirection = LayoutDirection.Vertical;
-            uiPanel.autoLayoutStart = LayoutStart.TopLeft;
-            uiPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
-            uiPanel.autoLayout = true;
-            uiPanel.relativePosition = new Vector3(10f, 224.0f);
-            _ishmContainer = uiPanel;
-            CreateDropDownPanel(); 
-            _initialized = true;
+            UIComponent Wrapper = _cityServiceWorldInfoPanel?.Find("Wrapper");
+            UIComponent MainSectionPanel = Wrapper?.Find("MainSectionPanel");
+            UIComponent MainTop = MainSectionPanel?.Find("MainTop");
+            UIComponent Right = MainTop?.Find("Right");
+            UIComponent Info = Right?.Find("Info");
+            if(Info != null) {
+                UIPanel uiPanel = Info.AddUIComponent<UIPanel>();
+                uiPanel.name = "IshmContainer";
+                uiPanel.width = 301f;
+                uiPanel.height = 166f;
+                uiPanel.autoLayoutDirection = LayoutDirection.Vertical;
+                uiPanel.autoLayoutStart = LayoutStart.TopLeft;
+                uiPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
+                uiPanel.autoLayout = true;
+                uiPanel.relativePosition = new Vector3(10f, 224.0f);
+                _ishmContainer = uiPanel;
+                CreateDropDownPanel(); 
+                _initialized = true;
+            }
         }
 
         private void OnDestroy()
