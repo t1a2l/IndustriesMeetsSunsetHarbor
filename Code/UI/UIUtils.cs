@@ -1,7 +1,7 @@
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged
+namespace IndustriesMeetsSunsetHarbor
 {
   public static class UIUtils
   {

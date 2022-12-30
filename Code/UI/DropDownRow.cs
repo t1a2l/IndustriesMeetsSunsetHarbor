@@ -2,7 +2,7 @@ using ColossalFramework.UI;
 using System;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged
+namespace IndustriesMeetsSunsetHarbor
 {
   public class DropDownRow : UIPanel
   {

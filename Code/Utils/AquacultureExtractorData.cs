@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged {
-    public struct FishExtractorData
+namespace IndustriesMeetsSunsetHarbor {
+    public struct AquacultureExtractorData
     {
-        public ushort FishFarm { get; set; }
+        public ushort AquacultureFarm { get; set; }
 
         public Vector3 Position { get; set; }
 

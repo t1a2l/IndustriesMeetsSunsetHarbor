@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using ColossalFramework;
 using ICities;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesMeetsSunsetHarbor {
 
     public class BuildingExtensionManager : BuildingExtensionBase
     {

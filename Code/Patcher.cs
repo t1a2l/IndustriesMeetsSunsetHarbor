@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System.Reflection;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesMeetsSunsetHarbor {
     public static class Patcher {
         private const string HarmonyId = "t1a2l.IndustriesSunsetHarborMerged";
 

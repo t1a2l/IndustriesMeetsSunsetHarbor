@@ -1,7 +1,7 @@
 using ICities;
 using System;
 
-namespace IndustriesSunsetHarborMerged
+namespace IndustriesMeetsSunsetHarbor
 {
   public class SerializableDataExtension : ISerializableDataExtension
   {

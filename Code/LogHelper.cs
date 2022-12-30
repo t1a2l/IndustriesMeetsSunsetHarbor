@@ -1,5 +1,5 @@
-﻿
-namespace IndustriesSunsetHarborMerged {
+
+namespace IndustriesMeetsSunsetHarbor {
     internal static class LogHelper {
         private const string Prefix = "Industries SunsetHarbor Merged: ";
 

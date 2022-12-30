@@ -3,7 +3,7 @@ using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged.HarmonyPatches.FishFarmAIPatch {
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
 
     [HarmonyPatch(typeof(FishFarmAI), "ProduceGoods")]
     public static class FishFarmAIPatch {

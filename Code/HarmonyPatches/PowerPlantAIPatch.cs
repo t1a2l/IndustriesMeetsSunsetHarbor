@@ -1,7 +1,7 @@
 using HarmonyLib;
 using System;
 
-namespace IndustriesSunsetHarborMerged.HarmonyPatches.PowerPlantAIPatch {
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
 
     [HarmonyPatch(typeof(PowerPlantAI), "GetLocalizedStats")]
     public static class PowerPlantAIPatch {

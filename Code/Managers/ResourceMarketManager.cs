@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace IndustriesSunsetHarborMerged {
+namespace IndustriesMeetsSunsetHarbor {
     public class ResourceMarketManager {
 
         public class MarketData {

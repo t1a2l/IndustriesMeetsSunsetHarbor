@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged
+namespace IndustriesMeetsSunsetHarbor
 {
   public class DropDown : UIPanel
   {

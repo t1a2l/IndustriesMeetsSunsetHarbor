@@ -1,10 +1,12 @@
 using ColossalFramework;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged {
-    class FishExtractorAI :  PlayerBuildingAI {
+namespace IndustriesMeetsSunsetHarbor.AI
+{
+    class AquacultureExtractorAI :  PlayerBuildingAI
+    {
 
-        public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode)
+        public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
 	{
 	    switch (infoMode)
 	    {
@@ -15,7 +17,7 @@ namespace IndustriesSunsetHarborMerged {
 		    }
 		    return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
 	        default:
-		        return base.GetColor(buildingID, ref data, infoMode);
+		        return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
 	    }
 	}
 

@@ -2,30 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ColossalFramework;
+using IndustriesMeetsSunsetHarbor.AI;
 
-namespace IndustriesSunsetHarborMerged
+namespace IndustriesMeetsSunsetHarbor
 {
-    public static class CachedFishExtractorData
+    public static class CachedAquacultureExtractorData
     {
-        private static readonly string _dataID = "IndustriesSunsetHarborMerged";
+        private static readonly string _dataID = "IndustriesMeetsSunsetHarbor";
         private static readonly string _dataVersion = "v001";
 
         public static bool _init = false;
-        public static FishExtractorData[] _fishExtractorData;
+        public static AquacultureExtractorData[] _aquacultureExtractorData;
         
         public static void Init()
         {
-            if (!TryLoadData(out _fishExtractorData))
+            if (!TryLoadData(out _aquacultureExtractorData))
             {
-                LogHelper.Information("Loading default fish extractor data.");
+                LogHelper.Information("Loading default aquaculture extractor data.");
                 BuildingManager instance2 = Singleton<BuildingManager>.instance;
                 int length = instance2.m_buildings.m_buffer.Length;
                 for (ushort index = 0; index < length; ++index)
                 {
                     var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
                     var buildingPosition = BuildingManager.instance.m_buildings.m_buffer[index].m_position;
-                    if(buildingInfo.GetAI() is FishExtractorAI) {
-                        _fishExtractorData[index].FishFarm = FishFarmManager.GetClosestFishFarm(buildingPosition);
+                    if(buildingInfo.GetAI() is AquaExtractorAI)
+                    {
+                        _aquacultureExtractorData[index].AquacultureFarm = AquacultureFarmManager.GetClosestAquacultureFarm(buildingPosition);
                     }
                 }
             }
@@ -36,29 +38,29 @@ namespace IndustriesSunsetHarborMerged
 
         public static void Deinit()
         {
-            _fishExtractorData = null;
+            _aquacultureExtractorData = null;
             SerializableDataExtension.instance.EventSaveData -= new SerializableDataExtension.SaveDataEventHandler(OnSaveData);
             _init = false;
         }
 
-        public static bool TryLoadData(out FishExtractorData[] data)
+        public static bool TryLoadData(out AquacultureExtractorData[] data)
         {
-            data = new FishExtractorData[256];
+            data = new AquacultureExtractorData[256];
             byte[] data1 = SerializableDataExtension.instance.SerializableData.LoadData(_dataID);
             if (data1 == null)
                 return false;
             int index1 = 0;
-            ushort fishExtractorID = 0;
+            ushort aquacultureExtractorID = 0;
             try
             {
-                LogHelper.Information("Try to load fish extractor data.");
+                LogHelper.Information("Try to load aquaculture extractor data.");
                 string str = SerializableDataExtension.ReadString(data1, ref index1);
                 if (string.IsNullOrEmpty(str) || str.Length != 4)
                 {
                     LogHelper.Warning("Unknown data found.");
                     return false;
                 }
-                LogHelper.Information("Found fish extractor data version: " + str);
+                LogHelper.Information("Found aquaculture extractor data version: " + str);
                 while (index1 < data1.Length)
                 {
                     index1 += 4;
@@ -66,20 +68,20 @@ namespace IndustriesSunsetHarborMerged
                     bool boolean = BitConverter.ToBoolean(data1, index1);
                     ++index1;
                     ushort uint16 = BitConverter.ToUInt16(data1, index1);
-                    data[(int) fishExtractorID].FishFarm = (int) uint16 != 0
+                    data[(int) aquacultureExtractorID].AquacultureFarm = (int) uint16 != 0
                         ? uint16
-                        : FishFarmManager.GetClosestFishFarm(BuildingManager.instance.m_buildings.m_buffer[fishExtractorID].m_position);
+                        : AquacultureFarmManager.GetClosestAquacultureFarm(BuildingManager.instance.m_buildings.m_buffer[aquacultureExtractorID].m_position);
                     index1 += 2;
                     if (str == "v003")
                         ++index1;
-                    ++fishExtractorID;
+                    ++aquacultureExtractorID;
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                LogHelper.Error("Could not load fish extractor data. " + ex.Message);
-                data = new FishExtractorData[256];
+                LogHelper.Error("Could not load aquaculture extractor data. " + ex.Message);
+                data = new AquacultureExtractorData[256];
                 return false;
             }
         }
@@ -114,31 +116,31 @@ namespace IndustriesSunsetHarborMerged
             }
         }
             
-        public static ushort GetFishFarm(ushort fishExtractorID)
+        public static ushort GetAquacultureFarm(ushort aquacultureExtractorID)
         {
-            return CachedFishExtractorData._fishExtractorData[fishExtractorID].FishFarm;
+            return _aquacultureExtractorData[aquacultureExtractorID].AquacultureFarm;
         }
 
-        public static void SetFishFarm(ushort fishExtractorID, ushort fishFarmID)
+        public static void SetAquacultureFarm(ushort aquacultureExtractorID, ushort aquacultureFarmID)
         {
-            CachedFishExtractorData._fishExtractorData[fishExtractorID].FishFarm = fishFarmID;
+            _aquacultureExtractorData[aquacultureExtractorID].AquacultureFarm = aquacultureFarmID;
         }
 
         public static HashSet<string> GetPrefabs(ushort fishExtractorID)
         {
-            return CachedFishExtractorData._fishExtractorData[fishExtractorID].Prefabs;
+            return _aquacultureExtractorData[fishExtractorID].Prefabs;
         }
 
-        public static void SetPrefabs(ushort fishExtractorID, HashSet<string> prefabs)
+        public static void SetPrefabs(ushort aquacultureExtractorID, HashSet<string> prefabs)
         {
-            CachedFishExtractorData._fishExtractorData[fishExtractorID].Prefabs = prefabs;
+            _aquacultureExtractorData[aquacultureExtractorID].Prefabs = prefabs;
         }
 
-        public static string GetRandomPrefab(ushort fishExtractorID)
+        public static string GetRandomPrefab(ushort aquacultureExtractorID)
         {
-            if (CachedFishExtractorData._fishExtractorData[fishExtractorID].Prefabs != null)
+            if (_aquacultureExtractorData[aquacultureExtractorID].Prefabs != null)
             {
-                string[] array = CachedFishExtractorData._fishExtractorData[fishExtractorID].Prefabs.ToArray<string>();
+                string[] array = _aquacultureExtractorData[aquacultureExtractorID].Prefabs.ToArray<string>();
                 if (array.Length != 0)
                 {
                     int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint) array.Length);
