@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using ColossalFramework;
 using ICities;
 
-namespace IndustriesMeetsSunsetHarbor.Managers {
+namespace IndustriesMeetsSunsetHarbor.Managers
+{
 
     public class BuildingExtensionManager : BuildingExtensionBase
     {
@@ -96,8 +97,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers {
             for (ushort index = 0; index < length; ++index)
             {
                 var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
-                if(buildingInfo.GetAI() is FishFarmAI) {
-                    if(AquacultureFarmManager.IsValidAquacultureFarm(index)) {
+                if (buildingInfo.GetAI() is FishFarmAI)
+                {
+                    if (AquacultureFarmManager.IsValidAquacultureFarm(index))
+                    {
                         AquacultureFarms.Add(index);
                     }
                 }

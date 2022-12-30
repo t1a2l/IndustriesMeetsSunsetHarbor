@@ -16,7 +16,13 @@ tab_width=8
 # Microsoft .NET properties
 csharp_new_line_before_else=false
 csharp_new_line_before_members_in_object_initializers=false
-csharp_new_line_before_open_brace=none
+csharp_new_line_before_open_brace=all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
 csharp_preferred_modifier_order=public, private, protected, internal, new, abstract, virtual, sealed, override, static, readonly, extern, unsafe, volatile, async:suggestion
 csharp_space_after_cast=false
 csharp_style_var_elsewhere=false:hint
@@ -93,8 +99,8 @@ indent_style=space
 indent_size=4
 
 [.editorconfig]
-indent_style=space
-indent_size=4
+indent_style=tab
+indent_size=1
 
 [*.{appxmanifest,asax,ascx,aspx,build,config,cshtml,dbml,discomap,dtd,htm,html,jsproj,lsproj,master,njsproj,nuspec,proj,props,razor,resw,resx,skin,StyleCop,targets,tasks,vb,vbproj,xaml,xamlx,xml,xoml,xsd}]
 indent_style=space

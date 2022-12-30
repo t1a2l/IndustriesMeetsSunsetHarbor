@@ -368,12 +368,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int value = 0;
                 for (int i = 0; i < m_incomingResources.Length; i++)
                 {
-                    if(marketBuffer.inputAmountBuffer[i] > 0)
+                    if (marketBuffer.inputAmountBuffer[i] > 0)
                     {
                         isAmount = true;
                         break;
                     }
-                    if(i == m_incomingResources.Length - 1 && isAmount)
+                    if (i == m_incomingResources.Length - 1 && isAmount)
                     {
                         isAmount = false;
                     }

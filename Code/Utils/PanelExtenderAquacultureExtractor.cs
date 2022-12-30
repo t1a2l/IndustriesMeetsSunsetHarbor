@@ -3,13 +3,13 @@ using UnityEngine;
 using ColossalFramework.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
-using IndustriesMeetsSunsetHarbor.Utils;
+using IndustriesMeetsSunsetHarbor.UI;
 
-namespace IndustriesMeetsSunsetHarbor
+namespace IndustriesMeetsSunsetHarbor.Utils
 {
     class PanelExtenderAquacultureExtractor : MonoBehaviour
     {
-    
+
         private bool _initialized;
         private CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
         private UIPanel _aquacultureExtractorPanel;
@@ -38,7 +38,8 @@ namespace IndustriesMeetsSunsetHarbor
             UIComponent MainTop = MainSectionPanel?.Find("MainTop");
             UIComponent Right = MainTop?.Find("Right");
             UIComponent Info = Right?.Find("Info");
-            if(Info != null) {
+            if (Info != null)
+            {
                 UIPanel uiPanel = Info.AddUIComponent<UIPanel>();
                 uiPanel.name = "AquacultureExtractorPanel";
                 uiPanel.width = 301f;
@@ -49,7 +50,7 @@ namespace IndustriesMeetsSunsetHarbor
                 uiPanel.autoLayout = true;
                 uiPanel.relativePosition = new Vector3(10f, 224.0f);
                 _aquacultureExtractorPanel = uiPanel;
-                CreateDropDownPanel(); 
+                CreateDropDownPanel();
                 _initialized = true;
             }
         }
@@ -57,7 +58,7 @@ namespace IndustriesMeetsSunsetHarbor
         public void OnDestroy()
         {
             _initialized = false;
-            if(_aquacultureExtractorPanel != null) Destroy(_aquacultureExtractorPanel.gameObject);
+            if (_aquacultureExtractorPanel != null) Destroy(_aquacultureExtractorPanel.gameObject);
         }
 
         private void CreateDropDownPanel()
@@ -74,17 +75,17 @@ namespace IndustriesMeetsSunsetHarbor
             int num1 = 0;
             uiLabel.autoSize = num1 != 0;
             double num2 = 27.0;
-            uiLabel.height = (float) num2;
+            uiLabel.height = (float)num2;
             double num3 = 97.0;
-            uiLabel.width = (float) num3;
+            uiLabel.width = (float)num3;
             int num4 = 1;
-            uiLabel.verticalAlignment = (UIVerticalAlignment) num4;
+            uiLabel.verticalAlignment = (UIVerticalAlignment)num4;
             _aquacultureFarmDropDown = DropDown.Create(uiPanel);
             _aquacultureFarmDropDown.name = "AquacultureFarmDropDown";
             _aquacultureFarmDropDown.height = 27f;
             _aquacultureFarmDropDown.width = 167f;
             _aquacultureFarmDropDown.DropDownPanelAlignParent = _cityServiceWorldInfoPanel.component;
-            _aquacultureFarmDropDown.eventSelectedItemChanged  += OnSelectedAquacultureFarmChanged;
+            _aquacultureFarmDropDown.eventSelectedItemChanged += OnSelectedAquacultureFarmChanged;
 
             // Local references.
             var buildingID = GetBuildingID();
@@ -106,16 +107,16 @@ namespace IndustriesMeetsSunsetHarbor
         }
 
         private void UpdateBindings()
-        { 
+        {
             var buildingID = GetBuildingID();
             Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
             BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
-            
-            if(buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
+
+            if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
                 ushort aquacultureFarmID = CachedAquacultureExtractorData.GetAquacultureFarm(buildingID);
                 var aquacultureFarmNotValid = false;
-                if(!AquacultureFarmManager.IsValidAquacultureFarm(aquacultureFarmID))
+                if (!AquacultureFarmManager.IsValidAquacultureFarm(aquacultureFarmID))
                 {
                     aquacultureFarmNotValid = true;
                 }
@@ -124,7 +125,7 @@ namespace IndustriesMeetsSunsetHarbor
                 else
                     _aquacultureFarmDropDown.SelectedItem = aquacultureFarmID;
 
-                if(aquacultureFarmNotValid)
+                if (aquacultureFarmNotValid)
                 {
                     PopulateAquacultureFarmDropDown();
                 }
@@ -139,9 +140,9 @@ namespace IndustriesMeetsSunsetHarbor
             if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
                 CachedAquacultureExtractorData.SetAquacultureFarm(buildingID, selectedIndex);
-            } 
+            }
         }
-     
+
         private void PopulateAquacultureFarmDropDown()
         {
             _aquacultureFarmDropDown.ClearItems();
@@ -151,7 +152,7 @@ namespace IndustriesMeetsSunsetHarbor
         private string IDToName(ushort buildingID)
         {
             BuildingManager instance = Singleton<BuildingManager>.instance;
-            if ((instance.m_buildings.m_buffer[(int) buildingID].m_flags & Building.Flags.Untouchable) != Building.Flags.None)
+            if ((instance.m_buildings.m_buffer[(int)buildingID].m_flags & Building.Flags.Untouchable) != Building.Flags.None)
             {
                 buildingID = instance.FindBuilding(instance.m_buildings.m_buffer[buildingID].m_position, 100f, ItemClass.Service.None, ItemClass.SubService.None, Building.Flags.Active, Building.Flags.Untouchable);
             }
@@ -160,10 +161,10 @@ namespace IndustriesMeetsSunsetHarbor
 
         public ushort GetBuildingID()
         {
-          InstanceID currentInstanceId = WorldInfoPanel.GetCurrentInstanceID();
-          if (currentInstanceId.Type == InstanceType.Building)
-            return currentInstanceId.Building;
-          return 0;
+            InstanceID currentInstanceId = WorldInfoPanel.GetCurrentInstanceID();
+            if (currentInstanceId.Type == InstanceType.Building)
+                return currentInstanceId.Building;
+            return 0;
         }
 
     }

@@ -23,7 +23,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             {
                 // do not copy attributes marked NonSerialized
                 bool copyField = !fieldInfo.IsDefined(typeof(NonSerializedAttribute), true);
-                
+
                 if (safe && !fieldInfo.IsDefined(typeof(CustomizablePropertyAttribute), true)) copyField = false;
 
                 if (copyField)

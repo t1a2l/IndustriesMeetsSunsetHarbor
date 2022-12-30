@@ -14,7 +14,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static bool _init = false;
         public static AquacultureExtractorData[] _aquacultureExtractorData;
-        
+
         public static void Init()
         {
             if (!TryLoadData(out _aquacultureExtractorData))
@@ -26,7 +26,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 {
                     var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
                     var buildingPosition = BuildingManager.instance.m_buildings.m_buffer[index].m_position;
-                    if(buildingInfo.GetAI() is AquacultureExtractorAI)
+                    if (buildingInfo.GetAI() is AquacultureExtractorAI)
                     {
                         _aquacultureExtractorData[index].AquacultureFarm = AquacultureFarmManager.GetClosestAquacultureFarm(buildingPosition);
                     }
@@ -69,7 +69,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                     bool boolean = BitConverter.ToBoolean(data1, index1);
                     ++index1;
                     ushort uint16 = BitConverter.ToUInt16(data1, index1);
-                    data[(int) aquacultureExtractorID].AquacultureFarm = (int) uint16 != 0
+                    data[(int)aquacultureExtractorID].AquacultureFarm = (int)uint16 != 0
                         ? uint16
                         : AquacultureFarmManager.GetClosestAquacultureFarm(BuildingManager.instance.m_buildings.m_buffer[aquacultureExtractorID].m_position);
                     index1 += 2;
@@ -111,12 +111,12 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             }
             catch (Exception ex)
             {
-                string msg = "Error while saving aquaculture extractor data! " + ex.Message + " " + (object) ex.InnerException;
+                string msg = "Error while saving aquaculture extractor data! " + ex.Message + " " + (object)ex.InnerException;
                 LogHelper.Error(msg);
                 CODebugBase<LogChannel>.Log(LogChannel.Modding, msg, ErrorLevel.Error);
             }
         }
-            
+
         public static ushort GetAquacultureFarm(ushort aquacultureExtractorID)
         {
             return _aquacultureExtractorData[aquacultureExtractorID].AquacultureFarm;
@@ -144,7 +144,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 string[] array = _aquacultureExtractorData[aquacultureExtractorID].Prefabs.ToArray<string>();
                 if (array.Length != 0)
                 {
-                    int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint) array.Length);
+                    int index = Singleton<SimulationManager>.instance.m_randomizer.Int32((uint)array.Length);
                     return array[index];
                 }
             }

@@ -29,8 +29,10 @@ namespace IndustriesMeetsSunsetHarbor
         }
 
 
-        public override void OnLevelLoaded(LoadMode mode) {
-            if (mode != LoadMode.NewGame && mode != LoadMode.LoadGame) {
+        public override void OnLevelLoaded(LoadMode mode)
+        {
+            if (mode != LoadMode.NewGame && mode != LoadMode.LoadGame)
+            {
                 return;
             }
             try
@@ -52,7 +54,7 @@ namespace IndustriesMeetsSunsetHarbor
                 {
                     LogHelper.Error("UIView not found, aborting!");
                 }
-                        
+
             }
             catch (Exception e)
             {
@@ -73,7 +75,7 @@ namespace IndustriesMeetsSunsetHarbor
 
         private void Deinit()
         {
-          BuildingExtensionManager.Deinit();
+            BuildingExtensionManager.Deinit();
         }
 
     }

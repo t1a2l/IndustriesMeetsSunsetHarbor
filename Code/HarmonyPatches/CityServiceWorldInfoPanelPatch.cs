@@ -3,12 +3,15 @@ using ColossalFramework.UI;
 using HarmonyLib;
 using System.Reflection;
 
-namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
+{
 
     [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
-    public static class CityServiceWorldInfoPanelPatch {
+    public static class CityServiceWorldInfoPanelPatch
+    {
         [HarmonyPostfix]
-        public static void Postfix(CityServiceWorldInfoPanel __instance) {
+        public static void Postfix(CityServiceWorldInfoPanel __instance)
+        {
             var m_fishFarmAI = (FishFarmAI)typeof(CityServiceWorldInfoPanel).GetField("m_fishFarmAI", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             var m_outputBuffer = (UIProgressBar)typeof(CityServiceWorldInfoPanel).GetField("m_outputBuffer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             var m_outputLabel = (UILabel)typeof(CityServiceWorldInfoPanel).GetField("m_outputLabel", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
@@ -16,7 +19,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
             var m_outputSprite = (UISprite)typeof(CityServiceWorldInfoPanel).GetField("m_outputSprite", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             var m_ShowIndustryInfoButton = (UIButton)typeof(CityServiceWorldInfoPanel).GetField("m_ShowIndustryInfoButton", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
 
-            if (m_fishFarmAI != null) {
+            if (m_fishFarmAI != null)
+            {
                 m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_fishFarmAI.m_outputResource);
                 string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
                 m_outputLabel.text = text;

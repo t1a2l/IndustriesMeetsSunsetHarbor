@@ -1,25 +1,29 @@
 using HarmonyLib;
 using System;
 
-namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
+{
 
     [HarmonyPatch(typeof(PowerPlantAI), "GetLocalizedStats")]
-    public static class PowerPlantAIPatch {
+    public static class PowerPlantAIPatch
+    {
 
         [HarmonyPrefix]
-        public static bool Prefix() {
+        public static bool Prefix()
+        {
             return false;
         }
 
         [HarmonyPostfix]
-        public static void Postfix(PowerPlantAI __instance, ushort buildingID, ref Building data, ref string __result) {
+        public static void Postfix(PowerPlantAI __instance, ushort buildingID, ref Building data, ref string __result)
+        {
             int electricityRate = __instance.GetElectricityRate(buildingID, ref data);
             string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
             {
                 (electricityRate * 16 + 500) / 1000
             });
             text += Environment.NewLine;
-            if(__instance.m_resourceType != TransferManager.TransferReason.None)
+            if (__instance.m_resourceType != TransferManager.TransferReason.None)
             {
                 string name = __instance.m_resourceType.ToString();
                 name = name.Replace("Grain", "Crops");
