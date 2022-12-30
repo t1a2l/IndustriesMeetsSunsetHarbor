@@ -1,20 +1,21 @@
 using ColossalFramework;
 using UnityEngine;
+using IndustriesMeetsSunsetHarbor.Utils;
 
-namespace IndustriesMeetsSunsetHarbor
+namespace IndustriesMeetsSunsetHarbor.Managers
 { 
     public static class AquacultureFarmManager
     {
         public static void GetStats(ref Building building, out BuildingInfo primatyInfo)
         {
-            var aquacultureFarmAi = building.Info?.m_buildingAI as FishFarmAI;
-            if (aquacultureFarmAi == null)
+            var aquacultureFarmAI = building.Info?.m_buildingAI as FishFarmAI;
+            if (aquacultureFarmAI == null)
             {
                 primatyInfo = null;
             }
             else
             {
-                primatyInfo = aquacultureFarmAi.m_info;
+                primatyInfo = aquacultureFarmAI.m_info;
             }
         }
 
@@ -66,7 +67,7 @@ namespace IndustriesMeetsSunsetHarbor
             ushort closestAquacultureFarm = GetClosestAquacultureFarm(aquacultureExtractoPosition);
             if (closestAquacultureFarm != 0)
             {
-                CachedFishExtractorData.SetFishFarm(aquacultureExtractorID, closestAquacultureFarm);
+                CachedAquacultureExtractorData.SetAquacultureFarm(aquacultureExtractorID, closestAquacultureFarm);
                 LogHelper.Information($"auto assigned aquaculture farm {closestAquacultureFarm} to aquaculture extractor {aquacultureExtractorID}");
             }
             return closestAquacultureFarm;
@@ -77,7 +78,7 @@ namespace IndustriesMeetsSunsetHarbor
             ushort result = 0;
             var previousDistance = float.MaxValue;
             var instance = Singleton<BuildingManager>.instance;
-            var aquacultureFarmIds = BuildingExtensionManager.GetFishFarmsIds();
+            var aquacultureFarmIds = BuildingExtensionManager.GetAquacultureFarmsIds();
             foreach (var aquacultureFarmId in aquacultureFarmIds)
             {
                 var distance = Vector3.Distance(aquacultureExtractoPosition, instance.m_buildings.m_buffer[aquacultureFarmId].m_position);

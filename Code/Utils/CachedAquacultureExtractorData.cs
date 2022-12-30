@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ColossalFramework;
 using IndustriesMeetsSunsetHarbor.AI;
+using IndustriesMeetsSunsetHarbor.Managers;
 
-namespace IndustriesMeetsSunsetHarbor
+namespace IndustriesMeetsSunsetHarbor.Utils
 {
     public static class CachedAquacultureExtractorData
     {
@@ -25,7 +26,7 @@ namespace IndustriesMeetsSunsetHarbor
                 {
                     var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
                     var buildingPosition = BuildingManager.instance.m_buildings.m_buffer[index].m_position;
-                    if(buildingInfo.GetAI() is AquaExtractorAI)
+                    if(buildingInfo.GetAI() is AquacultureExtractorAI)
                     {
                         _aquacultureExtractorData[index].AquacultureFarm = AquacultureFarmManager.GetClosestAquacultureFarm(buildingPosition);
                     }
@@ -88,15 +89,15 @@ namespace IndustriesMeetsSunsetHarbor
 
         private static void OnSaveData()
         {
-            FastList<byte> data = new FastList<byte>();
+            FastList<byte> data = new();
             try
             {
                 SerializableDataExtension.WriteString(_dataVersion, data);
-                for (ushort fishExtractorID = 0; fishExtractorID < 256; ++fishExtractorID)
+                for (ushort aquacultureExtractorID = 0; aquacultureExtractorID < 256; ++aquacultureExtractorID)
                 {
-                    SerializableDataExtension.AddToData(BitConverter.GetBytes(GetFishFarm(fishExtractorID)), data);
+                    SerializableDataExtension.AddToData(BitConverter.GetBytes(GetAquacultureFarm(aquacultureExtractorID)), data);
                     int num = 0;
-                    HashSet<string> prefabs = GetPrefabs(fishExtractorID);
+                    HashSet<string> prefabs = GetPrefabs(aquacultureExtractorID);
                     if (prefabs != null)
                         num = prefabs.Count;
                     SerializableDataExtension.AddToData(BitConverter.GetBytes(num), data);
@@ -110,7 +111,7 @@ namespace IndustriesMeetsSunsetHarbor
             }
             catch (Exception ex)
             {
-                string msg = "Error while saving fish extractor data! " + ex.Message + " " + (object) ex.InnerException;
+                string msg = "Error while saving aquaculture extractor data! " + ex.Message + " " + (object) ex.InnerException;
                 LogHelper.Error(msg);
                 CODebugBase<LogChannel>.Log(LogChannel.Modding, msg, ErrorLevel.Error);
             }
@@ -126,9 +127,9 @@ namespace IndustriesMeetsSunsetHarbor
             _aquacultureExtractorData[aquacultureExtractorID].AquacultureFarm = aquacultureFarmID;
         }
 
-        public static HashSet<string> GetPrefabs(ushort fishExtractorID)
+        public static HashSet<string> GetPrefabs(ushort aquacultureExtractorID)
         {
-            return _aquacultureExtractorData[fishExtractorID].Prefabs;
+            return _aquacultureExtractorData[aquacultureExtractorID].Prefabs;
         }
 
         public static void SetPrefabs(ushort aquacultureExtractorID, HashSet<string> prefabs)

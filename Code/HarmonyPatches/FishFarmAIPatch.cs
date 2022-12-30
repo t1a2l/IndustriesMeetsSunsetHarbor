@@ -8,13 +8,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
     [HarmonyPatch(typeof(FishFarmAI), "ProduceGoods")]
     public static class FishFarmAIPatch {
         private delegate void HandleDeadDelegate(CommonBuildingAI instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount);
-        private static HandleDeadDelegate BaseHandleDead = AccessTools.MethodDelegate<HandleDeadDelegate>(typeof(CommonBuildingAI).GetMethod("HandleDead", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+        private static readonly HandleDeadDelegate BaseHandleDead = AccessTools.MethodDelegate<HandleDeadDelegate>(typeof(CommonBuildingAI).GetMethod("HandleDead", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
         private delegate void CalculateOwnVehiclesDelegate(CommonBuildingAI instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside);
-        private static CalculateOwnVehiclesDelegate BaseCalculateOwnVehicles = AccessTools.MethodDelegate<CalculateOwnVehiclesDelegate>(typeof(CommonBuildingAI).GetMethod("CalculateOwnVehicles", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+        private static readonly CalculateOwnVehiclesDelegate BaseCalculateOwnVehicles = AccessTools.MethodDelegate<CalculateOwnVehiclesDelegate>(typeof(CommonBuildingAI).GetMethod("CalculateOwnVehicles", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
         private delegate void ProduceGoodsDelegate(PlayerBuildingAI instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount);
-        private static ProduceGoodsDelegate BaseProduceGoods = AccessTools.MethodDelegate<ProduceGoodsDelegate>(typeof(PlayerBuildingAI).GetMethod("ProduceGoods", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+        private static readonly ProduceGoodsDelegate BaseProduceGoods = AccessTools.MethodDelegate<ProduceGoodsDelegate>(typeof(PlayerBuildingAI).GetMethod("ProduceGoods", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
         [HarmonyPrefix]
         public static bool Prefix() {
@@ -38,16 +38,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
                 for (int i = 0; i < __instance.m_extractionPositions.Length; i++) {
                     if (shoreLineFishFarm) {
                         Vector3 position = buildingData.CalculatePosition(__instance.m_extractionPositions[i]);
-                        int b;
-                        int num4;
-                        int value;
-                        Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out b, out num4, out value);
+                        Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out int b, out int _, out int value);
                         num += Mathf.Clamp(value, 0, 128); // check if pollution is in range
                         num3 = Mathf.Max(num3, b);
                     } else {
-                        byte buildingGroundPollution;
-                        Singleton<NaturalResourceManager>.instance.CheckPollution(buildingData.m_position, out buildingGroundPollution);
-                        num += Mathf.Clamp((int)buildingGroundPollution, 0, 128); // check if pollution is in range
+                        Singleton<NaturalResourceManager>.instance.CheckPollution(buildingData.m_position, out byte buildingGroundPollution);
+                        num += Mathf.Clamp(buildingGroundPollution, 0, 128); // check if pollution is in range
                         num3 = 1;
                     }
                 }
@@ -126,7 +122,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches {
                     }
                     int num15 = num8;
                     if (num15 >= 8000 && num12 < num11) {
-                        TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer = default;
                         offer.Priority = Mathf.Max(1, num15 * 8 / num7);
                         offer.Building = buildingID;
                         offer.Position = buildingData.m_position;

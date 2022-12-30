@@ -9,12 +9,12 @@ using ColossalFramework.UI;
 using ICities;
 using UnityEngine;
 
-namespace IndustriesSunsetHarborMerged.Utils.Utils
+namespace IndustriesMeetsSunsetHarbor.Utils
 {
   public static class Utils
   {
-    private static readonly string _fileName = "IndustriesSunsetHarborMerged.log";
-    private static readonly string _logPrefix = "IndustriesSunsetHarborMerged: ";
+    private static readonly string _fileName = "IndustriesMeetsSunsetHarbor.log";
+    private static readonly string _logPrefix = "IndustriesMeetsSunsetHarbor: ";
 
       public static string AssemblyPath => PluginInfo.modPath;
 
@@ -41,7 +41,7 @@ namespace IndustriesSunsetHarborMerged.Utils.Utils
 
                   }
               }
-              throw new Exception("Failed to find ImprovedPublicTransportMod assembly!");
+              throw new Exception("Failed to find IndustriesMeetsSunsetHarbor assembly!");
 
           }
       }
@@ -119,22 +119,19 @@ namespace IndustriesSunsetHarborMerged.Utils.Utils
 
     public static float ToSingle(string value)
     {
-      float result = 0.0f;
-      float.TryParse(value, out result);
+      float.TryParse(value, out float result);
       return result;
     }
 
     public static int ToInt32(string value)
     {
-      int result = 0;
-      int.TryParse(value, out result);
+      int.TryParse(value, out int result);
       return result;
     }
 
     public static byte ToByte(string value)
     {
-      byte result = 0;
-      byte.TryParse(value, out result);
+      byte.TryParse(value, out byte result);
       return result;
     }
 

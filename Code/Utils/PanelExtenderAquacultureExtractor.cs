@@ -2,6 +2,8 @@ using ColossalFramework;
 using UnityEngine;
 using ColossalFramework.UI;
 using IndustriesMeetsSunsetHarbor.AI;
+using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor
 {
@@ -13,7 +15,7 @@ namespace IndustriesMeetsSunsetHarbor
         private UIPanel _aquacultureExtractorPanel;
         private DropDown _aquacultureFarmDropDown;
 
-        private void Update()
+        public void Update()
         {
             if (!_initialized)
             {
@@ -52,7 +54,7 @@ namespace IndustriesMeetsSunsetHarbor
             }
         }
 
-        private void OnDestroy()
+        public void OnDestroy()
         {
             _initialized = false;
             if(_aquacultureExtractorPanel != null) Destroy(_aquacultureExtractorPanel.gameObject);
@@ -143,7 +145,7 @@ namespace IndustriesMeetsSunsetHarbor
         private void PopulateAquacultureFarmDropDown()
         {
             _aquacultureFarmDropDown.ClearItems();
-            _aquacultureFarmDropDown.AddItems(BuildingExtensionManager.GetFishFarmsIds(), IDToName);
+            _aquacultureFarmDropDown.AddItems(BuildingExtensionManager.GetAquacultureFarmsIds(), IDToName);
         }
 
         private string IDToName(ushort buildingID)

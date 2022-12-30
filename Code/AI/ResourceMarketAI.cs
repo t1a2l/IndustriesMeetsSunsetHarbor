@@ -234,7 +234,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
         {
-            TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+            TransferManager.TransferOffer offer = default;
             offer.Building = buildingID;
             for (int i = 0; i < m_incomingResources.Length; i++)
             {
@@ -437,7 +437,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         num22 -= num23 >> 1;
                         if (num22 >= 0)
                         {
-                            TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer = default;
                             offer.Priority = num22 * 8 / num23;
                             offer.Building = buildingID;
                             offer.Position = buildingData.m_position;
@@ -456,7 +456,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int num25 = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
                         if (num24 >= 100 && num25 > 0)
                         {
-                            TransferManager.TransferOffer offer2 = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer2 = default;
                             offer2.Priority = Mathf.Max(1, num24 * 8 / goodsCapacity);
                             offer2.Building = buildingID;
                             offer2.Position = buildingData.m_position;

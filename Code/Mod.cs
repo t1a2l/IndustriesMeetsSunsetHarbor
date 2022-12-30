@@ -3,6 +3,8 @@ using ICities;
 using System;
 using UnityEngine;
 using ColossalFramework.UI;
+using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor
 {
@@ -44,7 +46,7 @@ namespace IndustriesMeetsSunsetHarbor
                     _worldInfoPanel.transform.parent = objectOfType.transform;
                     _worldInfoPanel.AddComponent<CityServiceWorldInfoPanel>();
                     BuildingExtensionManager.Init();
-                    _ishmGameObject.AddComponent<PanelExtenderFishExtractor>();
+                    _ishmGameObject.AddComponent<PanelExtenderAquacultureExtractor>();
                 }
                 else
                 {
