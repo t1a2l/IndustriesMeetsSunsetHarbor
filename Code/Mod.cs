@@ -1,10 +1,7 @@
 using CitiesHarmony.API;
 using ICities;
 using System;
-using UnityEngine;
-using ColossalFramework.UI;
 using IndustriesMeetsSunsetHarbor.Managers;
-using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor
 {
@@ -12,8 +9,7 @@ namespace IndustriesMeetsSunsetHarbor
     {
 
         public static bool inGame = false;
-        private GameObject _ishmGameObject;
-        private GameObject _worldInfoPanel;
+
         string IUserMod.Name => "Industries meets Sunset Harbor Mod";
 
         string IUserMod.Description => "Mix Industries and Sunset Harbor together";
@@ -38,28 +34,12 @@ namespace IndustriesMeetsSunsetHarbor
             try
             {
                 inGame = true;
-
-                UIView objectOfType = UnityEngine.Object.FindObjectOfType<UIView>();
-                if (objectOfType != null)
-                {
-                    _ishmGameObject = new GameObject("IsmhGameObject");
-                    _ishmGameObject.transform.parent = objectOfType.transform;
-                    _worldInfoPanel = new GameObject("CityServiceWorldInfoPanel");
-                    _worldInfoPanel.transform.parent = objectOfType.transform;
-                    _worldInfoPanel.AddComponent<CityServiceWorldInfoPanel>();
-                    BuildingExtensionManager.Init();
-                    _ishmGameObject.AddComponent<PanelExtenderAquacultureExtractor>();
-                }
-                else
-                {
-                    LogHelper.Error("UIView not found, aborting!");
-                }
-
+                BuildingExtensionManager.Init();
             }
             catch (Exception e)
             {
                 LogHelper.Information(e.ToString());
-                Deinit();
+                BuildingExtensionManager.Deinit();
             }
         }
 
@@ -69,14 +49,10 @@ namespace IndustriesMeetsSunsetHarbor
             if (!inGame)
                 return;
             inGame = false;
-            Deinit();
+            BuildingExtensionManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 
-        private void Deinit()
-        {
-            BuildingExtensionManager.Deinit();
-        }
 
     }
 
