@@ -136,6 +136,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
             if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
+                var currentAquacultureFarmId = CachedAquacultureExtractorData.GetAquacultureFarm(buildingID);
+                if(currentAquacultureFarmId != 0)
+                {
+                    AquacultureFarmManager.AquacultureFarms[currentAquacultureFarmId].Remove(buildingID);
+                }
+                AquacultureFarmManager.AquacultureFarms[selectedIndex].Add(buildingID);
                 CachedAquacultureExtractorData.SetAquacultureFarm(buildingID, selectedIndex);
             }
         }

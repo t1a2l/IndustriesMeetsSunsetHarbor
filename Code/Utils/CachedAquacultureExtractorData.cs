@@ -28,7 +28,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                     var buildingPosition = BuildingManager.instance.m_buildings.m_buffer[index].m_position;
                     if (buildingInfo.GetAI() is AquacultureExtractorAI)
                     {
-                        _aquacultureExtractorData[index].AquacultureFarm = AquacultureFarmManager.GetClosestAquacultureFarm(buildingPosition);
+                        _aquacultureExtractorData[index].AquacultureFarm = AquacultureFarmManager.GetClosestAquacultureFarm(index);
+                        AquacultureFarmManager.AquacultureFarms[_aquacultureExtractorData[index].AquacultureFarm].Add(index);
                     }
                 }
             }
@@ -71,10 +72,14 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                     ushort uint16 = BitConverter.ToUInt16(data1, index1);
                     data[(int)aquacultureExtractorID].AquacultureFarm = (int)uint16 != 0
                         ? uint16
-                        : AquacultureFarmManager.GetClosestAquacultureFarm(BuildingManager.instance.m_buildings.m_buffer[aquacultureExtractorID].m_position);
+                        : AquacultureFarmManager.GetClosestAquacultureFarm(aquacultureExtractorID);
                     index1 += 2;
                     if (str == "v003")
                         ++index1;
+                    if(data[(int)aquacultureExtractorID].AquacultureFarm != 0)
+                    {
+                        AquacultureFarmManager.AquacultureFarms[data[(int)aquacultureExtractorID].AquacultureFarm].Add(aquacultureExtractorID);
+                    }
                     ++aquacultureExtractorID;
                 }
                 return true;

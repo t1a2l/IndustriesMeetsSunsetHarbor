@@ -34,12 +34,12 @@ namespace IndustriesMeetsSunsetHarbor
             try
             {
                 inGame = true;
-                BuildingExtensionManager.Init();
+                AquacultureFarmManager.Init();
             }
             catch (Exception e)
             {
                 LogHelper.Information(e.ToString());
-                BuildingExtensionManager.Deinit();
+                AquacultureFarmManager.Deinit();
             }
         }
 
@@ -49,7 +49,7 @@ namespace IndustriesMeetsSunsetHarbor
             if (!inGame)
                 return;
             inGame = false;
-            BuildingExtensionManager.Deinit();
+            AquacultureFarmManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 
