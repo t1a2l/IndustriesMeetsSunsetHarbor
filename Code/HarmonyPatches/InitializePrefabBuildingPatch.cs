@@ -14,18 +14,25 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         {
             try
             {
-                if (__instance.m_class.m_service == ItemClass.Service.HealthCare && __instance.name.Contains("Fish Market 01") && __instance.GetAI() is not ResourceMarketAI)
+                if (__instance.m_class.m_service == ItemClass.Service.Fishing && __instance.name.Contains("Fish Market 01") && __instance.GetAI() is not ResourceMarketAI)
                 {
                     var oldAI = __instance.GetComponent<PrefabAI>();
                     Object.DestroyImmediate(oldAI);
                     var newAI = (PrefabAI)__instance.gameObject.AddComponent<ResourceMarketAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
-                else if (__instance.m_class.m_service == ItemClass.Service.HealthCare && (__instance.name.Contains("Aqua Crop Extractor") || __instance.name.Contains("Aqua Fish Extractor")) && __instance.GetAI() is not AquacultureExtractorAI)
+                else if (__instance.m_class.m_service == ItemClass.Service.Fishing && (__instance.name.Contains("Aqua Crop Extractor") || __instance.name.Contains("Aqua Fish Extractor")) && __instance.GetAI() is not AquacultureExtractorAI)
                 {
                     var oldAI = __instance.GetComponent<PrefabAI>();
                     Object.DestroyImmediate(oldAI);
                     var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureExtractorAI>();
+                    PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                }
+                else if (__instance.m_class.m_service == ItemClass.Service.Fishing && __instance.name.Contains("Aquaculture") &&  __instance.name.Contains("Dock") && __instance.GetAI() is not AquacultureFarmAI)
+                {
+                    var oldAI = __instance.GetComponent<PrefabAI>();
+                    Object.DestroyImmediate(oldAI);
+                    var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
             }

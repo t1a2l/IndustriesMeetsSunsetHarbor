@@ -143,7 +143,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private static void PopulateAquacultureFarmDropDown()
         {
             _aquacultureFarmDropDown.ClearItems();
-            _aquacultureFarmDropDown.AddItems(BuildingExtensionManager.GetAquacultureFarmsIds(), IDToName);
+            _aquacultureFarmDropDown.AddItems(AquacultureFarmManager.GetAquacultureFarmsIds(), IDToName);
         }
 
         private static string IDToName(ushort buildingID)
