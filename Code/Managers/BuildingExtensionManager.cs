@@ -9,7 +9,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         public override void OnBuildingCreated(ushort id)
         {
             base.OnBuildingCreated(id);
-            if (!Mod.inGame)
+            if (!IndustriesMeetsSunsetHarborMod.inGame)
             {
                 return;
             }
@@ -19,7 +19,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         public override void OnBuildingReleased(ushort id)
         {
             base.OnBuildingReleased(id);
-            if (!Mod.inGame)
+            if (!IndustriesMeetsSunsetHarborMod.inGame)
             {
                 return;
             }
@@ -30,7 +30,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     continue;
                 }
                 AquacultureFarmManager.GetStats(ref BuildingManager.instance.m_buildings.m_buffer[id], out BuildingInfo primaryInfo);
-                AquacultureFarmManager.OnReleasedForInfo(id, primaryInfo);
             }
         }
     }

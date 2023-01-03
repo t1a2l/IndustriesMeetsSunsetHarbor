@@ -2,10 +2,11 @@ using CitiesHarmony.API;
 using ICities;
 using System;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor
 {
-    public class Mod : LoadingExtensionBase, IUserMod
+    public class IndustriesMeetsSunsetHarborMod : LoadingExtensionBase, IUserMod
     {
 
         public static bool inGame = false;
@@ -35,10 +36,12 @@ namespace IndustriesMeetsSunsetHarbor
             {
                 inGame = true;
                 AquacultureFarmManager.Init();
+                CachedAquacultureExtractorData.Init();
             }
             catch (Exception e)
             {
                 LogHelper.Information(e.ToString());
+                CachedAquacultureExtractorData.Deinit();
                 AquacultureFarmManager.Deinit();
             }
         }
@@ -49,6 +52,7 @@ namespace IndustriesMeetsSunsetHarbor
             if (!inGame)
                 return;
             inGame = false;
+            CachedAquacultureExtractorData.Deinit();
             AquacultureFarmManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }

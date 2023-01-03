@@ -1,6 +1,6 @@
 using ColossalFramework;
 using System;
-using System.Collections.Generic;
+using IndustriesMeetsSunsetHarbor.Managers;
 using System.Reflection;
 using UnityEngine;
 
@@ -20,8 +20,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
         };
 
         public Boolean isAmount = false;
-
-        Dictionary<ushort, ResourceMarketManager.MarketData> MarketBuffers => ResourceMarketManager.Instance.marketBuffers;
 
         int index = 0;
 
@@ -124,7 +122,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             string text = base.GetDebugString(buildingID, ref data);
             TransferManager.TransferReason[] incomingResources = m_incomingResources;
             TransferManager.TransferReason transferReason = TransferManager.TransferReason.Shopping;
-            var marketBuffer = MarketBuffers[buildingID];
+            var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             for (int i = 0; i < incomingResources.Length; i++)
             {
                 int num = 0;
@@ -171,7 +169,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 newMarketData.amountSold1[j] = 0;
                 newMarketData.amountSold2[j] = 0;
             }
-            MarketBuffers.Add(buildingID, newMarketData);
+            ResourceMarketManager.MarketBuffers.Add(buildingID, newMarketData);
         }
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
@@ -189,10 +187,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case TransferManager.TransferReason.ShoppingG:
                 case TransferManager.TransferReason.ShoppingH:
                     {
-                        int outputAmountBuffer = MarketBuffers[buildingID].outputAmountBuffer[index];
+                        int outputAmountBuffer = ResourceMarketManager.MarketBuffers[buildingID].outputAmountBuffer[index];
                         amountDelta = Mathf.Clamp(amountDelta, -outputAmountBuffer, 0);
-                        MarketBuffers[buildingID].outputAmountBuffer[index] = (ushort)(outputAmountBuffer + amountDelta);
-                        MarketBuffers[buildingID].amountSold1[index] = (byte)Mathf.Clamp((int)MarketBuffers[buildingID].amountSold1[index] + (-amountDelta + 99) / 100, 0, 255);
+                        ResourceMarketManager.MarketBuffers[buildingID].outputAmountBuffer[index] = (ushort)(outputAmountBuffer + amountDelta);
+                        ResourceMarketManager.MarketBuffers[buildingID].amountSold1[index] = (byte)Mathf.Clamp((int)ResourceMarketManager.MarketBuffers[buildingID].amountSold1[index] + (-amountDelta + 99) / 100, 0, 255);
                         data.m_outgoingProblemTimer = 0;
                         int num = (-amountDelta * m_goodsSellPrice + 50) / 100;
                         if (num != 0)
@@ -210,15 +208,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             if (material == m_incomingResources[i])
                             {
                                 index = i;
-                                if (!MarketBuffers.ContainsKey(buildingID))
+                                if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
                                 {
                                     AddMarketBufferToBuildingData(buildingID);
                                 }
-                                var marketBuffer = MarketBuffers[buildingID];
+                                var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
                                 int goodsCapacity = m_goodsCapacity;
                                 amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)marketBuffer.inputAmountBuffer[i]);
                                 marketBuffer.inputAmountBuffer[i] = (ushort)((int)marketBuffer.inputAmountBuffer[i] + amountDelta);
-                                MarketBuffers[buildingID] = marketBuffer;
+                                ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
                                 found = true;
                                 break;
                             }
@@ -270,11 +268,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
             float num2 = (float)buildingData.Width * 4f;
             float num3 = (float)buildingData.Length * -4f;
             float num4 = (float)buildingData.Length * 4f;
-            if (!MarketBuffers.ContainsKey(buildingID))
+            if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
             {
                 AddMarketBufferToBuildingData(buildingID);
             }
-            var marketBuffer = MarketBuffers[buildingID];
+            var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             if (m_info.m_subBuildings != null)
             {
                 for (int i = 0; i < m_info.m_subBuildings.Length; i++)
@@ -466,18 +464,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
-                MarketBuffers[buildingID] = marketBuffer;
+                ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
             }
             buildingData.m_problems = problem;
         }
 
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
-            if (!MarketBuffers.ContainsKey(buildingID))
+            if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
             {
                 AddMarketBufferToBuildingData(buildingID);
             }
-            var marketBuffer = MarketBuffers[buildingID];
+            var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             string str = "";
             int num;
             for (int i = 0; i < m_incomingResources.Length; i++)
@@ -502,7 +500,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 str += Environment.NewLine;
             }
             str += Environment.NewLine;
-            MarketBuffers[buildingID] = marketBuffer;
+            ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
             int finalExport = (int)data.m_finalExport;
             return str + LocaleFormatter.FormatGeneric("AIINFO_TOURISTS", new object[]
             {
@@ -513,11 +511,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
             base.SimulationStep(buildingID, ref buildingData, ref frameData);
-            if (!MarketBuffers.ContainsKey(buildingID))
+            if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
             {
                 AddMarketBufferToBuildingData(buildingID);
             }
-            var marketBuffer = MarketBuffers[buildingID];
+            var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             SimulationManager instance = Singleton<SimulationManager>.instance;
             uint num = (instance.m_currentFrameIndex & 3840U) >> 8;
             if (num == 15U)

@@ -21,7 +21,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     var building = BuildingManager.instance.m_buildings.m_buffer[aquacultureExtractorId];
                     Vector3 position = buildingData.CalculatePosition(building.m_position);
-                    Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out var water, out var _, out var pollution);
+                    Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out var water, out _, out var pollution);
                     num += Mathf.Clamp(pollution, 0, 128);
                     num3 = Mathf.Max(num3, water);
                 }
@@ -34,7 +34,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (num2 > 32)
             {
                 GuideController properties = Singleton<GuideManager>.instance.m_properties;
-                if ((object)properties != null)
+                if (properties is object)
                 {
                     Singleton<BuildingManager>.instance.m_fishingPollutionDetected.Activate(properties.m_fishingPollutionDetected, buildingID);
                 }
@@ -65,8 +65,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, num5, buildingData.m_position, m_noiseRadius);
                 }
                 HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount);
-                int num6 = 0;
-                int num7 = 0;
                 int num8 = 0;
                 int num9 = 0;
                 if (m_outputResource != TransferManager.TransferReason.None)
@@ -77,8 +75,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         instance.m_districts.m_buffer[district].m_servicePoliciesEffect |= DistrictPolicies.Services.AlgaeBasedWaterFiltering;
                         num10 = (num10 * 50 + 49) / 100;
                     }
-                    num6 = GetCycleBufferSize(buildingID, ref buildingData);
-                    num7 = buildingData.m_customBuffer1;
+                    int num6 = GetCycleBufferSize(buildingID, ref buildingData);
+                    int num7 = buildingData.m_customBuffer1;
                     num8 = GetStorageBufferSize(buildingID, ref buildingData);
                     num9 = buildingData.m_customBuffer2 * 100;
                     if (num10 >= num6 - num7)

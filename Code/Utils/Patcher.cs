@@ -1,7 +1,7 @@
 using HarmonyLib;
 using System.Reflection;
 
-namespace IndustriesMeetsSunsetHarbor
+namespace IndustriesMeetsSunsetHarbor.Utils
 {
     public static class Patcher
     {

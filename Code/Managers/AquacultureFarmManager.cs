@@ -7,14 +7,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 {
     public static class AquacultureFarmManager
     {
-        public static event AquacultureFarmAdded OnAquacultureFarmAdded;
-        public static event AquacultureFarmRemoved OnAquacultureFarmRemoved;
-
-        public static Dictionary<ushort, HashSet<ushort>> AquacultureFarms;
+        public static Dictionary<ushort, List<ushort>> AquacultureFarms;
 
         public static void Init()
         {
-            AquacultureFarms = new Dictionary<ushort, HashSet<ushort>>();
+            AquacultureFarms = new Dictionary<ushort, List<ushort>>();
             for (ushort index = 0; index < BuildingManager.instance.m_buildings.m_buffer.Length; ++index)
             {
                 ObserveBuilding(index);
@@ -23,7 +20,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Deinit()
         {
-            AquacultureFarms = new Dictionary<ushort, HashSet<ushort>>();
+            AquacultureFarms = new Dictionary<ushort, List<ushort>>();
         }
 
         public static void ObserveBuilding(ushort buildingId)
@@ -38,18 +35,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 return;
             }
-            if (!AquacultureFarms.TryGetValue(buildingId, out HashSet<ushort> aquacultureExtractors))
+            if (!AquacultureFarms.TryGetValue(buildingId, out List<ushort> aquacultureFarmExtractors))
             {
-                aquacultureExtractors = new HashSet<ushort>();
-                AquacultureFarms.Add(buildingId, aquacultureExtractors);
+                aquacultureFarmExtractors = new List<ushort>();
+                AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
             }
             if (AquacultureFarms.ContainsKey(buildingId))
             {
                 return;
             }
-            OnAquacultureFarmAdded?.Invoke(buildingInfo.GetService());
         }
-
 
         public static ushort[] GetAquacultureFarmsIds()
         {
@@ -118,7 +113,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             foreach (var aquacultureFarmId in aquacultureFarmIds)
             {
                 Building aquacultureFarmBuilding = instance.m_buildings.m_buffer[aquacultureFarmId];
-                if(checkIfSameAquacultureType(aquacultureFarmBuilding.Info, aquacultureExtractorBuilding.Info))
+                if(CheckIfSameAquacultureType(aquacultureFarmBuilding.Info, aquacultureExtractorBuilding.Info))
                 {
                     var distance = Vector3.Distance(aquacultureExtractorBuilding.m_position, aquacultureFarmBuilding.m_position);
                     if (!(distance < (double)previousDistance))
@@ -132,7 +127,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             return result;
         }
 
-        public static bool checkIfSameAquacultureType(BuildingInfo aquacultureFarm, BuildingInfo aquacultureExtractor)
+        public static bool CheckIfSameAquacultureType(BuildingInfo aquacultureFarm, BuildingInfo aquacultureExtractor)
         {
             if(aquacultureFarm.name.Contains("Algae") && aquacultureExtractor.name.Contains("Algae"))
             {
@@ -153,17 +148,19 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             return false;
         }
 
-        public static void OnReleasedForInfo(ushort _, BuildingInfo buildingInfo)
+        public static ushort GetAquacultureFarm(ushort extractorId)
         {
-            if (buildingInfo == null)
+            ushort farmId = 0;
+            foreach(var aquacultureFarm in AquacultureFarms)
             {
-                return;
+                var extractorsList = aquacultureFarm.Value;
+                farmId = extractorsList.Find(item => item == extractorId);
+                if(farmId != 0)
+                {
+                    break;
+                }
             }
-            OnAquacultureFarmRemoved?.Invoke(buildingInfo.GetService());
+            return farmId;
         }
-
-        public delegate void AquacultureFarmAdded(ItemClass.Service service);
-
-        public delegate void AquacultureFarmRemoved(ItemClass.Service service);
     }
 }

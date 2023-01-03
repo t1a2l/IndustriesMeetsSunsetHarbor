@@ -6,7 +6,6 @@ using System.Reflection;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
-using IndustriesMeetsSunsetHarbor.Utils;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -75,20 +74,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
             if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
-                ushort aquacultureFarmID = CachedAquacultureExtractorData.GetAquacultureFarm(buildingID);
+                ushort aquacultureFarmID = AquacultureFarmManager.GetAquacultureFarm(buildingID);
                 var aquacultureFarmNotValid = false;
                 if (!AquacultureFarmManager.IsValidAquacultureFarm(aquacultureFarmID))
                 {
                     aquacultureFarmNotValid = true;
                 }
                 if (_aquacultureFarmDropDown.Items.Length == 0)
+                {
                     _aquacultureFarmDropDown.Text = "No Aquaculture Farms Found";
+                }
                 else
                 {
                     _aquacultureFarmDropDown.SelectedItem = aquacultureFarmID;
                      // aquaculture building - show the label.
                     _aquacultureExtractorPanel.Show();
-            
                 }
                 if (aquacultureFarmNotValid)
                 {
@@ -136,13 +136,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
             if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
-                var currentAquacultureFarmId = CachedAquacultureExtractorData.GetAquacultureFarm(buildingID);
-                if(currentAquacultureFarmId != 0)
-                {
-                    AquacultureFarmManager.AquacultureFarms[currentAquacultureFarmId].Remove(buildingID);
-                }
-                AquacultureFarmManager.AquacultureFarms[selectedIndex].Add(buildingID);
-                CachedAquacultureExtractorData.SetAquacultureFarm(buildingID, selectedIndex);
+                var extractorId = buildingID;
+                var aquacultureFarm = AquacultureFarmManager.GetAquacultureFarm(extractorId);
+                AquacultureFarmManager.AquacultureFarms[aquacultureFarm].Remove(extractorId);
+                AquacultureFarmManager.AquacultureFarms[selectedIndex].Add(extractorId);
             }
         }
 
