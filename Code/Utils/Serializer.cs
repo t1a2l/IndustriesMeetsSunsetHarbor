@@ -14,8 +14,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
         public const ushort DataVersion = 1;
         public const string DataID = "IndustriesMeetsSunsetHarbor";
 
-        public static Serializer? instance = null;
-        private ISerializableData? m_serializableData = null;
+        public static Serializer instance = null;
+        private ISerializableData m_serializableData = null;
 
         public void OnCreated(ISerializableData serializedData)
         {
