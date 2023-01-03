@@ -36,12 +36,10 @@ namespace IndustriesMeetsSunsetHarbor
             {
                 inGame = true;
                 AquacultureFarmManager.Init();
-                CachedAquacultureExtractorData.Init();
             }
             catch (Exception e)
             {
                 LogHelper.Information(e.ToString());
-                CachedAquacultureExtractorData.Deinit();
                 AquacultureFarmManager.Deinit();
             }
         }
@@ -52,7 +50,6 @@ namespace IndustriesMeetsSunsetHarbor
             if (!inGame)
                 return;
             inGame = false;
-            CachedAquacultureExtractorData.Deinit();
             AquacultureFarmManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }

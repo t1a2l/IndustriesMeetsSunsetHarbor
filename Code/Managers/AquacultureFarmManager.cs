@@ -35,9 +35,9 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 return;
             }
-            if (!AquacultureFarms.TryGetValue(buildingId, out List<ushort> aquacultureFarmExtractors))
+            if (!AquacultureFarms.TryGetValue(buildingId, out List<ushort> _))
             {
-                aquacultureFarmExtractors = new List<ushort>();
+                var aquacultureFarmExtractors = new List<ushort>();
                 AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
             }
             if (AquacultureFarms.ContainsKey(buildingId))

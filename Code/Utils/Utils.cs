@@ -30,7 +30,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                     try
                     {
                         var instances = item.GetInstances<IUserMod>();
-                        if (!(instances.FirstOrDefault() is Mod))
+                        if (!(instances.FirstOrDefault() is IndustriesMeetsSunsetHarborMod))
                         {
                             continue;
                         }

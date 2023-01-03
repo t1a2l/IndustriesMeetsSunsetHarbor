@@ -117,7 +117,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num12 = num9;
                     if (num12 >= 8000 && count < num11)
                     {
-                        TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer = default;
                         offer.Priority = Mathf.Max(1, num12 * 8 / num8);
                         offer.Building = buildingID;
                         offer.Position = buildingData.m_position;

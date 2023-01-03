@@ -177,7 +177,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static List<ushort> ReadList(byte[] Data, ref int iIndex)
         {
-            List<ushort> list = new List<ushort>();
+            List<ushort> list = new();
             if (Data.Length > iIndex + 4)
             {
                 int iArrayCount = ReadInt32(Data, ref iIndex);
@@ -213,7 +213,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             for (int index1 = 0; index1 < num; ++index1)
             {
                 empty += BitConverter.ToChar(data, index).ToString();
-                index = index + 2;
+                index += 2;
             }
             return empty;
         }
