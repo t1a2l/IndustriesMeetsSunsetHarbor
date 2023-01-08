@@ -38,7 +38,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                LogHelper.Error(e.ToString());
             }
         }
 

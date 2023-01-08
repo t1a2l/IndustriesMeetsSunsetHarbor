@@ -39,7 +39,7 @@ namespace IndustriesMeetsSunsetHarbor
             }
             catch (Exception e)
             {
-                LogHelper.Information(e.ToString());
+                LogHelper.Error(e.ToString());
                 AquacultureFarmManager.Deinit();
             }
         }

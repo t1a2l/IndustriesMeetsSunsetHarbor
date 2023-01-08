@@ -207,8 +207,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.LogError($"Failed to detect if mod {modId} is active");
-                UnityEngine.Debug.LogException(e);
+                LogHelper.Error($"Failed to detect if mod {modId} is active");
+                LogHelper.Error(e.ToString());
                 return false;
             }
         }
