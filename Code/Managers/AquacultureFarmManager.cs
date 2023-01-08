@@ -39,6 +39,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 var aquacultureFarmExtractors = new List<ushort>();
                 AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
+
             }
             if (AquacultureFarms.ContainsKey(buildingId))
             {
