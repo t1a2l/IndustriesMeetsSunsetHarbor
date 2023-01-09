@@ -1,6 +1,5 @@
 using ICities;
 using IndustriesMeetsSunsetHarbor.AI;
-using IndustriesMeetsSunsetHarbor.UI;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
@@ -45,7 +44,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     }
                 }
                 AquacultureFarmManager.AquacultureFarms.Remove(buildingId);
-                AquacultureExtractorPanel.PopulateAquacultureFarmDropDown();
             }
 
             

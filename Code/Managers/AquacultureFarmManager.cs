@@ -2,7 +2,6 @@ using ColossalFramework;
 using System.Collections.Generic;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
-using IndustriesMeetsSunsetHarbor.UI;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
@@ -40,7 +39,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 var aquacultureFarmExtractors = new List<ushort>();
                 AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
-                AquacultureExtractorPanel.PopulateAquacultureFarmDropDown();
             }
             if (AquacultureFarms.ContainsKey(buildingId))
             {
@@ -48,10 +46,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        public static ushort[] GetAquacultureFarmsIds()
+        public static ushort[] GetAquacultureFarmsIds(ushort extractorId) // get all farms of the same type of the extractor
         {
-            List<ushort> AquacultureFarms = new();
+            List<ushort> AquacultureFarmsIds = new();
             BuildingManager instance2 = Singleton<BuildingManager>.instance;
+            var extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorId].Info;
             int length = instance2.m_buildings.m_buffer.Length;
             for (ushort index = 0; index < length; ++index)
             {
@@ -60,12 +59,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 {
                     if (IsValidAquacultureFarm(index))
                     {
-                        AquacultureFarms.Add(index);
+                        if(CheckIfSameAquacultureType(buildingInfo, extractorInfo))
+                        {
+                             AquacultureFarmsIds.Add(index);
+                        }
                     }
                 }
             }
-
-            return AquacultureFarms.ToArray();
+            return AquacultureFarmsIds.ToArray();
         }
 
         public static void GetStats(ref Building building, out BuildingInfo primatyInfo)
@@ -110,21 +111,19 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             ushort result = 0;
             var previousDistance = float.MaxValue;
             var instance = Singleton<BuildingManager>.instance;
-            var aquacultureFarmIds = GetAquacultureFarmsIds();
-            Building aquacultureExtractorBuilding = instance.m_buildings.m_buffer[aquacultureExtractorId];
+            var aquacultureFarmIds = GetAquacultureFarmsIds(aquacultureExtractorId);
+            var aquacultureExtractor = BuildingManager.instance.m_buildings.m_buffer[aquacultureExtractorId];
             foreach (var aquacultureFarmId in aquacultureFarmIds)
             {
-                Building aquacultureFarmBuilding = instance.m_buildings.m_buffer[aquacultureFarmId];
-                if(CheckIfSameAquacultureType(aquacultureFarmBuilding.Info, aquacultureExtractorBuilding.Info))
+                Building aquacultureFarm = instance.m_buildings.m_buffer[aquacultureFarmId];
+                var distance = Vector3.Distance(aquacultureExtractor.m_position, aquacultureFarm.m_position);
+                if (!(distance < (double)previousDistance))
                 {
-                    var distance = Vector3.Distance(aquacultureExtractorBuilding.m_position, aquacultureFarmBuilding.m_position);
-                    if (!(distance < (double)previousDistance))
-                    {
-                        continue;
-                    }
-                    result = aquacultureFarmId;
-                    previousDistance = distance;
+                    continue;
                 }
+                result = aquacultureFarmId;
+                previousDistance = distance;
+                
             }
             return result;
         }

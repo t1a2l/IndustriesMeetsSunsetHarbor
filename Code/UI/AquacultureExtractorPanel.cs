@@ -36,7 +36,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 _aquacultureFarmDropDown = UIDropDowns.AddLabelledDropDown(_aquacultureExtractorPanel, _aquacultureExtractorPanel.width, 160f, "Aquaculture Farm:");
                 _aquacultureFarmDropDown.eventSelectedIndexChanged += ChangeSelectedFarm;
                 buttonPanels.AttachUIComponent(_aquacultureExtractorPanel.gameObject);
-                PopulateAquacultureFarmDropDown();
+                
             }
         }
 
@@ -44,17 +44,19 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             var extractorId = GetBuildingID();
             var aquacultureFarm = AquacultureFarmManager.GetAquacultureFarm(extractorId);
-            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarm))
-            {
-                AquacultureFarmManager.AquacultureFarms[aquacultureFarm].Remove(extractorId);
-            }
-            var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds();
+            var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds(extractorId);
             var chosenAquacultureFarm = aquacultureFarms[index];
-            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(chosenAquacultureFarm))
+            if(aquacultureFarm != 0) // if extractor already belong to other farm - remove it 
+            {
+                if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarm))
+                {
+                    AquacultureFarmManager.AquacultureFarms[aquacultureFarm].Remove(extractorId);
+                }
+            }
+            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(chosenAquacultureFarm)) // add extractor to new farm
             {
                 AquacultureFarmManager.AquacultureFarms[chosenAquacultureFarm].Add(extractorId);
-            }
-            
+            }         
         } 
 
         public static void ExtractorDropdownCheck()
@@ -62,9 +64,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             var buildingID = GetBuildingID();
             Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
             BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
-
             if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
+                var aquacultureFarmsIds = AquacultureFarmManager.GetAquacultureFarmsIds(buildingID);
+                PopulateAquacultureFarmDropDown(aquacultureFarmsIds);
                 if (_aquacultureFarmDropDown.items.Length == 0)
                 {
                     _aquacultureFarmDropDown.text = "No Aquaculture Farms Found";
@@ -72,30 +75,33 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 else
                 {
                     ushort aquacultureFarmID = AquacultureFarmManager.GetAquacultureFarm(buildingID);
-                    var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds();
-                    var selectedIndex = Array.FindIndex<ushort>(aquacultureFarms, item => item == aquacultureFarmID);
-                    _aquacultureFarmDropDown.selectedIndex = selectedIndex;
-                     // aquaculture building - show the label.
-                    _aquacultureExtractorPanel.Show();
+                    if(aquacultureFarmID != 0)
+                    {
+                        var selectedIndex = Array.FindIndex<ushort>(aquacultureFarmsIds, item => item == aquacultureFarmID);
+                        if(selectedIndex != -1)
+                        {
+                            _aquacultureFarmDropDown.selectedIndex = selectedIndex;
+                        }
+                    }
                 }
+                _aquacultureExtractorPanel.Show();
             }
             else
             {
-                // Not a aquaculture building - hide the dropdown.
+                // Not a aquaculture extractor - hide the dropdown.
                 _aquacultureExtractorPanel.Hide();
             }
         }
 
-        public static void PopulateAquacultureFarmDropDown()
+        public static void PopulateAquacultureFarmDropDown(ushort[] aquacultureFarmsIds)
         {
             if(_aquacultureFarmDropDown.items != null && _aquacultureFarmDropDown.items.Length > 0)
             {
                 Array.Clear(_aquacultureFarmDropDown.items, 0, _aquacultureFarmDropDown.items.Length);
             }
-            var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds();
-            if(aquacultureFarms != null && aquacultureFarms.Length > 0)
+            if(aquacultureFarmsIds != null && aquacultureFarmsIds.Length > 0)
             {
-                _aquacultureFarmDropDown.items = aquacultureFarms.Select(x => IDToName(x)).ToArray();
+                _aquacultureFarmDropDown.items = aquacultureFarmsIds.Select(x => IDToName(x)).ToArray();
             }
         }
 
