@@ -139,7 +139,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 	    int customBuffer = data.m_customBuffer1;
 	    float num = Mathf.Clamp(5 * customBuffer / cycleBufferSize + 1, 1, 5);
 	    string text = LocaleFormatter.FormatGeneric("INFO_FISH_FARM_STATS", num, 5) + Environment.NewLine;
-            int extractors_count = AquacultureFarmManager.AquacultureFarms[buildingID].Count;
+           
 	    if (m_outputResource != TransferManager.TransferReason.None && m_outputVehicleCount != 0)
 	    {
 		int budget = GetBudget(buildingID, ref data);
@@ -151,7 +151,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
 		int outside = 0;
 		CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
 		text += LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", count, num2);
-                text += string.Format("Number of Extractors used: {0}", extractors_count);
+                if(AquacultureFarmManager.AquacultureFarms.ContainsKey(buildingID))
+                {
+                    int extractors_count = AquacultureFarmManager.AquacultureFarms[buildingID].Count;
+                    text += Environment.NewLine;
+                    text += string.Format("Number of Extractors used: {0}", extractors_count);
+                }
 	    }
 	    return text;
 	}
