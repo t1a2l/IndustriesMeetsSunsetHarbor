@@ -1,6 +1,7 @@
 using ColossalFramework;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.Managers;
+using System;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -132,5 +133,27 @@ namespace IndustriesMeetsSunsetHarbor.AI
             base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
         }
 
+        public override string GetLocalizedStats(ushort buildingID, ref Building data)
+	{
+	    int cycleBufferSize = GetCycleBufferSize(buildingID, ref data);
+	    int customBuffer = data.m_customBuffer1;
+	    float num = Mathf.Clamp(5 * customBuffer / cycleBufferSize + 1, 1, 5);
+	    string text = LocaleFormatter.FormatGeneric("INFO_FISH_FARM_STATS", num, 5) + Environment.NewLine;
+            int extractors_count = AquacultureFarmManager.AquacultureFarms[buildingID].Count;
+	    if (m_outputResource != TransferManager.TransferReason.None && m_outputVehicleCount != 0)
+	    {
+		int budget = GetBudget(buildingID, ref data);
+		int productionRate = PlayerBuildingAI.GetProductionRate(100, budget);
+		int num2 = (productionRate * m_outputVehicleCount + 99) / 100;
+		int count = 0;
+		int cargo = 0;
+		int capacity = 0;
+		int outside = 0;
+		CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
+		text += LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", count, num2);
+                text += string.Format("Number of Extractors used: {0}", extractors_count);
+	    }
+	    return text;
+	}
     }
 }
