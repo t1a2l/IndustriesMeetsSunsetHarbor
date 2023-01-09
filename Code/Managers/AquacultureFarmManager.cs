@@ -158,10 +158,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 farmId = extractorsList.Find(item => item == extractorId);
                 if(farmId != 0)
                 {
-                    break;
+                   return aquacultureFarm.Key;
                 }
             }
-            return farmId;
+            return 0;
         }
     }
 }

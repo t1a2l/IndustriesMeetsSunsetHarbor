@@ -43,19 +43,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private static void ChangeSelectedFarm(UIComponent c, int index)
         {
             var extractorId = GetBuildingID();
-            var aquacultureFarm = AquacultureFarmManager.GetAquacultureFarm(extractorId);
-            var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds(extractorId);
-            var chosenAquacultureFarm = aquacultureFarms[index];
-            if(aquacultureFarm != 0) // if extractor already belong to other farm - remove it 
+            var aquacultureFarmId = AquacultureFarmManager.GetAquacultureFarm(extractorId);
+            LogHelper.Information("the aquacultureFarm id is: {0}, name is: {1}", aquacultureFarmId, IDToName(aquacultureFarmId));
+            var aquacultureFarmsIds = AquacultureFarmManager.GetAquacultureFarmsIds(extractorId);
+            var chosenAquacultureFarmId = aquacultureFarmsIds[index];
+            if(aquacultureFarmId != 0) // if extractor already belong to other farm - remove it 
             {
-                if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarm))
+                if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarmId))
                 {
-                    AquacultureFarmManager.AquacultureFarms[aquacultureFarm].Remove(extractorId);
+                    AquacultureFarmManager.AquacultureFarms[aquacultureFarmId].Remove(extractorId);
+                    LogHelper.Information("extractor removed from list farm id - {0}, farm name: {1}", aquacultureFarmId, IDToName(aquacultureFarmId));
                 }
             }
-            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(chosenAquacultureFarm)) // add extractor to new farm
+            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(chosenAquacultureFarmId)) // add extractor to new farm
             {
-                AquacultureFarmManager.AquacultureFarms[chosenAquacultureFarm].Add(extractorId);
+                AquacultureFarmManager.AquacultureFarms[chosenAquacultureFarmId].Add(extractorId);
+                LogHelper.Information("extractor add to list farm id - {0}, farm name: {1}", chosenAquacultureFarmId, IDToName(chosenAquacultureFarmId));
             }         
         } 
 
