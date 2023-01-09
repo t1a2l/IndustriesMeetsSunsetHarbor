@@ -36,7 +36,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 _aquacultureFarmDropDown = UIDropDowns.AddLabelledDropDown(_aquacultureExtractorPanel, _aquacultureExtractorPanel.width, 160f, "Aquaculture Farm:");
                 _aquacultureFarmDropDown.eventSelectedIndexChanged += ChangeSelectedFarm;
                 buttonPanels.AttachUIComponent(_aquacultureExtractorPanel.gameObject);
-                
             }
         }
 
@@ -78,13 +77,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 else
                 {
                     ushort aquacultureFarmID = AquacultureFarmManager.GetAquacultureFarm(buildingID);
-                    if(aquacultureFarmID != 0)
+                    if(aquacultureFarmID == 0)
                     {
-                        var selectedIndex = Array.FindIndex<ushort>(aquacultureFarmsIds, item => item == aquacultureFarmID);
-                        if(selectedIndex != -1)
-                        {
-                            _aquacultureFarmDropDown.selectedIndex = selectedIndex;
-                        }
+                         aquacultureFarmID = AquacultureFarmManager.GetClosestAquacultureFarm(buildingID);
+                    }
+                    var selectedIndex = Array.FindIndex<ushort>(aquacultureFarmsIds, item => item == aquacultureFarmID);
+                    if(selectedIndex != -1)
+                    {
+                        _aquacultureFarmDropDown.selectedIndex = selectedIndex;
                     }
                 }
                 _aquacultureExtractorPanel.Show();
