@@ -8,60 +8,54 @@ using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
-    public class AquacultureExtractorPanel : UIPanel
+    public static class AquacultureExtractorPanel
     {
         private static CityServiceWorldInfoPanel _cityServiceWorldInfoPanel;
-        private static UIPanel _aquacultureExtractorPanel;
+        public static UIPanel _aquacultureExtractorPanel;
         private static UIDropDown _aquacultureFarmDropDown;
 
-        public override  void Start()
+        public static void Init()
         {
-            base.Start();
-            if(_aquacultureExtractorPanel == null || _aquacultureFarmDropDown == null)
+            _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
+            if (!(_cityServiceWorldInfoPanel != null)) return;
+            UIComponent wrapper = _cityServiceWorldInfoPanel?.Find("Wrapper");
+            UIComponent mainSectionPanel = wrapper?.Find("MainSectionPanel");
+            UIComponent mainBottom = mainSectionPanel?.Find("MainBottom");
+            UIComponent buttonPanels = mainBottom?.Find("ButtonPanels");
+            if (buttonPanels != null)
             {
-                _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
-                if (!(_cityServiceWorldInfoPanel != null)) return;
-                UIComponent wrapper = _cityServiceWorldInfoPanel?.Find("Wrapper");
-                UIComponent mainSectionPanel = wrapper?.Find("MainSectionPanel");
-                UIComponent mainBottom = mainSectionPanel?.Find("MainBottom");
-                UIComponent buttonPanels = mainBottom?.Find("ButtonPanels");
-                if (buttonPanels != null)
-                {
-                    _aquacultureExtractorPanel = buttonPanels.AddUIComponent<UIPanel>();
-                    _aquacultureExtractorPanel.name = "AquacultureExtractorPanel";
-                    _aquacultureExtractorPanel.width = 301f;
-                    _aquacultureExtractorPanel.height = 166f;
-                    _aquacultureExtractorPanel.autoLayoutDirection = LayoutDirection.Vertical;
-                    _aquacultureExtractorPanel.autoLayoutStart = LayoutStart.TopLeft;
-                    _aquacultureExtractorPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
-                    _aquacultureExtractorPanel.autoLayout = true;
-                    _aquacultureExtractorPanel.relativePosition = new Vector3(10f, 224.0f);
-                    _aquacultureFarmDropDown = UIDropDowns.AddLabelledDropDown(_aquacultureExtractorPanel, _aquacultureExtractorPanel.width, 160f, "Aquaculture Farm:");
-                    _aquacultureFarmDropDown.eventSelectedIndexChanged += delegate (UIComponent c, int index)
-                    {
-                        var buildingID = GetBuildingID();
-                        Building[] buildingBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
-                        BuildingInfo buildingInfo = buildingBuffer[buildingID].Info;
-                        if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
-                        {
-                            var extractorId = buildingID;
-                            var aquacultureFarm = AquacultureFarmManager.GetAquacultureFarm(extractorId);
-                            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarm))
-                            {
-                                AquacultureFarmManager.AquacultureFarms[aquacultureFarm].Remove(extractorId);
-                            }
-                            var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds();
-                            var chosenAquacultureFarm = aquacultureFarms[index];
-                            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(chosenAquacultureFarm))
-                            {
-                                 AquacultureFarmManager.AquacultureFarms[chosenAquacultureFarm].Add(extractorId);
-                            }
-                        }
-                    };
-                    buttonPanels.AttachUIComponent(_aquacultureExtractorPanel.gameObject);
-                }
+                _aquacultureExtractorPanel = buttonPanels.AddUIComponent<UIPanel>();
+                _aquacultureExtractorPanel.name = "AquacultureExtractorPanel";
+                _aquacultureExtractorPanel.width = 301f;
+                _aquacultureExtractorPanel.height = 166f;
+                _aquacultureExtractorPanel.autoLayoutDirection = LayoutDirection.Vertical;
+                _aquacultureExtractorPanel.autoLayoutStart = LayoutStart.TopLeft;
+                _aquacultureExtractorPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
+                _aquacultureExtractorPanel.autoLayout = true;
+                _aquacultureExtractorPanel.relativePosition = new Vector3(10f, 224.0f);
+                _aquacultureFarmDropDown = UIDropDowns.AddLabelledDropDown(_aquacultureExtractorPanel, _aquacultureExtractorPanel.width, 160f, "Aquaculture Farm:");
+                _aquacultureFarmDropDown.eventSelectedIndexChanged += ChangeSelectedFarm;
+                buttonPanels.AttachUIComponent(_aquacultureExtractorPanel.gameObject);
+                PopulateAquacultureFarmDropDown();
             }
         }
+
+        private static void ChangeSelectedFarm(UIComponent c, int index)
+        {
+            var extractorId = GetBuildingID();
+            var aquacultureFarm = AquacultureFarmManager.GetAquacultureFarm(extractorId);
+            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarm))
+            {
+                AquacultureFarmManager.AquacultureFarms[aquacultureFarm].Remove(extractorId);
+            }
+            var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds();
+            var chosenAquacultureFarm = aquacultureFarms[index];
+            if(AquacultureFarmManager.AquacultureFarms.ContainsKey(chosenAquacultureFarm))
+            {
+                AquacultureFarmManager.AquacultureFarms[chosenAquacultureFarm].Add(extractorId);
+            }
+            
+        } 
 
         public static void ExtractorDropdownCheck()
         {
@@ -71,27 +65,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
             if (buildingID != 0 && buildingInfo.GetAI() is AquacultureExtractorAI)
             {
-                ushort aquacultureFarmID = AquacultureFarmManager.GetAquacultureFarm(buildingID);
-                var aquacultureFarmNotValid = false;
-                if (!AquacultureFarmManager.IsValidAquacultureFarm(aquacultureFarmID))
-                {
-                    aquacultureFarmNotValid = true;
-                }
                 if (_aquacultureFarmDropDown.items.Length == 0)
                 {
                     _aquacultureFarmDropDown.text = "No Aquaculture Farms Found";
                 }
                 else
                 {
+                    ushort aquacultureFarmID = AquacultureFarmManager.GetAquacultureFarm(buildingID);
                     var aquacultureFarms = AquacultureFarmManager.GetAquacultureFarmsIds();
                     var selectedIndex = Array.FindIndex<ushort>(aquacultureFarms, item => item == aquacultureFarmID);
                     _aquacultureFarmDropDown.selectedIndex = selectedIndex;
                      // aquaculture building - show the label.
                     _aquacultureExtractorPanel.Show();
-                }
-                if (aquacultureFarmNotValid)
-                {
-                    PopulateAquacultureFarmDropDown();
                 }
             }
             else

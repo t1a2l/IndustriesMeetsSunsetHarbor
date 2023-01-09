@@ -29,13 +29,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_fishFarmAI.m_outputResource, false);
                 m_ShowIndustryInfoButton.isVisible = false;
             }
-        }
 
-        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
-        [HarmonyPostfix]
-        public static void UpdateBindings()
-	{
+            if(AquacultureExtractorPanel._aquacultureExtractorPanel == null)
+            {
+                AquacultureExtractorPanel.Init();
+            }
+
             AquacultureExtractorPanel.ExtractorDropdownCheck();
+
         }
 
     }

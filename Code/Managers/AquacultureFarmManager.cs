@@ -2,6 +2,7 @@ using ColossalFramework;
 using System.Collections.Generic;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
+using IndustriesMeetsSunsetHarbor.UI;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
@@ -39,7 +40,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 var aquacultureFarmExtractors = new List<ushort>();
                 AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
-
+                AquacultureExtractorPanel.PopulateAquacultureFarmDropDown();
             }
             if (AquacultureFarms.ContainsKey(buildingId))
             {
