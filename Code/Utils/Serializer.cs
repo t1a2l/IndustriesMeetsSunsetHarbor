@@ -36,6 +36,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
                     if(AquacultureFarmManager.AquacultureFarms != null)
                     {
+                        StorageData.WriteUInt32(uiTUPLE_START, Data);
+
                         StorageData.WriteUInt16(AquacultureFarmManager.AquacultureFarms.Count, Data);
 
                         // Write out each buildings settings
@@ -114,6 +116,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
                         if (SaveGameFileVersion <= DataVersion)
                         {
+                            CheckStartTuple(DataID, DataVersion, Data, ref Index);
+
                             var AquacultureFarms_Count = StorageData.ReadUInt16(Data, ref Index);
 
                             for (int i = 0; i < AquacultureFarms_Count; i++)
@@ -182,7 +186,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 string sErrorMessage = "Loading of Industries Meets Sunset Harbor save game settings failed with the following error:\r\n";
                 sErrorMessage += "\r\n";
                 sErrorMessage += ex.Message;
-                LogHelper.Error("Industries Meets Sunset Harbor", sErrorMessage);
+                LogHelper.Error(sErrorMessage);
             }
         }
 
