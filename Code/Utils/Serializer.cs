@@ -25,113 +25,164 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public void OnSaveData()
         {
-            FastList<byte> Data = new();
-
-            StorageData.WriteUInt32(uiTUPLE_START, Data);
-            // Write out metadata
-            StorageData.WriteUInt16(DataVersion, Data);
-            StorageData.WriteUInt16(AquacultureFarmManager.AquacultureFarms.Count, Data);
-
-            // Write out each buildings settings
-            foreach (KeyValuePair<ushort, List<ushort>> kvp in AquacultureFarmManager.AquacultureFarms)
+            LogHelper.Information("OnSaveData - Start");
+            try
             {
-                // Write start tuple
-                StorageData.WriteUInt32(uiTUPLE_START, Data);
+                if (m_serializableData != null)
+                {
+                    FastList<byte> Data = new();
 
-                // Write actual settings
-                StorageData.WriteUInt16(kvp.Key, Data);
-                StorageData.WriteList(kvp.Value, Data);
+                    StorageData.WriteUInt16(DataVersion, Data);
 
-                // Write end tuple
-                StorageData.WriteUInt32(uiTUPLE_END, Data);
+                    if(AquacultureFarmManager.AquacultureFarms != null)
+                    {
+                        StorageData.WriteUInt16(AquacultureFarmManager.AquacultureFarms.Count, Data);
+
+                        // Write out each buildings settings
+                        foreach (KeyValuePair<ushort, List<ushort>> kvp in AquacultureFarmManager.AquacultureFarms)
+                        {
+                            // Write start tuple
+                            StorageData.WriteUInt32(uiTUPLE_START, Data);
+
+                            // Write actual settings
+                            StorageData.WriteUInt16(kvp.Key, Data);
+                            StorageData.WriteList(kvp.Value, Data);
+
+                            // Write end tuple
+                            StorageData.WriteUInt32(uiTUPLE_END, Data);
+                        }
+
+                        StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    }
+                    if(ResourceMarketManager.MarketBuffers != null)
+                    {
+                        StorageData.WriteUInt32(uiTUPLE_START, Data);
+
+                        StorageData.WriteUInt16(ResourceMarketManager.MarketBuffers.Count, Data);
+
+                        foreach (KeyValuePair<ushort, ResourceMarketManager.MarketData> kvp in ResourceMarketManager.MarketBuffers)
+                        {
+                            // Write start tuple
+                            StorageData.WriteUInt32(uiTUPLE_START, Data);
+
+                            // Write actual settings
+                            StorageData.WriteUInt16(kvp.Key, Data);
+                            StorageData.WriteUInt16(kvp.Value.inputAmountBuffer.Length, Data);
+                            StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.inputAmountBuffer, Data);
+                            StorageData.WriteUInt16(kvp.Value.outputAmountBuffer.Length, Data);
+                            StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.outputAmountBuffer, Data);
+                            StorageData.WriteUInt16(kvp.Value.amountSold1.Length, Data);
+                            StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.amountSold1, Data);
+                            StorageData.WriteUInt16(kvp.Value.amountSold2.Length, Data);
+                            StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.amountSold2, Data);
+
+                            // Write end tuple
+                            StorageData.WriteUInt32(uiTUPLE_END, Data);
+                        }
+
+                        StorageData.WriteUInt32(uiTUPLE_END, Data);
+                    }
+
+                    m_serializableData.SaveData(DataID, Data.ToArray());
+                }
             }
-
-            StorageData.WriteUInt32(uiTUPLE_END, Data);
-
-            StorageData.WriteUInt32(uiTUPLE_START, Data);
-
-            StorageData.WriteUInt16(ResourceMarketManager.MarketBuffers.Count, Data);
-
-            foreach (KeyValuePair<ushort, ResourceMarketManager.MarketData> kvp in ResourceMarketManager.MarketBuffers)
+            catch (Exception ex)
             {
-                // Write start tuple
-                StorageData.WriteUInt32(uiTUPLE_START, Data);
-
-                // Write actual settings
-                StorageData.WriteUInt16(kvp.Key, Data);
-                StorageData.WriteUInt16(kvp.Value.inputAmountBuffer.Length, Data);
-                StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.inputAmountBuffer, Data);
-                StorageData.WriteUInt16(kvp.Value.outputAmountBuffer.Length, Data);
-                StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.outputAmountBuffer, Data);
-                StorageData.WriteUInt16(kvp.Value.amountSold1.Length, Data);
-                StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.amountSold1, Data);
-                StorageData.WriteUInt16(kvp.Value.amountSold2.Length, Data);
-                StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.amountSold2, Data);
-
-                // Write end tuple
-                StorageData.WriteUInt32(uiTUPLE_END, Data);
+                LogHelper.Error("Could not save data. " + ex.Message);
             }
+            LogHelper.Information("OnSaveData - Finish");
+            
 
-             StorageData.WriteUInt32(uiTUPLE_END, Data);
         }
 
         public void OnLoadData()
         {
-            byte[] Data = m_serializableData.LoadData(DataID);
-            if (Data != null && Data.Length > 0)
+            try
             {
-                 ushort SaveGameFileVersion;
-                int Index = 0;
-
-                CheckStartTuple(DataID, DataVersion, Data, ref Index);
-
-                SaveGameFileVersion = StorageData.ReadUInt16(Data, ref Index);
-                if(SaveGameFileVersion != DataVersion)
+                if (m_serializableData != null)
                 {
-                    return;
-                }
-
-                var AquacultureFarms_Count = StorageData.ReadUInt16(Data, ref Index);
-
-                for (int i = 0; i < AquacultureFarms_Count; i++)
-                {
-                    CheckStartTuple(DataID, DataVersion, Data, ref Index);
-                    ushort aquaculturerFarmId = StorageData.ReadUInt16(Data, ref Index);
-                    List<ushort> aquaculturerFarmExtractors = StorageData.ReadList(Data, ref Index);
-                    AquacultureFarmManager.AquacultureFarms[aquaculturerFarmId] = aquaculturerFarmExtractors;
-                    CheckEndTuple(DataID, DataVersion, Data, ref Index);
-                }
-
-                CheckEndTuple(DataID, DataVersion, Data, ref Index);
-
-                CheckStartTuple(DataID, DataVersion, Data, ref Index);
-
-                var MarketBuffers_Count = StorageData.ReadUInt16(Data, ref Index);
-
-                for (int i = 0; i < MarketBuffers_Count; i++)
-                {
-                    CheckStartTuple(DataID, DataVersion, Data, ref Index);
-                    ushort marketId = StorageData.ReadUInt16(Data, ref Index);
-                    int inputAmountBuffer_length = StorageData.ReadUInt16(Data, ref Index);
-                    ushort[] inputAmountBuffer = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, inputAmountBuffer_length);
-                    int outputAmountBuffer_length = StorageData.ReadUInt16(Data, ref Index);
-                    ushort[] outputAmountBuffer = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, outputAmountBuffer_length);
-                    int amountSold1_length = StorageData.ReadUInt16(Data, ref Index);
-                    ushort[] amountSold1 = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, amountSold1_length);
-                    int amountSold2_length = StorageData.ReadUInt16(Data, ref Index);
-                    ushort[] amountSold2 = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, amountSold2_length);
-                    var marketData = new ResourceMarketManager.MarketData
+                    byte[] Data = m_serializableData.LoadData(DataID);
+                    if (Data != null && Data.Length > 0)
                     {
-                        inputAmountBuffer = inputAmountBuffer,
-                        outputAmountBuffer = outputAmountBuffer,
-                        amountSold1 = amountSold1,
-                        amountSold2 = amountSold2
-                    };
-                    ResourceMarketManager.MarketBuffers[marketId] = marketData;
-                    CheckEndTuple(DataID, DataVersion, Data, ref Index);
-                }
+                        ushort SaveGameFileVersion;
+                        int Index = 0;
 
-                CheckEndTuple(DataID, DataVersion, Data, ref Index);
+                        SaveGameFileVersion = StorageData.ReadUInt16(Data, ref Index);
+
+                        LogHelper.Information("Data length: " + Data.Length.ToString() + "; Data Version: " + SaveGameFileVersion);
+
+                        if (SaveGameFileVersion <= DataVersion)
+                        {
+                            var AquacultureFarms_Count = StorageData.ReadUInt16(Data, ref Index);
+
+                            for (int i = 0; i < AquacultureFarms_Count; i++)
+                            {
+                                CheckStartTuple(DataID, DataVersion, Data, ref Index);
+                                ushort aquaculturerFarmId = StorageData.ReadUInt16(Data, ref Index);
+                                List<ushort> aquaculturerFarmExtractors = StorageData.ReadList(Data, ref Index);
+                                AquacultureFarmManager.AquacultureFarms[aquaculturerFarmId] = aquaculturerFarmExtractors;
+                                CheckEndTuple(DataID, DataVersion, Data, ref Index);
+                            }
+
+                            CheckEndTuple(DataID, DataVersion, Data, ref Index);
+
+                            CheckStartTuple(DataID, DataVersion, Data, ref Index);
+
+                            var MarketBuffers_Count = StorageData.ReadUInt16(Data, ref Index);
+
+                            for (int i = 0; i < MarketBuffers_Count; i++)
+                            {
+                                CheckStartTuple(DataID, DataVersion, Data, ref Index);
+                                ushort marketId = StorageData.ReadUInt16(Data, ref Index);
+                                int inputAmountBuffer_length = StorageData.ReadUInt16(Data, ref Index);
+                                ushort[] inputAmountBuffer = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, inputAmountBuffer_length);
+                                int outputAmountBuffer_length = StorageData.ReadUInt16(Data, ref Index);
+                                ushort[] outputAmountBuffer = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, outputAmountBuffer_length);
+                                int amountSold1_length = StorageData.ReadUInt16(Data, ref Index);
+                                ushort[] amountSold1 = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, amountSold1_length);
+                                int amountSold2_length = StorageData.ReadUInt16(Data, ref Index);
+                                ushort[] amountSold2 = StorageData.ReadUInt16ArrayWithoutLength(Data, ref Index, amountSold2_length);
+                                var marketData = new ResourceMarketManager.MarketData
+                                {
+                                    inputAmountBuffer = inputAmountBuffer,
+                                    outputAmountBuffer = outputAmountBuffer,
+                                    amountSold1 = amountSold1,
+                                    amountSold2 = amountSold2
+                                };
+                                ResourceMarketManager.MarketBuffers[marketId] = marketData;
+                                CheckEndTuple(DataID, DataVersion, Data, ref Index);
+                            }
+
+                            CheckEndTuple(DataID, DataVersion, Data, ref Index);
+                        }
+                        else
+                        {
+                            string sMessage = "This saved game was saved with a newer version of Industries Meets Sunset Harbor.\r\n";
+                            sMessage += "\r\n";
+                            sMessage += "Unable to load settings.\r\n";
+                            sMessage += "\r\n";
+                            sMessage += "Saved game data version: " + SaveGameFileVersion + "\r\n";
+                            sMessage += "MOD data version: " + DataVersion + "\r\n";
+                            LogHelper.Information(sMessage);
+                        }
+                    }
+                    else
+                    {
+                        LogHelper.Information("Data is null");
+                    }
+                }
+                else
+                {
+                    LogHelper.Information("m_serializableData is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                string sErrorMessage = "Loading of Transfer Manager save game settings failed with the following error:\r\n";
+                sErrorMessage += "\r\n";
+                sErrorMessage += ex.Message;
+                LogHelper.Error("Transfer Manager CE", sErrorMessage);
             }
         }
 
