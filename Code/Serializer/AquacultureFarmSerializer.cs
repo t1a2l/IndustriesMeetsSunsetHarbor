@@ -40,13 +40,13 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 if (iAquacultureFarmVersion <= IndustriesMeetsSunsetHarborSerializer.DataVersion)
                 {
-                    var AquacultureFarms_Count = StorageData.ReadUInt16(Data, ref iIndex);
+                    var AquacultureFarms_Count = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < AquacultureFarms_Count; i++)
                     {
                         CheckStartTuple($"Building({i})", iAquacultureFarmVersion, Data, ref iIndex);
                         ushort aquaculturerFarmId = StorageData.ReadUInt16(Data, ref iIndex);
                         List<ushort> aquaculturerFarmExtractors = StorageData.ReadList(Data, ref iIndex);
-                        AquacultureFarmManager.AquacultureFarms[aquaculturerFarmId] = aquaculturerFarmExtractors;
+                        AquacultureFarmManager.AquacultureFarms.Add(aquaculturerFarmId, aquaculturerFarmExtractors);
                         CheckEndTuple($"Building({i})", iAquacultureFarmVersion, Data, ref iIndex);
                     }
                 }

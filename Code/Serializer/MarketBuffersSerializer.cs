@@ -67,7 +67,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                             amountSold1 = amountSold1,
                             amountSold2 = amountSold2
                         };
-                        ResourceMarketManager.MarketBuffers[marketId] = marketData;
+                        ResourceMarketManager.MarketBuffers.Add(marketId, marketData);
                         CheckEndTuple($"Building({i})", iMarketBuffersVersion, Data, ref iIndex);
                     }
                 }

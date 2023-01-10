@@ -84,7 +84,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             {
                 if (m_serializableData != null)
                 {
-                    FastList<byte> Data = new FastList<byte>();
+                    FastList<byte> Data = new();
                     // Always write out data version first
                     StorageData.WriteUInt16(DataVersion, Data);
 
