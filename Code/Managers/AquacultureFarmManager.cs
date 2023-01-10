@@ -25,13 +25,12 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void ObserveBuilding(ushort buildingId)
         {
-            GetStats(ref BuildingManager.instance.m_buildings.m_buffer[buildingId], out BuildingInfo primaryInfo);
-            ObserveForInfo(buildingId, primaryInfo);
+            ObserveForInfo(buildingId);
         }
 
-        public static void ObserveForInfo(ushort buildingId, BuildingInfo buildingInfo)
+        public static void ObserveForInfo(ushort buildingId)
         {
-            if (buildingInfo == null || !IsValidAquacultureFarm(buildingId))
+            if (!IsValidAquacultureFarm(buildingId))
             {
                 return;
             }
@@ -69,19 +68,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             return AquacultureFarmsIds.ToArray();
         }
 
-        public static void GetStats(ref Building building, out BuildingInfo primatyInfo)
-        {
-            var aquacultureFarmAI = building.Info?.m_buildingAI as AquacultureFarmAI;
-            if (aquacultureFarmAI == null)
-            {
-                primatyInfo = null;
-            }
-            else
-            {
-                primatyInfo = aquacultureFarmAI.m_info;
-            }
-        }
-
         public static bool IsValidAquacultureFarm(ushort aquacultureFarmID)
         {
             if (aquacultureFarmID == 0)
@@ -90,11 +76,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
             var building = BuildingManager.instance.m_buildings.m_buffer[aquacultureFarmID];
             if (building.Info?.m_class == null || (building.m_flags & Building.Flags.Created) == Building.Flags.None)
-            {
-                return false;
-            }
-            GetStats(ref building, out BuildingInfo primaryInfo);
-            if (primaryInfo == null)
             {
                 return false;
             }

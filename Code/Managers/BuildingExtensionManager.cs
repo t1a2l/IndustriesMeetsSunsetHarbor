@@ -15,6 +15,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 return;
             }
             AquacultureFarmManager.ObserveBuilding(buildingId);
+            AquacultureExtractorManager.ObserveBuilding(buildingId);
         }
 
         public override void OnBuildingReleased(ushort buildingId)

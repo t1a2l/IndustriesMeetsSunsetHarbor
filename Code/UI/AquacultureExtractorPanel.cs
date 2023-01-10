@@ -79,7 +79,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     ushort aquacultureFarmID = AquacultureFarmManager.GetAquacultureFarm(buildingID);
                     if(aquacultureFarmID == 0)
                     {
-                         aquacultureFarmID = AquacultureFarmManager.GetClosestAquacultureFarm(buildingID);
+                        aquacultureFarmID = AquacultureFarmManager.GetClosestAquacultureFarm(buildingID);
+                        if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarmID))
+                        {
+                            AquacultureFarmManager.AquacultureFarms[aquacultureFarmID].Add(buildingID);
+                        }
                     }
                     var selectedIndex = Array.FindIndex<ushort>(aquacultureFarmsIds, item => item == aquacultureFarmID);
                     if(selectedIndex != -1)
