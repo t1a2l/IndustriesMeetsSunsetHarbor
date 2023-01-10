@@ -98,10 +98,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         public static void PopulateAquacultureFarmDropDown(ushort[] aquacultureFarmsIds)
         {
+             LogHelper.Information("aquacultureFarmsIds length: {0}", aquacultureFarmsIds.Length);
+            LogHelper.Information("_aquacultureFarmDropDown length befor clear: {0}", _aquacultureFarmDropDown.items.Length);
             if(_aquacultureFarmDropDown.items != null && _aquacultureFarmDropDown.items.Length > 0)
             {
-                Array.Clear(_aquacultureFarmDropDown.items, 0, _aquacultureFarmDropDown.items.Length);
+                _aquacultureFarmDropDown.items = new string[0];
             }
+            LogHelper.Information("_aquacultureFarmDropDown length after clear: {0}", _aquacultureFarmDropDown.items.Length);
             if(aquacultureFarmsIds != null && aquacultureFarmsIds.Length > 0)
             {
                 _aquacultureFarmDropDown.items = aquacultureFarmsIds.Select(x => IDToName(x)).ToArray();
