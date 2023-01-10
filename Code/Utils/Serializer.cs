@@ -179,10 +179,10 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             }
             catch (Exception ex)
             {
-                string sErrorMessage = "Loading of Transfer Manager save game settings failed with the following error:\r\n";
+                string sErrorMessage = "Loading of Industries Meets Sunset Harbor save game settings failed with the following error:\r\n";
                 sErrorMessage += "\r\n";
                 sErrorMessage += ex.Message;
-                LogHelper.Error("Transfer Manager CE", sErrorMessage);
+                LogHelper.Error("Industries Meets Sunset Harbor", sErrorMessage);
             }
         }
 
