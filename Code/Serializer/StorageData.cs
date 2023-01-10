@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IndustriesMeetsSunsetHarbor.Utils
+namespace IndustriesMeetsSunsetHarbor.Serializer
 {
     public class StorageData
     {
