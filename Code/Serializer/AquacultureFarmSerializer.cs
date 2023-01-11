@@ -10,10 +10,12 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
+        private const ushort iAQUACULTURE_FARM_DATA_VERSION = 14;
+
         public static void SaveData(FastList<byte> Data)
         {
             // Write out metadata
-            StorageData.WriteInt32(IndustriesMeetsSunsetHarborSerializer.DataVersion, Data);
+            StorageData.WriteUInt16(iAQUACULTURE_FARM_DATA_VERSION, Data);
             StorageData.WriteInt32(AquacultureFarmManager.AquacultureFarms.Count, Data);
 
             // Write out each buildings settings
@@ -35,10 +37,10 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             if (Data != null && Data.Length > iIndex)
             {
-                int iAquacultureFarmVersion = StorageData.ReadInt32(Data, ref iIndex);
+                int iAquacultureFarmVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 LogHelper.Information("Global: " + iGlobalVersion + " BuildingVersion: " + iAquacultureFarmVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
 
-                if (iAquacultureFarmVersion <= IndustriesMeetsSunsetHarborSerializer.DataVersion)
+                if (iAquacultureFarmVersion <= iAQUACULTURE_FARM_DATA_VERSION)
                 {
                     var AquacultureFarms_Count = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < AquacultureFarms_Count; i++)

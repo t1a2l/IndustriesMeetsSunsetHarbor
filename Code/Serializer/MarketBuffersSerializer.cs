@@ -10,10 +10,12 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
+        private const ushort iMARKET_BUFFERS_DATA_VERSION = 14;
+
         public static void SaveData(FastList<byte> Data)
         {
             // Write out metadata
-            StorageData.WriteInt32(IndustriesMeetsSunsetHarborSerializer.DataVersion, Data);
+            StorageData.WriteUInt16(iMARKET_BUFFERS_DATA_VERSION, Data);
             StorageData.WriteInt32(ResourceMarketManager.MarketBuffers.Count, Data);
 
             // Write out each buildings settings
@@ -42,10 +44,10 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             if (Data != null && Data.Length > iIndex)
             {
-                int iMarketBuffersVersion = StorageData.ReadInt32(Data, ref iIndex);
+                int iMarketBuffersVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 LogHelper.Information("Global: " + iGlobalVersion + " BuildingVersion: " + iMarketBuffersVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
 
-                if (iMarketBuffersVersion <= IndustriesMeetsSunsetHarborSerializer.DataVersion)
+                if (iMarketBuffersVersion <= iMARKET_BUFFERS_DATA_VERSION)
                 {
                     var MarketBuffers_Count = StorageData.ReadUInt16(Data, ref iIndex);
                     for (int i = 0; i < MarketBuffers_Count; i++)
