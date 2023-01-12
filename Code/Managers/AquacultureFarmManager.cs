@@ -11,7 +11,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            AquacultureFarms = new Dictionary<ushort, List<ushort>>();
+            if(AquacultureFarms == null)
+            {
+                AquacultureFarms = new Dictionary<ushort, List<ushort>>();
+            }
             for (ushort index = 0; index < BuildingManager.instance.m_buildings.m_buffer.Length; ++index)
             {
                 ObserveBuilding(index);

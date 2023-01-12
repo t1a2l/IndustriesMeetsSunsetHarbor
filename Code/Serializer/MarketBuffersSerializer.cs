@@ -49,6 +49,10 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 if (iMarketBuffersVersion <= iMARKET_BUFFERS_DATA_VERSION)
                 {
+                    if( ResourceMarketManager.MarketBuffers == null)
+                    {
+                        ResourceMarketManager.MarketBuffers = new();
+                    }
                     var MarketBuffers_Count = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < MarketBuffers_Count; i++)
                     {

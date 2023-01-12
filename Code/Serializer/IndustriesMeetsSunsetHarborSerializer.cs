@@ -113,7 +113,6 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             if (iDataVersion >= 1)
             {
                 uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
-                LogHelper.Information("IndustriesMeetsSunsetHarborSerializer iTupleStart: " + iTupleStart);
                 if (iTupleStart != uiTUPLE_START)
                 {
                     throw new Exception($"Start tuple not found at: {sTupleLocation}");
@@ -126,7 +125,6 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             if (iDataVersion >= 1)
             {
                 uint iTupleEnd = StorageData.ReadUInt32(Data, ref iIndex);
-                LogHelper.Information("IndustriesMeetsSunsetHarborSerializer iTupleEnd: " + iTupleEnd);
                 if (iTupleEnd != uiTUPLE_END)
                 {
                     throw new Exception($"End tuple not found at: {sTupleLocation}");

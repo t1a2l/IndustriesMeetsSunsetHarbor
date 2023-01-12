@@ -12,6 +12,19 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public ushort[] amountSold2;
         }
 
-        public static Dictionary<ushort, MarketData> MarketBuffers = new();
+        public static Dictionary<ushort, MarketData> MarketBuffers;
+
+        public static void Init()
+        {
+            if(MarketBuffers == null)
+            {
+                MarketBuffers = new();
+            }
+        }
+
+        public static void Deinit()
+        {
+            MarketBuffers = new();
+        }
     }
 }
