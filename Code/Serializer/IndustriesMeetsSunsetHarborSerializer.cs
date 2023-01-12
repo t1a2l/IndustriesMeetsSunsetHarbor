@@ -51,7 +51,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         {
                             string sMessage = "This saved game was saved with a newer version of Industries Meets Sunset Harbor.\r\n";
                             sMessage += "\r\n";
-                            sMessage += "Unable to load Transfer Manager settings.\r\n";
+                            sMessage += "Unable to load settings.\r\n";
                             sMessage += "\r\n";
                             sMessage += "Saved game data version: " + SaveGameFileVersion + "\r\n";
                             sMessage += "MOD data version: " + DataVersion + "\r\n";
@@ -110,9 +110,10 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
         private void CheckStartTuple(string sTupleLocation, int iDataVersion, byte[] Data, ref int iIndex)
         {
-            if (iDataVersion >= 17)
+            if (iDataVersion >= 1)
             {
                 uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
+                LogHelper.Information("IndustriesMeetsSunsetHarborSerializer iTupleStart: " + iTupleStart);
                 if (iTupleStart != uiTUPLE_START)
                 {
                     throw new Exception($"Start tuple not found at: {sTupleLocation}");
@@ -122,10 +123,11 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
         private void CheckEndTuple(string sTupleLocation, int iDataVersion, byte[] Data, ref int iIndex)
         {
-            if (iDataVersion >= 17)
+            if (iDataVersion >= 1)
             {
-                uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
-                if (iTupleStart != uiTUPLE_END)
+                uint iTupleEnd = StorageData.ReadUInt32(Data, ref iIndex);
+                LogHelper.Information("IndustriesMeetsSunsetHarborSerializer iTupleEnd: " + iTupleEnd);
+                if (iTupleEnd != uiTUPLE_END)
                 {
                     throw new Exception($"End tuple not found at: {sTupleLocation}");
                 }

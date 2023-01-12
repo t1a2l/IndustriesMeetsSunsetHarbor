@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.Serializer
 {
@@ -30,7 +29,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             return Boolean;
         }
 
-        public static void WriteUInt16(int Value, FastList<byte> Data)
+        public static void WriteUInt16(ushort Value, FastList<byte> Data)
         {
             StorageData.AddToData(BitConverter.GetBytes(Value), Data);
         }
@@ -177,7 +176,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
         public static List<ushort> ReadList(byte[] Data, ref int iIndex)
         {
-            List<ushort> list = new();
+            List<ushort> list = new List<ushort>();
             if (Data.Length > iIndex + 4)
             {
                 int iArrayCount = ReadInt32(Data, ref iIndex);
@@ -190,7 +189,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 } 
                 else
                 {
-                    Debug.LogError("Data size not large enough aborting read. ArraySize: " + iArrayCount + " DataSize: " + Data.Length + " Index: " + iIndex);
+                    LogHelper.Error("Data size not large enough aborting read. ArraySize: " + iArrayCount + " DataSize: " + Data.Length + " Index: " + iIndex);
                 }
             }
             return list;
@@ -213,7 +212,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             for (int index1 = 0; index1 < num; ++index1)
             {
                 empty += BitConverter.ToChar(data, index).ToString();
-                index += 2;
+                index = index + 2;
             }
             return empty;
         }

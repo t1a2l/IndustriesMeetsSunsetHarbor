@@ -26,13 +26,13 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 // Write actual settings
                 StorageData.WriteUInt16(kvp.Key, Data);
-                StorageData.WriteUInt16(kvp.Value.inputAmountBuffer.Length, Data);
+                StorageData.WriteInt32(kvp.Value.inputAmountBuffer.Length, Data);
                 StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.inputAmountBuffer, Data);
-                StorageData.WriteUInt16(kvp.Value.outputAmountBuffer.Length, Data);
+                StorageData.WriteInt32(kvp.Value.outputAmountBuffer.Length, Data);
                 StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.outputAmountBuffer, Data);
-                StorageData.WriteUInt16(kvp.Value.amountSold1.Length, Data);
+                StorageData.WriteInt32(kvp.Value.amountSold1.Length, Data);
                 StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.amountSold1, Data);
-                StorageData.WriteUInt16(kvp.Value.amountSold2.Length, Data);
+                StorageData.WriteInt32(kvp.Value.amountSold2.Length, Data);
                 StorageData.WriteUInt16ArrayWithoutLength(kvp.Value.amountSold2, Data);
 
                 // Write end tuple
@@ -49,18 +49,18 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 if (iMarketBuffersVersion <= iMARKET_BUFFERS_DATA_VERSION)
                 {
-                    var MarketBuffers_Count = StorageData.ReadUInt16(Data, ref iIndex);
+                    var MarketBuffers_Count = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < MarketBuffers_Count; i++)
                     {
                         CheckStartTuple($"Building({i})", iMarketBuffersVersion, Data, ref iIndex);
                         ushort marketId = StorageData.ReadUInt16(Data, ref iIndex);
-                        int inputAmountBuffer_length = StorageData.ReadUInt16(Data, ref iIndex);
+                        int inputAmountBuffer_length = StorageData.ReadInt32(Data, ref iIndex);
                         ushort[] inputAmountBuffer = StorageData.ReadUInt16ArrayWithoutLength(Data, ref iIndex, inputAmountBuffer_length);
-                        int outputAmountBuffer_length = StorageData.ReadUInt16(Data, ref iIndex);
+                        int outputAmountBuffer_length = StorageData.ReadInt32(Data, ref iIndex);
                         ushort[] outputAmountBuffer = StorageData.ReadUInt16ArrayWithoutLength(Data, ref iIndex, outputAmountBuffer_length);
-                        int amountSold1_length = StorageData.ReadUInt16(Data, ref iIndex);
+                        int amountSold1_length = StorageData.ReadInt32(Data, ref iIndex);
                         ushort[] amountSold1 = StorageData.ReadUInt16ArrayWithoutLength(Data, ref iIndex, amountSold1_length);
-                        int amountSold2_length = StorageData.ReadUInt16(Data, ref iIndex);
+                        int amountSold2_length = StorageData.ReadInt32(Data, ref iIndex);
                         ushort[] amountSold2 = StorageData.ReadUInt16ArrayWithoutLength(Data, ref iIndex, amountSold2_length);
                         var marketData = new ResourceMarketManager.MarketData
                         {

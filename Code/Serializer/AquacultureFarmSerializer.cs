@@ -43,11 +43,17 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 if (iAquacultureFarmVersion <= iAQUACULTURE_FARM_DATA_VERSION)
                 {
                     var AquacultureFarms_Count = StorageData.ReadInt32(Data, ref iIndex);
+                    LogHelper.Information("AquacultureFarms_Count: " + AquacultureFarms_Count);
                     for (int i = 0; i < AquacultureFarms_Count; i++)
                     {
                         CheckStartTuple($"Building({i})", iAquacultureFarmVersion, Data, ref iIndex);
                         ushort aquaculturerFarmId = StorageData.ReadUInt16(Data, ref iIndex);
+                        LogHelper.Information("aquaculturerFarmId: " + aquaculturerFarmId);
                         List<ushort> aquaculturerFarmExtractors = StorageData.ReadList(Data, ref iIndex);
+                        foreach(ushort extractorId in aquaculturerFarmExtractors)
+                        {
+                             LogHelper.Information("extractorId: " + extractorId);
+                        }
                         AquacultureFarmManager.AquacultureFarms.Add(aquaculturerFarmId, aquaculturerFarmExtractors);
                         CheckEndTuple($"Building({i})", iAquacultureFarmVersion, Data, ref iIndex);
                     }
@@ -60,6 +66,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             if (iDataVersion >= 1)
             {
                 uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
+                LogHelper.Information("AquacultureFarmSerializer iTupleStart: " + iTupleStart);
                 if (iTupleStart != uiTUPLE_START)
                 {
                     throw new Exception($"Building start tuple not found at: {sTupleLocation}");
@@ -71,8 +78,9 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             if (iDataVersion >= 1)
             {
-                uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
-                if (iTupleStart != uiTUPLE_END)
+                uint iTupleEnd = StorageData.ReadUInt32(Data, ref iIndex);
+                LogHelper.Information("AquacultureFarmSerializer iTupleEnd: " + iTupleEnd);
+                if (iTupleEnd != uiTUPLE_END)
                 {
                     throw new Exception($"Building end tuple not found at: {sTupleLocation}");
                 }
