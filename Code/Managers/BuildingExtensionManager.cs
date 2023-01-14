@@ -30,21 +30,28 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             if(buildingId != 0 && building.Info.GetAI() is AquacultureExtractorAI)
             {
                 var aquacultureFarmId = AquacultureFarmManager.GetAquacultureFarm(buildingId);
-                AquacultureFarmManager.AquacultureFarms[aquacultureFarmId].Remove(buildingId);
+                if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarmId))
+                {
+                    AquacultureFarmManager.AquacultureFarms[aquacultureFarmId].Remove(buildingId);
+                }
             }
             // if building is a farm remove all extractors from it and try to find them a new farm, then remove the current farm
             if(buildingId != 0 && building.Info.GetAI() is AquacultureFarmAI)
             {
-                foreach (var aquacultureExtractorId in AquacultureFarmManager.AquacultureFarms[buildingId])
+                if(AquacultureFarmManager.AquacultureFarms.ContainsKey(buildingId))
                 {
-                    AquacultureFarmManager.AquacultureFarms[buildingId].Remove(aquacultureExtractorId);
-                    var newAquacultureFarmId = AquacultureFarmManager.GetClosestAquacultureFarm(aquacultureExtractorId);
-                    if(newAquacultureFarmId != 0)
+                    foreach (var aquacultureExtractorId in AquacultureFarmManager.AquacultureFarms[buildingId])
                     {
-                        AquacultureFarmManager.AquacultureFarms[newAquacultureFarmId].Add(aquacultureExtractorId);
+                        AquacultureFarmManager.AquacultureFarms[buildingId].Remove(aquacultureExtractorId);
+                        var newAquacultureFarmId = AquacultureFarmManager.GetClosestAquacultureFarm(aquacultureExtractorId);
+                        if(newAquacultureFarmId != 0)
+                        {
+                            AquacultureFarmManager.AquacultureFarms[newAquacultureFarmId].Add(aquacultureExtractorId);
+                        }
                     }
+                    AquacultureFarmManager.AquacultureFarms.Remove(buildingId);
                 }
-                AquacultureFarmManager.AquacultureFarms.Remove(buildingId);
+                
             }
 
             
