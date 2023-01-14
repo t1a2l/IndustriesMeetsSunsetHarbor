@@ -1,9 +1,25 @@
 using IndustriesMeetsSunsetHarbor.AI;
+using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
     public static class AquacultureExtractorManager
     {
+
+        public static List<ushort> AquacultureExtractorsWithNoFarm;
+
+        public static void Init()
+        {
+            if(AquacultureExtractorsWithNoFarm == null)
+            {
+                AquacultureExtractorsWithNoFarm = new();
+            }
+        }
+
+        public static void Deinit()
+        {
+            AquacultureExtractorsWithNoFarm = new();
+        }
 
         public static void ObserveBuilding(ushort buildingId)
         {
@@ -22,6 +38,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 if(AquacultureFarmManager.AquacultureFarms.ContainsKey(aquacultureFarmID))
                 {
                     AquacultureFarmManager.AquacultureFarms[aquacultureFarmID].Add(buildingId);
+                }
+                else
+                {
+                    AquacultureExtractorsWithNoFarm.Add(buildingId);
                 }
             }
         }

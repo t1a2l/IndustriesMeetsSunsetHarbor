@@ -40,6 +40,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             if (!AquacultureFarms.TryGetValue(buildingId, out List<ushort> _))
             {
                 var aquacultureFarmExtractors = new List<ushort>();
+                var farmInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+                // if there are extractors with no farm attached and we add a new farm, we need to check and match the extractors to the new farm
+                foreach(var extractorId in AquacultureExtractorManager.AquacultureExtractorsWithNoFarm)
+                {
+                    var extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorId].Info;
+                    if(CheckIfSameAquacultureType(farmInfo, extractorInfo))
+                    {
+                        aquacultureFarmExtractors.Add(extractorId);
+                    }
+                }
                 AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
             }
             if (AquacultureFarms.ContainsKey(buildingId))

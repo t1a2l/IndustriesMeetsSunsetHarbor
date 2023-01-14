@@ -36,12 +36,14 @@ namespace IndustriesMeetsSunsetHarbor
             {
                 inGame = true;
                 AquacultureFarmManager.Init();
+                AquacultureExtractorManager.Init();
                 ResourceMarketManager.Init();
             }
             catch (Exception e)
             {
                 LogHelper.Error(e.ToString());
                 AquacultureFarmManager.Deinit();
+                AquacultureExtractorManager.Deinit();
                 ResourceMarketManager.Deinit();
             }
         }
@@ -53,6 +55,7 @@ namespace IndustriesMeetsSunsetHarbor
                 return;
             inGame = false;
             AquacultureFarmManager.Deinit();
+            AquacultureExtractorManager.Deinit();
             ResourceMarketManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
