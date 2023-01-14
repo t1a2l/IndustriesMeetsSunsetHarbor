@@ -118,7 +118,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 return true;
             }
-            else if(aquacultureFarm.name.Contains("Fish") && aquacultureExtractor.name.Contains("Fish"))
+            else if(aquacultureFarm.name.Contains("Fish") && aquacultureExtractor.name.Contains("Mixed"))
             {
                 return true;
             }
