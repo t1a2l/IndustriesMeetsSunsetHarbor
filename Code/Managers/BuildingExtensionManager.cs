@@ -34,6 +34,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 {
                     AquacultureFarmManager.AquacultureFarms[aquacultureFarmId].Remove(buildingId);
                 }
+                if(AquacultureExtractorManager.AquacultureExtractorsWithNoFarm.Contains(buildingId))
+                {
+                    AquacultureExtractorManager.AquacultureExtractorsWithNoFarm.Remove(buildingId);
+                }
             }
             // if building is a farm remove all extractors from it and try to find them a new farm, then remove the current farm
             if(buildingId != 0 && building.Info.GetAI() is AquacultureFarmAI)

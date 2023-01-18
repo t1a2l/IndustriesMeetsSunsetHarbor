@@ -48,6 +48,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     if(CheckIfSameAquacultureType(farmInfo, extractorInfo))
                     {
                         aquacultureFarmExtractors.Add(extractorId);
+                        AquacultureExtractorManager.AquacultureExtractorsWithNoFarm.Remove(extractorId);
                     }
                 }
                 AquacultureFarms.Add(buildingId, aquacultureFarmExtractors);
@@ -120,21 +121,24 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static bool CheckIfSameAquacultureType(BuildingInfo aquacultureFarm, BuildingInfo aquacultureExtractor)
         {
-            if(aquacultureFarm.name.Contains("Algae") && aquacultureExtractor.name.Contains("Algae"))
+            if(aquacultureFarm != null && aquacultureExtractor != null)
             {
-                return true;
-            }
-            else if(aquacultureFarm.name.Contains("Fish") && aquacultureExtractor.name.Contains("Mixed"))
-            {
-                return true;
-            }
-            else if(aquacultureFarm.name.Contains("Mussels") && aquacultureExtractor.name.Contains("Mussels"))
-            {
-                return true;
-            }
-            else if(aquacultureFarm.name.Contains("Seaweed") && aquacultureExtractor.name.Contains("Seaweed"))
-            {
-                return true;
+                if(aquacultureFarm.name.Contains("Algae") && aquacultureExtractor.name.Contains("Algae"))
+                {
+                    return true;
+                }
+                else if(aquacultureFarm.name.Contains("Fish") && aquacultureExtractor.name.Contains("Mixed"))
+                {
+                    return true;
+                }
+                else if(aquacultureFarm.name.Contains("Mussels") && aquacultureExtractor.name.Contains("Mussels"))
+                {
+                    return true;
+                }
+                else if(aquacultureFarm.name.Contains("Seaweed") && aquacultureExtractor.name.Contains("Seaweed"))
+                {
+                    return true;
+                }
             }
             return false;
         }
