@@ -2,6 +2,7 @@ using ColossalFramework;
 using System.Collections.Generic;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
+using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
@@ -42,7 +43,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 var aquacultureFarmExtractors = new List<ushort>();
                 var farmInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
                 // if there are extractors with no farm attached and we add a new farm, we need to check and match the extractors to the new farm
-                foreach(var extractorId in AquacultureExtractorManager.AquacultureExtractorsWithNoFarm)
+                foreach(var extractorId in AquacultureExtractorManager.AquacultureExtractorsWithNoFarm.ToList())
                 {
                     var extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorId].Info;
                     if(CheckIfSameAquacultureType(farmInfo, extractorInfo))
