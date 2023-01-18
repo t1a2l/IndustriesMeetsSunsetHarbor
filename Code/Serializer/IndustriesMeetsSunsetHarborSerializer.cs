@@ -46,6 +46,10 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                             CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
                             MarketBuffersSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
                             CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+
+                            CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                            AquacultureExtractorSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                            CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
                         }
                         else
                         {
@@ -96,6 +100,11 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     // MarketBuffers settings
                     StorageData.WriteUInt32(uiTUPLE_START, Data);
                     MarketBuffersSerializer.SaveData(Data);
+                    StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    // AquacultureExtractorsWithNoFarm settings
+                    StorageData.WriteUInt32(uiTUPLE_START, Data);
+                    AquacultureExtractorSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
                     m_serializableData.SaveData(DataID, Data.ToArray());

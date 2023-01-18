@@ -51,6 +51,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                             {
                                 AquacultureFarmManager.AquacultureFarms[newAquacultureFarmId].Add(aquacultureExtractorId);
                             }
+                            else
+                            {
+                                AquacultureExtractorManager.AquacultureExtractorsWithNoFarm.Add(aquacultureExtractorId);
+                            }
                         }
                     }
                     AquacultureFarmManager.AquacultureFarms.Remove(buildingId);
