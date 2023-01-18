@@ -40,9 +40,8 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 if(AquacultureFarmManager.AquacultureFarms.ContainsKey(buildingId))
                 {
-                    foreach (var aquacultureExtractorId in AquacultureFarmManager.AquacultureFarms[buildingId])
+                    foreach (var aquacultureExtractorId in  AquacultureFarmManager.AquacultureFarms[buildingId])
                     {
-                        AquacultureFarmManager.AquacultureFarms[buildingId].Remove(aquacultureExtractorId);
                         var aquacultureFarmId = AquacultureFarmManager.GetAquacultureFarm(aquacultureExtractorId);
                         if(aquacultureFarmId == 0)
                         {
