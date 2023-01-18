@@ -40,10 +40,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 if(AquacultureFarmManager.AquacultureFarms.ContainsKey(buildingId))
                 {
-                    foreach (var aquacultureExtractorId in  AquacultureFarmManager.AquacultureFarms[buildingId])
+                    foreach (var aquacultureExtractorId in AquacultureFarmManager.AquacultureFarms[buildingId])
                     {
                         var aquacultureFarmId = AquacultureFarmManager.GetAquacultureFarm(aquacultureExtractorId);
-                        if(aquacultureFarmId == 0)
+                        // check that the closest farm is not the old farm you want to remove
+                        if(aquacultureFarmId == 0 || aquacultureFarmId == buildingId)
                         {
                             var newAquacultureFarmId = AquacultureFarmManager.GetClosestAquacultureFarm(aquacultureExtractorId);
                             if(newAquacultureFarmId != 0)
