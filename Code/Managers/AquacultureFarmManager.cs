@@ -61,22 +61,18 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         public static ushort[] GetAquacultureFarmsIds(ushort extractorId) // get all farms of the same type of the extractor
         {
             List<ushort> AquacultureFarmsIds = new();
-            BuildingManager instance2 = Singleton<BuildingManager>.instance;
             var extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorId].Info;
-            int length = instance2.m_buildings.m_buffer.Length;
-            for (ushort index = 0; index < length; ++index)
+            for (ushort buildingId = 0; buildingId < BuildingManager.instance.m_buildings.m_buffer.Length; ++buildingId)
             {
-                var buildingInfo = BuildingManager.instance.m_buildings.m_buffer[index].Info;
-                if (buildingInfo.GetAI() is AquacultureFarmAI)
+                if (IsValidAquacultureFarm(buildingId))
                 {
-                    if (IsValidAquacultureFarm(index))
+                    var farmInfo = BuildingManager.instance.m_buildings.m_buffer[buildingId].Info;
+                    if(CheckIfSameAquacultureType(farmInfo, extractorInfo))
                     {
-                        if(CheckIfSameAquacultureType(buildingInfo, extractorInfo))
-                        {
-                             AquacultureFarmsIds.Add(index);
-                        }
+                        AquacultureFarmsIds.Add(buildingId);
                     }
                 }
+                
             }
             return AquacultureFarmsIds.ToArray();
         }
@@ -92,7 +88,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 return false;
             }
-            var aquacultureFarmAI = building.Info.m_buildingAI as AquacultureFarmAI;
+            var aquacultureFarmAI = building.Info?.m_buildingAI as AquacultureFarmAI;
             if (aquacultureFarmAI == null)
             {
                 return false;

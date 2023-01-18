@@ -355,8 +355,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 foreach (var aquacultureExtractorId in AquacultureFarmManager.AquacultureFarms[buildingID])
                 {
                     var building = BuildingManager.instance.m_buildings.m_buffer[aquacultureExtractorId];
-                    Vector3 position = buildingData.CalculatePosition(building.m_position);
-                    Singleton<TerrainManager>.instance.CountWaterCoverage(position, 20f, out var water, out _, out var pollution);
+                    //Vector3 position = buildingData.CalculatePosition(building.m_position);
+                    Singleton<TerrainManager>.instance.CountWaterCoverage(building.m_position, 20f, out var water, out _, out var pollution);
                     num += Mathf.Clamp(pollution, 0, 128);
                     num3 = Mathf.Max(num3, water);
                 }

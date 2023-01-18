@@ -43,10 +43,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     foreach (var aquacultureExtractorId in AquacultureFarmManager.AquacultureFarms[buildingId])
                     {
                         AquacultureFarmManager.AquacultureFarms[buildingId].Remove(aquacultureExtractorId);
-                        var newAquacultureFarmId = AquacultureFarmManager.GetClosestAquacultureFarm(aquacultureExtractorId);
-                        if(newAquacultureFarmId != 0)
+                        var aquacultureFarmId = AquacultureFarmManager.GetAquacultureFarm(aquacultureExtractorId);
+                        if(aquacultureFarmId == 0)
                         {
-                            AquacultureFarmManager.AquacultureFarms[newAquacultureFarmId].Add(aquacultureExtractorId);
+                            var newAquacultureFarmId = AquacultureFarmManager.GetClosestAquacultureFarm(aquacultureExtractorId);
+                            if(newAquacultureFarmId != 0)
+                            {
+                                AquacultureFarmManager.AquacultureFarms[newAquacultureFarmId].Add(aquacultureExtractorId);
+                            }
                         }
                     }
                     AquacultureFarmManager.AquacultureFarms.Remove(buildingId);
