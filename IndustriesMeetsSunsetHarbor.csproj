@@ -24,6 +24,17 @@
     <Copy SourceFiles="@(ModFiles)" DestinationFolder="$(ModDirectory)" />
   </Target>
   <ItemGroup>
+    <Compile Remove="Code\Icons\**" />
+    <EmbeddedResource Remove="Code\Icons\**" />
+    <None Remove="Code\Icons\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Code\Utils\Atlas\sprites.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Code\Utils\Atlas\sprites.png" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CitiesHarmony.API" Version="2.1.0" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +49,9 @@
     <Reference Include="ICities">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+    <Reference Include="MoreTransferReasons">
+      <HintPath>C:\Users\talrofeh\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\MoreTransferReasons\MoreTransferReasons.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
