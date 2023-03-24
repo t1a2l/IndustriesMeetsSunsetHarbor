@@ -5,6 +5,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using UnityEngine;
 using System;
 using System.Linq;
+using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
