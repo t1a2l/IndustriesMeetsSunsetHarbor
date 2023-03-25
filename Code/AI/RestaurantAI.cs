@@ -6,6 +6,7 @@ using UnityEngine;
 using MoreTransferReasons.Code;
 using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
+using ICities;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -22,6 +23,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Highly Educated Workers", "Workers", 3)]
         public int m_workPlaceCount3 = 2;
+
+        [CustomizableProperty("Low Wealth", "Visitors", 0)]
+	public int m_visitPlaceCount0 = 10;
+
+	[CustomizableProperty("Medium Wealth", "Visitors", 1)]
+	public int m_visitPlaceCount1 = 10;
+
+	[CustomizableProperty("High Wealth", "Visitors", 2)]
+	public int m_visitPlaceCount2 = 10;
 
         [CustomizableProperty("Delivery Vehicle Count")]
         public int m_DeliveryVehicleCount = 10;
@@ -70,6 +80,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Quality (values: 1-3 including 1 and 3)")]
         public int quality = 1;
+
+        [CustomizableProperty("Allow delivery")]
+        public bool allow_delivery = true;
 
         [NonSerialized]
         private bool m_hasBufferStatusMeshes;
@@ -292,7 +305,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private void CheckCapacity(ushort buildingID, ref Building buildingData)
         {
-            int outputBufferSize = GetOutputBufferSize(buildingID, ref buildingData);
+            int outputBufferSize = GetOutputBufferSize();
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             int customBuffer = custom_buffers.m_customBuffer1;
             if (customBuffer * 3 >= outputBufferSize * 2)
@@ -340,26 +353,26 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         data.m_customBuffer2 = (ushort)(customBuffer2 + amountDelta);
                         data.m_outgoingProblemTimer = 0;
                         byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
-			if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone)
-			{
-				Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempGoodsSold -= (uint)amountDelta;
-			}
-			int cashCapacity = GetCashCapacity(buildingID, ref data);
-			data.m_cashBuffer = Math.Min(data.m_cashBuffer - amountDelta, cashCapacity);
-			return;
+                        if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone)
+                        {
+                            Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempGoodsSold -= (uint)amountDelta;
+                        }
+                        int cashCapacity = 4000 * 4;
+                        data.m_cashBuffer = Math.Min(data.m_cashBuffer - amountDelta, cashCapacity);
+                        return;
                     }
                 case TransferManager.TransferReason.Cash:
-		    {
-			int cashBuffer = data.m_cashBuffer;
-			amountDelta = Mathf.Clamp(amountDelta, -cashBuffer, 0);
-			data.m_cashBuffer = cashBuffer + amountDelta;
-			return;
-		    }
+                    {
+                        int cashBuffer = data.m_cashBuffer;
+                        amountDelta = Mathf.Clamp(amountDelta, -cashBuffer, 0);
+                        data.m_cashBuffer = cashBuffer + amountDelta;
+                        return;
+                    }
                 default:
                     var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
                     if (material == m_inputResource4)
                     {
-                        int inputBufferSize4 = GetInputBufferSize4(buildingID, ref data);
+                        int inputBufferSize4 = GetInputBufferSize4();
                         int m_customBuffer4 = custom_buffers.m_customBuffer4;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer4, inputBufferSize4 - m_customBuffer4);
                         m_customBuffer4 += amountDelta;
@@ -367,7 +380,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (material == m_inputResource5)
                     {
-                        int inputBufferSize5 = GetInputBufferSize5(buildingID, ref data);
+                        int inputBufferSize5 = GetInputBufferSize5();
                         int m_customBuffer5 = custom_buffers.m_customBuffer5;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer5, inputBufferSize5 - m_customBuffer5);
                         m_customBuffer5 += amountDelta;
@@ -375,7 +388,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (material == m_inputResource6)
                     {
-                        int inputBufferSize6 = GetInputBufferSize6(buildingID, ref data);
+                        int inputBufferSize6 = GetInputBufferSize6();
                         int m_customBuffer6 = custom_buffers.m_customBuffer6;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer6, inputBufferSize6 - m_customBuffer6);
                         m_customBuffer6 += amountDelta;
@@ -383,7 +396,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (material == m_inputResource7)
                     {
-                        int inputBufferSize7 = GetInputBufferSize7(buildingID, ref data);
+                        int inputBufferSize7 = GetInputBufferSize7();
                         int m_customBuffer7 = custom_buffers.m_customBuffer7;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer7, inputBufferSize7 - m_customBuffer7);
                         m_customBuffer7 += amountDelta;
@@ -397,12 +410,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public  void ModifyExtendedMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
+        public void ModifyExtendedMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource1)
             {
-                int inputBufferSize1 = GetInputBufferSize1(buildingID, ref data);
+                int inputBufferSize1 = GetInputBufferSize1();
                 int customBuffer1 = custom_buffers.m_customBuffer1;
                 amountDelta = Mathf.Clamp(amountDelta, -customBuffer1, inputBufferSize1 - customBuffer1);
                 customBuffer1 += amountDelta;
@@ -410,7 +423,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_inputResource2)
             {
-                int inputBufferSize2 = GetInputBufferSize2(buildingID, ref data);
+                int inputBufferSize2 = GetInputBufferSize2();
                 int m_customBuffer2 = custom_buffers.m_customBuffer2;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer2, inputBufferSize2 - m_customBuffer2);
                 m_customBuffer2 += amountDelta;
@@ -418,7 +431,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_inputResource3)
             {
-                int inputBufferSize3 = GetInputBufferSize3(buildingID, ref data);
+                int inputBufferSize3 = GetInputBufferSize3();
                 int m_customBuffer3 = custom_buffers.m_customBuffer3;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer3, inputBufferSize3 - m_customBuffer3);
                 m_customBuffer3 += amountDelta;
@@ -426,7 +439,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_outputResource)
             {
-                int outputBufferSize = GetOutputBufferSize(buildingID, ref data);
+                int outputBufferSize = GetOutputBufferSize();
                 int m_customBuffer8 = custom_buffers.m_customBuffer8;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer8, outputBufferSize - m_customBuffer8);
                 m_customBuffer8 += amountDelta;
@@ -490,13 +503,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             base.BuildingDeactivated(buildingID, ref data);
         }
 
-        protected override void HandleWorkAndVisitPlaces(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveWorkerCount, ref int totalWorkerCount, ref int workPlaceCount, ref int aliveVisitorCount, ref int totalVisitorCount, ref int visitPlaceCount)
-        {
-            workPlaceCount += m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
-            GetWorkBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveWorkerCount, ref totalWorkerCount);
-            HandleWorkPlaces(buildingID, ref buildingData, m_workPlaceCount0, m_workPlaceCount1, m_workPlaceCount2, m_workPlaceCount3, ref behaviour, aliveWorkerCount, totalWorkerCount);
-        }
-
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
             int amountDelta = -Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
@@ -507,67 +513,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
             DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte district = instance.GetDistrict(buildingData.m_position);
-            byte b = instance.GetPark(buildingData.m_position);
-            float num = (float)buildingData.Width * -4f;
-            float num2 = (float)buildingData.Width * 4f;
-            float num3 = (float)buildingData.Length * -4f;
-            float num4 = (float)buildingData.Length * 4f;
-            if (m_info.m_subBuildings != null)
-            {
-                for (int i = 0; i < m_info.m_subBuildings.Length; i++)
-                {
-                    if ((object)m_info.m_subBuildings[i].m_buildingInfo != null)
-                    {
-                        float num5 = m_info.m_subBuildings[i].m_buildingInfo.m_cellWidth;
-                        float num6 = m_info.m_subBuildings[i].m_buildingInfo.m_cellLength;
-                        float x = m_info.m_subBuildings[i].m_position.x;
-                        float num7 = 0f - m_info.m_subBuildings[i].m_position.z;
-                        num = Mathf.Min(num, x - num5 * 4f);
-                        num2 = Mathf.Max(num2, x + num5 * 4f);
-                        num3 = Mathf.Min(num3, num7 - num6 * 4f);
-                        num4 = Mathf.Max(num4, num7 + num6 * 4f);
-                    }
-                }
-            }
-            float angle = buildingData.m_angle;
-            float num8 = (0f - (num + num2)) * 0.5f;
-            float num9 = (0f - (num3 + num4)) * 0.5f;
-            float num10 = Mathf.Sin(angle);
-            float num11 = Mathf.Cos(angle);
-            Vector3 position = buildingData.m_position - new Vector3(num11 * num8 + num10 * num9, 0f, num10 * num8 - num11 * num9);
+	    byte district = instance.GetDistrict(buildingData.m_position);
+	    byte park = instance.GetPark(buildingData.m_position);
+	    DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
+	    District[] buffer = instance.m_districts.m_buffer;
+	    byte b = district;
+	    buffer[(int)b].m_servicePoliciesEffect = buffer[(int)b].m_servicePoliciesEffect | (servicePolicies & (DistrictPolicies.Services.PowerSaving | DistrictPolicies.Services.WaterSaving | DistrictPolicies.Services.SmokeDetectors | DistrictPolicies.Services.Recycling | DistrictPolicies.Services.RecreationalUse | DistrictPolicies.Services.ExtraInsulation | DistrictPolicies.Services.NoElectricity | DistrictPolicies.Services.OnlyElectricity | DistrictPolicies.Services.FreeWifi));
             Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoResources | Notification.Problem1.NoPlaceforGoods | Notification.Problem1.NoInputProducts | Notification.Problem1.NoFishingGoods);
             bool flag = m_info.m_class.m_service == ItemClass.Service.Fishing;
-            DistrictPolicies.Park parkPolicies = instance.m_parks.m_buffer[b].m_parkPolicies;
-            instance.m_parks.m_buffer[b].m_parkPoliciesEffect |= parkPolicies & (DistrictPolicies.Park.ImprovedLogistics | DistrictPolicies.Park.WorkSafety | DistrictPolicies.Park.AdvancedAutomation);
-            if ((parkPolicies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                int num12 = GetMaintenanceCost() / 100;
-                num12 = finalProductionRate * num12 / 1000;
-                if (num12 != 0)
-                {
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num12, m_info.m_class);
-                }
-            }
-            int num13 = m_outputRate;
-            if ((parkPolicies & DistrictPolicies.Park.AdvancedAutomation) != 0)
-            {
-                num13 = (num13 * 110 + 50) / 100;
-                int num14 = GetMaintenanceCost() / 100;
-                num14 = finalProductionRate * num14 / 1000;
-                if (num14 != 0)
-                {
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num14, m_info.m_class);
-                }
-            }
-            if ((parkPolicies & DistrictPolicies.Park.WorkSafety) != 0)
-            {
-                int num15 = (aliveWorkerCount + (int)((Singleton<SimulationManager>.instance.m_currentFrameIndex >> 8) & 0xF)) / 16;
-                if (num15 != 0)
-                {
-                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, num15, m_info.m_class);
-                }
-            }
             if (finalProductionRate != 0)
             {
                 int num17 = 0;
@@ -575,7 +528,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
                 if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
                 {
-                    num17 = GetInputBufferSize1(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num17 = GetInputBufferSize1();
                     num18 = custom_buffers.m_customBuffer1;
                     int num19 = (m_inputRate1 * finalProductionRate + 99) / 100;
                     if (num18 < num19)
@@ -588,7 +541,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num21 = 0;
                 if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
                 {
-                    num20 = GetInputBufferSize2(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num20 = GetInputBufferSize2();
                     num21 = custom_buffers.m_customBuffer2;
                     int num22 = (m_inputRate2 * finalProductionRate + 99) / 100;
                     if (num21 < num22)
@@ -601,7 +554,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num24 = 0;
                 if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
                 {
-                    num23 = GetInputBufferSize3(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num23 = GetInputBufferSize3();
                     num24 = custom_buffers.m_customBuffer3;
                     int num25 = (m_inputRate3 * finalProductionRate + 99) / 100;
                     if (num24 < num25)
@@ -614,7 +567,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num27 = 0;
                 if (m_inputResource4 != TransferManager.TransferReason.None)
                 {
-                    num26 = GetInputBufferSize4(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num26 = GetInputBufferSize4();
                     num27 = custom_buffers.m_customBuffer4;
                     int num28 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     if (num27 < num28)
@@ -627,7 +580,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num30 = 0;
                 if (m_inputResource5 != TransferManager.TransferReason.None)
                 {
-                    num29 = GetInputBufferSize4(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num29 = GetInputBufferSize5();
                     num30 = custom_buffers.m_customBuffer5;
                     int num31 = (m_inputRate5 * finalProductionRate + 99) / 100;
                     if (num30 < num31)
@@ -640,7 +593,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num33 = 0;
                 if (m_inputResource6 != TransferManager.TransferReason.None)
                 {
-                    num32 = GetInputBufferSize4(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num32 = GetInputBufferSize6();
                     num33 = custom_buffers.m_customBuffer6;
                     int num34 = (m_inputRate6 * finalProductionRate + 99) / 100;
                     if (num33 < num34)
@@ -653,7 +606,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num36 = 0;
                 if (m_inputResource7 != TransferManager.TransferReason.None)
                 {
-                    num35 = GetInputBufferSize4(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num35 = GetInputBufferSize7();
                     num36 = custom_buffers.m_customBuffer7;
                     int num37 = (m_inputRate7 * finalProductionRate + 99) / 100;
                     if (num36 < num37)
@@ -666,13 +619,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num39 = 0;
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
-                    num38 = GetOutputBufferSize(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num38 = GetOutputBufferSize();
                     num39 = custom_buffers.m_customBuffer8;
-                    int num40 = (num13 * finalProductionRate + 99) / 100;
+                    int num40 = (m_outputRate * finalProductionRate + 99) / 100;
                     if (num38 - num39 < num40)
                     {
                         num40 = Mathf.Max(0, num29 - num30);
-                        finalProductionRate = (num40 * 100 + num13 - 1) / num13;
+                        finalProductionRate = (num40 * 100 + m_outputRate - 1) / m_outputRate;
                         if (m_DeliveryVehicleCount != 0)
                         {
                             problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoPlaceforGoods);
@@ -710,217 +663,209 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num44 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     num27 = Mathf.Max(0, num27 - num44);
                     custom_buffers.m_customBuffer4 = (ushort)num27;
-                    instance.m_parks.m_buffer[b].AddConsumptionAmount(m_inputResource4, num44);
                 }
                 if (m_inputResource5 != TransferManager.TransferReason.None)
                 {
                     int num45 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     num30 = Mathf.Max(0, num30 - num45);
                     custom_buffers.m_customBuffer5 = (ushort)num30;
-                    instance.m_parks.m_buffer[b].AddConsumptionAmount(m_inputResource5, num45);
                 }
                 if (m_inputResource6 != TransferManager.TransferReason.None)
                 {
                     int num46 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     num33 = Mathf.Max(0, num33 - num46);
                     custom_buffers.m_customBuffer6 = (ushort)num33;
-                    instance.m_parks.m_buffer[b].AddConsumptionAmount(m_inputResource6, num46);
                 }
                 if (m_inputResource7 != TransferManager.TransferReason.None)
                 {
                     int num47 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     num36 = Mathf.Max(0, num36 - num47);
                     custom_buffers.m_customBuffer7 = (ushort)num36;
-                    instance.m_parks.m_buffer[b].AddConsumptionAmount(m_inputResource7, num47);
                 }
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
-                    int num48 = (num13 * finalProductionRate + 99) / 100;
+                    int num48 = (m_outputRate * finalProductionRate + 99) / 100;
                     num39 = Mathf.Min(num38, num39 + num48);
                     custom_buffers.m_customBuffer8 = (ushort)num39;
                 }
                 base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
-                if (b != 0)
+                int num49 = 0;
+                if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
                 {
-                    int num49 = 0;
-                    if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+                    int count = 0;
+                    int cargo = 0;
+                    int capacity = 0;
+                    int outside = 0;
+                    CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count, ref cargo, ref capacity, ref outside);
+                    if (outside != 0)
                     {
-                        int count = 0;
-                        int cargo = 0;
-                        int capacity = 0;
-                        int outside = 0;
-                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count, ref cargo, ref capacity, ref outside);
-                        if (outside != 0)
-                        {
-                            num49 |= 1;
-                        }
-                        int num50 = num17 - num18 - cargo;
-                        if (num50 >= 8000)
-                        {
-                            ExtendedTransferManager.Offer offer = default(ExtendedTransferManager.Offer);
-                            offer.Building = buildingID;
-                            offer.Position = buildingData.m_position;
-                            offer.Amount = 1;
-                            offer.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_inputResource1, offer);
-                        }
+                        num49 |= 1;
                     }
-                    if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+                    int num50 = num17 - num18 - cargo;
+                    if (num50 >= 8000)
                     {
-                        int count2 = 0;
-                        int cargo2 = 0;
-                        int capacity2 = 0;
-                        int outside2 = 0;
-                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
-                        if (outside2 != 0)
-                        {
-                            num49 |= 2;
-                        }
-                        int num51 = num20 - num21 - cargo2;
-                        if (num51 >= 8000)
-                        {
-                            ExtendedTransferManager.Offer offer2 = default(ExtendedTransferManager.Offer);
-                            offer2.Building = buildingID;
-                            offer2.Position = buildingData.m_position;
-                            offer2.Amount = 1;
-                            offer2.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_inputResource2, offer2);
-                        }
+                        ExtendedTransferManager.Offer offer = default(ExtendedTransferManager.Offer);
+                        offer.Building = buildingID;
+                        offer.Position = buildingData.m_position;
+                        offer.Amount = 1;
+                        offer.Active = false;
+                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_inputResource1, offer);
                     }
-                    if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+                }
+                if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+                {
+                    int count2 = 0;
+                    int cargo2 = 0;
+                    int capacity2 = 0;
+                    int outside2 = 0;
+                    CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
+                    if (outside2 != 0)
                     {
-                        int count3 = 0;
-                        int cargo3 = 0;
-                        int capacity3 = 0;
-                        int outside3 = 0;
-                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
-                        if (outside3 != 0)
-                        {
-                            num49 |= 4;
-                        }
-                        int num52 = num23 - num24 - cargo3;
-                        if (num52 >= 8000)
-                        {
-                            ExtendedTransferManager.Offer offer3 = default(ExtendedTransferManager.Offer);
-                            offer3.Building = buildingID;
-                            offer3.Position = buildingData.m_position;
-                            offer3.Amount = 1;
-                            offer3.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_inputResource3, offer3);
-                        }
+                        num49 |= 2;
                     }
-                    if (m_inputResource4 != TransferManager.TransferReason.None)
+                    int num51 = num20 - num21 - cargo2;
+                    if (num51 >= 8000)
                     {
-                        int count4 = 0;
-                        int cargo4 = 0;
-                        int capacity4 = 0;
-                        int outside4 = 0;
-                        CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource4, ref count4, ref cargo4, ref capacity4, ref outside4);
-                        if (outside4 != 0)
-                        {
-                            num49 |= 8;
-                        }
-                        int num53 = num26 - num27 - cargo4;
-                        if (num53 >= 8000)
-                        {
-                            TransferManager.TransferOffer offer4 = default(TransferManager.TransferOffer);
-                            offer4.Priority = Mathf.Max(1, num53 * 8 / num26);
-                            offer4.Building = buildingID;
-                            offer4.Position = buildingData.m_position;
-                            offer4.Amount = 1;
-                            offer4.Active = false;
-                            Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource4, offer4);
-                        }
-                        instance.m_parks.m_buffer[b].AddBufferStatus(m_inputResource4, num27, cargo4, num26);
+                        ExtendedTransferManager.Offer offer2 = default(ExtendedTransferManager.Offer);
+                        offer2.Building = buildingID;
+                        offer2.Position = buildingData.m_position;
+                        offer2.Amount = 1;
+                        offer2.Active = false;
+                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_inputResource2, offer2);
                     }
-                    if (m_inputResource5 != TransferManager.TransferReason.None)
+                }
+                if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+                {
+                    int count3 = 0;
+                    int cargo3 = 0;
+                    int capacity3 = 0;
+                    int outside3 = 0;
+                    CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
+                    if (outside3 != 0)
                     {
-                        int count5 = 0;
-                        int cargo5 = 0;
-                        int capacity5 = 0;
-                        int outside5 = 0;
-                        CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource5, ref count5, ref cargo5, ref capacity5, ref outside5);
-                        if (outside5 != 0)
-                        {
-                            num49 |= 16;
-                        }
-                        int num54 = num29 - num30 - cargo5;
-                        if (num54 >= 8000)
-                        {
-                            TransferManager.TransferOffer offer5 = default(TransferManager.TransferOffer);
-                            offer5.Priority = Mathf.Max(1, num54 * 8 / num29);
-                            offer5.Building = buildingID;
-                            offer5.Position = buildingData.m_position;
-                            offer5.Amount = 1;
-                            offer5.Active = false;
-                            Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource5, offer5);
-                        }
-                        instance.m_parks.m_buffer[b].AddBufferStatus(m_inputResource4, num30, cargo5, num29);
+                        num49 |= 4;
                     }
-                    if (m_inputResource6 != TransferManager.TransferReason.None)
+                    int num52 = num23 - num24 - cargo3;
+                    if (num52 >= 8000)
                     {
-                        int count6 = 0;
-                        int cargo6 = 0;
-                        int capacity6 = 0;
-                        int outside6 = 0;
-                        CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource6, ref count6, ref cargo6, ref capacity6, ref outside6);
-                        if (outside6 != 0)
-                        {
-                            num49 |= 32;
-                        }
-                        int num55 = num32 - num33 - cargo6;
-                        if (num55 >= 8000)
-                        {
-                            TransferManager.TransferOffer offer6 = default(TransferManager.TransferOffer);
-                            offer6.Priority = Mathf.Max(1, num55 * 8 / num32);
-                            offer6.Building = buildingID;
-                            offer6.Position = buildingData.m_position;
-                            offer6.Amount = 1;
-                            offer6.Active = false;
-                            Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource6, offer6);
-                        }
-                        instance.m_parks.m_buffer[b].AddBufferStatus(m_inputResource4, num33, cargo6, num32);
+                        ExtendedTransferManager.Offer offer3 = default(ExtendedTransferManager.Offer);
+                        offer3.Building = buildingID;
+                        offer3.Position = buildingData.m_position;
+                        offer3.Amount = 1;
+                        offer3.Active = false;
+                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_inputResource3, offer3);
                     }
-                    if (m_inputResource7 != TransferManager.TransferReason.None)
+                }
+                if (m_inputResource4 != TransferManager.TransferReason.None)
+                {
+                    int count4 = 0;
+                    int cargo4 = 0;
+                    int capacity4 = 0;
+                    int outside4 = 0;
+                    CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource4, ref count4, ref cargo4, ref capacity4, ref outside4);
+                    if (outside4 != 0)
                     {
-                        int count7 = 0;
-                        int cargo7 = 0;
-                        int capacity7 = 0;
-                        int outside7 = 0;
-                        CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource7, ref count7, ref cargo7, ref capacity7, ref outside7);
-                        if (outside7 != 0)
-                        {
-                            num49 |= 64;
-                        }
-                        int num56 = num35 - num36 - cargo7;
-                        if (num56 >= 8000)
-                        {
-                            TransferManager.TransferOffer offer7 = default(TransferManager.TransferOffer);
-                            offer7.Priority = Mathf.Max(1, num56 * 8 / num35);
-                            offer7.Building = buildingID;
-                            offer7.Position = buildingData.m_position;
-                            offer7.Amount = 1;
-                            offer7.Active = false;
-                            Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource7, offer7);
-                        }
-                        instance.m_parks.m_buffer[b].AddBufferStatus(m_inputResource4, num36, cargo7, num35);
+                        num49 |= 8;
                     }
-                    buildingData.m_tempImport |= (byte)num49;
-                    if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+                    int num53 = num26 - num27 - cargo4;
+                    if (num53 >= 8000)
                     {
-                        if (m_DeliveryVehicleCount != 0)
+                        TransferManager.TransferOffer offer4 = default(TransferManager.TransferOffer);
+                        offer4.Priority = Mathf.Max(1, num53 * 8 / num26);
+                        offer4.Building = buildingID;
+                        offer4.Position = buildingData.m_position;
+                        offer4.Amount = 1;
+                        offer4.Active = false;
+                        Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource4, offer4);
+                    }
+                }
+                if (m_inputResource5 != TransferManager.TransferReason.None)
+                {
+                    int count5 = 0;
+                    int cargo5 = 0;
+                    int capacity5 = 0;
+                    int outside5 = 0;
+                    CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource5, ref count5, ref cargo5, ref capacity5, ref outside5);
+                    if (outside5 != 0)
+                    {
+                        num49 |= 16;
+                    }
+                    int num54 = num29 - num30 - cargo5;
+                    if (num54 >= 8000)
+                    {
+                        TransferManager.TransferOffer offer5 = default(TransferManager.TransferOffer);
+                        offer5.Priority = Mathf.Max(1, num54 * 8 / num29);
+                        offer5.Building = buildingID;
+                        offer5.Position = buildingData.m_position;
+                        offer5.Amount = 1;
+                        offer5.Active = false;
+                        Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource5, offer5);
+                    }
+                }
+                if (m_inputResource6 != TransferManager.TransferReason.None)
+                {
+                    int count6 = 0;
+                    int cargo6 = 0;
+                    int capacity6 = 0;
+                    int outside6 = 0;
+                    CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource6, ref count6, ref cargo6, ref capacity6, ref outside6);
+                    if (outside6 != 0)
+                    {
+                        num49 |= 32;
+                    }
+                    int num55 = num32 - num33 - cargo6;
+                    if (num55 >= 8000)
+                    {
+                        TransferManager.TransferOffer offer6 = default(TransferManager.TransferOffer);
+                        offer6.Priority = Mathf.Max(1, num55 * 8 / num32);
+                        offer6.Building = buildingID;
+                        offer6.Position = buildingData.m_position;
+                        offer6.Amount = 1;
+                        offer6.Active = false;
+                        Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource6, offer6);
+                    }
+                }
+                if (m_inputResource7 != TransferManager.TransferReason.None)
+                {
+                    int count7 = 0;
+                    int cargo7 = 0;
+                    int capacity7 = 0;
+                    int outside7 = 0;
+                    CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource7, ref count7, ref cargo7, ref capacity7, ref outside7);
+                    if (outside7 != 0)
+                    {
+                        num49 |= 64;
+                    }
+                    int num56 = num35 - num36 - cargo7;
+                    if (num56 >= 8000)
+                    {
+                        TransferManager.TransferOffer offer7 = default(TransferManager.TransferOffer);
+                        offer7.Priority = Mathf.Max(1, num56 * 8 / num35);
+                        offer7.Building = buildingID;
+                        offer7.Position = buildingData.m_position;
+                        offer7.Amount = 1;
+                        offer7.Active = false;
+                        Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource7, offer7);
+                    }
+                }
+                buildingData.m_tempImport |= (byte)num49;
+                if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+                {
+                    if (m_DeliveryVehicleCount != 0)
+                    {
+                        int count8 = 0;
+                        int cargo8 = 0;
+                        int capacity8 = 0;
+                        int outside8 = 0;
+                        CalculateVehicles.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count8, ref cargo8, ref capacity8, ref outside8);
+                        buildingData.m_tempExport = (byte)Mathf.Clamp(outside8, buildingData.m_tempExport, 255);
+                        int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
+                        int productionRate2 = PlayerBuildingAI.GetProductionRate(100, budget);
+                        int num58 = (productionRate2 * m_DeliveryVehicleCount + 99) / 100;
+                        int num59 = num39;
+                        if (num59 >= 8000 && count8 < num58 && allow_delivery)
                         {
-                            int count8 = 0;
-                            int cargo8 = 0;
-                            int capacity8 = 0;
-                            int outside8 = 0;
-                            CalculateVehicles.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count8, ref cargo8, ref capacity8, ref outside8);
-                            buildingData.m_tempExport = (byte)Mathf.Clamp(outside8, buildingData.m_tempExport, 255);
-                            int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
-                            int productionRate2 = PlayerBuildingAI.GetProductionRate(100, budget);
-                            int num58 = (productionRate2 * m_DeliveryVehicleCount + 99) / 100;
-                            int num59 = num39;
-                            if (num59 >= 8000 && count8 < num58)
+                            if (quality == 1)
                             {
                                 ExtendedTransferManager.Offer offer8 = default(ExtendedTransferManager.Offer);
                                 offer8.Building = buildingID;
@@ -928,16 +873,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 offer8.Amount = 1;
                                 offer8.Active = true;
                                 Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryLow, offer8);
-
-                                
+                            }
+                            else if (quality == 2)
+                            {
                                 ExtendedTransferManager.Offer offer9 = default(ExtendedTransferManager.Offer);
                                 offer9.Building = buildingID;
                                 offer9.Position = buildingData.m_position;
                                 offer9.Amount = 1;
                                 offer9.Active = true;
                                 Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryMedium, offer9);
-
-                                
+                            }
+                            else if (quality == 3)
+                            {
                                 ExtendedTransferManager.Offer offer10 = default(ExtendedTransferManager.Offer);
                                 offer10.Building = buildingID;
                                 offer10.Position = buildingData.m_position;
@@ -946,45 +893,84 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryHigh, offer10);
                             }
                         }
-                        var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
-                        if (outgoingTransferReason != TransferManager.TransferReason.None)
+                    }
+                    var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
+                    if (outgoingTransferReason != TransferManager.TransferReason.None)
+                    {
+                        int num60 = buildingData.m_customBuffer1 - aliveVisitorCount * 100;
+                        int num61 = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
+                        if (num60 >= 100 && num61 > 0)
                         {
-                            int num60 = buildingData.m_customBuffer1 - aliveVisitorCount * 100;
-                            int num61 = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
-                            if (num60 >= 100 && num61 > 0)
+                            TransferManager.TransferOffer offer6 = default(TransferManager.TransferOffer);
+                            offer6.Priority = Mathf.Max(1, num60 * 8 / num29);
+                            offer6.Building = buildingID;
+                            offer6.Position = buildingData.m_position;
+                            offer6.Amount = Mathf.Min(num60 / 100, num61);
+                            offer6.Active = false;
+                            Singleton<TransferManager>.instance.AddOutgoingOffer(outgoingTransferReason, offer6);
+                        }
+                    }
+                    if (Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.FinanceExpansion) && Singleton<UnlockManager>.instance.Unlocked(ItemClass.SubService.PoliceDepartmentBank) && buildingData.m_fireIntensity == 0)
+                    {
+                        int cashCapacity = 4000 * 4;
+                        if (cashCapacity != 0)
+                        {
+                            int num54 = buildingData.m_cashBuffer;
+                            if (num54 >= cashCapacity / 8 && Singleton<SimulationManager>.instance.m_randomizer.Int32(5U) == 0)
                             {
-                                TransferManager.TransferOffer offer6 = default(TransferManager.TransferOffer);
-                                offer6.Priority = Mathf.Max(1, num60 * 8 / num29);
-                                offer6.Building = buildingID;
-                                offer6.Position = buildingData.m_position;
-                                offer6.Amount = Mathf.Min(num60 / 100, num61);
-                                offer6.Active = false;
-                                Singleton<TransferManager>.instance.AddOutgoingOffer(outgoingTransferReason, offer6);
+                                int num55 = 0;
+                                int num56 = 0;
+                                int num57 = 0;
+                                int num58 = 0;
+                                base.CalculateGuestVehicles(buildingID, ref buildingData, TransferManager.TransferReason.Cash, ref num55, ref num56, ref num57, ref num58);
+                                num54 -= num57 - num56;
+                                if (num54 >= cashCapacity / 8)
+                                {
+                                    TransferManager.TransferOffer transferOffer3 = default(TransferManager.TransferOffer);
+                                    transferOffer3.Priority = num54 * 8 / cashCapacity;
+                                    transferOffer3.Building = buildingID;
+                                    transferOffer3.Position = buildingData.m_position;
+                                    transferOffer3.Amount = 1;
+                                    Singleton<TransferManager>.instance.AddOutgoingOffer(TransferManager.TransferReason.Cash, transferOffer3);
+                                }
                             }
                         }
                     }
                 }
-                if (buildingData.m_finalImport != 0)
-                {
-                    instance.m_districts.m_buffer[district].m_playerConsumption.m_finalImportAmount += buildingData.m_finalImport;
-                }
-                if (buildingData.m_finalExport != 0)
-                {
-                    instance.m_districts.m_buffer[district].m_playerConsumption.m_finalExportAmount += buildingData.m_finalExport;
-                }
-                int num62 = finalProductionRate * m_noiseAccumulation / 100;
-                if (num62 != 0)
-                {
-                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, num62, position, m_noiseRadius);
-                }
+
+
             }
             buildingData.m_problems = problemStruct;
-            buildingData.m_education3 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate), 0, 255);
+            buildingData.m_education3 = (byte)Mathf.Clamp(finalProductionRate * m_outputRate / Mathf.Max(1, m_outputRate), 0, 255);
             buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
-            if (b != 0)
-            {
-                instance.m_parks.m_buffer[b].AddWorkers(aliveWorkerCount);
-            }
+            int healthAccumulation = 0;
+	    int wellbeingAccumulation = 0;
+            if (behaviour.m_healthAccumulation != 0)
+	    {
+		if (aliveWorkerCount + aliveVisitorCount != 0)
+		{
+		    healthAccumulation = (behaviour.m_healthAccumulation + (aliveWorkerCount + aliveVisitorCount >> 1)) / (aliveWorkerCount + aliveVisitorCount);
+		}
+	    }
+            if (behaviour.m_wellbeingAccumulation != 0)
+	    {
+		if (aliveWorkerCount + aliveVisitorCount != 0)
+		{
+		    wellbeingAccumulation = (behaviour.m_wellbeingAccumulation + (aliveWorkerCount + aliveVisitorCount >> 1)) / (aliveWorkerCount + aliveVisitorCount);
+		}
+	    }
+            int happines = Citizen.GetHappiness(healthAccumulation, wellbeingAccumulation) * 15 / 100;
+	    if ((buildingData.m_problems & Notification.Problem1.MajorProblem).IsNone)
+	    {
+		happines += 20;
+	    }
+	    if (buildingData.m_problems.IsNone)
+	    {
+		happines += 25;
+	    }
+            happines = Mathf.Clamp(happines, 0, 100);
+            buildingData.m_happiness = (byte)happines;
+	    buildingData.m_citizenCount = (byte)(aliveWorkerCount + aliveVisitorCount);
             base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
         }
 
@@ -1099,141 +1085,70 @@ namespace IndustriesMeetsSunsetHarbor.AI
             entertainment = UniqueFacultyAI.IncreaseByBonus(UniqueFacultyAI.FacultyBonus.Tourism, entertainment);
         }
 
+        protected override void HandleWorkAndVisitPlaces(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveWorkerCount, ref int totalWorkerCount, ref int workPlaceCount, ref int aliveVisitorCount, ref int totalVisitorCount, ref int visitPlaceCount)
+	{
+	    workPlaceCount += m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
+	    base.GetWorkBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveWorkerCount, ref totalWorkerCount);
+	    base.HandleWorkPlaces(buildingID, ref buildingData, m_workPlaceCount0, m_workPlaceCount1, m_workPlaceCount2, m_workPlaceCount3, ref behaviour, aliveWorkerCount, totalWorkerCount);
+	    visitPlaceCount += m_visitPlaceCount0 + m_visitPlaceCount1 + m_visitPlaceCount2;
+	    base.GetVisitBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveVisitorCount, ref totalVisitorCount);
+	}
+
         public override bool RequireRoadAccess()
         {
             return true;
         }
 
-        public int GetInputBufferSize1(ushort buildingID, ref Building data)
-        {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize1(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize1(DistrictPolicies.Park policies, int storageDelta)
+        private int GetInputBufferSize1()
         {
             int num = m_inputRate1 * 32 + 8000;
-            num = (num * (100 + storageDelta) + 50) / 100;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetInputBufferSize2(ushort buildingID, ref Building data)
-        {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize2(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize2(DistrictPolicies.Park policies, int storageDelta)
+        private int GetInputBufferSize2()
         {
             int num = m_inputRate2 * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetInputBufferSize3(ushort buildingID, ref Building data)
-        {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize3(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize3(DistrictPolicies.Park policies, int storageDelta)
+        private int GetInputBufferSize3()
         {
             int num = m_inputRate3 * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetInputBufferSize4(ushort buildingID, ref Building data)
+        private int GetInputBufferSize4()
         {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize4(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize4(DistrictPolicies.Park policies, int storageDelta)
-        {
-            int num = m_inputRate1 * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            int num = m_inputRate4 * 32 + 8000;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetInputBufferSize5(ushort buildingID, ref Building data)
+        private int GetInputBufferSize5()
         {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize5(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize5(DistrictPolicies.Park policies, int storageDelta)
-        {
-            int num = m_inputRate1 * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            int num = m_inputRate5 * 32 + 8000;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetInputBufferSize6(ushort buildingID, ref Building data)
+        private int GetInputBufferSize6()
         {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize6(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize6(DistrictPolicies.Park policies, int storageDelta)
-        {
-            int num = m_inputRate1 * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            int num = m_inputRate6 * 32 + 8000;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetInputBufferSize7(ushort buildingID, ref Building data)
+        private int GetInputBufferSize7()
         {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetInputBufferSize7(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetInputBufferSize7(DistrictPolicies.Park policies, int storageDelta)
-        {
-            int num = m_inputRate1 * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            int num = m_inputRate7 * 32 + 8000;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetOutputBufferSize(ushort buildingID, ref Building data)
-        {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
-            byte b = instance.GetPark(data.m_position);
-            return GetOutputBufferSize(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
-        }
-
-        private int GetOutputBufferSize(DistrictPolicies.Park policies, int storageDelta)
+        private int GetOutputBufferSize()
         {
             if (m_DeliveryVehicleCount == 0)
             {
@@ -1241,11 +1156,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 return Mathf.Clamp(value, 1, 64000);
             }
             int num = m_outputRate * 32 + 8000;
-            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != 0)
-            {
-                num = (num * 6 + 4) / 5;
-            }
-            num = (num * (100 + storageDelta) + 50) / 100;
+            num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
@@ -1294,42 +1205,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 _ => TransferManager.TransferReason.Shopping,
             };
         }
-
-        private int GetGoodsCapacity(ushort buildingID, ref Building data)
-	{
-		int num = 4000;
-		int num2 = CalculateVisitplaceCount(new Randomizer(buildingID));
-		return Mathf.Max(num2 * 500, num * 4);
-	}
-
-	private int GetCashCapacity(ushort buildingID, ref Building data)
-	{
-		return GetGoodsCapacity(buildingID, ref data) * 4;
-	}
-
-        public int CalculateVisitplaceCount(Randomizer r)
-	{
-	    ItemClass @class = m_info.m_class;
-	    int num = 0;
-	    if (quality == 1)
-	    {
-		num = 110;
-	    }
-            else if (quality == 2)
-	    {
-		num = 250;
-	    }
-	    else if (quality == 3)
-	    {
-		num = 400;
-	    }
-	    if (num != 0)
-	    {
-		num = Mathf.Max(200, num + r.Int32(100u)) / 100;
-	    }
-	    return num;
-	}
-
 
     }
 
