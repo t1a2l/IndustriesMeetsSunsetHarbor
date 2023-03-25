@@ -4,6 +4,7 @@ using ColossalFramework.DataBinding;
 using UnityEngine;
 using MoreTransferReasons.Code;
 using IndustriesMeetsSunsetHarbor.Utils;
+using IndustriesMeetsSunsetHarbor.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -280,31 +281,30 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
+            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource1)
             {
-                int inputBufferSize = GetInputBufferSize1(buildingID, ref data);
-                int num = (int)data.m_customBuffer2;
-                amountDelta = Mathf.Clamp(amountDelta, -num, inputBufferSize - num);
-                num += amountDelta;
-                data.m_customBuffer2 = (ushort)num;
+                int inputBufferSize1 = GetInputBufferSize1(buildingID, ref data);
+                int m_customBuffer1 = (int)custom_buffers.m_customBuffer1;
+                amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer1, inputBufferSize1 - m_customBuffer1);
+                m_customBuffer1 += amountDelta;
+                custom_buffers.m_customBuffer1 = (ushort)m_customBuffer1;
             }
             else if (material == m_inputResource2)
             {
                 int inputBufferSize2 = GetInputBufferSize2(buildingID, ref data);
-                int num2 = ((int)data.m_teens << 8) | (int)data.m_youngs;
-                amountDelta = Mathf.Clamp(amountDelta, -num2, inputBufferSize2 - num2);
-                num2 += amountDelta;
-                data.m_youngs = (byte)(num2 & 255);
-                data.m_teens = (byte)(num2 >> 8);
+                int m_customBuffer2 = (int)custom_buffers.m_customBuffer2;
+                amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer2, inputBufferSize2 - m_customBuffer2);
+                m_customBuffer2 += amountDelta;
+                custom_buffers.m_customBuffer2 = (ushort)m_customBuffer2;
             }
             else if (material == m_inputResource3)
             {
                 int inputBufferSize3 = GetInputBufferSize3(buildingID, ref data);
-                int num3 = ((int)data.m_adults << 8) | (int)data.m_seniors;
-                amountDelta = Mathf.Clamp(amountDelta, -num3, inputBufferSize3 - num3);
-                num3 += amountDelta;
-                data.m_seniors = (byte)(num3 & 255);
-                data.m_adults = (byte)(num3 >> 8);
+                int m_customBuffer3 = (int)custom_buffers.m_customBuffer3;
+                amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer3, inputBufferSize3 - m_customBuffer3);
+                m_customBuffer3 += amountDelta;
+                custom_buffers.m_customBuffer3 = (ushort)m_customBuffer3;
             }
             else
             {
@@ -314,22 +314,22 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public void ModifyExtendedMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
+            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource4)
             {
-                int inputBufferSize = GetInputBufferSize1(buildingID, ref data);
-                int num = (int)data.m_customBuffer2;
-                amountDelta = Mathf.Clamp(amountDelta, -num, inputBufferSize - num);
-                num += amountDelta;
-                data.m_customBuffer2 = (ushort)num;
+                int inputBufferSize4 = GetInputBufferSize4(buildingID, ref data);
+                int m_customBuffer4 = (int)custom_buffers.m_customBuffer4;
+                amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer4, inputBufferSize4 - m_customBuffer4);
+                m_customBuffer4 += amountDelta;
+                custom_buffers.m_customBuffer4 = (ushort)m_customBuffer4;
             }
             else if (material == m_outputResource)
             {
-                int inputBufferSize3 = GetInputBufferSize3(buildingID, ref data);
-                int num3 = ((int)data.m_adults << 8) | (int)data.m_seniors;
-                amountDelta = Mathf.Clamp(amountDelta, -num3, inputBufferSize3 - num3);
-                num3 += amountDelta;
-                data.m_seniors = (byte)(num3 & 255);
-                data.m_adults = (byte)(num3 >> 8);
+                int outputBufferSize = GetOutputBufferSize(buildingID, ref data);
+                int m_customBuffer5 = (int)custom_buffers.m_customBuffer5;
+                amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer5, outputBufferSize - m_customBuffer5);
+                m_customBuffer5 += amountDelta;
+                custom_buffers.m_customBuffer5 = (ushort)m_customBuffer5;
             }
         }
 
@@ -480,10 +480,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 int num19 = 0;
                 int num20 = 0;
+                var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
                 if (m_inputResource1 != TransferManager.TransferReason.None)
                 {
                     num19 = GetInputBufferSize1(parkPolicies, (int)instance.m_parks.m_buffer[(int)b].m_finalStorageDelta);
-                    num20 = (int)buildingData.m_customBuffer2;
+                    num20 = (int)custom_buffers.m_customBuffer1;
                     int num21 = (m_inputRate1 * finalProductionRate + 99) / 100;
                     if (num20 < num21)
                     {
@@ -496,7 +497,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource2 != TransferManager.TransferReason.None)
                 {
                     num22 = GetInputBufferSize2(parkPolicies, (int)instance.m_parks.m_buffer[(int)b].m_finalStorageDelta);
-                    num23 = ((int)buildingData.m_teens << 8) | (int)buildingData.m_youngs;
+                    num23 = (int)custom_buffers.m_customBuffer2;
                     int num24 = (m_inputRate2 * finalProductionRate + 99) / 100;
                     if (num23 < num24)
                     {
@@ -509,7 +510,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource3 != TransferManager.TransferReason.None)
                 {
                     num25 = GetInputBufferSize3(parkPolicies, (int)instance.m_parks.m_buffer[(int)b].m_finalStorageDelta);
-                    num26 = ((int)buildingData.m_adults << 8) | (int)buildingData.m_seniors;
+                    num26 = (int)custom_buffers.m_customBuffer3;
                     int num27 = (m_inputRate3 * finalProductionRate + 99) / 100;
                     if (num26 < num27)
                     {
@@ -522,7 +523,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource4 != ExtendedTransferManager.TransferReason.None)
                 {
                     num28 = GetInputBufferSize4(parkPolicies, (int)instance.m_parks.m_buffer[(int)b].m_finalStorageDelta);
-                    num29 = ((int)buildingData.m_education1 << 8) | (int)buildingData.m_education2;
+                    num29 = (int)custom_buffers.m_customBuffer4;
                     int num30 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     if (num29 < num30)
                     {
@@ -535,7 +536,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
                     num31 = GetOutputBufferSize(parkPolicies, (int)instance.m_parks.m_buffer[(int)b].m_finalStorageDelta);
-                    num32 = (int)buildingData.m_customBuffer1;
+                    num32 = (int)custom_buffers.m_customBuffer5;
                     int num33 = (num13 * finalProductionRate + 99) / 100;
                     if (num31 - num32 < num33)
                     {
@@ -559,37 +560,34 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     int num34 = (m_inputRate1 * finalProductionRate + 99) / 100;
                     num20 = Mathf.Max(0, num20 - num34);
-                    buildingData.m_customBuffer2 = (ushort)num20;
+                    custom_buffers.m_customBuffer1 = (ushort)num20;
                     instance.m_parks.m_buffer[(int)b].AddConsumptionAmount(m_inputResource1, num34);
                 }
                 if (m_inputResource2 != TransferManager.TransferReason.None)
                 {
                     int num35 = (m_inputRate2 * finalProductionRate + 99) / 100;
                     num23 = Mathf.Max(0, num23 - num35);
-                    buildingData.m_youngs = (byte)(num23 & 255);
-                    buildingData.m_teens = (byte)(num23 >> 8);
+                    custom_buffers.m_customBuffer2 = (ushort)num23;
                     instance.m_parks.m_buffer[(int)b].AddConsumptionAmount(m_inputResource2, num35);
                 }
                 if (m_inputResource3 != TransferManager.TransferReason.None)
                 {
                     int num36 = (m_inputRate3 * finalProductionRate + 99) / 100;
                     num26 = Mathf.Max(0, num26 - num36);
-                    buildingData.m_seniors = (byte)(num26 & 255);
-                    buildingData.m_adults = (byte)(num26 >> 8);
+                    custom_buffers.m_customBuffer3 = (ushort)num26;
                     instance.m_parks.m_buffer[(int)b].AddConsumptionAmount(m_inputResource3, num36);
                 }
                 if (m_inputResource4 != ExtendedTransferManager.TransferReason.None)
                 {
                     int num37 = (m_inputRate4 * finalProductionRate + 99) / 100;
                     num29 = Mathf.Max(0, num29 - num37);
-                    buildingData.m_education2 = (byte)(num29 & 255);
-                    buildingData.m_education1 = (byte)(num29 >> 8);
+                    custom_buffers.m_customBuffer4 = (ushort)num29;
                 }
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
                     int num38 = (num13 * finalProductionRate + 99) / 100;
                     num32 = Mathf.Min(num31, num32 + num38);
-                    buildingData.m_customBuffer1 = (ushort)num32;
+                    custom_buffers.m_customBuffer5 = (ushort)num32;
                 }
                 num16 = (finalProductionRate * num16 + 50) / 100;
                 if (num16 != 0)
