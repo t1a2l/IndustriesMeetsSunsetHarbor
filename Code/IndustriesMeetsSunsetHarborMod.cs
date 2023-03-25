@@ -38,6 +38,7 @@ namespace IndustriesMeetsSunsetHarbor
                 AquacultureFarmManager.Init();
                 AquacultureExtractorManager.Init();
                 ResourceMarketManager.Init();
+                BuildingCustomBuffersManager.Init();
             }
             catch (Exception e)
             {
@@ -45,6 +46,7 @@ namespace IndustriesMeetsSunsetHarbor
                 AquacultureFarmManager.Deinit();
                 AquacultureExtractorManager.Deinit();
                 ResourceMarketManager.Deinit();
+                BuildingCustomBuffersManager.Deinit();
             }
         }
 
@@ -57,6 +59,7 @@ namespace IndustriesMeetsSunsetHarbor
             AquacultureFarmManager.Deinit();
             AquacultureExtractorManager.Deinit();
             ResourceMarketManager.Deinit();
+            BuildingCustomBuffersManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 

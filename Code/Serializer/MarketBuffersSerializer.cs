@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.Serializer
 {
