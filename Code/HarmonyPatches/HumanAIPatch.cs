@@ -34,7 +34,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     // if building not already waiting for delivery
                     if((homeBuildingData.m_flags & Building.Flags.Incoming) == Building.Flags.None)
                     {
-                        homeBuildingData.m_flags |= Building.Flags.Incoming; // raise flag as building waitng for delivery
+                        homeBuildingData.m_flags |= Building.Flags.Incoming; // raise flag as building waiting for delivery
                     }
                     
                 }
@@ -50,7 +50,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int outside1 = 0;
                     CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryLow, ref count1, ref cargo1, ref capacity1, ref outside1);
                     ExtendedTransferManager.Offer transferOffer1 = default(ExtendedTransferManager.Offer);
-                    transferOffer1.Building = sourceBuilding;
+                    transferOffer1.Citizen = citizenID;
                     transferOffer1.Position = homeBuildingData.m_position;
                     transferOffer1.Amount = 1;
                     transferOffer1.Active = false;
@@ -64,7 +64,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int outside2 = 0;
                     CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryMedium, ref count2, ref cargo2, ref capacity2, ref outside2);
                     ExtendedTransferManager.Offer transferOffer2 = default(ExtendedTransferManager.Offer);
-                    transferOffer2.Building = sourceBuilding;
+                    transferOffer2.Citizen = citizenID;
                     transferOffer2.Position = homeBuildingData.m_position;
                     transferOffer2.Amount = 1;
                     transferOffer2.Active = false;
@@ -78,7 +78,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int outside3 = 0;
                     CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryHigh, ref count3, ref cargo3, ref capacity3, ref outside3);
                     ExtendedTransferManager.Offer transferOffer3 = default(ExtendedTransferManager.Offer);
-                    transferOffer3.Building = sourceBuilding;
+                    transferOffer3.Citizen = citizenID;
                     transferOffer3.Position = homeBuildingData.m_position;
                     transferOffer3.Amount = 1;
                     transferOffer3.Active = false;

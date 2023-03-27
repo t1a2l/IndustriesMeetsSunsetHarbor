@@ -1,5 +1,6 @@
 using ColossalFramework;
 using ColossalFramework.Math;
+using MoreTransferReasons.Code;
 using System;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public int m_deliveryPersonCount = 1;
 
         [CustomizableProperty("Delivery capacity")]
-        public int m_deliveryCapacity = 5;
+        public int m_deliveryCapacity = 500;
 
         public override Color GetColor(ushort vehicleID, ref Vehicle data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
@@ -70,7 +71,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0 && ++data.m_waitCounter > 20)
             {
                 RemoveOffers(vehicleID, ref data);
-                data.m_flags &= ~(Vehicle.Flags.Emergency2 | Vehicle.Flags.WaitingTarget);
+                data.m_flags &= ~Vehicle.Flags.WaitingTarget;
                 data.m_flags |= Vehicle.Flags.GoingBack;
                 data.m_waitCounter = 0;
                 if (!StartPathFind(vehicleID, ref data))
@@ -139,11 +140,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else
             {
-                data.m_flags &= ~Vehicle.Flags.Emergency2;
                 if (data.m_transferSize > 0 && !ShouldReturnToSource(vehicleID, ref data))
                 {
-                    TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
-                    offer.Priority = 7;
+                    ExtendedTransferManager.Offer offer = default(ExtendedTransferManager.Offer);
                     offer.Vehicle = vehicleID;
                     if (data.m_sourceBuilding != 0)
                     {
@@ -155,7 +154,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     offer.Amount = 1;
                     offer.Active = true;
-                    Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)data.m_transferType, offer);
+                    Singleton<ExtendedTransferManager>.instance.AddIncomingOffer((ExtendedTransferManager.TransferReason)data.m_transferType, offer);
                     data.m_flags |= Vehicle.Flags.WaitingTarget;
                 }
                 else
@@ -185,9 +184,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public override void StartTransfer(ushort vehicleID, ref Vehicle data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
+        public void StartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
-            if (material == (TransferManager.TransferReason)data.m_transferType)
+            if (material == (ExtendedTransferManager.TransferReason)data.m_transferType)
             {
                 if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
                 {
@@ -196,7 +195,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else
             {
-                base.StartTransfer(vehicleID, ref data, material, offer);
+                CustomStartTransfer.VehicleAIStartTransfer(vehicleID, ref data, offer);
             }
         }
 
@@ -267,13 +266,29 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return true;
             }
-            int amountDelta = Mathf.Min(0, data.m_transferSize - m_deliveryCapacity);
-            BuildingManager instance = Singleton<BuildingManager>.instance;
-            BuildingInfo info = instance.m_buildings.m_buffer[data.m_targetBuilding].Info;
-            info.m_buildingAI.ModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[data.m_targetBuilding], (TransferManager.TransferReason)data.m_transferType, ref amountDelta);
+            CitizenManager instance = Singleton<CitizenManager>.instance;
+            BuildingManager b_instance = Singleton<BuildingManager>.instance;
+            var citizenId = data.m_custom;
+            var home_building = b_instance.m_buildings.m_buffer[(int)data.m_targetBuilding];
+            var target_citizen = instance.m_citizens.m_buffer[(int)((UIntPtr)data.m_custom)];
+            uint containingUnit = target_citizen.GetContainingUnit(citizenId, home_building.m_citizenUnits, CitizenUnit.Flags.Home);
+            if (containingUnit != 0U)
+            {
+                CitizenUnit[] buffer = instance.m_units.m_buffer;
+                UIntPtr uintPtr = (UIntPtr)containingUnit;
+                buffer[(int)uintPtr].m_goods = (ushort)(buffer[(int)uintPtr].m_goods + 100);
+            }
+            Citizen[] buffer2 = instance.m_citizens.m_buffer;
+            UIntPtr uintPtr2 = (UIntPtr)citizenId;
+            buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~Citizen.Flags.NeedGoods;
+            buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~(Citizen.Flags)1048576;
+            if(!IsCitizenWaitingForDelivery(data.m_targetBuilding))
+            {
+                home_building.m_flags = home_building.m_flags & ~Building.Flags.Incoming;
+            }
             for (int i = 0; i < m_deliveryPersonCount; i++)
             {
-                CreateDeliveryGuy(vehicleID, ref data, Citizen.AgePhase.Senior0);
+                CreateDeliveryGuy(vehicleID, ref data, Citizen.AgePhase.Adult0);
             }
             data.m_flags |= Vehicle.Flags.Stopped;
             SetTarget(vehicleID, ref data, 0);
@@ -355,13 +370,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             SimulationManager instance = Singleton<SimulationManager>.instance;
             CitizenManager instance2 = Singleton<CitizenManager>.instance;
             CitizenInfo groupCitizenInfo = instance2.GetGroupCitizenInfo(ref instance.m_randomizer, m_info.m_class.m_service, Citizen.Gender.Male, Citizen.SubCulture.Generic, agePhase);
-            if ((object)groupCitizenInfo == null)
+            if (groupCitizenInfo == null)
             {
                 return;
             }
             int family = instance.m_randomizer.Int32(256u);
-            uint citizen = 0u;
-            if (instance2.CreateCitizen(out citizen, 90, family, ref instance.m_randomizer, groupCitizenInfo.m_gender))
+            if (instance2.CreateCitizen(out uint citizen, 90, family, ref instance.m_randomizer, groupCitizenInfo.m_gender))
             {
                 if (instance2.CreateCitizenInstance(out var instance3, ref instance.m_randomizer, groupCitizenInfo, citizen))
                 {
@@ -472,6 +486,40 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 result.Building = vehicleData.m_targetBuilding;
             }
             return result;
+        }
+
+        public bool IsCitizenWaitingForDelivery(ushort target_building)
+        {
+            CitizenManager instance = Singleton<CitizenManager>.instance;
+            BuildingManager b_instance = Singleton<BuildingManager>.instance;
+            var home_building = b_instance.m_buildings.m_buffer[target_building];
+            uint num = home_building.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0U)
+            {
+                uint nextUnit = instance.m_units.m_buffer[(int)(UIntPtr)num].m_nextUnit;
+                var citizen_unit = instance.m_units.m_buffer[(int)((UIntPtr)num)];
+                for (int i = 0; i < 5; i++)
+                {
+                    uint citizenId = citizen_unit.GetCitizen(i);
+                    if (citizenId == 0)
+                    {
+                        continue;
+                    }
+                    var citizen = instance.m_citizens.m_buffer[citizenId];
+                    if((citizen.m_flags & (Citizen.Flags)1048576) != Citizen.Flags.None)
+                    {
+                        return true;
+                    }
+                }
+                num = nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
+            return false;
         }
 
     }
