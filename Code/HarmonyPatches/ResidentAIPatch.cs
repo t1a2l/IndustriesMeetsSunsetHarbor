@@ -18,7 +18,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 CitizenManager instance = Singleton<CitizenManager>.instance;
                 uint citizen = citizenData.m_citizen;
                 // if citizen is waiting for delivery do nothing - the goods transfer will happen when the delivery vehicle will arrive at the house
-                if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None) && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & (Citizen.Flags)1048576) != Citizen.Flags.None))
+                if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None) && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None))
                 {
                     return false;
                 }
@@ -41,7 +41,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		case TransferManager.TransferReason.ShoppingG:
 		case TransferManager.TransferReason.ShoppingH:
                     {
-                        if((data.m_flags & (Citizen.Flags)1048576) != Citizen.Flags.None) // don't start moving if waiting for delivery
+                        if((data.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None) // don't start moving if waiting for delivery
                         {
                              return false;
                         }

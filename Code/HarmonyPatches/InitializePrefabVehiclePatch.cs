@@ -39,7 +39,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 {
                     VehicleInfo vehicleInfo = PrefabCollection<VehicleInfo>.GetLoaded(index);
 
-                    if (vehicleInfo != null && vehicleInfo.GetAI() is FoodDeliveryVehicleAI foodDeliveryVehicleAI)
+                    if (vehicleInfo != null && vehicleInfo.GetAI() is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
                     {
                         vehicleInfo.m_class = cargoTruckVehicleInfo.m_class;
                     }

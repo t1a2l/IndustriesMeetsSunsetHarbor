@@ -293,10 +293,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 CheckCapacity(buildingID, ref buildingData);
             }
-            if ((object)m_info != null && (object)m_info.m_class != null && m_info.m_class.m_service == ItemClass.Service.Fishing)
+            if (m_info != null && m_info.m_class != null && m_info.m_class.m_service == ItemClass.Service.Fishing)
             {
                 GuideController properties = Singleton<GuideManager>.instance.m_properties;
-                if ((object)properties != null && Singleton<BuildingManager>.instance.m_intercityBusStationBuilt != null)
+                if (properties != null && Singleton<BuildingManager>.instance.m_intercityBusStationBuilt != null)
                 {
                     Singleton<BuildingManager>.instance.m_intercityBusStationBuilt.Activate(properties.m_fishFactoryMarketBuilt, buildingID);
                 }
@@ -449,8 +449,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
         {
-            TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
-            ExtendedTransferManager.Offer extended_offer = default(ExtendedTransferManager.Offer);
+            TransferManager.TransferOffer offer = default;
+            ExtendedTransferManager.Offer extended_offer = default;
             offer.Building = buildingID;
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
@@ -514,7 +514,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             DistrictManager instance = Singleton<DistrictManager>.instance;
 	    byte district = instance.GetDistrict(buildingData.m_position);
-	    byte park = instance.GetPark(buildingData.m_position);
 	    DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
 	    District[] buffer = instance.m_districts.m_buffer;
 	    byte b = district;
@@ -704,7 +703,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num50 = num17 - num18 - cargo;
                     if (num50 >= 8000)
                     {
-                        ExtendedTransferManager.Offer offer = default(ExtendedTransferManager.Offer);
+                        ExtendedTransferManager.Offer offer = default;
                         offer.Building = buildingID;
                         offer.Position = buildingData.m_position;
                         offer.Amount = 1;
@@ -726,7 +725,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num51 = num20 - num21 - cargo2;
                     if (num51 >= 8000)
                     {
-                        ExtendedTransferManager.Offer offer2 = default(ExtendedTransferManager.Offer);
+                        ExtendedTransferManager.Offer offer2 = default;
                         offer2.Building = buildingID;
                         offer2.Position = buildingData.m_position;
                         offer2.Amount = 1;
@@ -748,7 +747,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num52 = num23 - num24 - cargo3;
                     if (num52 >= 8000)
                     {
-                        ExtendedTransferManager.Offer offer3 = default(ExtendedTransferManager.Offer);
+                        ExtendedTransferManager.Offer offer3 = default;
                         offer3.Building = buildingID;
                         offer3.Position = buildingData.m_position;
                         offer3.Amount = 1;
@@ -770,7 +769,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num53 = num26 - num27 - cargo4;
                     if (num53 >= 8000)
                     {
-                        TransferManager.TransferOffer offer4 = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer4 = default;
                         offer4.Priority = Mathf.Max(1, num53 * 8 / num26);
                         offer4.Building = buildingID;
                         offer4.Position = buildingData.m_position;
@@ -793,7 +792,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num54 = num29 - num30 - cargo5;
                     if (num54 >= 8000)
                     {
-                        TransferManager.TransferOffer offer5 = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer5 = default;
                         offer5.Priority = Mathf.Max(1, num54 * 8 / num29);
                         offer5.Building = buildingID;
                         offer5.Position = buildingData.m_position;
@@ -816,7 +815,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num55 = num32 - num33 - cargo6;
                     if (num55 >= 8000)
                     {
-                        TransferManager.TransferOffer offer6 = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer6 = default;
                         offer6.Priority = Mathf.Max(1, num55 * 8 / num32);
                         offer6.Building = buildingID;
                         offer6.Position = buildingData.m_position;
@@ -839,7 +838,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num56 = num35 - num36 - cargo7;
                     if (num56 >= 8000)
                     {
-                        TransferManager.TransferOffer offer7 = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer7 = default;
                         offer7.Priority = Mathf.Max(1, num56 * 8 / num35);
                         offer7.Building = buildingID;
                         offer7.Position = buildingData.m_position;
@@ -867,7 +866,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             if (quality == 1)
                             {
-                                ExtendedTransferManager.Offer offer8 = default(ExtendedTransferManager.Offer);
+                                ExtendedTransferManager.Offer offer8 = default;
                                 offer8.Building = buildingID;
                                 offer8.Position = buildingData.m_position;
                                 offer8.Amount = 1;
@@ -876,7 +875,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             }
                             else if (quality == 2)
                             {
-                                ExtendedTransferManager.Offer offer9 = default(ExtendedTransferManager.Offer);
+                                ExtendedTransferManager.Offer offer9 = default;
                                 offer9.Building = buildingID;
                                 offer9.Position = buildingData.m_position;
                                 offer9.Amount = 1;
@@ -885,7 +884,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             }
                             else if (quality == 3)
                             {
-                                ExtendedTransferManager.Offer offer10 = default(ExtendedTransferManager.Offer);
+                                ExtendedTransferManager.Offer offer10 = default;
                                 offer10.Building = buildingID;
                                 offer10.Position = buildingData.m_position;
                                 offer10.Amount = 1;
@@ -901,7 +900,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int num61 = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
                         if (num60 >= 100 && num61 > 0)
                         {
-                            TransferManager.TransferOffer offer6 = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer6 = default;
                             offer6.Priority = Mathf.Max(1, num60 * 8 / num29);
                             offer6.Building = buildingID;
                             offer6.Position = buildingData.m_position;
@@ -926,7 +925,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 num54 -= num57 - num56;
                                 if (num54 >= cashCapacity / 8)
                                 {
-                                    TransferManager.TransferOffer transferOffer3 = default(TransferManager.TransferOffer);
+                                    TransferManager.TransferOffer transferOffer3 = default;
                                     transferOffer3.Priority = num54 * 8 / cashCapacity;
                                     transferOffer3.Building = buildingID;
                                     transferOffer3.Position = buildingData.m_position;
@@ -1162,16 +1161,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private bool IsRawMaterial(TransferManager.TransferReason material)
         {
-            switch (material)
+            return material switch
             {
-                case TransferManager.TransferReason.Oil:
-                case TransferManager.TransferReason.Ore:
-                case TransferManager.TransferReason.Logs:
-                case TransferManager.TransferReason.Grain:
-                    return true;
-                default:
-                    return false;
-            }
+                TransferManager.TransferReason.Oil or TransferManager.TransferReason.Ore or TransferManager.TransferReason.Logs or TransferManager.TransferReason.Grain => true,
+                _ => false,
+            };
         }
 
         private TransferManager.TransferReason GetOutgoingTransferReason(ushort buildingID)

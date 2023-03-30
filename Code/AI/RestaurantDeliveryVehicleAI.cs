@@ -1,5 +1,6 @@
 using ColossalFramework;
 using ColossalFramework.Math;
+using IndustriesMeetsSunsetHarbor.HarmonyPatches;
 using MoreTransferReasons.Code;
 using System;
 using UnityEngine;
@@ -105,7 +106,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 BuildingManager instance = Singleton<BuildingManager>.instance;
                 BuildingInfo info = instance.m_buildings.m_buffer[sourceBuilding].Info;
                 data.Unspawn(vehicleID);
-                Randomizer randomizer = new Randomizer(vehicleID);
+                Randomizer randomizer = new(vehicleID);
                 info.m_buildingAI.CalculateSpawnPosition(sourceBuilding, ref instance.m_buildings.m_buffer[sourceBuilding], ref randomizer, m_info, out var position, out var target);
                 Quaternion rotation = Quaternion.identity;
                 Vector3 forward = target - position;
@@ -142,7 +143,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 if (data.m_transferSize > 0 && !ShouldReturnToSource(vehicleID, ref data))
                 {
-                    ExtendedTransferManager.Offer offer = default(ExtendedTransferManager.Offer);
+                    ExtendedTransferManager.Offer offer = default;
                     offer.Vehicle = vehicleID;
                     if (data.m_sourceBuilding != 0)
                     {
@@ -236,7 +237,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
             {
-                TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                TransferManager.TransferOffer offer = default;
                 offer.Vehicle = vehicleID;
                 Singleton<TransferManager>.instance.RemoveIncomingOffer((TransferManager.TransferReason)data.m_transferType, offer);
             }
@@ -281,10 +282,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             Citizen[] buffer2 = instance.m_citizens.m_buffer;
             UIntPtr uintPtr2 = (UIntPtr)citizenId;
             buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~Citizen.Flags.NeedGoods;
-            buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~(Citizen.Flags)1048576;
+            buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~HumanAIPatch.waitingDelivery;
             if(!IsCitizenWaitingForDelivery(data.m_targetBuilding))
             {
-                home_building.m_flags = home_building.m_flags & ~Building.Flags.Incoming;
+                home_building.m_flags &= ~Building.Flags.Incoming;
             }
             for (int i = 0; i < m_deliveryPersonCount; i++)
             {
@@ -431,7 +432,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     BuildingManager instance = Singleton<BuildingManager>.instance;
                     BuildingInfo info = instance.m_buildings.m_buffer[leaderData.m_sourceBuilding].Info;
-                    Randomizer randomizer = new Randomizer(vehicleID);
+                    Randomizer randomizer = new(vehicleID);
                     info.m_buildingAI.CalculateUnspawnPosition(vehicleData.m_sourceBuilding, ref instance.m_buildings.m_buffer[leaderData.m_sourceBuilding], ref randomizer, m_info, out var _, out var target);
                     vehicleData.SetTargetPos(index++, CalculateTargetPoint(refPos, target, minSqrDistance, 2f));
                 }
@@ -440,7 +441,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 BuildingManager instance2 = Singleton<BuildingManager>.instance;
                 BuildingInfo info2 = instance2.m_buildings.m_buffer[leaderData.m_targetBuilding].Info;
-                Randomizer randomizer2 = new Randomizer(vehicleID);
+                Randomizer randomizer2 = new(vehicleID);
                 info2.m_buildingAI.CalculateUnspawnPosition(vehicleData.m_targetBuilding, ref instance2.m_buildings.m_buffer[leaderData.m_targetBuilding], ref randomizer2, m_info, out var _, out var target2);
                 vehicleData.SetTargetPos(index++, CalculateTargetPoint(refPos, target2, minSqrDistance, 2f));
             }
@@ -458,7 +459,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     BuildingManager instance = Singleton<BuildingManager>.instance;
                     BuildingInfo info = instance.m_buildings.m_buffer[vehicleData.m_sourceBuilding].Info;
-                    Randomizer randomizer = new Randomizer(vehicleID);
+                    Randomizer randomizer = new(vehicleID);
                     info.m_buildingAI.CalculateUnspawnPosition(vehicleData.m_sourceBuilding, ref instance.m_buildings.m_buffer[vehicleData.m_sourceBuilding], ref randomizer, m_info, out var _, out var target);
                     return StartPathFind(vehicleID, ref vehicleData, vehicleData.m_targetPos3, target);
                 }
@@ -467,7 +468,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 BuildingManager instance2 = Singleton<BuildingManager>.instance;
                 BuildingInfo info2 = instance2.m_buildings.m_buffer[vehicleData.m_targetBuilding].Info;
-                Randomizer randomizer2 = new Randomizer(vehicleID);
+                Randomizer randomizer2 = new(vehicleID);
                 info2.m_buildingAI.CalculateUnspawnPosition(vehicleData.m_targetBuilding, ref instance2.m_buildings.m_buffer[vehicleData.m_targetBuilding], ref randomizer2, m_info, out var _, out var target2);
                 return StartPathFind(vehicleID, ref vehicleData, vehicleData.m_targetPos3, target2);
             }
@@ -476,7 +477,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override InstanceID GetTargetID(ushort vehicleID, ref Vehicle vehicleData)
         {
-            InstanceID result = default(InstanceID);
+            InstanceID result = default;
             if ((vehicleData.m_flags & Vehicle.Flags.GoingBack) != 0)
             {
                 result.Building = vehicleData.m_sourceBuilding;
@@ -507,7 +508,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         continue;
                     }
                     var citizen = instance.m_citizens.m_buffer[citizenId];
-                    if((citizen.m_flags & (Citizen.Flags)1048576) != Citizen.Flags.None)
+                    if((citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
                     {
                         return true;
                     }

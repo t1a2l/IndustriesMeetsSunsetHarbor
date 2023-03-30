@@ -3,13 +3,16 @@ using ICities;
 using System;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
+using IndustriesMeetsSunsetHarbor.Serializer;
 
 namespace IndustriesMeetsSunsetHarbor
 {
-    public class IndustriesMeetsSunsetHarborMod : LoadingExtensionBase, IUserMod
+    public class Mod : LoadingExtensionBase, IUserMod
     {
 
         public static bool inGame = false;
+
+        public static float DeliveryChance = 1f;
 
         string IUserMod.Name => "Industries meets Sunset Harbor Mod";
 
@@ -17,6 +20,7 @@ namespace IndustriesMeetsSunsetHarbor
 
         public void OnEnabled()
         {
+            ModSettings.Load();
             HarmonyHelper.DoOnHarmonyReady(() => Patcher.PatchAll());
         }
 
@@ -63,6 +67,27 @@ namespace IndustriesMeetsSunsetHarbor
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 
+
+        public void OnSettingsUI(UIHelperBase helper)
+        {
+            if (IsInGame())
+            {
+                var group = helper.AddGroup("Industries meets Sunset Harbor Mod");
+
+                group.AddSlider("Delivery Chance", 0.0f, 1f, 0.05f, 1f, sel =>
+                {
+                    DeliveryChance = sel;
+                    ModSettings.Save();
+                });
+            }
+            
+        }
+
+        private bool IsInGame()
+        {
+            return !SimulationManager.exists
+                   || SimulationManager.instance.m_metaData is {m_updateMode: SimulationManager.UpdateMode.LoadGame or SimulationManager.UpdateMode.NewGameFromMap or SimulationManager.UpdateMode.NewGameFromScenario};
+        }
 
     }
 

@@ -10,7 +10,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         public override void OnBuildingCreated(ushort buildingId)
         {
             base.OnBuildingCreated(buildingId);
-            if (!IndustriesMeetsSunsetHarborMod.inGame)
+            if (!Mod.inGame)
             {
                 return;
             }
@@ -21,7 +21,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         public override void OnBuildingReleased(ushort buildingId)
         {
             base.OnBuildingReleased(buildingId);
-            if (!IndustriesMeetsSunsetHarborMod.inGame)
+            if (!Mod.inGame)
             {
                 return;
             }
