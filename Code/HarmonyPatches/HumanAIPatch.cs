@@ -10,8 +10,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(HumanAI))]
     public static class HumanAIPatch
     {
-        private delegate bool GetHomeBehaviourCommonBuildingAIDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount, ref int homeCount, ref int aliveHomeCount, ref int emptyHomeCount);
-        private static readonly GetHomeBehaviourCommonBuildingAIDelegate GetHomeBehaviour = AccessTools.MethodDelegate<GetHomeBehaviourCommonBuildingAIDelegate>(typeof(CommonBuildingAI).GetMethod("GetHomeBehaviour", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+        public static Citizen.Flags waitingDelivery = (Citizen.Flags)1048576;
 
         [HarmonyPatch(typeof(HumanAI), "FindVisitPlace")]
         [HarmonyPrefix]
@@ -20,17 +19,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             bool get_delivery = false;
             var homeBuildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)sourceBuilding];
             var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenID];
-            if((citizen.m_flags & (Citizen.Flags)1048576) != Citizen.Flags.None) // already waiting for delivery do nothing
+            if((citizen.m_flags & waitingDelivery) != Citizen.Flags.None) // already waiting for delivery do nothing
             {
                 return false;
             }
-            if((citizen.m_flags & (Citizen.Flags)1048576) == Citizen.Flags.None) // not waiting for delivery 50% chance ordering a delivery
+            if((citizen.m_flags & waitingDelivery) == Citizen.Flags.None) // not waiting for delivery 50% chance ordering a delivery
             {
-                Random rand = new Random();
-                if (rand.Next(0, 2) != 0)
+                if (Singleton<SimulationManager>.instance.m_randomizer.Int32(100U) < Mod.DeliveryChance)
                 {
                     get_delivery = true;
-                    citizen.m_flags |= (Citizen.Flags)1048576; // raise flag as getting delivery for citizen
+                    citizen.m_flags |= waitingDelivery; // raise flag as getting delivery for citizen
                     // if building not already waiting for delivery
                     if((homeBuildingData.m_flags & Building.Flags.Incoming) == Building.Flags.None)
                     {
@@ -49,7 +47,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int capacity1 = 0;
                     int outside1 = 0;
                     CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryLow, ref count1, ref cargo1, ref capacity1, ref outside1);
-                    ExtendedTransferManager.Offer transferOffer1 = default(ExtendedTransferManager.Offer);
+                    ExtendedTransferManager.Offer transferOffer1 = default;
                     transferOffer1.Citizen = citizenID;
                     transferOffer1.Position = homeBuildingData.m_position;
                     transferOffer1.Amount = 1;
@@ -63,7 +61,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int capacity2 = 0;
                     int outside2 = 0;
                     CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryMedium, ref count2, ref cargo2, ref capacity2, ref outside2);
-                    ExtendedTransferManager.Offer transferOffer2 = default(ExtendedTransferManager.Offer);
+                    ExtendedTransferManager.Offer transferOffer2 = default;
                     transferOffer2.Citizen = citizenID;
                     transferOffer2.Position = homeBuildingData.m_position;
                     transferOffer2.Amount = 1;
@@ -77,7 +75,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int capacity3 = 0;
                     int outside3 = 0;
                     CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryHigh, ref count3, ref cargo3, ref capacity3, ref outside3);
-                    ExtendedTransferManager.Offer transferOffer3 = default(ExtendedTransferManager.Offer);
+                    ExtendedTransferManager.Offer transferOffer3 = default;
                     transferOffer3.Citizen = citizenID;
                     transferOffer3.Position = homeBuildingData.m_position;
                     transferOffer3.Amount = 1;
