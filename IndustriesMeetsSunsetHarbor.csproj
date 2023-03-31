@@ -29,10 +29,12 @@
     <None Remove="Code\Icons\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Code\Utils\Atlas\RestaurantAtlas.png" />
     <None Remove="Code\Utils\Atlas\sprites.png" />
+    <None Remove="Code\Utils\Atlas\spritesheet.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Code\Utils\Atlas\sprites.png" />
+    <EmbeddedResource Include="Code\Utils\Atlas\RestaurantAtlas.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CitiesHarmony.API" Version="2.1.0" />

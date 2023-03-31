@@ -21,6 +21,7 @@ namespace IndustriesMeetsSunsetHarbor
         public void OnEnabled()
         {
             ModSettings.Load();
+            AtlasUtils.CreateAtlas();
             HarmonyHelper.DoOnHarmonyReady(() => Patcher.PatchAll());
         }
 

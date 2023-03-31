@@ -1098,56 +1098,56 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return true;
         }
 
-        private int GetInputBufferSize1()
+        public int GetInputBufferSize1()
         {
             int num = m_inputRate1 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetInputBufferSize2()
+        public int GetInputBufferSize2()
         {
             int num = m_inputRate2 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetInputBufferSize3()
+        public int GetInputBufferSize3()
         {
             int num = m_inputRate3 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetInputBufferSize4()
+        public int GetInputBufferSize4()
         {
             int num = m_inputRate4 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetInputBufferSize5()
+        public int GetInputBufferSize5()
         {
             int num = m_inputRate5 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetInputBufferSize6()
+        public int GetInputBufferSize6()
         {
             int num = m_inputRate6 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetInputBufferSize7()
+        public int GetInputBufferSize7()
         {
             int num = m_inputRate7 * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        private int GetOutputBufferSize()
+        public int GetOutputBufferSize()
         {
             if (m_DeliveryVehicleCount == 0)
             {
