@@ -41,7 +41,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     var newAI = (PrefabAI)__instance.gameObject.AddComponent<RestaurantAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
-                else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry &&  (__instance.name.Contains("Food") || __instance.name.Contains("Lemonade") || __instance.name.Contains("Bakery")) && __instance.GetAI() is not NewUniqueFactoryAI)
+                else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry &&  (__instance.name.Contains("Food Factory 01") || __instance.name.Contains("Lemonade Factory 01") || __instance.name.Contains("Bakery 01")) && __instance.GetAI() is not NewUniqueFactoryAI)
                 {
                     var oldAI = __instance.GetComponent<PrefabAI>();
                     Object.DestroyImmediate(oldAI);
