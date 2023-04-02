@@ -303,7 +303,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        void IExtendedBuildingAI.StartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
             if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow || material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium || material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
             {
@@ -319,7 +319,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is IExtendedVehicleAI extended)
                     {
                         vehicleInfo.m_vehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
-                        extended.StartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
+                        extended.ExtendedStartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
                     }
                 }
             }
@@ -432,13 +432,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        void IExtendedBuildingAI.GetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
+        void IExtendedBuildingAI.ExtendedGetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
 	{
 	    amount = 0;
 	    max = 0;
 	}
 
-        void IExtendedBuildingAI.ModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
+        void IExtendedBuildingAI.ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource1)
@@ -467,7 +467,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow ||
                 material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium ||
-                material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
+                material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh ||
+                material == ExtendedTransferManager.TransferReason.Meals)
             {
                 int outputBufferSize = GetOutputBufferSize();
                 int m_customBuffer8 = custom_buffers.m_customBuffer8;

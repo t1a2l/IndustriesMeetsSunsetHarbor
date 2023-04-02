@@ -1,7 +1,7 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 using UnityEngine;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.AI;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
@@ -210,8 +210,8 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 if (info2.m_buildingAI is RestaurantAI restaurantAI)
                 {
                     if (data.m_transferType == (byte)ExtendedTransferManager.TransferReason.Bread || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.FoodSupplies || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.DrinkSupplies)
-                    {
-                        restaurantAI.ModifyExtendedMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                    { 
+                        ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                     }
                     else
                     {
@@ -223,7 +223,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 {
                     if (data.m_transferType == (byte)ExtendedTransferManager.TransferReason.Bread || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.FoodSupplies || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.DrinkSupplies)
                     {
-                        newUniqueFactoryAI.ModifyExtendedMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                        ((IExtendedBuildingAI)newUniqueFactoryAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                     }
                     else
                     {
@@ -234,7 +234,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 {
                     if (data.m_transferType == (byte)ExtendedTransferManager.TransferReason.Bread || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.FoodSupplies || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.DrinkSupplies)
                     {
-                        newProcessingFacilityAI.ModifyExtendedMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                        ((IExtendedBuildingAI)newProcessingFacilityAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                     }
                     else
                     {

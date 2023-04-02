@@ -6,7 +6,7 @@ using ColossalFramework.UI;
 using ICities;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
 

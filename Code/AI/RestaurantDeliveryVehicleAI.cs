@@ -134,7 +134,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 		    int num = Mathf.Min(0, (int)data.m_transferSize - m_deliveryCapacity);
 		    BuildingInfo info2 = instance.m_buildings.m_buffer[(int)data.m_sourceBuilding].Info;
                     IExtendedBuildingAI extendedBuildingAI = info2.m_buildingAI as IExtendedBuildingAI;
-                    extendedBuildingAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                    extendedBuildingAI.ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
 		    num = Mathf.Max(0, -num);
 		    data.m_transferSize += (ushort)num;
 		}
@@ -199,7 +199,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        void IExtendedVehicleAI.StartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        void IExtendedVehicleAI.ExtendedStartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
             if (material == (ExtendedTransferManager.TransferReason)data.m_transferType)
             {
