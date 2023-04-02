@@ -1,13 +1,13 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 using IndustriesMeetsSunsetHarbor.HarmonyPatches;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using System;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    class RestaurantDeliveryVehicleAI : CarAI
+    class RestaurantDeliveryVehicleAI : CarAI, IExtendedVehicleAI
     {
         public int m_deliveryPersonCount = 1;
 
@@ -124,6 +124,20 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 data.m_targetPos1.w = 2f;
                 data.m_targetPos2 = data.m_targetPos1;
                 data.m_targetPos3 = data.m_targetPos1;
+                // the default transfer size of a created vehicle is 0, the delivery capacity is 500
+                // so here it takes -500 which is the min value
+                // it then passes the -500 to ModifyMaterialBuffer and remove 500 from resturant meals capacity
+                // and then here again takes that 500 and add it to the tranfer size of the vehicle
+                // the delivery vehicle now have 500 size (which is 100 goods per citizen = 1 meal)
+                if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0)
+		{
+		    int num = Mathf.Min(0, (int)data.m_transferSize - m_deliveryCapacity);
+		    BuildingInfo info2 = instance.m_buildings.m_buffer[(int)data.m_sourceBuilding].Info;
+                    IExtendedBuildingAI extendedBuildingAI = info2.m_buildingAI as IExtendedBuildingAI;
+                    extendedBuildingAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+		    num = Mathf.Max(0, -num);
+		    data.m_transferSize += (ushort)num;
+		}
                 FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[sourceBuilding].AddOwnVehicle(vehicleID, ref data);
             }
@@ -147,7 +161,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     offer.Vehicle = vehicleID;
                     if (data.m_sourceBuilding != 0)
                     {
-                        offer.Position = data.GetLastFramePosition() * 0.25f + Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding].m_position * 0.75f;
+                        offer.Position = data.GetLastFramePosition() * 0.25f + Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding].m_position * 0.5f;
                     }
                     else
                     {
@@ -185,18 +199,16 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void StartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        void IExtendedVehicleAI.StartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
             if (material == (ExtendedTransferManager.TransferReason)data.m_transferType)
             {
                 if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
                 {
-                    SetTarget(vehicleID, ref data, offer.Building);
+                    uint citizen = offer.Citizen;
+                    ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].GetBuildingByLocation();
+                    SetTarget(vehicleID, ref data, buildingByLocation);
                 }
-            }
-            else
-            {
-                CustomStartTransfer.VehicleAIStartTransfer(vehicleID, ref data, offer);
             }
         }
 
@@ -214,7 +226,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 vehicleData.m_flags &= ~Vehicle.Flags.Stopped;
                 vehicleData.m_flags |= Vehicle.Flags.Leaving;
             }
-            if ((vehicleData.m_flags & (Vehicle.Flags.TransferToSource | Vehicle.Flags.GoingBack)) == Vehicle.Flags.TransferToSource && ShouldReturnToSource(vehicleID, ref vehicleData))
+            if ((vehicleData.m_flags & Vehicle.Flags.GoingBack) == 0 && ShouldReturnToSource(vehicleID, ref vehicleData))
             {
                 SetTarget(vehicleID, ref vehicleData, 0);
             }
@@ -265,29 +277,42 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (data.m_targetBuilding == 0)
             {
+                Singleton<VehicleManager>.instance.ReleaseVehicle(vehicleID);
                 return true;
             }
             CitizenManager instance = Singleton<CitizenManager>.instance;
-            BuildingManager b_instance = Singleton<BuildingManager>.instance;
-            var citizenId = data.m_custom;
-            var home_building = b_instance.m_buildings.m_buffer[(int)data.m_targetBuilding];
-            var target_citizen = instance.m_citizens.m_buffer[(int)((UIntPtr)data.m_custom)];
-            uint containingUnit = target_citizen.GetContainingUnit(citizenId, home_building.m_citizenUnits, CitizenUnit.Flags.Home);
-            if (containingUnit != 0U)
+            uint num = data.m_citizenUnits;
+            int num2 = 0;
+            while (num != 0U)
             {
-                CitizenUnit[] buffer = instance.m_units.m_buffer;
-                UIntPtr uintPtr = (UIntPtr)containingUnit;
-                buffer[(int)uintPtr].m_goods = (ushort)(buffer[(int)uintPtr].m_goods + 100);
+                uint nextUnit = instance.m_units.m_buffer[(int)((UIntPtr)num)].m_nextUnit;
+                for (int i = 0; i < 5; i++)
+                {
+                    var citizen_unit = instance.m_units.m_buffer[(int)((UIntPtr)num)];
+                    uint citizenId = citizen_unit.GetCitizen(i);
+                    var citizen = instance.m_citizens.m_buffer[(int)((UIntPtr)citizenId)];
+                    if (citizenId != 0U && citizen.CurrentLocation != Citizen.Location.Moving && (citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
+                    {
+                        citizen_unit.m_goods += 100;
+                        citizen.m_flags &= ~Citizen.Flags.NeedGoods;
+                        citizen.m_flags &= ~HumanAIPatch.waitingDelivery;
+                        data.m_transferSize -= 100;
+                    }
+                }
+                num = nextUnit;
+                if (++num2 > 524288)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
             }
-            Citizen[] buffer2 = instance.m_citizens.m_buffer;
-            UIntPtr uintPtr2 = (UIntPtr)citizenId;
-            buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~Citizen.Flags.NeedGoods;
-            buffer2[(int)uintPtr2].m_flags = buffer2[(int)uintPtr2].m_flags & ~HumanAIPatch.waitingDelivery;
-            if(!IsCitizenWaitingForDelivery(data.m_targetBuilding))
+            if (!IsCitizenWaitingForDelivery(data.m_targetBuilding))
             {
+                BuildingManager b_instance = Singleton<BuildingManager>.instance;
+                var home_building = b_instance.m_buildings.m_buffer[(int)data.m_targetBuilding];
                 home_building.m_flags &= ~Building.Flags.Incoming;
             }
-            for (int i = 0; i < m_deliveryPersonCount; i++)
+            for (int j = 0; j < m_deliveryPersonCount; j++)
             {
                 CreateDeliveryGuy(vehicleID, ref data, Citizen.AgePhase.Adult0);
             }
@@ -508,7 +533,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         continue;
                     }
                     var citizen = instance.m_citizens.m_buffer[citizenId];
-                    if((citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
+                    if ((citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
                     {
                         return true;
                     }

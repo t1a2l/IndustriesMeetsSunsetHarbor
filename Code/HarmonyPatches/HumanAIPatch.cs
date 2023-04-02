@@ -1,9 +1,7 @@
 using ColossalFramework;
 using HarmonyLib;
-using System.Reflection;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
-using System;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {

@@ -2,13 +2,13 @@ using System;
 using ColossalFramework;
 using ColossalFramework.DataBinding;
 using UnityEngine;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    public class NewProcessingFacilityAI : IndustryBuildingAI
+    public class NewProcessingFacilityAI : IndustryBuildingAI, IExtendedBuildingAI
     {
         [CustomizableProperty("Input Resource Rate 1")]
         public int m_inputRate1 = 1000;
@@ -279,6 +279,32 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
+        void IExtendedBuildingAI.GetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
+	{
+	    amount = 0;
+	    max = 0;
+	}
+
+        void IExtendedBuildingAI.StartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        {
+            if (material == m_outputResource)
+            {
+                VehicleInfo transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, data.Info.m_class.m_service, data.Info.m_class.m_subService, data.Info.m_class.m_level);
+                if (transferVehicleService != null)
+                {
+                    Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
+                    var material_byte = (byte)material;
+                    if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, (TransferManager.TransferReason)material_byte, false, true)
+                        && transferVehicleService.m_vehicleAI is IExtendedVehicleAI extended)
+                    {
+                        vehicles.m_buffer[(int)num].m_gateIndex = (byte)m_variationGroupID;
+                        transferVehicleService.m_vehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
+                        extended.StartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
+                    }
+                }
+            }
+        }
+
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
@@ -312,7 +338,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void ModifyExtendedMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
+        void IExtendedBuildingAI.ModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource4)
@@ -1032,26 +1058,26 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         protected void CalculateOwnVehicles(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside)
         {
-	    VehicleManager instance = Singleton<VehicleManager>.instance;
-	    ushort num = data.m_ownVehicles;
-	    int num2 = 0;
-	    while (num != 0)
-	    {
-		if ((ExtendedTransferManager.TransferReason)instance.m_vehicles.m_buffer[num].m_transferType == material)
-		{
-		    VehicleInfo info = instance.m_vehicles.m_buffer[num].Info;
-		    info.m_vehicleAI.GetSize(num, ref instance.m_vehicles.m_buffer[num], out var size, out var max);
-		    cargo += Mathf.Min(size, max);
-		    capacity += max;
-		    count++;
-		}
-		num = instance.m_vehicles.m_buffer[num].m_nextOwnVehicle;
-		if (++num2 > 16384)
-		{
-		    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-		    break;
-		}
-	    }
+            VehicleManager instance = Singleton<VehicleManager>.instance;
+            ushort num = data.m_ownVehicles;
+            int num2 = 0;
+            while (num != 0)
+            {
+                if ((ExtendedTransferManager.TransferReason)instance.m_vehicles.m_buffer[num].m_transferType == material)
+                {
+                    VehicleInfo info = instance.m_vehicles.m_buffer[num].Info;
+                    info.m_vehicleAI.GetSize(num, ref instance.m_vehicles.m_buffer[num], out var size, out var max);
+                    cargo += Mathf.Min(size, max);
+                    capacity += max;
+                    count++;
+                }
+                num = instance.m_vehicles.m_buffer[num].m_nextOwnVehicle;
+                if (++num2 > 16384)
+                {
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
+                }
+            }
         }
 
     }

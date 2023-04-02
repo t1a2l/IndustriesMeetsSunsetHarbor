@@ -3,14 +3,14 @@ using ColossalFramework.DataBinding;
 using ColossalFramework.Math;
 using System;
 using UnityEngine;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
 using ICities;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    public class RestaurantAI : PlayerBuildingAI
+    public class RestaurantAI : PlayerBuildingAI, IExtendedBuildingAI
     {
         [CustomizableProperty("Uneducated Workers", "Workers", 0)]
         public int m_workPlaceCount0 = 3;
@@ -25,13 +25,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public int m_workPlaceCount3 = 2;
 
         [CustomizableProperty("Low Wealth", "Visitors", 0)]
-	public int m_visitPlaceCount0 = 10;
+        public int m_visitPlaceCount0 = 10;
 
-	[CustomizableProperty("Medium Wealth", "Visitors", 1)]
-	public int m_visitPlaceCount1 = 10;
+        [CustomizableProperty("Medium Wealth", "Visitors", 1)]
+        public int m_visitPlaceCount1 = 10;
 
-	[CustomizableProperty("High Wealth", "Visitors", 2)]
-	public int m_visitPlaceCount2 = 10;
+        [CustomizableProperty("High Wealth", "Visitors", 2)]
+        public int m_visitPlaceCount2 = 10;
 
         [CustomizableProperty("Delivery Vehicle Count")]
         public int m_DeliveryVehicleCount = 10;
@@ -303,6 +303,28 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
+        void IExtendedBuildingAI.StartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        {
+            if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow || material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium || material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
+            {
+                VehicleInfo vehicleInfo = base.GetSelectedVehicle(buildingID);
+                if (vehicleInfo == null)
+                {
+                    vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, m_info.m_class.m_service, m_info.m_class.m_subService, m_info.m_class.m_level);
+                }
+                if (vehicleInfo != null)
+                {
+                    Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
+                    var material_byte = (byte)material;
+                    if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is IExtendedVehicleAI extended)
+                    {
+                        vehicleInfo.m_vehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
+                        extended.StartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
+                    }
+                }
+            }
+        }
+
         private void CheckCapacity(ushort buildingID, ref Building buildingData)
         {
             int outputBufferSize = GetOutputBufferSize();
@@ -410,7 +432,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void ModifyExtendedMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
+        void IExtendedBuildingAI.GetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
+	{
+	    amount = 0;
+	    max = 0;
+	}
+
+        void IExtendedBuildingAI.ModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource1)
@@ -437,7 +465,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 m_customBuffer3 += amountDelta;
                 custom_buffers.m_customBuffer3 = (ushort)m_customBuffer3;
             }
-            else if (material == m_outputResource)
+            else if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow ||
+                material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium ||
+                material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
             {
                 int outputBufferSize = GetOutputBufferSize();
                 int m_customBuffer8 = custom_buffers.m_customBuffer8;
@@ -513,11 +543,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
             DistrictManager instance = Singleton<DistrictManager>.instance;
-	    byte district = instance.GetDistrict(buildingData.m_position);
-	    DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
-	    District[] buffer = instance.m_districts.m_buffer;
-	    byte b = district;
-	    buffer[(int)b].m_servicePoliciesEffect = buffer[(int)b].m_servicePoliciesEffect | (servicePolicies & (DistrictPolicies.Services.PowerSaving | DistrictPolicies.Services.WaterSaving | DistrictPolicies.Services.SmokeDetectors | DistrictPolicies.Services.Recycling | DistrictPolicies.Services.RecreationalUse | DistrictPolicies.Services.ExtraInsulation | DistrictPolicies.Services.NoElectricity | DistrictPolicies.Services.OnlyElectricity | DistrictPolicies.Services.FreeWifi));
+            byte district = instance.GetDistrict(buildingData.m_position);
+            DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[(int)district].m_servicePolicies;
+            District[] buffer = instance.m_districts.m_buffer;
+            byte b = district;
+            buffer[(int)b].m_servicePoliciesEffect = buffer[(int)b].m_servicePoliciesEffect | (servicePolicies & (DistrictPolicies.Services.PowerSaving | DistrictPolicies.Services.WaterSaving | DistrictPolicies.Services.SmokeDetectors | DistrictPolicies.Services.Recycling | DistrictPolicies.Services.RecreationalUse | DistrictPolicies.Services.ExtraInsulation | DistrictPolicies.Services.NoElectricity | DistrictPolicies.Services.OnlyElectricity | DistrictPolicies.Services.FreeWifi));
             Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoResources | Notification.Problem1.NoPlaceforGoods | Notification.Problem1.NoInputProducts | Notification.Problem1.NoFishingGoods);
             bool flag = m_info.m_class.m_service == ItemClass.Service.Fishing;
             if (finalProductionRate != 0)
@@ -943,33 +973,33 @@ namespace IndustriesMeetsSunsetHarbor.AI
             buildingData.m_education3 = (byte)Mathf.Clamp(finalProductionRate * m_outputRate / Mathf.Max(1, m_outputRate), 0, 255);
             buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
             int healthAccumulation = 0;
-	    int wellbeingAccumulation = 0;
+            int wellbeingAccumulation = 0;
             if (behaviour.m_healthAccumulation != 0)
-	    {
-		if (aliveWorkerCount + aliveVisitorCount != 0)
-		{
-		    healthAccumulation = (behaviour.m_healthAccumulation + (aliveWorkerCount + aliveVisitorCount >> 1)) / (aliveWorkerCount + aliveVisitorCount);
-		}
-	    }
+            {
+                if (aliveWorkerCount + aliveVisitorCount != 0)
+                {
+                    healthAccumulation = (behaviour.m_healthAccumulation + (aliveWorkerCount + aliveVisitorCount >> 1)) / (aliveWorkerCount + aliveVisitorCount);
+                }
+            }
             if (behaviour.m_wellbeingAccumulation != 0)
-	    {
-		if (aliveWorkerCount + aliveVisitorCount != 0)
-		{
-		    wellbeingAccumulation = (behaviour.m_wellbeingAccumulation + (aliveWorkerCount + aliveVisitorCount >> 1)) / (aliveWorkerCount + aliveVisitorCount);
-		}
-	    }
+            {
+                if (aliveWorkerCount + aliveVisitorCount != 0)
+                {
+                    wellbeingAccumulation = (behaviour.m_wellbeingAccumulation + (aliveWorkerCount + aliveVisitorCount >> 1)) / (aliveWorkerCount + aliveVisitorCount);
+                }
+            }
             int happines = Citizen.GetHappiness(healthAccumulation, wellbeingAccumulation) * 15 / 100;
-	    if ((buildingData.m_problems & Notification.Problem1.MajorProblem).IsNone)
-	    {
-		happines += 20;
-	    }
-	    if (buildingData.m_problems.IsNone)
-	    {
-		happines += 25;
-	    }
+            if ((buildingData.m_problems & Notification.Problem1.MajorProblem).IsNone)
+            {
+                happines += 20;
+            }
+            if (buildingData.m_problems.IsNone)
+            {
+                happines += 25;
+            }
             happines = Mathf.Clamp(happines, 0, 100);
             buildingData.m_happiness = (byte)happines;
-	    buildingData.m_citizenCount = (byte)(aliveWorkerCount + aliveVisitorCount);
+            buildingData.m_citizenCount = (byte)(aliveWorkerCount + aliveVisitorCount);
             base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
         }
 
@@ -1085,13 +1115,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
         }
 
         protected override void HandleWorkAndVisitPlaces(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveWorkerCount, ref int totalWorkerCount, ref int workPlaceCount, ref int aliveVisitorCount, ref int totalVisitorCount, ref int visitPlaceCount)
-	{
-	    workPlaceCount += m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
-	    base.GetWorkBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveWorkerCount, ref totalWorkerCount);
-	    base.HandleWorkPlaces(buildingID, ref buildingData, m_workPlaceCount0, m_workPlaceCount1, m_workPlaceCount2, m_workPlaceCount3, ref behaviour, aliveWorkerCount, totalWorkerCount);
-	    visitPlaceCount += m_visitPlaceCount0 + m_visitPlaceCount1 + m_visitPlaceCount2;
-	    base.GetVisitBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveVisitorCount, ref totalVisitorCount);
-	}
+        {
+            workPlaceCount += m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
+            base.GetWorkBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveWorkerCount, ref totalWorkerCount);
+            base.HandleWorkPlaces(buildingID, ref buildingData, m_workPlaceCount0, m_workPlaceCount1, m_workPlaceCount2, m_workPlaceCount3, ref behaviour, aliveWorkerCount, totalWorkerCount);
+            visitPlaceCount += m_visitPlaceCount0 + m_visitPlaceCount1 + m_visitPlaceCount2;
+            base.GetVisitBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveVisitorCount, ref totalVisitorCount);
+        }
 
         public override bool RequireRoadAccess()
         {
