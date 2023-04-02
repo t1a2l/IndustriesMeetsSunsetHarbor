@@ -25,15 +25,15 @@ namespace IndustriesMeetsSunsetHarbor.UI
             UIComponent buttonPanels = mainBottom?.Find("ButtonPanels");
             if (buttonPanels != null)
             {
-                _aquacultureExtractorPanel = buttonPanels.AddUIComponent<UIPanel>();
+                _aquacultureExtractorPanel = buttonPanels.AddUIComponent<UIPanel>();               
                 _aquacultureExtractorPanel.name = "AquacultureExtractorPanel";
-                _aquacultureExtractorPanel.width = 301f;
-                _aquacultureExtractorPanel.height = 166f;
+                _aquacultureExtractorPanel.width = 230f;
+                _aquacultureExtractorPanel.height = 40f;
                 _aquacultureExtractorPanel.autoLayoutDirection = LayoutDirection.Vertical;
                 _aquacultureExtractorPanel.autoLayoutStart = LayoutStart.TopLeft;
                 _aquacultureExtractorPanel.autoLayoutPadding = new RectOffset(0, 0, 0, 5);
                 _aquacultureExtractorPanel.autoLayout = true;
-                _aquacultureExtractorPanel.relativePosition = new Vector3(10f, 224.0f);
+                _aquacultureExtractorPanel.relativePosition = new Vector3(0f, 10f);
                 _aquacultureFarmDropDown = UIDropDowns.AddLabelledDropDown(_aquacultureExtractorPanel, _aquacultureExtractorPanel.width, 160f, "Aquaculture Farm:");
                 _aquacultureFarmDropDown.eventSelectedIndexChanged += ChangeSelectedFarm;
                 buttonPanels.AttachUIComponent(_aquacultureExtractorPanel.gameObject);

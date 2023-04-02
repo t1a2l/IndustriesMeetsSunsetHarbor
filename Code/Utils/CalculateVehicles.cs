@@ -1,7 +1,6 @@
 using ColossalFramework;
 using System;
-using System.Linq;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.Utils
