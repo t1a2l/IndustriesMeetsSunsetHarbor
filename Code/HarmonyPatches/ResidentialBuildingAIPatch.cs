@@ -1,10 +1,7 @@
-using ColossalFramework;
 using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons;
-using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -14,7 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private delegate bool GetHomeBehaviourCommonBuildingAIDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount, ref int homeCount, ref int aliveHomeCount, ref int emptyHomeCount);
         private static readonly GetHomeBehaviourCommonBuildingAIDelegate GetHomeBehaviour = AccessTools.MethodDelegate<GetHomeBehaviourCommonBuildingAIDelegate>(typeof(CommonBuildingAI).GetMethod("GetHomeBehaviour", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-        [HarmonyPatch(typeof(ResidentialBuildingAI), "FindVisitPlace")]
+        [HarmonyPatch(typeof(ResidentialBuildingAI), "SimulationStepActive")]
         [HarmonyPrefix]
         public static void SimulationStepActive(ResidentialBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {

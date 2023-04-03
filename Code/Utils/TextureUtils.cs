@@ -12,7 +12,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
     internal static class TextureUtils
     {
         internal static Dictionary<string, UITextureAtlas> m_atlasStore = new();
-        static string PATH => "BetterHealthCareToolbar.BetterHealthCareToolbar.Utils.Atlas.";
+        static string PATH => "IndustriesMeetsSunsetHarbor.Code.Utils.Atlas.";
         static string ModPath => GetPlugin().modPath;
         public static string FILE_PATH = ModPath;
         public static bool EmbededResources = true;
@@ -76,7 +76,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
             if (shader != null)
             {
-                Texture2D spriteTexture = GetTextureFromAssemblyManifest("HealthCareAtlas.png");
+                Texture2D spriteTexture = GetTextureFromAssemblyManifest(atlasName + ".png");
                 FixTransparency(spriteTexture);
 
                 Material atlasMaterial = new(shader)

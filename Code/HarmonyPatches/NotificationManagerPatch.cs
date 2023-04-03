@@ -11,8 +11,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     public static class NotificationManagerPatch
     {
 
-        private delegate bool SimulationManagerInitializePropertiesBaseDelegate(SimulationManagerBase<NotificationManager, NotificationProperties> __instance, NotificationProperties properties);
-        private static readonly SimulationManagerInitializePropertiesBaseDelegate InitializePropertiesBase = AccessTools.MethodDelegate<SimulationManagerInitializePropertiesBaseDelegate>(typeof(SimulationManagerBase<NotificationManager, NotificationProperties>).GetMethod("InitializeProperties", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+        private delegate void SimulationManagerInitializePropertiesBaseDelegate(SimulationManagerBase<NotificationManager, NotificationProperties> __instance, NotificationProperties properties);
+        private static readonly SimulationManagerInitializePropertiesBaseDelegate InitializePropertiesBase = AccessTools.MethodDelegate<SimulationManagerInitializePropertiesBaseDelegate>(typeof(SimulationManagerBase<NotificationManager, NotificationProperties>).GetMethod("InitializeProperties", BindingFlags.Instance | BindingFlags.Public), null, false);
 
         [HarmonyPatch(typeof(NotificationManager), "PopulateGroupData")]
         [HarmonyPostfix]
@@ -124,7 +124,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return false;
         }
 
-        [HarmonyPatch(typeof(NotificationManager), "InitializeProperties")]
+        [HarmonyPatch(typeof(NotificationManager), "EndRenderingImpl")]
         [HarmonyPrefix]
         public static bool EndRenderingImpl(NotificationManager __instance, RenderManager.CameraInfo cameraInfo)
         {
