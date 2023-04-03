@@ -3,7 +3,7 @@ using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -31,17 +31,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private static void HandleFoodDelivery(ResidentialBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
-            Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, (Notification.Problem2)64);
+            Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, BuildingCustomBuffersManager.WaitingDelivery);
             if((buildingData.m_flags & Building.Flags.Incoming) != Building.Flags.None)
             {
                 custom_buffers.m_customBuffer1 = (byte)Mathf.Min(255, (int)(custom_buffers.m_customBuffer1 + 1));
                 if (custom_buffers.m_customBuffer1 >= 128)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, (Notification.Problem2)64 | (Notification.Problem2)128);
+                    problemStruct = Notification.AddProblems(problemStruct, BuildingCustomBuffersManager.WaitingDelivery);
                 }
                 else if (custom_buffers.m_customBuffer1 >= 64)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, (Notification.Problem2)64);
+                    problemStruct = Notification.AddProblems(problemStruct, BuildingCustomBuffersManager.WaitingDelivery);
                 }
             }
             else

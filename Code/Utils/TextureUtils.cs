@@ -11,7 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 {
     internal static class TextureUtils
     {
-        internal static Dictionary<string, UITextureAtlas> m_atlasStore = new Dictionary<string, UITextureAtlas>();
+        internal static Dictionary<string, UITextureAtlas> m_atlasStore = new();
         static string PATH => "BetterHealthCareToolbar.BetterHealthCareToolbar.Utils.Atlas.";
         static string ModPath => GetPlugin().modPath;
         public static string FILE_PATH = ModPath;
@@ -79,7 +79,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 Texture2D spriteTexture = GetTextureFromAssemblyManifest("HealthCareAtlas.png");
                 FixTransparency(spriteTexture);
 
-                Material atlasMaterial = new Material(shader)
+                Material atlasMaterial = new(shader)
                 {
                     mainTexture = spriteTexture
                 };
@@ -115,13 +115,13 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             {
                 UITextureAtlas foundAtlas = m_atlasStore[atlasName];
                 Texture2D atlasTexture = foundAtlas.texture;
-                Vector2 atlasSize = new Vector2(atlasTexture.width, atlasTexture.height);
-                Rect relativeLocation = new Rect(new Vector2(dimensions.position.x / atlasSize.x, dimensions.position.y / atlasSize.y), new Vector2(dimensions.width / atlasSize.x, dimensions.height / atlasSize.y));
-                Texture2D spriteTexture = new Texture2D((int)Math.Round(dimensions.width), (int)Math.Round(dimensions.height));
+                Vector2 atlasSize = new(atlasTexture.width, atlasTexture.height);
+                Rect relativeLocation = new(new Vector2(dimensions.position.x / atlasSize.x, dimensions.position.y / atlasSize.y), new Vector2(dimensions.width / atlasSize.x, dimensions.height / atlasSize.y));
+                Texture2D spriteTexture = new((int)Math.Round(dimensions.width), (int)Math.Round(dimensions.height));
 
                 spriteTexture.SetPixels(atlasTexture.GetPixels((int)dimensions.position.x, (int)dimensions.position.y, (int)dimensions.width, (int)dimensions.height));
 
-                UITextureAtlas.SpriteInfo createdSprite = new UITextureAtlas.SpriteInfo()
+                UITextureAtlas.SpriteInfo createdSprite = new()
                 {
                     name = spriteName,
                     region = relativeLocation,
@@ -137,8 +137,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static Texture2D GetTextureFromAssemblyManifest(string file)
         {
-            using (Stream stream = GetManifestResourceStream(file))
-                return GetTextureFromStream(stream);
+            using Stream stream = GetManifestResourceStream(file);
+            return GetTextureFromStream(stream);
         }
 
         public static Stream GetManifestResourceStream(string file)
@@ -159,7 +159,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static Texture2D GetTextureFromStream(Stream stream)
         {
-            Texture2D texture2D = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            Texture2D texture2D = new(1, 1, TextureFormat.ARGB32, false);
             byte[] array = new byte[stream.Length];
             stream.Read(array, 0, array.Length);
             texture2D.filterMode = FilterMode.Bilinear;

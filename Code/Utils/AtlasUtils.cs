@@ -1,5 +1,5 @@
 using UnityEngine;
-using MoreTransferReasons.Code;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.Utils
 {
@@ -10,7 +10,14 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             "Bread",
             "Drinks",
             "Food",
-            "Meal",
+            "Meal"
+        };
+
+        public static string[] NotificationSpriteNames = new string[]
+        {
+            "BuildingNotificationNotEnoughFoodDeliveryCritical",
+            "BuildingNotificationNotEnoughFoodDelivery",
+            "BuildingNotificationNotEnoughFoodDeliveryFirst"
         };
 
         public static void CreateAtlas()
@@ -22,7 +29,14 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 {
                     TextureUtils.AddSpriteToAtlas(new Rect(32 * i, 0, 32, 32), SpriteNames[i], "RestaurantAtlas");
                 }
-
+            }
+            if (TextureUtils.GetAtlas("DeliveryNotificationAtlas") == null)
+            {
+                TextureUtils.InitialiseAtlas("DeliveryNotificationAtlas");
+                for (int i = 0; i < NotificationSpriteNames.Length; i++)
+                {
+                    TextureUtils.AddSpriteToAtlas(new Rect(82 * i, 0, 82, 82), NotificationSpriteNames[i], "DeliveryNotificationAtlas");
+                }
             }
         }
 
