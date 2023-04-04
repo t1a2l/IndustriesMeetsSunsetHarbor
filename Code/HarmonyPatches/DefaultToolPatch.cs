@@ -7,7 +7,7 @@ using ColossalFramework;
 namespace IndustriesMeetsSunsetHarbor.Code.HarmonyPatches
 {
     [HarmonyPatch(typeof(DefaultTool))]
-    public static class DefaultToolpatch
+    public static class DefaultToolPatch
     {
         [HarmonyPatch(typeof(DefaultTool), "OpenWorldInfoPanel")]
         [HarmonyPrefix]
