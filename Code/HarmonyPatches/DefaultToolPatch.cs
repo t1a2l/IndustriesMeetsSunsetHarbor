@@ -4,7 +4,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.UI;
 using ColossalFramework;
 
-namespace IndustriesMeetsSunsetHarbor.Code.HarmonyPatches
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
     [HarmonyPatch(typeof(DefaultTool))]
     public static class DefaultToolPatch

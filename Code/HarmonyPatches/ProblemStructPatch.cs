@@ -2,7 +2,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using static Notification;
 
-namespace IndustriesMeetsSunsetHarbor.Code.HarmonyPatches
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
     [HarmonyPatch(typeof(ProblemStruct))]
     public static class ProblemStructPatch
