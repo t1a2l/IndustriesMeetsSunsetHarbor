@@ -35,10 +35,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField).SetValue(dynamicPanelInfo, false);
             dynamicPanelInfo.viewOwner = view;
 	    GameObject gameObject = UnityEngine.Object.Instantiate(dynamicPanelInfo.panelRoot.gameObject);
-            // Type old_type = Type.GetType(customOldWorldInfoPanelName);
             var old_component = gameObject.GetComponent(typeof(UniqueFactoryWorldInfoPanel));
             GameObject.Destroy(old_component);
-            //Type new_type = Type.GetType(customWorldInfoPanelName);
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
                 gameObject.AddComponent(typeof(NewUniqueFactoryWorldInfoPanel));
@@ -48,7 +46,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 gameObject.AddComponent(typeof(RestaurantAIWorldInfoPanel));
             }
 	    gameObject.hideFlags = HideFlags.DontSave;
-	    gameObject.name = "(Library) " + dynamicPanelInfo.panelRoot.name;
+	    gameObject.name = "(Library) NewUniqueFactoryWorldInfoPanel";
             UIComponent uicomponent = view.AttachUIComponent(gameObject);
 	    uicomponent.isVisible = false;
 	    dynamicPanelInfo.AddInstance(uicomponent);

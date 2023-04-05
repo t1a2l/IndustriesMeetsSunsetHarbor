@@ -103,6 +103,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public ExtendedTransferManager.TransferReason m_outputResource = ExtendedTransferManager.TransferReason.Meals; // consumed by citizens and delivery 
 
+        public override void InitializePrefab()
+        {
+            base.InitializePrefab();
+            m_hasBufferStatusMeshes = false;
+            if (m_info.m_subMeshes != null)
+            {
+                for (int i = 0; i < m_info.m_subMeshes.Length; i++)
+                {
+                    if ((m_info.m_subMeshes[i].m_flagsRequired & Building.Flags.CapacityFull) != Building.Flags.None)
+                    {
+                        m_hasBufferStatusMeshes = true;
+                        break;
+                    }
+                }
+            }
+        }
+
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
             switch (infoMode)

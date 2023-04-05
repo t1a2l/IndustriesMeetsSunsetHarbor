@@ -16,8 +16,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
     {
         private UILabel m_status;
 
-        private UIPanel m_ActionPanel;
-
         private UIButton m_RebuildButton;
 
         private UICheckBox m_OnOff;
