@@ -28,11 +28,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         {
             DynamicPanelInfo dynamicPanelInfo = new();
             var customOldWorldInfoPanel = Array.Find(__instance.m_DynamicPanels, element => element.name == customOldWorldInfoPanelName);
-            var m_PanelRoot = UnityEngine.Object.Instantiate(customOldWorldInfoPanel.instance);
-            typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField).SetValue(dynamicPanelInfo, "NewUniqueFactoryWorldInfoPanel");
-            typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField).SetValue(dynamicPanelInfo, m_PanelRoot);
-            typeof(DynamicPanelInfo).GetField("m_SingleInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField).SetValue(dynamicPanelInfo, true);
-            typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField).SetValue(dynamicPanelInfo, false);
+            var customOldUIClone = UnityEngine.Object.Instantiate(customOldWorldInfoPanel.instance);
+            customOldUIClone.name = customWorldInfoPanelName;
+            typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);
+            typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customOldUIClone);
+            typeof(DynamicPanelInfo).GetField("m_SingleInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, true);
+            typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, false);
             dynamicPanelInfo.viewOwner = view;
 	    GameObject gameObject = UnityEngine.Object.Instantiate(dynamicPanelInfo.panelRoot.gameObject);
             var old_component = gameObject.GetComponent(typeof(UniqueFactoryWorldInfoPanel));
@@ -46,7 +47,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 gameObject.AddComponent(typeof(RestaurantAIWorldInfoPanel));
             }
 	    gameObject.hideFlags = HideFlags.DontSave;
-	    gameObject.name = "(Library) NewUniqueFactoryWorldInfoPanel";
+	    gameObject.name = "(Library) " + customWorldInfoPanelName;
             UIComponent uicomponent = view.AttachUIComponent(gameObject);
 	    uicomponent.isVisible = false;
 	    dynamicPanelInfo.AddInstance(uicomponent);
