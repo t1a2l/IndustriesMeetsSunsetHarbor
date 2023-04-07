@@ -31,6 +31,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         public static bool InitializeProperties(NotificationManager __instance, NotificationProperties properties)
         {
             InitializePropertiesBase(__instance, properties);
+            Notification.ProblemStruct.All.AddItem(new());
             Notification.ProblemStruct all = Notification.ProblemStruct.All;
             var DeliveryNotificationAtlas = TextureUtils.GetAtlas("DeliveryNotificationAtlas");
             for (int i = 0; i < 69; i++)
@@ -99,7 +100,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     if (spriteInfo3 != null)
                     {
                         Rect region3 = spriteInfo3.region;
-                        __instance.m_spriteAtlasRegions[136 + i] = new Vector4(region3.xMin, region3.yMin, region3.xMax, region3.yMax);
+                        __instance.m_spriteAtlasRegions[137 + i] = new Vector4(region3.xMin, region3.yMin, region3.xMax, region3.yMax);
                     }
                 }
             }
