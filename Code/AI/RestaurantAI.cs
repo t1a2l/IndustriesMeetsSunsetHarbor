@@ -52,7 +52,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public float m_noiseRadius = 200f;
 
         [CustomizableProperty("Input Resource Rate 1")]
-        public int m_inputRate1 = 1000;
+        public int m_inputRate1;
 
         [CustomizableProperty("Input Resource Rate 2")]
         public int m_inputRate2;
@@ -411,7 +411,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
                     if (material == m_inputResource4)
                     {
-                        int inputBufferSize4 = GetInputBufferSize4();
+                        int inputBufferSize4 = GetInputBufferSize(m_inputRate4);
                         int m_customBuffer4 = custom_buffers.m_customBuffer4;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer4, inputBufferSize4 - m_customBuffer4);
                         m_customBuffer4 += amountDelta;
@@ -419,7 +419,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (material == m_inputResource5)
                     {
-                        int inputBufferSize5 = GetInputBufferSize5();
+                        int inputBufferSize5 = GetInputBufferSize(m_inputRate5);
                         int m_customBuffer5 = custom_buffers.m_customBuffer5;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer5, inputBufferSize5 - m_customBuffer5);
                         m_customBuffer5 += amountDelta;
@@ -427,7 +427,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (material == m_inputResource6)
                     {
-                        int inputBufferSize6 = GetInputBufferSize6();
+                        int inputBufferSize6 = GetInputBufferSize(m_inputRate6);
                         int m_customBuffer6 = custom_buffers.m_customBuffer6;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer6, inputBufferSize6 - m_customBuffer6);
                         m_customBuffer6 += amountDelta;
@@ -435,7 +435,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (material == m_inputResource7)
                     {
-                        int inputBufferSize7 = GetInputBufferSize7();
+                        int inputBufferSize7 = GetInputBufferSize(m_inputRate7);
                         int m_customBuffer7 = custom_buffers.m_customBuffer7;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer7, inputBufferSize7 - m_customBuffer7);
                         m_customBuffer7 += amountDelta;
@@ -460,7 +460,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource1)
             {
-                int inputBufferSize1 = GetInputBufferSize1();
+                int inputBufferSize1 = GetInputBufferSize(m_inputRate1);
                 int customBuffer1 = custom_buffers.m_customBuffer1;
                 amountDelta = Mathf.Clamp(amountDelta, -customBuffer1, inputBufferSize1 - customBuffer1);
                 customBuffer1 += amountDelta;
@@ -468,7 +468,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_inputResource2)
             {
-                int inputBufferSize2 = GetInputBufferSize2();
+                int inputBufferSize2 = GetInputBufferSize(m_inputRate2);
                 int m_customBuffer2 = custom_buffers.m_customBuffer2;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer2, inputBufferSize2 - m_customBuffer2);
                 m_customBuffer2 += amountDelta;
@@ -476,7 +476,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_inputResource3)
             {
-                int inputBufferSize3 = GetInputBufferSize3();
+                int inputBufferSize3 = GetInputBufferSize(m_inputRate3);
                 int m_customBuffer3 = custom_buffers.m_customBuffer3;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer3, inputBufferSize3 - m_customBuffer3);
                 m_customBuffer3 += amountDelta;
@@ -570,109 +570,110 @@ namespace IndustriesMeetsSunsetHarbor.AI
             bool flag = m_info.m_class.m_service == ItemClass.Service.Fishing;
             if (finalProductionRate != 0)
             {
-                int num17 = 0;
-                int num18 = 0;
                 var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+
+                int InputBufferSize1 = 0;
+                int CustomBuffer1 = 0;
                 if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
                 {
-                    num17 = GetInputBufferSize1();
-                    num18 = custom_buffers.m_customBuffer1;
-                    int num19 = (m_inputRate1 * finalProductionRate + 99) / 100;
-                    if (num18 < num19)
+                    InputBufferSize1 = GetInputBufferSize(m_inputRate1);
+                    CustomBuffer1 = custom_buffers.m_customBuffer1;
+                    int Input1ProductionRate = (m_inputRate1 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer1 < Input1ProductionRate)
                     {
-                        finalProductionRate = (num18 * 100 + m_inputRate1 - 1) / m_inputRate1;
+                        finalProductionRate = (CustomBuffer1 * 100 + m_inputRate1 - 1) / m_inputRate1;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : Notification.Problem1.NoInputProducts);
                     }
                 }
-                int num20 = 0;
-                int num21 = 0;
+                int InputBufferSize2 = 0;
+                int CustomBuffer2 = 0;
                 if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
                 {
-                    num20 = GetInputBufferSize2();
-                    num21 = custom_buffers.m_customBuffer2;
-                    int num22 = (m_inputRate2 * finalProductionRate + 99) / 100;
-                    if (num21 < num22)
+                    InputBufferSize2 = GetInputBufferSize(m_inputRate2);
+                    CustomBuffer2 = custom_buffers.m_customBuffer2;
+                    int Input2ProductionRate = (m_inputRate2 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer2 < Input2ProductionRate)
                     {
-                        finalProductionRate = (num21 * 100 + m_inputRate2 - 1) / m_inputRate2;
+                        finalProductionRate = (CustomBuffer2 * 100 + m_inputRate2 - 1) / m_inputRate2;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : Notification.Problem1.NoInputProducts);
                     }
                 }
-                int num23 = 0;
-                int num24 = 0;
+                int InputBufferSize3 = 0;
+                int CustomBuffer3 = 0;
                 if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
                 {
-                    num23 = GetInputBufferSize3();
-                    num24 = custom_buffers.m_customBuffer3;
-                    int num25 = (m_inputRate3 * finalProductionRate + 99) / 100;
-                    if (num24 < num25)
+                    InputBufferSize3 = GetInputBufferSize(m_inputRate3);
+                    CustomBuffer3 = custom_buffers.m_customBuffer3;
+                    int Input3ProductionRate = (m_inputRate3 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer3 < Input3ProductionRate)
                     {
-                        finalProductionRate = (num24 * 100 + m_inputRate3 - 1) / m_inputRate3;
+                        finalProductionRate = (CustomBuffer3 * 100 + m_inputRate3 - 1) / m_inputRate3;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : Notification.Problem1.NoInputProducts);
                     }
                 }
-                int num26 = 0;
-                int num27 = 0;
+                int InputBufferSize4 = 0;
+                int CustomBuffer4 = 0;
                 if (m_inputResource4 != TransferManager.TransferReason.None)
                 {
-                    num26 = GetInputBufferSize4();
-                    num27 = custom_buffers.m_customBuffer4;
-                    int num28 = (m_inputRate4 * finalProductionRate + 99) / 100;
-                    if (num27 < num28)
+                    InputBufferSize4 = GetInputBufferSize(m_inputRate4);
+                    CustomBuffer4 = custom_buffers.m_customBuffer4;
+                    int Input4ProductionRate = (m_inputRate4 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer4 < Input4ProductionRate)
                     {
-                        finalProductionRate = (num27 * 100 + m_inputRate4 - 1) / m_inputRate4;
+                        finalProductionRate = (CustomBuffer4 * 100 + m_inputRate4 - 1) / m_inputRate4;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(m_inputResource4)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
-                int num29 = 0;
-                int num30 = 0;
+                int InputBufferSize5 = 0;
+                int CustomBuffer5 = 0;
                 if (m_inputResource5 != TransferManager.TransferReason.None)
                 {
-                    num29 = GetInputBufferSize5();
-                    num30 = custom_buffers.m_customBuffer5;
-                    int num31 = (m_inputRate5 * finalProductionRate + 99) / 100;
-                    if (num30 < num31)
+                    InputBufferSize5 = GetInputBufferSize(m_inputRate5);
+                    CustomBuffer5 = custom_buffers.m_customBuffer5;
+                    int Input5ProductionRate = (m_inputRate5 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer5 < Input5ProductionRate)
                     {
-                        finalProductionRate = (num29 * 100 + m_inputRate5 - 1) / m_inputRate5;
+                        finalProductionRate = (CustomBuffer5 * 100 + m_inputRate5 - 1) / m_inputRate5;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(m_inputResource5)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
-                int num32 = 0;
-                int num33 = 0;
+                int InputBufferSize6 = 0;
+                int CustomBuffer6 = 0;
                 if (m_inputResource6 != TransferManager.TransferReason.None)
                 {
-                    num32 = GetInputBufferSize6();
-                    num33 = custom_buffers.m_customBuffer6;
-                    int num34 = (m_inputRate6 * finalProductionRate + 99) / 100;
-                    if (num33 < num34)
+                    InputBufferSize6 = GetInputBufferSize(m_inputRate6);
+                    CustomBuffer6 = custom_buffers.m_customBuffer6;
+                    int Input6ProductionRate = (m_inputRate6 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer6 < Input6ProductionRate)
                     {
-                        finalProductionRate = (num32 * 100 + m_inputRate6 - 1) / m_inputRate6;
+                        finalProductionRate = (CustomBuffer6 * 100 + m_inputRate6 - 1) / m_inputRate6;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(m_inputResource6)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
-                int num35 = 0;
-                int num36 = 0;
+                int InputBufferSize7 = 0;
+                int CustomBuffer7 = 0;
                 if (m_inputResource7 != TransferManager.TransferReason.None)
                 {
-                    num35 = GetInputBufferSize7();
-                    num36 = custom_buffers.m_customBuffer7;
-                    int num37 = (m_inputRate7 * finalProductionRate + 99) / 100;
-                    if (num36 < num37)
+                    InputBufferSize7 = GetInputBufferSize(m_inputRate7);
+                    CustomBuffer7 = custom_buffers.m_customBuffer7;
+                    int Input7ProductionRate = (m_inputRate7 * finalProductionRate + 99) / 100;
+                    if (CustomBuffer7 < Input7ProductionRate)
                     {
-                        finalProductionRate = (num35 * 100 + m_inputRate7 - 1) / m_inputRate7;
+                        finalProductionRate = (CustomBuffer7 * 100 + m_inputRate7 - 1) / m_inputRate7;
                         problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(m_inputResource7)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
-                int num38 = 0;
-                int num39 = 0;
+                int OutputBufferSize = 0;
+                int CustomBuffer8 = 0;
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
-                    num38 = GetOutputBufferSize();
-                    num39 = custom_buffers.m_customBuffer8;
-                    int num40 = (m_outputRate * finalProductionRate + 99) / 100;
-                    if (num38 - num39 < num40)
+                    OutputBufferSize = GetOutputBufferSize();
+                    CustomBuffer8 = custom_buffers.m_customBuffer8;
+                    int OutputProductionRate = (m_outputRate * finalProductionRate + 99) / 100;
+                    if (OutputBufferSize - CustomBuffer8 < OutputProductionRate)
                     {
-                        num40 = Mathf.Max(0, num29 - num30);
-                        finalProductionRate = (num40 * 100 + m_outputRate - 1) / m_outputRate;
+                        OutputProductionRate = Mathf.Max(0, OutputBufferSize - CustomBuffer8);
+                        finalProductionRate = (OutputProductionRate * 100 + m_outputRate - 1) / m_outputRate;
                         if (m_DeliveryVehicleCount != 0)
                         {
                             problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoPlaceforGoods);
@@ -689,67 +690,63 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
                 {
-                    int num41 = (m_inputRate1 * finalProductionRate + 99) / 100;
-                    num18 = Mathf.Max(0, num18 - num41);
-                    custom_buffers.m_customBuffer1 = (ushort)num18;
+                    int Input1ProductionRate = (m_inputRate1 * finalProductionRate + 99) / 100;
+                    CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
+                    custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
                 }
                 if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
                 {
-                    int num42 = (m_inputRate2 * finalProductionRate + 99) / 100;
-                    num21 = Mathf.Max(0, num21 - num42);
-                    custom_buffers.m_customBuffer2 = (ushort)num21;
+                    int Input2ProductionRate = (m_inputRate2 * finalProductionRate + 99) / 100;
+                    CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
+                    custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
                 }
                 if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
                 {
-                    int num43 = (m_inputRate3 * finalProductionRate + 99) / 100;
-                    num24 = Mathf.Max(0, num24 - num43);
-                    custom_buffers.m_customBuffer3 = (ushort)num24;
+                    int Input3ProductionRate = (m_inputRate3 * finalProductionRate + 99) / 100;
+                    CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
+                    custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
                 }
                 if (m_inputResource4 != TransferManager.TransferReason.None)
                 {
-                    int num44 = (m_inputRate4 * finalProductionRate + 99) / 100;
-                    num27 = Mathf.Max(0, num27 - num44);
-                    custom_buffers.m_customBuffer4 = (ushort)num27;
+                    int Input4ProductionRate = (m_inputRate4 * finalProductionRate + 99) / 100;
+                    CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
+                    custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
                 }
                 if (m_inputResource5 != TransferManager.TransferReason.None)
                 {
-                    int num45 = (m_inputRate4 * finalProductionRate + 99) / 100;
-                    num30 = Mathf.Max(0, num30 - num45);
-                    custom_buffers.m_customBuffer5 = (ushort)num30;
+                    int Input5ProductionRate = (m_inputRate5 * finalProductionRate + 99) / 100;
+                    CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
+                    custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
                 }
                 if (m_inputResource6 != TransferManager.TransferReason.None)
                 {
-                    int num46 = (m_inputRate4 * finalProductionRate + 99) / 100;
-                    num33 = Mathf.Max(0, num33 - num46);
-                    custom_buffers.m_customBuffer6 = (ushort)num33;
+                    int Input6ProductionRate = (m_inputRate6 * finalProductionRate + 99) / 100;
+                    CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
+                    custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
                 }
                 if (m_inputResource7 != TransferManager.TransferReason.None)
                 {
-                    int num47 = (m_inputRate4 * finalProductionRate + 99) / 100;
-                    num36 = Mathf.Max(0, num36 - num47);
-                    custom_buffers.m_customBuffer7 = (ushort)num36;
+                    int Input7ProductionRate = (m_inputRate7 * finalProductionRate + 99) / 100;
+                    CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
+                    custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
                 }
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
-                    int num48 = (m_outputRate * finalProductionRate + 99) / 100;
-                    num39 = Mathf.Min(num38, num39 + num48);
-                    custom_buffers.m_customBuffer8 = (ushort)num39;
+                    int OutputProductionRate = (m_outputRate * finalProductionRate + 99) / 100;
+                    CustomBuffer8 = Mathf.Min(OutputBufferSize, CustomBuffer8 + OutputProductionRate);
+                    custom_buffers.m_customBuffer8 = (ushort)CustomBuffer8;
                 }
                 base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
-                int num49 = 0;
+                int TempOutput = 0;
                 if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
                 {
-                    int count = 0;
-                    int cargo = 0;
-                    int capacity = 0;
-                    int outside = 0;
-                    CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count, ref cargo, ref capacity, ref outside);
-                    if (outside != 0)
-                    {
-                        num49 |= 1;
-                    }
-                    int num50 = num17 - num18 - cargo;
-                    if (num50 >= 8000)
+                    int count1 = 0;
+                    int cargo1 = 0;
+                    int capacity1 = 0;
+                    int outside1 = 0;
+                    CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count1, ref cargo1, ref capacity1, ref outside1);
+                    int InputSize1 = InputBufferSize1 - CustomBuffer1 - cargo1;
+                    if (InputSize1 >= 8000)
                     {
                         ExtendedTransferManager.Offer offer = default;
                         offer.Building = buildingID;
@@ -766,12 +763,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int capacity2 = 0;
                     int outside2 = 0;
                     CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
-                    if (outside2 != 0)
-                    {
-                        num49 |= 2;
-                    }
-                    int num51 = num20 - num21 - cargo2;
-                    if (num51 >= 8000)
+                    int InputSize2 = InputBufferSize2 - CustomBuffer2 - cargo2;
+                    if (InputSize2 >= 8000)
                     {
                         ExtendedTransferManager.Offer offer2 = default;
                         offer2.Building = buildingID;
@@ -788,12 +781,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int capacity3 = 0;
                     int outside3 = 0;
                     CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
-                    if (outside3 != 0)
-                    {
-                        num49 |= 4;
-                    }
-                    int num52 = num23 - num24 - cargo3;
-                    if (num52 >= 8000)
+                    int InputSize3 = InputBufferSize3 - CustomBuffer3 - cargo3;
+                    if (InputSize3 >= 8000)
                     {
                         ExtendedTransferManager.Offer offer3 = default;
                         offer3.Building = buildingID;
@@ -812,13 +801,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource4, ref count4, ref cargo4, ref capacity4, ref outside4);
                     if (outside4 != 0)
                     {
-                        num49 |= 8;
+                        TempOutput |= 1;
                     }
-                    int num53 = num26 - num27 - cargo4;
-                    if (num53 >= 8000)
+                    int InputSize4 = InputBufferSize4 - CustomBuffer4 - cargo4;
+                    if (InputSize4 >= 8000)
                     {
                         TransferManager.TransferOffer offer4 = default;
-                        offer4.Priority = Mathf.Max(1, num53 * 8 / num26);
+                        offer4.Priority = Mathf.Max(1, InputSize4 * 8 / InputBufferSize4);
                         offer4.Building = buildingID;
                         offer4.Position = buildingData.m_position;
                         offer4.Amount = 1;
@@ -835,13 +824,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource5, ref count5, ref cargo5, ref capacity5, ref outside5);
                     if (outside5 != 0)
                     {
-                        num49 |= 16;
+                        TempOutput |= 2;
                     }
-                    int num54 = num29 - num30 - cargo5;
-                    if (num54 >= 8000)
+                    int InputSize5 = InputBufferSize5 - CustomBuffer5 - cargo5;
+                    if (InputSize5 >= 8000)
                     {
                         TransferManager.TransferOffer offer5 = default;
-                        offer5.Priority = Mathf.Max(1, num54 * 8 / num29);
+                        offer5.Priority = Mathf.Max(1, InputSize5 * 8 / InputBufferSize5);
                         offer5.Building = buildingID;
                         offer5.Position = buildingData.m_position;
                         offer5.Amount = 1;
@@ -858,13 +847,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource6, ref count6, ref cargo6, ref capacity6, ref outside6);
                     if (outside6 != 0)
                     {
-                        num49 |= 32;
+                        TempOutput |= 4;
                     }
-                    int num55 = num32 - num33 - cargo6;
-                    if (num55 >= 8000)
+                    int InputSize6 = InputBufferSize6 - CustomBuffer6 - cargo6;
+                    if (InputSize6 >= 8000)
                     {
                         TransferManager.TransferOffer offer6 = default;
-                        offer6.Priority = Mathf.Max(1, num55 * 8 / num32);
+                        offer6.Priority = Mathf.Max(1, InputSize6 * 8 / InputBufferSize6);
                         offer6.Building = buildingID;
                         offer6.Position = buildingData.m_position;
                         offer6.Amount = 1;
@@ -881,13 +870,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource7, ref count7, ref cargo7, ref capacity7, ref outside7);
                     if (outside7 != 0)
                     {
-                        num49 |= 64;
+                        TempOutput |= 8;
                     }
-                    int num56 = num35 - num36 - cargo7;
-                    if (num56 >= 8000)
+                    int InputSize7 = InputBufferSize7 - CustomBuffer7 - cargo7;
+                    if (InputSize7 >= 8000)
                     {
                         TransferManager.TransferOffer offer7 = default;
-                        offer7.Priority = Mathf.Max(1, num56 * 8 / num35);
+                        offer7.Priority = Mathf.Max(1, InputSize7 * 8 / InputBufferSize7);
                         offer7.Building = buildingID;
                         offer7.Position = buildingData.m_position;
                         offer7.Amount = 1;
@@ -895,7 +884,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource7, offer7);
                     }
                 }
-                buildingData.m_tempImport |= (byte)num49;
+                buildingData.m_tempImport |= (byte)TempOutput;
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
                     if (m_DeliveryVehicleCount != 0)
@@ -908,9 +897,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         buildingData.m_tempExport = (byte)Mathf.Clamp(outside8, buildingData.m_tempExport, 255);
                         int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
                         int productionRate2 = PlayerBuildingAI.GetProductionRate(100, budget);
-                        int num58 = (productionRate2 * m_DeliveryVehicleCount + 99) / 100;
-                        int num59 = num39;
-                        if (num59 >= 8000 && count8 < num58 && allow_delivery)
+                        int OutputProductionRate = (productionRate2 * m_DeliveryVehicleCount + 99) / 100;
+                        if (CustomBuffer8 >= 8000 && count8 < OutputProductionRate && allow_delivery)
                         {
                             if (quality == 1)
                             {
@@ -949,7 +937,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         if (num60 >= 100 && num61 > 0)
                         {
                             TransferManager.TransferOffer offer6 = default;
-                            offer6.Priority = Mathf.Max(1, num60 * 8 / num29);
+                            offer6.Priority = Mathf.Max(1, num60 * 8 / OutputBufferSize);
                             offer6.Building = buildingID;
                             offer6.Position = buildingData.m_position;
                             offer6.Amount = Mathf.Min(num60 / 100, num61);
@@ -1067,7 +1055,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
-            int num = data.m_education3 * m_outputRate * 16 / 100;
+            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+            int m_customBuffer8 = custom_buffers.m_customBuffer8;
+            int num = m_customBuffer8 * m_outputRate * 16 / 100;
             string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", num);
             if (m_outputResource != ExtendedTransferManager.TransferReason.None && m_DeliveryVehicleCount != 0)
             {
@@ -1146,51 +1136,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return true;
         }
 
-        public int GetInputBufferSize1()
+        public int GetInputBufferSize(int inputRate)
         {
-            int num = m_inputRate1 * 32 + 8000;
-            num = (num * 100 + 50) / 100;
-            return Mathf.Clamp(num, 8000, 64000);
-        }
-
-        public int GetInputBufferSize2()
-        {
-            int num = m_inputRate2 * 32 + 8000;
-            num = (num * 100 + 50) / 100;
-            return Mathf.Clamp(num, 8000, 64000);
-        }
-
-        public int GetInputBufferSize3()
-        {
-            int num = m_inputRate3 * 32 + 8000;
-            num = (num * 100 + 50) / 100;
-            return Mathf.Clamp(num, 8000, 64000);
-        }
-
-        public int GetInputBufferSize4()
-        {
-            int num = m_inputRate4 * 32 + 8000;
-            num = (num * 100 + 50) / 100;
-            return Mathf.Clamp(num, 8000, 64000);
-        }
-
-        public int GetInputBufferSize5()
-        {
-            int num = m_inputRate5 * 32 + 8000;
-            num = (num * 100 + 50) / 100;
-            return Mathf.Clamp(num, 8000, 64000);
-        }
-
-        public int GetInputBufferSize6()
-        {
-            int num = m_inputRate6 * 32 + 8000;
-            num = (num * 100 + 50) / 100;
-            return Mathf.Clamp(num, 8000, 64000);
-        }
-
-        public int GetInputBufferSize7()
-        {
-            int num = m_inputRate7 * 32 + 8000;
+            int num = inputRate * 32 + 8000;
             num = (num * 100 + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
