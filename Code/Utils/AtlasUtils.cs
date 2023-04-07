@@ -8,9 +8,9 @@ namespace IndustriesMeetsSunsetHarbor.Utils
         public static string[] SpriteNames = new string[]
         {
             "Bread",
-            "Drinks",
-            "Food",
-            "Meal"
+            "Drink Supplies",
+            "Food Supplies",
+            "Meals"
         };
 
         public static string[] NotificationSpriteNames = new string[]
