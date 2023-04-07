@@ -9,6 +9,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
+using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -54,9 +55,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIComponent m_MovingPanel;
 
-        private bool IsBread = true;
-
         private UISprite m_outputSprite;
+
+        private List<string> items;
 
         public UIComponent movingPanel
         {
@@ -114,8 +115,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_outputSprite = Find<UISprite>("LuxuryProductIcon");
-            m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-            m_outputSprite.spriteName = "Meal";
+            
+            items = new List<string>();
         }
 
         private void OnProductionRateChanged(UIComponent component, float value)
@@ -141,43 +142,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             base.OnSetTarget();
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
-            m_inputResourceCount = GetInputResourceCount(restaurantAI);
+            m_inputResourceCount = GetInputResourceCount(ref items, restaurantAI);
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
-            m_productLabel.text = (!Locale.Exists("UNIQUEFACTORYPANEL_PRODUCT", restaurantAI.m_info.name)) ? Locale.Get("UNIQUEFACTORYPANEL_LUXURYGOODS") : Locale.Get("UNIQUEFACTORYPANEL_PRODUCT", restaurantAI.m_info.name);
             m_productBuffer.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
                 UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
+                uILabel.text = GetInputResourceName(ref items, i);
                 var game_atlas = uISprite.atlas;
-                uILabel.text = GetInputResourceName(i);
-                if (!IsBread)
-                {
-                    if(i < 2)
-                    {
-                        uISprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-                        uISprite.spriteName = AtlasUtils.ResourceSpriteName(GetExtendedInputResource(i));
-                    }
-                    else
-                    {
-                        uISprite.atlas = game_atlas;
-                        uISprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(i));
-                    }
-                }
-                else
-                {
-                    if(i < 3)
-                    {
-                        uISprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-                        uISprite.spriteName = AtlasUtils.ResourceSpriteName(GetExtendedInputResource(i));
-                    }
-                    else
-                    {
-                        uISprite.atlas = game_atlas;
-                        uISprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(i));
-                    }
-                }
+                GetInputResourceAtlas(ref items, i, ref game_atlas);
+                uISprite.spriteName = GetInputResourceSpriteName(ref items, i);
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
             if (productionRate > 0)
@@ -186,78 +162,88 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        private int GetInputResourceCount(RestaurantAI ai)
+        private int GetInputResourceCount(ref List<string> items, RestaurantAI ai)
         {
-            if (ai.m_inputResource3 == ExtendedTransferManager.TransferReason.None)
+            int count = 0;
+            if(ai.m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
-                if (ai.m_inputResource4 == TransferManager.TransferReason.None)
-                {
-                    return 2;
-                }
-                if (ai.m_inputResource5 == TransferManager.TransferReason.None)
-                {
-                    IsBread = false;
-                    return 3;
-                }
-                if (ai.m_inputResource6 == TransferManager.TransferReason.None)
-                {
-                    IsBread = false;
-                    return 4;
-                }
-                if (ai.m_inputResource7 == TransferManager.TransferReason.None)
-                {
-                    IsBread = false;
-                    return 5;
-                }
-                IsBread = false;
-                return 6;
+                items.Add("m_inputResource1");
+                count++;
             }
-            else
+            if(ai.m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
-                if (ai.m_inputResource4 == TransferManager.TransferReason.None)
-                {
-                    return 3;
-                }
-                if (ai.m_inputResource5 == TransferManager.TransferReason.None)
-                {
-                    return 4;
-                }
-                if (ai.m_inputResource6 == TransferManager.TransferReason.None)
-                {
-                    return 5;
-                }
-                if (ai.m_inputResource7 == TransferManager.TransferReason.None)
-                {
-                    return 6;
-                }
-                return 7;
+                items.Add("m_inputResource2");
+                count++;
             }
+            if(ai.m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource3");
+                count++;
+            }
+            if(ai.m_inputResource4 != TransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource4");
+                count++;
+            }
+            if(ai.m_inputResource5 != TransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource5");
+                count++;
+            }
+            if(ai.m_inputResource6 != TransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource6");
+                count++;
+            }
+            if(ai.m_inputResource7 != TransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource7");
+                count++;
+            }
+            return count;
         }
 
         protected override void UpdateBindings()
         {
             base.UpdateBindings();
-            ushort building = m_InstanceID.Building;
+            ushort buildingId = m_InstanceID.Building;
             BuildingManager instance = Singleton<BuildingManager>.instance;
-            Building building2 = instance.m_buildings.m_buffer[building];
-            RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
-            m_Upkeep.text = LocaleFormatter.FormatUpkeep(restaurantAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
-            m_status.text = restaurantAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[m_InstanceID.Building]);
-            int customBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer1;
+            Building building = instance.m_buildings.m_buffer[buildingId];
+            RestaurantAI restaurantAI = building.Info.m_buildingAI as RestaurantAI;
+            m_Upkeep.text = LocaleFormatter.FormatUpkeep(restaurantAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
+            m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
+            int customBuffer = building.m_customBuffer1;
             int outputBufferSize = restaurantAI.GetOutputBufferSize();
             m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
             m_productStorage.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, TransferManager.TransferReason.None));
+            m_productLabel.text = restaurantAI.m_outputResource.ToString();
+            m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_outputSprite.spriteName = restaurantAI.m_outputResource.ToString();
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
-                uIProgressBar.value = GetInputBufferProgress(i, out var amount, out var capacity);
-                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(GetInputResource(i));
-                TransferManager.TransferReason inputResource = GetInputResource(i);
-                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)amount), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource));
-                text = (uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString())));
+                uIProgressBar.value = GetInputBufferProgress(ref items, i, out var amount, out var capacity);
+                var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
+                string text;
+                if(GetInputResourceType(ref items, i) == "TransferManager")
+                {
+                    var inputResource = GetInputResource(ref items, i);
+                    var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource);
+                    uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
+                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
+                }
+                else if(GetInputResourceType(ref items, i) == "ExtendedTransferManager")
+                {
+                    var inputResource = GetInputResourceExtended(ref items, i);
+                    var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
+                    uIProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
+                }
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (restaurantAI.m_workPlaceCount0 + restaurantAI.m_workPlaceCount1 + restaurantAI.m_workPlaceCount2 + restaurantAI.m_workPlaceCount3).ToString());
-            if ((building2.m_flags & Building.Flags.Collapsed) != 0)
+            if ((building.m_flags & Building.Flags.Collapsed) != 0)
             {
                 m_RebuildButton.tooltip = ((!IsDisasterServiceRequired()) ? LocaleFormatter.FormatCost(restaurantAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
                 m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
@@ -269,25 +255,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_RebuildButton.isVisible = false;
                 m_MoveButton.isVisible = true;
             }
-            m_generatedInfo.text = restaurantAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
-            int priceRate1 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate1 * 16 / 100;
-            long price1 = priceRate1 * 10000 / 10000;
-            int priceRate2 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate2 * 16 / 100;
-            long price2 = priceRate2 * 10000 / 10000;
-            int priceRate3 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate3 * 16 / 100;
-            long price3 = priceRate3 * 10000 / 10000;
-            int priceRate4 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate4 * 16 / 100;
-            long price4 = priceRate4 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
-            int priceRate5 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate5 * 16 / 100;
-            long price5 = priceRate5 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource5) / 10000;
-            int priceRate6 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate6 * 16 / 100;
-            long price6 = priceRate6 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
-            int priceRate7 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * restaurantAI.m_inputRate7 * 16 / 100;
-            long price7 = priceRate7 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
-            m_expenses.text = (price1 + price2 + price3 + price4 + price5 + price6 + price7).ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            int num9 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_education3 * restaurantAI.m_outputRate * 16 / 100;
-            long num10 = num9 * 10000 / 10000;
-            m_income.text = num10.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            m_generatedInfo.text = restaurantAI.GetLocalizedStats(buildingId, ref building);
+            long inputs_expenses = 0;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate1 * 16 / 100;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate2 * 16 / 100;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate3 * 16 / 100;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate4 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate5 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate6 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += building.m_health * restaurantAI.m_inputRate7 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            int num9 = building.m_education3 * restaurantAI.m_outputRate * 16 / 100;
+            m_income.text = num9.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
             {
                 m_productionSlider.isEnabled = true;
@@ -300,188 +279,148 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        private float GetInputBufferProgress(int resourceIndex, out int amount, out int capacity)
+        private string GetInputResourceType(ref List<string> items, int resourceIndex)
+        {
+            switch (items[resourceIndex])
+            {
+                case "m_inputResource1":
+                case "m_inputResource2":
+                case "m_inputResource3":
+                    return "TransferManager";
+                case "m_inputResource4":
+                case "m_inputResource5":
+                case "m_inputResource6":
+                case "m_inputResource7":
+                    return "ExtendedTransferManager";
+            }
+            return "";
+        }
+
+        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
         {
             var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             amount = 0;
             capacity = 0;
-            if(!IsBread)
+            switch (items[resourceIndex])
             {
-                switch (resourceIndex)
-                {
-                    case 0:
-                        amount = custom_buffers.m_customBuffer1;
-                        capacity = restaurantAI.GetInputBufferSize1();
-                        break;
-                    case 1:
-                        amount = custom_buffers.m_customBuffer2;
-                        capacity = restaurantAI.GetInputBufferSize2();
-                        break;
-                    case 2:
-                        amount = custom_buffers.m_customBuffer4;
-                        capacity = restaurantAI.GetInputBufferSize4();
-                        break;
-                    case 3:
-                        amount = custom_buffers.m_customBuffer5;
-                        capacity = restaurantAI.GetInputBufferSize5();
-                        break;
-                    case 4:
-                        amount = custom_buffers.m_customBuffer6;
-                        capacity = restaurantAI.GetInputBufferSize6();
-                        break;
-                    case 5:
-                        amount = custom_buffers.m_customBuffer7;
-                        capacity = restaurantAI.GetInputBufferSize7();
-                        break;
-                }
+                case "m_inputResource1":
+                    amount = custom_buffers.m_customBuffer1;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate1);
+                    break;
+                case "m_inputResource2":
+                    amount = custom_buffers.m_customBuffer2;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate2);
+                    break;
+                case "m_inputResource3":
+                    amount = custom_buffers.m_customBuffer3;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate3);
+                    break;
+                case "m_inputResource4":
+                    amount = custom_buffers.m_customBuffer4;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate4);
+                    break;
+                case "m_inputResource5":
+                    amount = custom_buffers.m_customBuffer5;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate5);
+                    break;
+                case "m_inputResource6":
+                    amount = custom_buffers.m_customBuffer6;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate6);
+                    break;
+                case "m_inputResource7":
+                    amount = custom_buffers.m_customBuffer7;
+                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate7);
+                    break;
             }
-            else
-            {
-                switch (resourceIndex)
-                {
-                    case 0:
-                        amount = custom_buffers.m_customBuffer1;
-                        capacity = restaurantAI.GetInputBufferSize1();
-                        break;
-                    case 1:
-                        amount = custom_buffers.m_customBuffer2;
-                        capacity = restaurantAI.GetInputBufferSize2();
-                        break;
-                    case 2:
-                        amount = custom_buffers.m_customBuffer3;
-                        capacity = restaurantAI.GetInputBufferSize3();
-                        break;
-                    case 3:
-                        amount = custom_buffers.m_customBuffer4;
-                        capacity = restaurantAI.GetInputBufferSize4();
-                        break;
-                    case 4:
-                        amount = custom_buffers.m_customBuffer5;
-                        capacity = restaurantAI.GetInputBufferSize4();
-                        break;
-                    case 5:
-                        amount = custom_buffers.m_customBuffer6;
-                        capacity = restaurantAI.GetInputBufferSize5();
-                        break;
-                    case 6:
-                        amount = custom_buffers.m_customBuffer7;
-                        capacity = restaurantAI.GetInputBufferSize6();
-                        break;
-                }
-            }
-            
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
         }
 
-        private string GetInputResourceName(int resourceIndex)
+        private string GetInputResourceName(ref List<string> items, int resourceIndex)
         {
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             string key = "N/A";
-            if(!IsBread)
+            switch (items[resourceIndex])
             {
-                switch (resourceIndex)
-                {
-                    case 0:
-                        key = restaurantAI.m_inputResource1.ToString();
-                        break;
-                    case 1:
-                        key = restaurantAI.m_inputResource2.ToString();
-                        break;
-                    case 2:
-                        key = restaurantAI.m_inputResource4.ToString();
-                        break;
-                    case 3:
-                        key = restaurantAI.m_inputResource5.ToString();
-                        break;
-                    case 4:
-                        key = restaurantAI.m_inputResource6.ToString();
-                        break;
-                    case 5:
-                        key = restaurantAI.m_inputResource7.ToString();
-                        break;
-                }
-                if (resourceIndex < 2)
-                {
-                    return key;
-                }
-                return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
+                case "m_inputResource1":
+                    return restaurantAI.m_inputResource1.ToString();
+                case "m_inputResource2":
+                    return restaurantAI.m_inputResource2.ToString();
+                case "m_inputResource3":
+                    return restaurantAI.m_inputResource3.ToString();
+                case "m_inputResource4":
+                    key = restaurantAI.m_inputResource4.ToString();
+                    break;
+                case "m_inputResource5":
+                    key = restaurantAI.m_inputResource5.ToString();
+                    break;
+                case "m_inputResource6":
+                    key = restaurantAI.m_inputResource6.ToString();
+                    break;
+                case "m_inputResource7":
+                    key = restaurantAI.m_inputResource7.ToString();
+                    break;
             }
-            else
-            {
-                switch (resourceIndex)
-                {
-                    case 0:
-                        key = restaurantAI.m_inputResource1.ToString();
-                        break;
-                    case 1:
-                        key = restaurantAI.m_inputResource2.ToString();
-                        break;
-                    case 2:
-                        key = restaurantAI.m_inputResource3.ToString();
-                        break;
-                    case 3:
-                        key = restaurantAI.m_inputResource4.ToString();
-                        break;
-                    case 4:
-                        key = restaurantAI.m_inputResource5.ToString();
-                        break;
-                    case 5:
-                        key = restaurantAI.m_inputResource6.ToString();
-                        break;
-                    case 6:
-                        key = restaurantAI.m_inputResource7.ToString();
-                        break;
-                }
-                if (resourceIndex < 3)
-                {
-                    return key;
-                }
-                return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
-            }
-           
+            return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);          
         }
 
-        private TransferManager.TransferReason GetInputResource(int resourceIndex)
+        private void GetInputResourceAtlas(ref List<string> items, int resourceIndex, ref UITextureAtlas sprite_atlas)
         {
-            RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
-            if(!IsBread)
+            switch (items[resourceIndex])
             {
-                return resourceIndex switch
-                {
-                    2 => restaurantAI.m_inputResource4,
-                    3 => restaurantAI.m_inputResource5,
-                    4 => restaurantAI.m_inputResource6,
-                    5 => restaurantAI.m_inputResource7,
-                    _ => TransferManager.TransferReason.None,
-                };
-            }
-            else
-            {
-                return resourceIndex switch
-                {
-                    3 => restaurantAI.m_inputResource4,
-                    4 => restaurantAI.m_inputResource5,
-                    5 => restaurantAI.m_inputResource6,
-                    6 => restaurantAI.m_inputResource7,
-                    _ => TransferManager.TransferReason.None,
-                };
-            }
-
-            
+                case "m_inputResource1":
+                case "m_inputResource2":
+                case "m_inputResource3":
+                    sprite_atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+                    break;
+                case "m_inputResource4":
+                case "m_inputResource5":
+                case "m_inputResource6":
+                case "m_inputResource7":
+                    break;
+            }    
         }
 
-        private ExtendedTransferManager.TransferReason GetExtendedInputResource(int resourceIndex)
+        private string GetInputResourceSpriteName(ref List<string> items, int resourceIndex)
+        {
+            switch (items[resourceIndex])
+            {
+                case "m_inputResource1":
+                case "m_inputResource2":
+                case "m_inputResource3":
+                    return AtlasUtils.ResourceSpriteName(GetInputResourceExtended(ref items, resourceIndex));
+                case "m_inputResource4":
+                case "m_inputResource5":
+                case "m_inputResource6":
+                case "m_inputResource7":
+                    return IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(ref items, resourceIndex));;
+            }
+            return null;
+        }
+
+        private TransferManager.TransferReason GetInputResource(ref List<string> items, int resourceIndex)
         {
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
-            return resourceIndex switch
+            return items[resourceIndex] switch
             {
-                0 => restaurantAI.m_inputResource1,
-                1 => restaurantAI.m_inputResource2,
-                2 => restaurantAI.m_inputResource3,
+                "m_inputResource4" => restaurantAI.m_inputResource4,
+                "m_inputResource5" => restaurantAI.m_inputResource5,
+                "m_inputResource6" => restaurantAI.m_inputResource6,
+                "m_inputResource7" => restaurantAI.m_inputResource7,
+                _ => TransferManager.TransferReason.None,
+            };
+        }
+
+        private ExtendedTransferManager.TransferReason GetInputResourceExtended(ref List<string> items, int resourceIndex)
+        {
+            RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
+            return items[resourceIndex] switch
+            {
+                "m_inputResource1" => restaurantAI.m_inputResource1,
+                "m_inputResource2" => restaurantAI.m_inputResource2,
+                "m_inputResource3" => restaurantAI.m_inputResource3,
                 _ => ExtendedTransferManager.TransferReason.None,
             };
-
         }
 
         private void OnOnOffChanged(UIComponent comp, bool value)
@@ -719,6 +658,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
             }
             movingPanel.Hide();
+        }
+
+        private static string FormatResourceWithUnit(uint amount)
+        {
+	    return string.Concat(str2: Locale.Get("RESOURCEUNIT_TONS"), str0: IndustryWorldInfoPanel.FormatResource(amount), str1: " ");
         }
     }
 }

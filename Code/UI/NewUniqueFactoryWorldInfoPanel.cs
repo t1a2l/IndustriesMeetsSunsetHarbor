@@ -8,6 +8,8 @@ using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
+using System.Collections.Generic;
+using IndustriesMeetsSunsetHarbor.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -52,6 +54,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private UILabel m_expenses;
 
         private UIComponent m_MovingPanel;
+
+        private UISprite m_outputSprite;
+
+        private List<string> items;
 
         public UIComponent movingPanel
         {
@@ -108,6 +114,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep = Find<UILabel>("Upkeep");
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
+            m_outputSprite = Find<UISprite>("LuxuryProductIcon");
+            items = new List<string>();
         }
 
         private void OnProductionRateChanged(UIComponent component, float value)
@@ -133,7 +141,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             base.OnSetTarget();
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
-            m_inputResourceCount = GetInputResourceCount(newUniqueFactoryAI);
+            m_inputResourceCount = GetInputResourceCount(ref items, newUniqueFactoryAI);
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             m_productLabel.text = (!Locale.Exists("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name)) ? Locale.Get("UNIQUEFACTORYPANEL_LUXURYGOODS") : Locale.Get("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name);
@@ -142,75 +150,106 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
                 UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
+                uILabel.text = GetInputResourceName(ref items, i);
                 var game_atlas = uISprite.atlas;
-                uILabel.text = GetInputResourceName(i);
-                if (uILabel.text == "Bread")
-                {
-                    uISprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-                    uISprite.spriteName = uILabel.text;
-                }
-                else
-                {
-                    uISprite.atlas = game_atlas;
-                    uISprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(i));
-                }
+                GetInputResourceAtlas(ref items, i, ref game_atlas);
+                uISprite.spriteName = GetInputResourceSpriteName(ref items, i);
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
             if (productionRate > 0)
             {
                 m_productionSlider.value = (int)productionRate;
             }
-            UISprite m_outputSprite = m_productStorage.Find<UISprite>("LuxuryProductIcon");
-            m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-            UILabel m_outputLabel = m_productStorage.Find<UILabel>("ProductLabel");
-            m_outputSprite.spriteName = m_outputLabel.text;
+            
         }
 
-        private int GetInputResourceCount(NewUniqueFactoryAI ai)
+        private int GetInputResourceCount(ref List<string> items, NewUniqueFactoryAI ai)
         {
-            if (ai.m_inputResource1 == TransferManager.TransferReason.None)
+            int count = 0;
+            if (ai.m_inputResource1 != TransferManager.TransferReason.None)
             {
-                return 0;
+                items.Add("m_inputResource1");
+                count++;
             }
-            if (ai.m_inputResource2 == TransferManager.TransferReason.None)
+            if (ai.m_inputResource2 != TransferManager.TransferReason.None)
             {
-                return 1;
+                items.Add("m_inputResource2");
+                count++;
             }
-            if (ai.m_inputResource3 == TransferManager.TransferReason.None)
+            if (ai.m_inputResource3 != TransferManager.TransferReason.None)
             {
-                return 2;
+                items.Add("m_inputResource3");
+                count++;
             }
-            if (ai.m_inputResource4 == ExtendedTransferManager.TransferReason.None)
+            if (ai.m_inputResource4 != TransferManager.TransferReason.None)
             {
-                return 3;
+                items.Add("m_inputResource4");
+                count++;
             }
-            return 4;
+            if (ai.m_inputResource5 != ExtendedTransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource5");
+                count++;
+            }
+            if (ai.m_inputResource6 != ExtendedTransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource6");
+                count++;
+            }
+            if (ai.m_inputResource7 != ExtendedTransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource7");
+                count++;
+            }
+            if (ai.m_inputResource8 != ExtendedTransferManager.TransferReason.None)
+            {
+                items.Add("m_inputResource8");
+                count++;
+            }
+            return count;
         }
 
         protected override void UpdateBindings()
         {
             base.UpdateBindings();
-            ushort building = m_InstanceID.Building;
+            ushort buildingId = m_InstanceID.Building;
             BuildingManager instance = Singleton<BuildingManager>.instance;
-            Building building2 = instance.m_buildings.m_buffer[building];
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
-            m_Upkeep.text = LocaleFormatter.FormatUpkeep(newUniqueFactoryAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
-            m_status.text = newUniqueFactoryAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[m_InstanceID.Building]);
-            int customBuffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer1;
-            int outputBufferSize = newUniqueFactoryAI.GetOutputBufferSize(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+            Building building = instance.m_buildings.m_buffer[buildingId];
+            NewUniqueFactoryAI newUniqueFactoryAI = building.Info.m_buildingAI as NewUniqueFactoryAI;
+            m_Upkeep.text = LocaleFormatter.FormatUpkeep(newUniqueFactoryAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
+            m_status.text = newUniqueFactoryAI.GetLocalizedStatus(buildingId, ref building);
+            int customBuffer = building.m_customBuffer1;
+            int outputBufferSize = newUniqueFactoryAI.GetOutputBufferSize(ref building);
             m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
             m_productStorage.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, TransferManager.TransferReason.None));
+            m_productLabel.text = newUniqueFactoryAI.m_outputResource.ToString();
+            m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_outputSprite.spriteName = newUniqueFactoryAI.m_outputResource.ToString();
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
-                uIProgressBar.value = GetInputBufferProgress(i, out var amount, out var capacity);
-                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(GetInputResource(i));
-                TransferManager.TransferReason inputResource = GetInputResource(i);
-                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)amount), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource));
-                text = (uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString())));
+                uIProgressBar.value = GetInputBufferProgress(ref items, i, out var amount, out var capacity);
+                var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
+                string text;
+                if(GetInputResourceType(ref items, i) == "TransferManager")
+                {
+                    var inputResource = GetInputResource(ref items, i);
+                    var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource);
+                    uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
+                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
+                }
+                else if(GetInputResourceType(ref items, i) == "ExtendedTransferManager")
+                {
+                    var inputResource = GetInputResourceExtended(ref items, i);
+                    var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
+                    uIProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
+                }
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (newUniqueFactoryAI.m_workPlaceCount0 + newUniqueFactoryAI.m_workPlaceCount1 + newUniqueFactoryAI.m_workPlaceCount2 + newUniqueFactoryAI.m_workPlaceCount3).ToString());
-            if ((building2.m_flags & Building.Flags.Collapsed) != 0)
+            if ((building.m_flags & Building.Flags.Collapsed) != 0)
             {
                 m_RebuildButton.tooltip = ((!IsDisasterServiceRequired()) ? LocaleFormatter.FormatCost(newUniqueFactoryAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
                 m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
@@ -222,19 +261,19 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_RebuildButton.isVisible = false;
                 m_MoveButton.isVisible = true;
             }
-            m_generatedInfo.text = newUniqueFactoryAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
-            int num = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * newUniqueFactoryAI.m_inputRate1 * 16 / 100;
-            long num2 = num * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource1) / 10000;
-            int num3 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * newUniqueFactoryAI.m_inputRate2 * 16 / 100;
-            long num4 = num3 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource2) / 10000;
-            int num5 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * newUniqueFactoryAI.m_inputRate3 * 16 / 100;
-            long num6 = num5 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource3) / 10000;
-            int num7 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_health * newUniqueFactoryAI.m_inputRate4 * 16 / 100;
-            long num8 = num7 * 10000 / 10000;
-            m_expenses.text = (num2 + num4 + num6 + num8).ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            int num9 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_education3 * newUniqueFactoryAI.m_outputRate * 16 / 100;
-            long num10 = num9 * 10000 / 10000;
-            m_income.text = num10.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            m_generatedInfo.text = newUniqueFactoryAI.GetLocalizedStats(buildingId, ref building);
+            long inputs_expenses = 0;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource1) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource2) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate3 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource3) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate4 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource4) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate5 * 16 / 100;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate6 * 16 / 100;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate7 * 16 / 100;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate8 * 16 / 100;
+            m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            int num9 = building.m_education3 * newUniqueFactoryAI.m_outputRate * 16 / 100;
+            m_income.text = num9.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
             {
                 m_productionSlider.isEnabled = true;
@@ -247,61 +286,158 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        private float GetInputBufferProgress(int resourceIndex, out int amount, out int capacity)
+        private string GetInputResourceType(ref List<string> items, int resourceIndex)
         {
+            switch (items[resourceIndex])
+            {
+                case "m_inputResource1":
+                case "m_inputResource2":
+                case "m_inputResource3":
+                case "m_inputResource4":
+                    return "TransferManager";
+                case "m_inputResource5":
+                case "m_inputResource6":
+                case "m_inputResource7":
+                case "m_inputResource8":
+                    return "ExtendedTransferManager";
+            }
+            return "";
+        }
+
+        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
+        {
+            ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
+            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
             amount = 0;
             capacity = 0;
-            switch (resourceIndex)
+            switch (items[resourceIndex])
             {
-                case 0:
-                    amount = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer2;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                case "m_inputResource1":
+                    amount = custom_buffers.m_customBuffer1;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate1);
                     break;
-                case 1:
-                    amount = (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_teens << 8) | Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_youngs;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize2(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                case "m_inputResource2":
+                    amount = custom_buffers.m_customBuffer2;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate2);
                     break;
-                case 2:
-                    amount = (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_adults << 8) | Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_seniors;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize3(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                case "m_inputResource3":
+                    amount = custom_buffers.m_customBuffer3;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate3);
                     break;
-                case 3:
-                    amount = (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_education1 << 8) | Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_education2;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize4(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                case "m_inputResource4":
+                    amount = custom_buffers.m_customBuffer4;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate4);
+                    break;
+                case "m_inputResource5":
+                    amount = custom_buffers.m_customBuffer5;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate5);
+                    break;
+                case "m_inputResource6":
+                    amount = custom_buffers.m_customBuffer6;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate6);
+                    break;
+                case "m_inputResource7":
+                    amount = custom_buffers.m_customBuffer7;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate7);
+                    break;
+                case "m_inputResource8":
+                    amount = custom_buffers.m_customBuffer8;
+                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate8);
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
         }
 
-        private string GetInputResourceName(int resourceIndex)
+        private string GetInputResourceName(ref List<string> items, int resourceIndex)
         {
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
             string key = "N/A";
-            switch (resourceIndex)
+            switch (items[resourceIndex])
             {
-                case 0:
+                case "m_inputResource1":
                     key = newUniqueFactoryAI.m_inputResource1.ToString();
                     break;
-                case 1:
+                case "m_inputResource2":
                     key = newUniqueFactoryAI.m_inputResource2.ToString();
                     break;
-                case 2:
+                case "m_inputResource3":
                     key = newUniqueFactoryAI.m_inputResource3.ToString();
                     break;
+                case "m_inputResource4":
+                    key = newUniqueFactoryAI.m_inputResource4.ToString();
+                    break;
+                case "m_inputResource5":
+                    return newUniqueFactoryAI.m_inputResource5.ToString();
+                case "m_inputResource6":
+                    return newUniqueFactoryAI.m_inputResource6.ToString();
+                case "m_inputResource7":
+                    return newUniqueFactoryAI.m_inputResource7.ToString();
+                case "m_inputResource8":
+                    return newUniqueFactoryAI.m_inputResource8.ToString();
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }
 
-        private TransferManager.TransferReason GetInputResource(int resourceIndex)
+        private void GetInputResourceAtlas(ref List<string> items, int resourceIndex, ref UITextureAtlas sprite_atlas)
+        {
+            switch (items[resourceIndex])
+            {
+                case "m_inputResource1":
+                case "m_inputResource2":
+                case "m_inputResource3":
+                case "m_inputResource4":
+                    break;
+                case "m_inputResource5":
+                case "m_inputResource6":
+                case "m_inputResource7":
+                case "m_inputResource8":
+                    sprite_atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+                    break;
+            }    
+        }
+
+        private string GetInputResourceSpriteName(ref List<string> items, int resourceIndex)
+        {
+            switch (items[resourceIndex])
+            {
+                case "m_inputResource1":
+                case "m_inputResource2":
+                case "m_inputResource3":
+                case "m_inputResource4":
+                    return IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(ref items, resourceIndex));;
+                case "m_inputResource5":
+                case "m_inputResource6":
+                case "m_inputResource7":
+                case "m_inputResource8":
+                    return AtlasUtils.ResourceSpriteName(GetInputResourceExtended(ref items, resourceIndex));
+            }
+            return null;
+        }
+
+        private TransferManager.TransferReason GetInputResource(ref List<string> items, int resourceIndex)
         {
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
-            return resourceIndex switch
+            return items[resourceIndex] switch
             {
-                0 => newUniqueFactoryAI.m_inputResource1,
-                1 => newUniqueFactoryAI.m_inputResource2,
-                2 => newUniqueFactoryAI.m_inputResource3,
+                "m_inputResource1" => newUniqueFactoryAI.m_inputResource1,
+                "m_inputResource2" => newUniqueFactoryAI.m_inputResource2,
+                "m_inputResource3" => newUniqueFactoryAI.m_inputResource3,
+                "m_inputResource4" => newUniqueFactoryAI.m_inputResource4,
                 _ => TransferManager.TransferReason.None,
+            };
+        }
+
+        private ExtendedTransferManager.TransferReason GetInputResourceExtended(ref List<string> items, int resourceIndex)
+        {
+            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            return items[resourceIndex] switch
+            {
+                "m_inputResource1" => newUniqueFactoryAI.m_inputResource5,
+                "m_inputResource2" => newUniqueFactoryAI.m_inputResource6,
+                "m_inputResource3" => newUniqueFactoryAI.m_inputResource7,
+                "m_inputResource4" => newUniqueFactoryAI.m_inputResource8,
+                _ => ExtendedTransferManager.TransferReason.None,
             };
         }
 
@@ -540,6 +676,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
             }
             movingPanel.Hide();
+        }
+
+        private static string FormatResourceWithUnit(uint amount)
+        {
+	    return string.Concat(str2: Locale.Get("RESOURCEUNIT_TONS"), str0: IndustryWorldInfoPanel.FormatResource(amount), str1: " ");
         }
     }
 }
