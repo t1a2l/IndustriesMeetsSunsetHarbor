@@ -31,76 +31,70 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         public static bool InitializeProperties(NotificationManager __instance, NotificationProperties properties)
         {
             InitializePropertiesBase(__instance, properties);
-            Notification.ProblemStruct.All.AddItem(new());
+            Notification.ProblemStruct new_problemStruct = new();
+            new_problemStruct.m_Problems1 = Notification.Problem1.None;
+            new_problemStruct.m_Problems2 = (Notification.Problem2)64;
+            Notification.ProblemStruct.All.AddItem(new_problemStruct);
             Notification.ProblemStruct all = Notification.ProblemStruct.All;
             var DeliveryNotificationAtlas = TextureUtils.GetAtlas("DeliveryNotificationAtlas");
             for (int i = 0; i < 69; i++)
             {
                 Notification.ProblemStruct problemStruct = all[i];
-                string text;
-                string text2;
-                string text3;
-                if (problemStruct.m_Problems1 != Notification.Problem1.None)
+                if(i == 68)
                 {
-                    text = problemStruct.m_Problems1.Name("Normal");
-                    text2 = problemStruct.m_Problems1.Name("Major");
-                    text3 = problemStruct.m_Problems1.Name("Fatal");
+                    UITextureAtlas.SpriteInfo spriteInfo = DeliveryNotificationAtlas["BuildingNotificationNotEnoughFoodDeliveryFirst"];
+                    Rect region = spriteInfo.region;
+                    __instance.m_spriteAtlasRegions[i] = new Vector4(region.xMin, region.yMin, region.xMax, region.yMax);
+                    UITextureAtlas.SpriteInfo spriteInfo2 = DeliveryNotificationAtlas["BuildingNotificationNotEnoughFoodDelivery"];
+                    Rect region2 = spriteInfo2.region;
+                    __instance.m_spriteAtlasRegions[69 + i] = new Vector4(region2.xMin, region2.yMin, region2.xMax, region2.yMax);
+                    UITextureAtlas.SpriteInfo spriteInfo3 = DeliveryNotificationAtlas["BuildingNotificationNotEnoughFoodDeliveryCritical"];
+                    Rect region3 = spriteInfo3.region;
+                    __instance.m_spriteAtlasRegions[137 + i] = new Vector4(region3.xMin, region3.yMin, region3.xMax, region3.yMax);
                 }
                 else
                 {
-                    text = problemStruct.m_Problems2.Name("Normal");
-                    text2 = problemStruct.m_Problems2.Name("Major");
-                    text3 = problemStruct.m_Problems2.Name("Fatal");
-                }
-                if (!string.IsNullOrEmpty(text))
-                {
-                    UITextureAtlas.SpriteInfo spriteInfo;
-                    if(i == 68)
+                    string text;
+                    string text2;
+                    string text3;
+                    if (problemStruct.m_Problems1 != Notification.Problem1.None)
                     {
-                        spriteInfo = DeliveryNotificationAtlas["BuildingNotificationNotEnoughFoodDeliveryFirst"];
+                        text = problemStruct.m_Problems1.Name("Normal");
+                        text2 = problemStruct.m_Problems1.Name("Major");
+                        text3 = problemStruct.m_Problems1.Name("Fatal");
                     }
                     else
                     {
-                        spriteInfo = properties.m_notificationAtlas[text];
+                        text = problemStruct.m_Problems2.Name("Normal");
+                        text2 = problemStruct.m_Problems2.Name("Major");
+                        text3 = problemStruct.m_Problems2.Name("Fatal");
                     }
-                    if (spriteInfo != null)
+                    if (!string.IsNullOrEmpty(text))
                     {
-                        Rect region = spriteInfo.region;
-                        __instance.m_spriteAtlasRegions[i] = new Vector4(region.xMin, region.yMin, region.xMax, region.yMax);
+                        UITextureAtlas.SpriteInfo spriteInfo = properties.m_notificationAtlas[text];
+                        if (spriteInfo != null)
+                        {
+                            Rect region = spriteInfo.region;
+                            __instance.m_spriteAtlasRegions[i] = new Vector4(region.xMin, region.yMin, region.xMax, region.yMax);
+                        }
                     }
-                }
-                if (!string.IsNullOrEmpty(text2))
-                {
-                    UITextureAtlas.SpriteInfo spriteInfo2;
-                    if(i == 68)
+                    if (!string.IsNullOrEmpty(text2))
                     {
-                        spriteInfo2 = DeliveryNotificationAtlas["BuildingNotificationNotEnoughFoodDelivery"];
+                        UITextureAtlas.SpriteInfo spriteInfo2 = properties.m_notificationAtlas[text2];
+                        if (spriteInfo2 != null)
+                        {
+                            Rect region2 = spriteInfo2.region;
+                            __instance.m_spriteAtlasRegions[69 + i] = new Vector4(region2.xMin, region2.yMin, region2.xMax, region2.yMax);
+                        }
                     }
-                    else
+                    if (!string.IsNullOrEmpty(text3))
                     {
-                        spriteInfo2 = properties.m_notificationAtlas[text2];
-                    }
-                    if (spriteInfo2 != null)
-                    {
-                        Rect region2 = spriteInfo2.region;
-                        __instance.m_spriteAtlasRegions[69 + i] = new Vector4(region2.xMin, region2.yMin, region2.xMax, region2.yMax);
-                    }
-                }
-                if (!string.IsNullOrEmpty(text3))
-                {
-                    UITextureAtlas.SpriteInfo spriteInfo3;
-                    if(i == 68)
-                    {
-                        spriteInfo3 = DeliveryNotificationAtlas["BuildingNotificationNotEnoughFoodDeliveryCritical"];
-                    }
-                    else
-                    {
-                        spriteInfo3 = properties.m_notificationAtlas[text3];
-                    }
-                    if (spriteInfo3 != null)
-                    {
-                        Rect region3 = spriteInfo3.region;
-                        __instance.m_spriteAtlasRegions[137 + i] = new Vector4(region3.xMin, region3.yMin, region3.xMax, region3.yMax);
+                        UITextureAtlas.SpriteInfo spriteInfo3 = properties.m_notificationAtlas[text3];
+                        if (spriteInfo3 != null)
+                        {
+                            Rect region3 = spriteInfo3.region;
+                            __instance.m_spriteAtlasRegions[137 + i] = new Vector4(region3.xMin, region3.yMin, region3.xMax, region3.yMax);
+                        }
                     }
                 }
             }
