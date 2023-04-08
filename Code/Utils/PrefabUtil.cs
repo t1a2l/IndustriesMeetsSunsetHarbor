@@ -33,6 +33,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                     {
                         if (newAIField != null && newAIField.GetType().Equals(fieldInfo.GetType()))
                         {
+                            var obj = fieldInfo.GetValue(src);
+                            if(obj != null && obj.ToString() == "LuxuryProducts") continue;
                             newAIField.SetValue(dst, fieldInfo.GetValue(src));
                         }
                     }
