@@ -3,6 +3,7 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Utils;
 using Object = UnityEngine.Object;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -52,6 +53,40 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             catch (Exception e)
             {
                 LogHelper.Error(e.ToString());
+            }
+        }
+
+        public static void Postfix()
+        {
+            try
+            {
+                uint index = 0U;
+                for (; PrefabCollection<BuildingInfo>.LoadedCount() > index; ++index)
+                {
+                    BuildingInfo buildingInfo = PrefabCollection<BuildingInfo>.GetLoaded(index);
+
+                    if (buildingInfo != null && buildingInfo.GetAI() is NewUniqueFactoryAI newUniqueFactoryAI)
+                    {
+                        if(newUniqueFactoryAI.name.Contains("Food Factory 01") && newUniqueFactoryAI.m_outputResource != ExtendedTransferManager.TransferReason.FoodSupplies)
+                        {
+                            newUniqueFactoryAI.m_outputResource = ExtendedTransferManager.TransferReason.FoodSupplies;
+                        }
+                        else if((newUniqueFactoryAI.name.Contains("Lemonade Factory 01") || newUniqueFactoryAI.name.Contains("Drinks Factory 01")) &&
+                            newUniqueFactoryAI.m_outputResource != ExtendedTransferManager.TransferReason.DrinkSupplies)
+                        {
+                            newUniqueFactoryAI.m_outputResource = ExtendedTransferManager.TransferReason.DrinkSupplies;
+                            newUniqueFactoryAI.name = "Drinks Factory 01";
+                        }
+                        else if(newUniqueFactoryAI.name.Contains("Bakery 01") && newUniqueFactoryAI.m_outputResource != ExtendedTransferManager.TransferReason.Bread)
+                        {
+                            newUniqueFactoryAI.m_outputResource = ExtendedTransferManager.TransferReason.Bread;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.Error(e.Message);
             }
         }
 
