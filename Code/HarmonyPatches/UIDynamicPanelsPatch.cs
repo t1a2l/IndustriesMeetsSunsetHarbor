@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using IndustriesMeetsSunsetHarbor.UI;
+using Object = UnityEngine.Object;
+using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -36,15 +38,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, false);
             dynamicPanelInfo.viewOwner = view;
 	    GameObject gameObject = UnityEngine.Object.Instantiate(dynamicPanelInfo.panelRoot.gameObject);
-            var old_component = gameObject.GetComponent(typeof(UniqueFactoryWorldInfoPanel));
-            GameObject.Destroy(old_component);
+            var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
+            Object.DestroyImmediate(old_component);
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
-                gameObject.AddComponent(typeof(NewUniqueFactoryWorldInfoPanel));
+                var new_component = gameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<BuildingWorldInfoPanel>(old_component, new_component, false);
             }
             else if(customWorldInfoPanelName == "RestaurantAIWorldInfoPanel")
             {
-                gameObject.AddComponent(typeof(RestaurantAIWorldInfoPanel));
+                var new_component = gameObject.AddComponent<RestaurantAIWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<BuildingWorldInfoPanel>(old_component, new_component, false);
             }
 	    gameObject.hideFlags = HideFlags.DontSave;
 	    gameObject.name = "(Library) " + customWorldInfoPanelName;

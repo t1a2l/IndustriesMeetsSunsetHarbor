@@ -6,7 +6,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 {
     public static class PrefabUtil
     {
-        public static void TryCopyAttributes(PrefabAI src, PrefabAI dst, bool safe = true)
+        public static void TryCopyAttributes<T>(T src, T dst, bool safe = true)
         {
             var oldAIFields = src.GetType()
                 .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
