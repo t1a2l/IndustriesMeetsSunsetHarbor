@@ -168,42 +168,66 @@ namespace IndustriesMeetsSunsetHarbor.UI
             int count = 0;
             if (ai.m_inputResource1 != TransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource1");
+                if(!items.Contains("m_inputResource1"))
+                {
+                    items.Add("m_inputResource1");
+                }
                 count++;
             }
             if (ai.m_inputResource2 != TransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource2");
+                if(!items.Contains("m_inputResource2"))
+                {
+                    items.Add("m_inputResource2");
+                }
                 count++;
             }
             if (ai.m_inputResource3 != TransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource3");
+                if(!items.Contains("m_inputResource3"))
+                {
+                    items.Add("m_inputResource3");
+                }
                 count++;
             }
             if (ai.m_inputResource4 != TransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource4");
+                if(!items.Contains("m_inputResource4"))
+                {
+                    items.Add("m_inputResource4");
+                }
                 count++;
             }
             if (ai.m_inputResource5 != ExtendedTransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource5");
+                if(!items.Contains("m_inputResource5"))
+                {
+                    items.Add("m_inputResource5");
+                }
                 count++;
             }
             if (ai.m_inputResource6 != ExtendedTransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource6");
+                if(!items.Contains("m_inputResource6"))
+                {
+                    items.Add("m_inputResource6");
+                }
                 count++;
             }
             if (ai.m_inputResource7 != ExtendedTransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource7");
+                if(!items.Contains("m_inputResource7"))
+                {
+                    items.Add("m_inputResource7");
+                }
                 count++;
             }
             if (ai.m_inputResource8 != ExtendedTransferManager.TransferReason.None)
             {
-                items.Add("m_inputResource8");
+                if(!items.Contains("m_inputResource8"))
+                {
+                    items.Add("m_inputResource8");
+                }
                 count++;
             }
             return count;
