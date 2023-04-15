@@ -54,5 +54,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             return false;
         }
+
+        protected override bool CanSufferFromFlood(out bool onlyCollapse)
+        {
+            onlyCollapse = false;
+            return false;
+        }
     }
 }
