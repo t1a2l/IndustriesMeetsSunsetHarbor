@@ -26,6 +26,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             AquacultureFarmAI m_aquacultureFarmAI = data.Info.GetAI() as AquacultureFarmAI;
+            FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
 
             if (m_aquacultureFarmAI != null)
             {
@@ -49,14 +50,30 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 typeof(CityServiceWorldInfoPanel).GetField("m_outputSprite", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_outputSprite);
                 typeof(CityServiceWorldInfoPanel).GetField("m_ShowIndustryInfoButton", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_ShowIndustryInfoButton);
                 typeof(CityServiceWorldInfoPanel).GetField("m_inputOutputSection", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_inputOutputSection);
+
+                if(AquacultureExtractorPanel._aquacultureExtractorPanel == null)
+                {
+                    AquacultureExtractorPanel.Init();
+                }
+
+                AquacultureExtractorPanel.ExtractorDropdownCheck();
+
             }
 
-            if(AquacultureExtractorPanel._aquacultureExtractorPanel == null)
+            if(m_fishFarmAI != null && m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain)
             {
-                AquacultureExtractorPanel.Init();
+                m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_fishFarmAI.m_outputResource);
+		string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
+		m_outputLabel.text = text4;
+		m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
+		m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_fishFarmAI.m_outputResource);;
+		m_ShowIndustryInfoButton.isVisible = false;
+                typeof(CityServiceWorldInfoPanel).GetField("m_outputBuffer", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_outputBuffer);
+                typeof(CityServiceWorldInfoPanel).GetField("m_outputLabel", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_outputLabel);
+                typeof(CityServiceWorldInfoPanel).GetField("m_arrow3", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_arrow3);
+                typeof(CityServiceWorldInfoPanel).GetField("m_outputSprite", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_outputSprite);
+                typeof(CityServiceWorldInfoPanel).GetField("m_ShowIndustryInfoButton", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_ShowIndustryInfoButton);
             }
-
-            AquacultureExtractorPanel.ExtractorDropdownCheck();
 
         }
 
