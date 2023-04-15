@@ -87,20 +87,28 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [NonSerialized]
         private bool m_hasBufferStatusMeshes;
 
+        [CustomizableProperty("Extended Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
 
+        [CustomizableProperty("Extended Input Resource 2")]
         public ExtendedTransferManager.TransferReason m_inputResource2 = ExtendedTransferManager.TransferReason.FoodSupplies;
 
+        [CustomizableProperty("Extended Input Resource 3")]
         public ExtendedTransferManager.TransferReason m_inputResource3 = ExtendedTransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 4")]
         public TransferManager.TransferReason m_inputResource4 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 5")]
         public TransferManager.TransferReason m_inputResource5 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 6")]
         public TransferManager.TransferReason m_inputResource6 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 7")]
         public TransferManager.TransferReason m_inputResource7 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Extended Output Resource")]
         public ExtendedTransferManager.TransferReason m_outputResource = ExtendedTransferManager.TransferReason.Meals; // consumed by citizens and delivery 
 
         public override void InitializePrefab()

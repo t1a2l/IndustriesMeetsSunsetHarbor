@@ -61,22 +61,31 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
+        [CustomizableProperty("Input Resource 1")]
         public TransferManager.TransferReason m_inputResource1 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 2")]
         public TransferManager.TransferReason m_inputResource2 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 3")]
         public TransferManager.TransferReason m_inputResource3 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Input Resource 4")]
         public TransferManager.TransferReason m_inputResource4 = TransferManager.TransferReason.None;
 
+        [CustomizableProperty("Extended Input Resource 5")]
         public ExtendedTransferManager.TransferReason m_inputResource5 = ExtendedTransferManager.TransferReason.None;
 
+        [CustomizableProperty("Extended Input Resource 6")]
         public ExtendedTransferManager.TransferReason m_inputResource6 = ExtendedTransferManager.TransferReason.None;
 
+        [CustomizableProperty("Extended Input Resource 7")]
         public ExtendedTransferManager.TransferReason m_inputResource7 = ExtendedTransferManager.TransferReason.None;
 
+        [CustomizableProperty("Extended Input Resource 8")]
         public ExtendedTransferManager.TransferReason m_inputResource8 = ExtendedTransferManager.TransferReason.None;
 
+        [CustomizableProperty("Extended Output Resource")]
         public ExtendedTransferManager.TransferReason m_outputResource = ExtendedTransferManager.TransferReason.None;
 
         public override void InitializePrefab()
