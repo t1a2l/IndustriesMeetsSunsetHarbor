@@ -8,12 +8,14 @@ using System;
 using IndustriesMeetsSunsetHarbor.UI;
 using Object = UnityEngine.Object;
 using IndustriesMeetsSunsetHarbor.Utils;
+using ColossalFramework.DataBinding;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
     [HarmonyPatch(typeof(UIDynamicPanels))]
     public static class UIDynamicPanelsPatch
     {
+
         [HarmonyPatch(typeof(UIDynamicPanels), "Init")]
         [HarmonyPostfix]
         public static void Init(UIDynamicPanels __instance, UIView view)
@@ -52,13 +54,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             Object.DestroyImmediate(old_component);
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
-                var new_component = gameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
-                PrefabUtil.TryCopyAttributes<BuildingWorldInfoPanel>(old_component, new_component, false);
+                var newUniqueFactoryComp = gameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, newUniqueFactoryComp, false);
+                var bind = customOldUIClone.GetComponentInChildren<BindEvent>();
+                bind.dataTarget.component = newUniqueFactoryComp;
             }
             else if(customWorldInfoPanelName == "RestaurantAIWorldInfoPanel")
             {
-                var new_component = gameObject.AddComponent<RestaurantAIWorldInfoPanel>();
-                PrefabUtil.TryCopyAttributes<BuildingWorldInfoPanel>(old_component, new_component, false);
+                var restaurantComp = gameObject.AddComponent<RestaurantAIWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
+                var bind = customOldUIClone.GetComponentInChildren<BindEvent>();
+                bind.dataTarget.component = restaurantComp;
             }
 	    gameObject.hideFlags = HideFlags.DontSave;
 	    gameObject.name = "(Library) " + customWorldInfoPanelName;
@@ -67,5 +73,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 	    dynamicPanelInfo.AddInstance(uicomponent);
             return dynamicPanelInfo;
         }
+
     }
 }
