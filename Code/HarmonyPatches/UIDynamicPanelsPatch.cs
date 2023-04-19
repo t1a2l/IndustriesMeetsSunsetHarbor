@@ -56,15 +56,67 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 var newUniqueFactoryComp = gameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, newUniqueFactoryComp, false);
-                var bind = customOldUIClone.GetComponentInChildren<BindEvent>();
-                bind.dataTarget.component = newUniqueFactoryComp;
+                for (int i = 0; i < gameObject.transform.childCount; i++)
+                {
+                    var child = gameObject.transform.GetChild(i);
+                    if(child != null)
+                    {
+                        if(child.name == "Caption")
+                        {
+                            for (int j = 0; j < child.transform.childCount; i++)
+                            {
+                                var caption_child = child.transform.GetChild(j);
+                                if(caption_child != null)
+                                {
+                                    var caption_child_bind = caption_child.GetComponent<BindEvent>();
+                                    if(caption_child_bind != null)
+                                    {
+                                        caption_child_bind.dataTarget.component = newUniqueFactoryComp;
+                                    }
+                                }
+                            }
+                            
+                        }
+                        var bind = child.GetComponent<BindEvent>();
+                        if(bind != null)
+                        {
+                            bind.dataTarget.component = newUniqueFactoryComp;
+                        }
+                    }
+                }
             }
             else if(customWorldInfoPanelName == "RestaurantAIWorldInfoPanel")
             {
                 var restaurantComp = gameObject.AddComponent<RestaurantAIWorldInfoPanel>();
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
-                var bind = customOldUIClone.GetComponentInChildren<BindEvent>();
-                bind.dataTarget.component = restaurantComp;
+                for (int i = 0; i < gameObject.transform.childCount; i++)
+                {
+                    var child = gameObject.transform.GetChild(i);
+                    if(child != null)
+                    {
+                        if(child.name == "Caption")
+                        {
+                            for (int j = 0; j < child.transform.childCount; i++)
+                            {
+                                var caption_child = child.transform.GetChild(j);
+                                if(caption_child != null)
+                                {
+                                    var caption_child_bind = caption_child.GetComponent<BindEvent>();
+                                    if(caption_child_bind != null)
+                                    {
+                                        caption_child_bind.dataTarget.component = restaurantComp;
+                                    }
+                                }
+                            }
+                            
+                        }
+                        var bind = child.GetComponent<BindEvent>();
+                        if(bind != null)
+                        {
+                            bind.dataTarget.component = restaurantComp;
+                        }
+                    }
+                }
             }
 	    gameObject.hideFlags = HideFlags.DontSave;
 	    gameObject.name = "(Library) " + customWorldInfoPanelName;
