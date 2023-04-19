@@ -63,7 +63,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     {
                         if(child.name == "Caption")
                         {
-                            for (int j = 0; j < child.transform.childCount; i++)
+                            for (int j = 0; j < child.transform.childCount; j++)
                             {
                                 var caption_child = child.transform.GetChild(j);
                                 if(caption_child != null)
@@ -96,7 +96,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     {
                         if(child.name == "Caption")
                         {
-                            for (int j = 0; j < child.transform.childCount; i++)
+                            for (int j = 0; j < child.transform.childCount; j++)
                             {
                                 var caption_child = child.transform.GetChild(j);
                                 if(caption_child != null)
