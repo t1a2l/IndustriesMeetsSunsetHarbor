@@ -151,8 +151,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
                 UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
                 uILabel.text = GetInputResourceName(ref items, i);
-                var game_atlas = uISprite.atlas;
-                GetInputResourceAtlas(ref items, i, ref game_atlas);
+                var atlas = GetInputResourceAtlas(ref items, i);
+                if(atlas != null)
+                {
+                    uISprite.atlas = atlas;
+                }
                 uISprite.spriteName = GetInputResourceSpriteName(ref items, i);
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
@@ -385,21 +388,21 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);          
         }
 
-        private void GetInputResourceAtlas(ref List<string> items, int resourceIndex, ref UITextureAtlas sprite_atlas)
+        private UITextureAtlas GetInputResourceAtlas(ref List<string> items, int resourceIndex)
         {
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
                 case "m_inputResource2":
                 case "m_inputResource3":
-                    sprite_atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-                    break;
+                    return TextureUtils.GetAtlas("RestaurantAtlas");
                 case "m_inputResource4":
                 case "m_inputResource5":
                 case "m_inputResource6":
                 case "m_inputResource7":
-                    break;
-            }    
+                    return null;
+            }
+            return null;
         }
 
         private string GetInputResourceSpriteName(ref List<string> items, int resourceIndex)
