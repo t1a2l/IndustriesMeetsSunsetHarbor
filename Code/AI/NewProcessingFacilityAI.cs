@@ -764,7 +764,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_outputResource != ExtendedTransferManager.TransferReason.None)
                 {
                     OutputBufferSize = GetOutputBufferSize(ref buildingData);
-                    CustomBuffer8 = (int)custom_buffers.m_customBuffer5;
+                    CustomBuffer9 = (int)custom_buffers.m_customBuffer9;
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     if (OutputBufferSize - CustomBuffer9 < OutputProductionRate)
                     {
