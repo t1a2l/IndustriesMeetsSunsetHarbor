@@ -204,18 +204,18 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         private static void ModifyMaterialBufferCall(ref Vehicle data, ref int num)
         {
             BuildingManager instance = Singleton<BuildingManager>.instance;
-            BuildingInfo info2 = instance.m_buildings.m_buffer[data.m_sourceBuilding].Info;
+            BuildingInfo info2 = instance.m_buildings.m_buffer[data.m_targetBuilding].Info;
             if (info2 != null)
             {
                 if (info2.m_buildingAI is RestaurantAI restaurantAI)
                 {
                     if (data.m_transferType == (byte)ExtendedTransferManager.TransferReason.Bread || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.FoodSupplies || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.DrinkSupplies)
                     { 
-                        ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                        ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                     }
                     else
                     {
-                        restaurantAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
+                        restaurantAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_targetBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
                     }
 
                 }
@@ -223,22 +223,22 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 {
                     if (data.m_transferType == (byte)ExtendedTransferManager.TransferReason.Bread || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.FoodSupplies || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.DrinkSupplies)
                     {
-                        ((IExtendedBuildingAI)newUniqueFactoryAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                        ((IExtendedBuildingAI)newUniqueFactoryAI).ExtendedModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                     }
                     else
                     {
-                        newUniqueFactoryAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
+                        newUniqueFactoryAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_targetBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
                     }
                 }
                 else if (info2.m_buildingAI is NewProcessingFacilityAI newProcessingFacilityAI)
                 {
                     if (data.m_transferType == (byte)ExtendedTransferManager.TransferReason.Bread || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.FoodSupplies || data.m_transferType == (byte)ExtendedTransferManager.TransferReason.DrinkSupplies)
                     {
-                        ((IExtendedBuildingAI)newProcessingFacilityAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                        ((IExtendedBuildingAI)newProcessingFacilityAI).ExtendedModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                     }
                     else
                     {
-                        newProcessingFacilityAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
+                        newProcessingFacilityAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_targetBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
                     }
                 }
             }

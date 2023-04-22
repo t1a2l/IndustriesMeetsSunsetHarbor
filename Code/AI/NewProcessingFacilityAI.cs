@@ -445,6 +445,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
             }
+            BuildingCustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
 
         void IExtendedBuildingAI.ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
@@ -490,6 +491,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 m_customBuffer9 += amountDelta;
                 custom_buffers.m_customBuffer9 = (ushort)m_customBuffer9;
             }
+            BuildingCustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
@@ -841,6 +843,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     CustomBuffer9 = Mathf.Min(OutputBufferSize, CustomBuffer9 + OutputProductionRate);
                     custom_buffers.m_customBuffer9 = (ushort)CustomBuffer9;
                 }
+                BuildingCustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 num16 = (finalProductionRate * num16 + 50) / 100;
                 if (num16 != 0)
                 {

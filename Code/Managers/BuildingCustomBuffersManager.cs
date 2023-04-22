@@ -44,6 +44,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
             return buffer_struct;
         }
+
+        public static void SetCustomBuffer(ushort buildingID, BuildingCustomBuffer buffer_struct)
+        {
+            BuildingCustomBuffers[buildingID] = buffer_struct;
+        }
     }
     
 }

@@ -38,7 +38,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool ArriveAtTarget(CargoTruckAI __instance, ushort vehicleID, ref Vehicle data) {
             BuildingManager instance = Singleton<BuildingManager>.instance;
-            BuildingInfo info = instance.m_buildings.m_buffer[data.m_sourceBuilding].Info;
+            BuildingInfo info = instance.m_buildings.m_buffer[data.m_targetBuilding].Info;
             if(info.m_buildingAI is RestaurantAI || info.m_buildingAI is NewUniqueFactoryAI || info.m_buildingAI is NewProcessingFacilityAI)
             {
                 CargoTruckAIManager.ArriveAtTarget(__instance, vehicleID, ref data);
