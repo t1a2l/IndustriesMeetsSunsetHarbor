@@ -335,7 +335,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 VehicleInfo vehicleInfo = base.GetSelectedVehicle(buildingID);
                 if (vehicleInfo == null)
                 {
-                    vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, m_info.m_class.m_service, m_info.m_class.m_subService, m_info.m_class.m_level);
+                    vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level1);
                 }
                 if (vehicleInfo != null)
                 {
