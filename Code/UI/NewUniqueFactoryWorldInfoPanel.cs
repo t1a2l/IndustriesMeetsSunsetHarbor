@@ -245,10 +245,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             NewUniqueFactoryAI newUniqueFactoryAI = building.Info.m_buildingAI as NewUniqueFactoryAI;
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(newUniqueFactoryAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = newUniqueFactoryAI.GetLocalizedStatus(buildingId, ref building);
-            int customBuffer = building.m_customBuffer1;
+            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingId);
             int outputBufferSize = newUniqueFactoryAI.GetOutputBufferSize(ref building);
-            m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
-            m_productStorage.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, TransferManager.TransferReason.None));
+            m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, outputBufferSize);
+            m_productStorage.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)custom_buffers.m_customBuffer9), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, TransferManager.TransferReason.None));
             m_productLabel.text = newUniqueFactoryAI.m_outputResource.ToString();
             m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_outputSprite.spriteName = newUniqueFactoryAI.m_outputResource.ToString();
