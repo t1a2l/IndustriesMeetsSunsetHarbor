@@ -35,7 +35,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
-                else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry &&  (__instance.name.Contains("Food Factory 01") || __instance.name.Contains("Lemonade Factory 01") || __instance.name.Contains("Bakery 01")) && __instance.GetAI() is not NewUniqueFactoryAI)
+                else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry &&  (__instance.name.Contains("Food Factory 01") || __instance.name.Contains("Lemonade Factory 01") || __instance.name.Contains("Bakery 01")) && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                 {
                     var oldAI = __instance.GetComponent<PrefabAI>();
                     Object.DestroyImmediate(oldAI);
@@ -60,17 +60,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
                     if (buildingInfo != null && buildingInfo.GetAI() is NewUniqueFactoryAI newUniqueFactoryAI)
                     {
-                        for (int i = 0; i < newUniqueFactoryAI.m_info.m_subBuildings.Length; i++)
-                        {
-                            var info = newUniqueFactoryAI.m_info.m_subBuildings[i].m_buildingInfo;
-                            if(info.GetAI() is not DummyBuildingAI)
-                            {
-                                var oldAI = info.GetComponent<PrefabAI>();
-                                Object.DestroyImmediate(oldAI);
-                                var newAI = (PrefabAI)info.gameObject.AddComponent<DummyBuildingAI>();
-                                PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                            }
-                        }
                         if(newUniqueFactoryAI.name.Contains("Food Factory 01") && newUniqueFactoryAI.m_outputResource != ExtendedTransferManager.TransferReason.FoodSupplies)
                         {
                             newUniqueFactoryAI.m_outputResource = ExtendedTransferManager.TransferReason.FoodSupplies;
