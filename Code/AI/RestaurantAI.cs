@@ -384,6 +384,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
+            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
             switch (material)
             {
                 case TransferManager.TransferReason.Shopping:
@@ -395,9 +396,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case TransferManager.TransferReason.ShoppingG:
                 case TransferManager.TransferReason.ShoppingH:
                     {
-                        int customBuffer2 = data.m_customBuffer2;
-                        amountDelta = Mathf.Clamp(amountDelta, -customBuffer2, 0);
-                        data.m_customBuffer2 = (ushort)(customBuffer2 + amountDelta);
+                        int m_customBuffer8 = custom_buffers.m_customBuffer8;
+                        amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer8, 0);
+                        m_customBuffer8 += amountDelta;
+                        custom_buffers.m_customBuffer8 = (ushort)m_customBuffer8;
                         data.m_outgoingProblemTimer = 0;
                         byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
                         if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone)
@@ -416,7 +418,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         return;
                     }
                 default:
-                    var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
                     if (material == m_inputResource4)
                     {
                         int inputBufferSize4 = GetInputBufferSize(m_inputRate4);
@@ -941,7 +942,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                     var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
-                    if (outgoingTransferReason != TransferManager.TransferReason.None)
+                    if (CustomBuffer8 >= 8000 && outgoingTransferReason != TransferManager.TransferReason.None)
                     {
                         int num60 = buildingData.m_customBuffer1 - aliveVisitorCount * 100;
                         int num61 = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
