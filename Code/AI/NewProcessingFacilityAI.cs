@@ -884,7 +884,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo2 = 0;
                         int capacity2 = 0;
                         int outside2 = 0;
-                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count2, ref cargo2, ref capacity2, ref outside2);
+                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
                         if (outside2 != 0)
                         {
                             TempOutput |= 2;
@@ -908,7 +908,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo3 = 0;
                         int capacity3 = 0;
                         int outside3 = 0;
-                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count3, ref cargo3, ref capacity3, ref outside3);
+                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
                         if (outside3 != 0)
                         {
                             TempOutput |= 4;
@@ -932,7 +932,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo4 = 0;
                         int capacity4 = 0;
                         int outside4 = 0;
-                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count4, ref cargo4, ref capacity4, ref outside4);
+                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource4, ref count4, ref cargo4, ref capacity4, ref outside4);
                         if (outside4 != 0)
                         {
                             TempOutput |= 8;
@@ -992,7 +992,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo7 = 0;
                         int capacity7 = 0;
                         int outside7 = 0;
-                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource5, ref count7, ref cargo7, ref capacity7, ref outside7);
+                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource7, ref count7, ref cargo7, ref capacity7, ref outside7);
                         int InputSize7 = InputBufferSize7 - CustomBuffer7 - cargo7;
                         if (InputSize7 >= 4000)
                         {
@@ -1010,7 +1010,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo8 = 0;
                         int capacity8 = 0;
                         int outside8 = 0;
-                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource5, ref count8, ref cargo8, ref capacity8, ref outside8);
+                        CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource8, ref count8, ref cargo8, ref capacity8, ref outside8);
                         int InputSize8 = InputBufferSize8 - CustomBuffer8 - cargo8;
                         if (InputSize8 >= 4000)
                         {
@@ -1039,7 +1039,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             transferOffer.Building = buildingID;
                             transferOffer.Position = buildingData.m_position;
                             transferOffer.Amount = 1;
-                            transferOffer.Active = false;
+                            transferOffer.Active = true;
                             Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(m_outputResource, transferOffer);
                         }
                     }

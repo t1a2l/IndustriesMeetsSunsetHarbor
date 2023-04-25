@@ -953,7 +953,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer6.Building = buildingID;
                             offer6.Position = buildingData.m_position;
                             offer6.Amount = Mathf.Min(num60 / 100, num61);
-                            offer6.Active = false;
+                            offer6.Active = true;
                             Singleton<TransferManager>.instance.AddOutgoingOffer(outgoingTransferReason, offer6);
                         }
                     }
