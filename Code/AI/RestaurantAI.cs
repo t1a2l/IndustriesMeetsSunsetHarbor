@@ -341,10 +341,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     var material_byte = (byte)material;
-                    if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is IExtendedVehicleAI extended)
+                    if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
                     {
-                        vehicleInfo.m_vehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
-                        extended.ExtendedStartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
+                        restaurantDeliveryVehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
+                        ((IExtendedVehicleAI)restaurantDeliveryVehicleAI).ExtendedStartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
                     }
                 }
             }

@@ -5,6 +5,7 @@ using UnityEngine;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
+using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -400,12 +401,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     var material_byte = (byte)material;
-                    if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, (TransferManager.TransferReason)material_byte, false, true)
-                        && transferVehicleService.m_vehicleAI is IExtendedVehicleAI extended)
+                    if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, (TransferManager.TransferReason)material_byte, false, true) && transferVehicleService.m_vehicleAI is ExtendedCargoTruckAI extendedCargoTruckAI)
                     {
                         vehicles.m_buffer[(int)num].m_gateIndex = (byte)m_variationGroupID;
-                        transferVehicleService.m_vehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
-                        extended.ExtendedStartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
+                        extendedCargoTruckAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
+                        ((IExtendedVehicleAI)extendedCargoTruckAI).ExtendedStartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
                     }
                 }
             }
