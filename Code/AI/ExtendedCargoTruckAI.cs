@@ -1,14 +1,24 @@
 using ColossalFramework;
 using ColossalFramework.Math;
-using UnityEngine;
 using MoreTransferReasons;
-using IndustriesMeetsSunsetHarbor.AI;
+using UnityEngine;
 
-namespace IndustriesMeetsSunsetHarbor.Managers
+namespace IndustriesMeetsSunsetHarbor.AI
 {
-    public static class CargoTruckAIManager
+    class ExtendedCargoTruckAI : CargoTruckAI, IExtendedVehicleAI
     {
-        public static void ReleaseVehicle(CargoTruckAI cargo_instance, ushort vehicleID, ref Vehicle data)
+        void IExtendedVehicleAI.ExtendedStartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        {
+            if (material == (ExtendedTransferManager.TransferReason)data.m_transferType)
+            {
+                if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
+                {
+                    SetTarget(vehicleID, ref data, offer.Building);
+                }
+            }
+        }
+
+        public override void ReleaseVehicle(ushort vehicleID, ref Vehicle data)
         {
             if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0 && data.m_sourceBuilding != 0 && data.m_transferSize != 0)
             {
@@ -18,10 +28,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             RemoveOffers(vehicleID, ref data);
             RemoveSource(vehicleID, ref data);
             RemoveTarget(vehicleID, ref data);
-            cargo_instance.ReleaseVehicle(vehicleID, ref data);
+            ReleaseVehicle(vehicleID, ref data);
         }
 
-        public static void SetSource(CargoTruckAI cargo_instance, ushort vehicleID, ref Vehicle data, ushort sourceBuilding)
+        public override void SetSource(ushort vehicleID, ref Vehicle data, ushort sourceBuilding)
         {
             RemoveSource(vehicleID, ref data);
             data.m_sourceBuilding = sourceBuilding;
@@ -52,12 +62,12 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 data.m_targetPos3 = data.m_targetPos1;
                 if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0)
                 {
-                    int num = Mathf.Min(0, data.m_transferSize - cargo_instance.m_cargoCapacity);
+                    int num = Mathf.Min(0, data.m_transferSize - m_cargoCapacity);
                     ModifyMaterialBufferCall(ref data, ref num);
                     num = Mathf.Max(0, -num);
                     data.m_transferSize += (ushort)num;
                 }
-                cargo_instance.FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
+                FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 instance.m_buildings.m_buffer[(int)data.m_sourceBuilding].AddOwnVehicle(vehicleID, ref data);
                 if ((instance.m_buildings.m_buffer[(int)data.m_sourceBuilding].m_flags & Building.Flags.IncomingOutgoing) != Building.Flags.None)
                 {
@@ -73,7 +83,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        public static bool ArriveAtTarget(CargoTruckAI cargo_instance, ushort vehicleID, ref Vehicle data)
+        private bool ArriveAtTarget(ushort vehicleID, ref Vehicle data)
         {
             if (data.m_targetBuilding == 0)
             {
@@ -86,7 +96,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
             if ((data.m_flags & Vehicle.Flags.TransferToSource) != 0)
             {
-                num = Mathf.Min(0, (int)data.m_transferSize - cargo_instance.m_cargoCapacity);
+                num = Mathf.Min(0, (int)data.m_transferSize - m_cargoCapacity);
             }
             BuildingManager instance = Singleton<BuildingManager>.instance;
             BuildingInfo info = instance.m_buildings.m_buffer[(int)data.m_targetBuilding].Info;
@@ -122,7 +132,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     data.Unspawn(vehicleID);
                     BuildingInfo info3 = instance.m_buildings.m_buffer[(int)num3].Info;
                     Randomizer randomizer = new Randomizer((int)vehicleID);
-                    info3.m_buildingAI.CalculateSpawnPosition(num3, ref instance.m_buildings.m_buffer[(int)num3], ref randomizer, cargo_instance.m_info, out Vector3 vector, out Vector3 vector2);
+                    info3.m_buildingAI.CalculateSpawnPosition(num3, ref instance.m_buildings.m_buffer[(int)num3], ref randomizer, m_info, out Vector3 vector, out Vector3 vector2);
                     Quaternion quaternion = Quaternion.identity;
                     Vector3 vector3 = vector2 - vector;
                     if (vector3.sqrMagnitude > 0.01f)
@@ -139,16 +149,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     data.m_targetPos1.w = 2f;
                     data.m_targetPos2 = data.m_targetPos1;
                     data.m_targetPos3 = data.m_targetPos1;
-                    cargo_instance.FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
-                    cargo_instance.SetTarget(vehicleID, ref data, 0);
+                    FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
+                    SetTarget(vehicleID, ref data, 0);
                     return true;
                 }
             }
-            cargo_instance.SetTarget(vehicleID, ref data, 0);
+            SetTarget(vehicleID, ref data, 0);
             return false;
         }
 
-        public static bool ArriveAtSource(CargoTruckAI cargo_instance, ushort vehicleID, ref Vehicle data)
+        private bool ArriveAtSource(ushort vehicleID, ref Vehicle data)
         {
             if (data.m_sourceBuilding == 0)
             {
@@ -166,11 +176,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             return true;
         }
 
-        private static void RemoveOffers(ushort vehicleID, ref Vehicle data)
+        private void RemoveOffers(ushort vehicleID, ref Vehicle data)
         {
-            if ((data.m_flags & Vehicle.Flags.WaitingTarget) != (Vehicle.Flags)0)
+            if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
             {
-                ExtendedTransferManager.Offer transferOffer = default(ExtendedTransferManager.Offer);
+                ExtendedTransferManager.Offer transferOffer = default;
                 transferOffer.Vehicle = vehicleID;
                 if ((data.m_flags & Vehicle.Flags.TransferToSource) != 0)
                 {
@@ -183,7 +193,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        private static void RemoveSource(ushort vehicleID, ref Vehicle data)
+        private void RemoveSource(ushort vehicleID, ref Vehicle data)
         {
             if (data.m_sourceBuilding != 0)
             {
@@ -192,7 +202,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        private static void RemoveTarget(ushort vehicleID, ref Vehicle data)
+        private void RemoveTarget(ushort vehicleID, ref Vehicle data)
         {
             if (data.m_targetBuilding != 0)
             {
@@ -201,7 +211,20 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        private static void ModifyMaterialBufferCall(ref Vehicle data, ref int num)
+        public override bool ArriveAtDestination(ushort vehicleID, ref Vehicle vehicleData)
+	{
+	    if ((vehicleData.m_flags & Vehicle.Flags.WaitingTarget) != 0)
+	    {
+		    return false;
+	    }
+	    if ((vehicleData.m_flags & Vehicle.Flags.GoingBack) != 0)
+	    {
+		    return ArriveAtSource(vehicleID, ref vehicleData);
+	    }
+	    return ArriveAtTarget(vehicleID, ref vehicleData);
+	}
+
+        private void ModifyMaterialBufferCall(ref Vehicle data, ref int num)
         {
             BuildingManager instance = Singleton<BuildingManager>.instance;
             BuildingInfo info2 = instance.m_buildings.m_buffer[data.m_targetBuilding].Info;
@@ -244,6 +267,5 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
 
         }
-
     }
 }
