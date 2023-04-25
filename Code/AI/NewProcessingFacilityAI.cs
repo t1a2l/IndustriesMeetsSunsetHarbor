@@ -393,6 +393,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 VehicleInfo transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, data.Info.m_class.m_service, data.Info.m_class.m_subService, data.Info.m_class.m_level);
                 if (transferVehicleService != null)
                 {
+                    var oldAI = transferVehicleService.GetComponent<CargoTruckAI>();
+                    DestroyImmediate(oldAI);
+                    var newAI = transferVehicleService.gameObject.AddComponent<ExtendedCargoTruckAI>();
+                    PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     var material_byte = (byte)material;
                     if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, (TransferManager.TransferReason)material_byte, false, true)

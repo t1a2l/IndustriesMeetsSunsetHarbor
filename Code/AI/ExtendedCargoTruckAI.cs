@@ -43,7 +43,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Randomizer randomizer = new Randomizer((int)vehicleID);
                 Vector3 vector;
                 Vector3 vector2;
-                info.m_buildingAI.CalculateSpawnPosition(sourceBuilding, ref instance.m_buildings.m_buffer[(int)sourceBuilding], ref randomizer, cargo_instance.m_info, out vector, out vector2);
+                info.m_buildingAI.CalculateSpawnPosition(sourceBuilding, ref instance.m_buildings.m_buffer[(int)sourceBuilding], ref randomizer, m_info, out vector, out vector2);
                 Quaternion quaternion = Quaternion.identity;
                 Vector3 vector3 = vector2 - vector;
                 if (vector3.sqrMagnitude > 0.01f)
