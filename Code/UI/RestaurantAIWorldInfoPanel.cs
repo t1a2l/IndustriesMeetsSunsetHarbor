@@ -15,6 +15,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
 {
     public class RestaurantAIWorldInfoPanel : BuildingWorldInfoPanel
     {
+        private UIPanel m_mainPanel;
+
         private UILabel m_status;
 
         private UIButton m_RebuildButton;
@@ -115,7 +117,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_outputSprite = Find<UISprite>("LuxuryProductIcon");
-            
+            m_mainPanel = Find<UIPanel>("(Library) RestaurantAIWorldInfoPanel");
             items = new List<string>();
         }
 
@@ -143,6 +145,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
             base.OnSetTarget();
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             m_inputResourceCount = GetInputResourceCount(ref items, restaurantAI);
+            if(m_inputResourceCount > 4)
+            {
+                var width = m_inputResourceCount * 122 + 52;
+                m_mainPanel.width = width;
+            }
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             m_productBuffer.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);

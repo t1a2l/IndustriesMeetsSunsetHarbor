@@ -15,6 +15,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
 {
     public class NewUniqueFactoryWorldInfoPanel : BuildingWorldInfoPanel
     {
+        private UIPanel m_mainPanel;
+
         private UILabel m_status;
 
         private UIButton m_RebuildButton;
@@ -115,6 +117,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_outputSprite = Find<UISprite>("LuxuryProductIcon");
+            m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
             items = new List<string>();
         }
 
@@ -142,6 +145,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
             base.OnSetTarget();
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
             m_inputResourceCount = GetInputResourceCount(ref items, newUniqueFactoryAI);
+            if(m_inputResourceCount > 4)
+            {
+                var width = m_inputResourceCount * 122 + 52;
+                m_mainPanel.width = width;
+            }
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             m_productLabel.text = (!Locale.Exists("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name)) ? Locale.Get("UNIQUEFACTORYPANEL_LUXURYGOODS") : Locale.Get("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name);
