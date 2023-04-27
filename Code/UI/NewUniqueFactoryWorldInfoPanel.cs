@@ -147,8 +147,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputResourceCount = GetInputResourceCount(ref items, newUniqueFactoryAI);
             if(m_inputResourceCount > 4)
             {
-                var width = m_inputResourceCount * 122 + 52;
-                m_mainPanel.width = width;
+                m_mainPanel.width = m_inputContainer.width + 22;
             }
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;

@@ -305,11 +305,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 if(info_source.m_buildingAI is RestaurantAI || info_source.m_buildingAI is NewUniqueFactoryAI || info_source.m_buildingAI is NewProcessingFacilityAI)
                 {
-                    ((IExtendedBuildingAI)info_source.m_buildingAI).ExtendedModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                    ((IExtendedBuildingAI)info_source.m_buildingAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
                 }
                 else
                 {
-                    info_source.m_buildingAI.ModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
+                    info_source.m_buildingAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref num);
                 }
             }
 
