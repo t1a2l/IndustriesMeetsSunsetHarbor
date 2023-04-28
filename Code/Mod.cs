@@ -43,7 +43,7 @@ namespace IndustriesMeetsSunsetHarbor
                 AquacultureFarmManager.Init();
                 AquacultureExtractorManager.Init();
                 ResourceMarketManager.Init();
-                BuildingCustomBuffersManager.Init();
+                CustomBuffersManager.Init();
             }
             catch (Exception e)
             {
@@ -51,7 +51,7 @@ namespace IndustriesMeetsSunsetHarbor
                 AquacultureFarmManager.Deinit();
                 AquacultureExtractorManager.Deinit();
                 ResourceMarketManager.Deinit();
-                BuildingCustomBuffersManager.Deinit();
+                CustomBuffersManager.Deinit();
             }
         }
 
@@ -64,7 +64,7 @@ namespace IndustriesMeetsSunsetHarbor
             AquacultureFarmManager.Deinit();
             AquacultureExtractorManager.Deinit();
             ResourceMarketManager.Deinit();
-            BuildingCustomBuffersManager.Deinit();
+            CustomBuffersManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 
@@ -76,6 +76,12 @@ namespace IndustriesMeetsSunsetHarbor
                 var group = helper.AddGroup("Industries meets Sunset Harbor Mod");
 
                 group.AddSlider("Delivery Chance", 0.0f, 1f, 0.05f, 1f, sel =>
+                {
+                    DeliveryChance = sel;
+                    ModSettings.Save();
+                });
+
+                group.AddSlider("Restaurant Thres", 0.0f, 1f, 0.05f, 1f, sel =>
                 {
                     DeliveryChance = sel;
                     ModSettings.Save();

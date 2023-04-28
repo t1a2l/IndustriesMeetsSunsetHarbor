@@ -3,11 +3,11 @@ using static Notification;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
-    public static class BuildingCustomBuffersManager
+    public static class CustomBuffersManager
     {
-        public static Dictionary<ushort, BuildingCustomBuffer> BuildingCustomBuffers;
+        public static Dictionary<ushort, CustomBuffer> CustomBuffers;
 
-        public struct BuildingCustomBuffer
+        public struct CustomBuffer
         {
             public ushort m_customBuffer1;
             public ushort m_customBuffer2;
@@ -25,29 +25,29 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            if(BuildingCustomBuffers == null)
+            if(CustomBuffers == null)
             {
-                BuildingCustomBuffers = new();
+                CustomBuffers = new();
             }
         }
 
         public static void Deinit()
         {
-            BuildingCustomBuffers = new();
+            CustomBuffers = new();
         }
 
-        public static BuildingCustomBuffer GetCustomBuffer(ushort buildingID)
+        public static CustomBuffer GetCustomBuffer(ushort bufferID)
         {
-            if(!BuildingCustomBuffers.TryGetValue(buildingID, out BuildingCustomBuffer buffer_struct))
+            if(!CustomBuffers.TryGetValue(bufferID, out CustomBuffer buffer_struct))
             {
-                BuildingCustomBuffers.Add(buildingID, buffer_struct);
+                CustomBuffers.Add(bufferID, buffer_struct);
             }
             return buffer_struct;
         }
 
-        public static void SetCustomBuffer(ushort buildingID, BuildingCustomBuffer buffer_struct)
+        public static void SetCustomBuffer(ushort bufferID, CustomBuffer buffer_struct)
         {
-            BuildingCustomBuffers[buildingID] = buffer_struct;
+            CustomBuffers[bufferID] = buffer_struct;
         }
     }
     

@@ -5,7 +5,6 @@ using UnityEngine;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
-using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -161,7 +160,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override string GetDebugString(ushort buildingID, ref Building data)
         {
-            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             string text = base.GetDebugString(buildingID, ref data);
             if (m_inputResource1 != TransferManager.TransferReason.None)
             {
@@ -408,7 +407,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
-            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource1)
             {
                 int inputBufferSize1 = GetInputBufferSize(ref data, m_inputRate1);
@@ -445,12 +444,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
             }
-            BuildingCustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
 
         void IExtendedBuildingAI.ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
-            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (material == m_inputResource5)
             {
                 int inputBufferSize5 = GetInputBufferSize(ref data, m_inputRate5);
@@ -491,7 +490,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 m_customBuffer9 += amountDelta;
                 custom_buffers.m_customBuffer9 = (ushort)m_customBuffer9;
             }
-            BuildingCustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
@@ -653,7 +652,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     finalProductionRate = 0;
                 }
-                var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+                var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
 
                 int InputBufferSize1 = 0;
                 int CustomBuffer1 = 0;
@@ -843,7 +842,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     CustomBuffer9 = Mathf.Min(OutputBufferSize, CustomBuffer9 + OutputProductionRate);
                     custom_buffers.m_customBuffer9 = (ushort)CustomBuffer9;
                 }
-                BuildingCustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 num16 = (finalProductionRate * num16 + 50) / 100;
                 if (num16 != 0)
                 {
@@ -1192,7 +1191,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
-            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingID);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             int m_customBuffer9 = custom_buffers.m_customBuffer9;
             int output_production_rate = m_customBuffer9 * m_outputRate * 16 / 100;
             string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", new object[] { output_production_rate });

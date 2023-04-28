@@ -252,7 +252,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             NewUniqueFactoryAI newUniqueFactoryAI = building.Info.m_buildingAI as NewUniqueFactoryAI;
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(newUniqueFactoryAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = newUniqueFactoryAI.GetLocalizedStatus(buildingId, ref building);
-            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(buildingId);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
             int outputBufferSize = newUniqueFactoryAI.GetOutputBufferSize(ref building);
             m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, outputBufferSize);
             m_productStorage.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)custom_buffers.m_customBuffer9), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, TransferManager.TransferReason.None));
@@ -341,7 +341,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
         {
             ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
-            var custom_buffers = BuildingCustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
             amount = 0;
             capacity = 0;

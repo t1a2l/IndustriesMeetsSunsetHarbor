@@ -5,22 +5,22 @@ using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.Serializer
 {
-    public class BuildingCustomBuffersSerializer
+    public class CustomBuffersSerializer
     {
         // Some magic values to check we are line up correctly on the tuple boundaries
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
-        private const ushort iBUILDING_CUSTOM_BUFFERS_DATA_VERSION = 1;
+        private const ushort iCUSTOM_BUFFERS_DATA_VERSION = 1;
 
         public static void SaveData(FastList<byte> Data)
         {
             // Write out metadata
-            StorageData.WriteUInt16(iBUILDING_CUSTOM_BUFFERS_DATA_VERSION, Data);
-            StorageData.WriteInt32(BuildingCustomBuffersManager.BuildingCustomBuffers.Count, Data);
+            StorageData.WriteUInt16(iCUSTOM_BUFFERS_DATA_VERSION, Data);
+            StorageData.WriteInt32(CustomBuffersManager.CustomBuffers.Count, Data);
 
-            // Write out each buildings settings
-            foreach (KeyValuePair<ushort, BuildingCustomBuffersManager.BuildingCustomBuffer> kvp in BuildingCustomBuffersManager.BuildingCustomBuffers)
+            // Write out each buffer settings
+            foreach (KeyValuePair<ushort, CustomBuffersManager.CustomBuffer> kvp in CustomBuffersManager.CustomBuffers)
             {
                 // Write start tuple
                 StorageData.WriteUInt32(uiTUPLE_START, Data);
@@ -47,21 +47,21 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             if (Data != null && Data.Length > iIndex)
             {
-                int iBuildingCustomBuffersVersion = StorageData.ReadUInt16(Data, ref iIndex);
-                LogHelper.Information("Global: " + iGlobalVersion + " BuildingVersion: " + iBuildingCustomBuffersVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
+                int iCustomBuffersVersion = StorageData.ReadUInt16(Data, ref iIndex);
+                LogHelper.Information("Global: " + iGlobalVersion + " BufferVersion: " + iCustomBuffersVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
 
-                if (iBuildingCustomBuffersVersion <= iBUILDING_CUSTOM_BUFFERS_DATA_VERSION)
+                if (iCustomBuffersVersion <= iCUSTOM_BUFFERS_DATA_VERSION)
                 {
-                    if(BuildingCustomBuffersManager.BuildingCustomBuffers == null)
+                    if(CustomBuffersManager.CustomBuffers == null)
                     {
-                        BuildingCustomBuffersManager.BuildingCustomBuffers = new Dictionary<ushort, BuildingCustomBuffersManager.BuildingCustomBuffer>();
+                        CustomBuffersManager.CustomBuffers = new Dictionary<ushort, CustomBuffersManager.CustomBuffer>();
                     }
-                    var BuildingCustomBuffers_Count = StorageData.ReadInt32(Data, ref iIndex);
-                    for (int i = 0; i < BuildingCustomBuffers_Count; i++)
+                    var CustomBuffers_Count = StorageData.ReadInt32(Data, ref iIndex);
+                    for (int i = 0; i < CustomBuffers_Count; i++)
                     {
-                        CheckStartTuple($"Building({i})", iBuildingCustomBuffersVersion, Data, ref iIndex);
-                        ushort  buildingCustomBuffersId = StorageData.ReadUInt16(Data, ref iIndex);
-                        BuildingCustomBuffersManager.BuildingCustomBuffer new_strcut = new();
+                        CheckStartTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
+                        ushort customBuffersId = StorageData.ReadUInt16(Data, ref iIndex);
+                        CustomBuffersManager.CustomBuffer new_strcut = new();
                         new_strcut.m_customBuffer1 =  StorageData.ReadUInt16(Data, ref iIndex);
                         new_strcut.m_customBuffer2 =  StorageData.ReadUInt16(Data, ref iIndex);
                         new_strcut.m_customBuffer3 =  StorageData.ReadUInt16(Data, ref iIndex);
@@ -72,8 +72,8 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         new_strcut.m_customBuffer8 =  StorageData.ReadUInt16(Data, ref iIndex);
                         new_strcut.m_customBuffer9 =  StorageData.ReadUInt16(Data, ref iIndex);
                         new_strcut.m_customBuffer10 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        BuildingCustomBuffersManager.BuildingCustomBuffers.Add(buildingCustomBuffersId, new_strcut);
-                        CheckEndTuple($"Building({i})", iBuildingCustomBuffersVersion, Data, ref iIndex);
+                        CustomBuffersManager.CustomBuffers.Add(customBuffersId, new_strcut);
+                        CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                     }
                 }
             }
@@ -86,7 +86,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 uint iTupleStart = StorageData.ReadUInt32(Data, ref iIndex);
                 if (iTupleStart != uiTUPLE_START)
                 {
-                    throw new Exception($"Building start tuple not found at: {sTupleLocation}");
+                    throw new Exception($"Buffer start tuple not found at: {sTupleLocation}");
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 uint iTupleEnd = StorageData.ReadUInt32(Data, ref iIndex);
                 if (iTupleEnd != uiTUPLE_END)
                 {
-                    throw new Exception($"Building end tuple not found at: {sTupleLocation}");
+                    throw new Exception($"Buffer end tuple not found at: {sTupleLocation}");
                 }
             }
         }
