@@ -920,9 +920,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             string baseTooltip = TooltipHelper.Append(base.GetLocalizedTooltip(), TooltipHelper.Format(LocaleFormatter.Info1, text_water, LocaleFormatter.Info2, text));
             if (m_outputResource != ExtendedTransferManager.TransferReason.None)
             {
-                string text_workplace = LocaleFormatter.FormatGeneric("AIINFO_WORKPLACES_ACCUMULATION", (m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3).ToString());
-                string text_visitors = LocaleFormatter.FormatGeneric("AIINFO_VISITOR_CAPACITY", (m_visitPlaceCount0 + m_visitPlaceCount1 + m_visitPlaceCount2).ToString());
-                baseTooltip = TooltipHelper.Append(baseTooltip, TooltipHelper.Format(LocaleFormatter.WorkplaceCount, text_workplace, text_visitors));
+                int num = m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
+                int num2 = m_visitPlaceCount0 + m_visitPlaceCount1 + m_visitPlaceCount2;
+                baseTooltip = TooltipHelper.Append(baseTooltip, TooltipHelper.Format(LocaleFormatter.WorkplaceCount, LocaleFormatter.FormatGeneric("AIINFO_WORKPLACES_ACCUMULATION", num), LocaleFormatter.Info2, LocaleFormatter.FormatGeneric("AIINFO_VISITOR_CAPACITY", num2)));
             }
             bool flag1 = m_inputResource1 != ExtendedTransferManager.TransferReason.None;
             string text1 = ((m_inputResource1 == ExtendedTransferManager.TransferReason.None) ? string.Empty : "Drink Supplies");
