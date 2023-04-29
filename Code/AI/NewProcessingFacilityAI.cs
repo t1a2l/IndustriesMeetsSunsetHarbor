@@ -5,6 +5,7 @@ using UnityEngine;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
+using ColossalFramework.Math;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -381,16 +382,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
         }
 
         void IExtendedBuildingAI.ExtendedGetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
-	{
-	    amount = 0;
-	    max = 0;
-	}
+        {
+            amount = 0;
+            max = 0;
+        }
 
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
             if (material == m_outputResource)
             {
-                VehicleInfo transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, data.Info.m_class.m_service, data.Info.m_class.m_subService, data.Info.m_class.m_level);
+                int variationGroupID = m_variationGroupID;
+                ItemClass.Level level = ((variationGroupID == 1 || variationGroupID == 9) ? ItemClass.Level.Level2 : ItemClass.Level.Level1);
+                VehicleInfo transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.PlayerIndustry, ItemClass.SubService.None, level);
                 if (transferVehicleService != null)
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
@@ -1132,7 +1135,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             bool flag3 = m_inputResource3 != TransferManager.TransferReason.None;
             string text3 = ((m_inputResource3 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource3, false));
             bool flag4 = m_inputResource4 != TransferManager.TransferReason.None;
-            string text4 = ((m_inputResource4 == TransferManager.TransferReason.None) ? string.Empty :  IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource4, false));
+            string text4 = ((m_inputResource4 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource4, false));
             bool flag5 = m_inputResource5 != ExtendedTransferManager.TransferReason.None;
             string text5 = ((m_inputResource5 == ExtendedTransferManager.TransferReason.None) ? string.Empty : m_inputResource4.ToString());
             bool flag6 = m_inputResource6 != ExtendedTransferManager.TransferReason.None;
