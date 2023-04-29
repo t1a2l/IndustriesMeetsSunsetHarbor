@@ -11,8 +11,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
     {
         public int m_deliveryPersonCount = 1;
 
-        [CustomizableProperty("Delivery capacity")]
-        public int m_deliveryCapacity = 500;
+        [CustomizableProperty("Delivery Capacity")]
+        public int m_deliveryCapacity = 8;
+
+        [CustomizableProperty("Goods added to family")]
+        public int m_goodsMeal = 100;
 
         public override Color GetColor(ushort vehicleID, ref Vehicle data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
@@ -124,17 +127,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 data.m_targetPos1.w = 2f;
                 data.m_targetPos2 = data.m_targetPos1;
                 data.m_targetPos3 = data.m_targetPos1;
-                // the default transfer size of a created vehicle is 0, the delivery capacity is 500
-                // so here it takes -500 which is the min value
-                // it then passes the -500 to ModifyMaterialBuffer and remove 500 from resturant meals capacity
-                // and then here again takes that 500 and add it to the tranfer size of the vehicle
-                // the delivery vehicle now have 500 size (which is 100 goods per citizen = 1 meal)
+                // the default transfer size of a created vehicle is 0, the delivery capacity is 20
+                // so here it takes -20 which is the min value
+                // it then passes the -20 to ModifyMaterialBuffer and remove 20 from resturant meals capacity
+                // and then here again takes that 20 and add it to the transfer size of the vehicle
+                // the delivery vehicle now have 20 meals (which is 100 goods per citizen = 1 meal)
                 if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0)
 		{
 		    int num = Mathf.Min(0, (int)data.m_transferSize - m_deliveryCapacity);
 		    BuildingInfo info2 = instance.m_buildings.m_buffer[(int)data.m_sourceBuilding].Info;
-                    IExtendedBuildingAI extendedBuildingAI = info2.m_buildingAI as IExtendedBuildingAI;
-                    extendedBuildingAI.ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+                    RestaurantAI restaurantAI = info2.m_buildingAI as RestaurantAI;
+                    ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
 		    num = Mathf.Max(0, -num);
 		    data.m_transferSize += (ushort)num;
 		}
@@ -206,7 +209,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
                 {
                     uint citizen = offer.Citizen;
-                    ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].GetBuildingByLocation();
+                    ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
+                    BuildingManager b_instance = Singleton<BuildingManager>.instance;
+                    var building = b_instance.m_buildings.m_buffer[(int)data.m_sourceBuilding];
+                    RestaurantAI restaurantAI = building.Info.m_buildingAI as RestaurantAI;
+                    var citizens = restaurantAI.deliveries[data.m_sourceBuilding];
+                    citizens.Remove(citizen);
                     SetTarget(vehicleID, ref data, buildingByLocation);
                 }
             }
@@ -280,6 +288,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Singleton<VehicleManager>.instance.ReleaseVehicle(vehicleID);
                 return true;
             }
+            BuildingManager b_instance = Singleton<BuildingManager>.instance;
+            var restaurant_building = b_instance.m_buildings.m_buffer[(int)data.m_sourceBuilding];
+            RestaurantAI restaurantAI = restaurant_building.Info.m_buildingAI as RestaurantAI;
+            var citizens = restaurantAI.deliveries[data.m_sourceBuilding];
             CitizenManager instance = Singleton<CitizenManager>.instance;
             uint num = data.m_citizenUnits;
             int num2 = 0;
@@ -293,10 +305,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     var citizen = instance.m_citizens.m_buffer[(int)((UIntPtr)citizenId)];
                     if (citizenId != 0U && citizen.CurrentLocation != Citizen.Location.Moving && (citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
                     {
-                        citizen_unit.m_goods += 100;
+                        citizen_unit.m_goods += (ushort)m_goodsMeal;
                         citizen.m_flags &= ~Citizen.Flags.NeedGoods;
                         citizen.m_flags &= ~HumanAIPatch.waitingDelivery;
-                        data.m_transferSize -= 100;
+                        data.m_transferSize -= 1;
+                        citizens.Remove(citizenId);
                     }
                 }
                 num = nextUnit;
@@ -308,7 +321,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (!IsCitizenWaitingForDelivery(data.m_targetBuilding))
             {
-                BuildingManager b_instance = Singleton<BuildingManager>.instance;
                 var home_building = b_instance.m_buildings.m_buffer[(int)data.m_targetBuilding];
                 home_building.m_flags &= ~Building.Flags.Incoming;
             }
@@ -317,7 +329,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CreateDeliveryGuy(vehicleID, ref data, Citizen.AgePhase.Adult0);
             }
             data.m_flags |= Vehicle.Flags.Stopped;
-            SetTarget(vehicleID, ref data, 0);
+            // if source is restaurant - check if there are other deliveries for this vehicle
+            // and go to the next delivery
+            if(citizens.Count > 0)
+            {
+                ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizens[0]].GetBuildingByLocation();
+                SetTarget(vehicleID, ref data, buildingByLocation);
+            }
+            else
+            {
+                SetTarget(vehicleID, ref data, 0);
+            }
             return false;
         }
 

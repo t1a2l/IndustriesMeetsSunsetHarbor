@@ -243,9 +243,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(restaurantAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-            int outputBufferSize = restaurantAI.GetOutputBufferSize();
+            int outputBufferSize = restaurantAI.m_outputCount;
             m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer8, outputBufferSize);
-            m_productStorage.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)custom_buffers.m_customBuffer8), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, TransferManager.TransferReason.None));
+            m_productStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer8 + "/" + outputBufferSize;
             m_productLabel.text = restaurantAI.m_outputResource.ToString();
             m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_outputSprite.spriteName = restaurantAI.m_outputResource.ToString();
@@ -287,16 +287,15 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_generatedInfo.text = restaurantAI.GetLocalizedStats(buildingId, ref building);
             long inputs_expenses = 0;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate1 * 16 / 100;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate2 * 16 / 100;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate3 * 16 / 100;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate4 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate5 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate6 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
-            inputs_expenses += building.m_health * restaurantAI.m_inputRate7 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += 1;
+            inputs_expenses += 1;
+            inputs_expenses += 1;
+            inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource5) / 10000;
+            inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
+            inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            int num9 = building.m_education3 * restaurantAI.m_outputRate * 16 / 100;
-            m_income.text = num9.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            m_income.text = restaurantAI.m_outputCount.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
             {
                 m_productionSlider.isEnabled = true;
@@ -336,31 +335,31 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 case "m_inputResource1":
                     amount = custom_buffers.m_customBuffer1;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate1);
+                    capacity = restaurantAI.m_inputCapacity1;
                     break;
                 case "m_inputResource2":
                     amount = custom_buffers.m_customBuffer2;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate2);
+                    capacity = restaurantAI.m_inputCapacity2;
                     break;
                 case "m_inputResource3":
                     amount = custom_buffers.m_customBuffer3;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate3);
+                    capacity = restaurantAI.m_inputCapacity3;
                     break;
                 case "m_inputResource4":
                     amount = custom_buffers.m_customBuffer4;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate4);
+                    capacity = restaurantAI.m_inputCapacity4;
                     break;
                 case "m_inputResource5":
                     amount = custom_buffers.m_customBuffer5;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate5);
+                    capacity = restaurantAI.m_inputCapacity5;
                     break;
                 case "m_inputResource6":
                     amount = custom_buffers.m_customBuffer6;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate6);
+                    capacity = restaurantAI.m_inputCapacity6;
                     break;
                 case "m_inputResource7":
                     amount = custom_buffers.m_customBuffer7;
-                    capacity = restaurantAI.GetInputBufferSize(restaurantAI.m_inputRate7);
+                    capacity = restaurantAI.m_inputCapacity7;
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
