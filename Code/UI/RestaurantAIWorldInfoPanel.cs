@@ -253,24 +253,19 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
                 uIProgressBar.value = GetInputBufferProgress(ref items, i, out var amount, out var capacity);
-                var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
-                string text;
+                var FormatResource = amount.ToString();
+                var inputResource = GetInputResource(ref items, i);
+                var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
                 if(GetInputResourceType(ref items, i) == "TransferManager")
                 {
-                    var inputResource = GetInputResource(ref items, i);
-                    var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource);
                     uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
-                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
                 }
                 else if(GetInputResourceType(ref items, i) == "ExtendedTransferManager")
                 {
-                    var inputResource = GetInputResourceExtended(ref items, i);
-                    var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
                     uIProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
-                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
                 }
+                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (restaurantAI.m_workPlaceCount0 + restaurantAI.m_workPlaceCount1 + restaurantAI.m_workPlaceCount2 + restaurantAI.m_workPlaceCount3).ToString());
             if ((building.m_flags & Building.Flags.Collapsed) != 0)
@@ -691,7 +686,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private static string FormatResourceWithUnit(uint amount)
         {
-	    return string.Concat(str2: Locale.Get("RESOURCEUNIT_TONS"), str0: IndustryWorldInfoPanel.FormatResource(amount), str1: " ");
+	    return string.Concat(str2: "kg", str0: amount.ToString(), str1: " ");
         }
+
+
     }
 }
