@@ -455,7 +455,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int m_customBuffer5 = custom_buffers.m_customBuffer5;
                         amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer5, m_inputCapacity5 - m_customBuffer5);
                         m_customBuffer5 += amountDelta;
-                        custom_buffers.m_customBuffer4 = (ushort)m_customBuffer5;
+                        custom_buffers.m_customBuffer5 = (ushort)m_customBuffer5;
                     }
                     else if (material == m_inputResource6)
                     {
