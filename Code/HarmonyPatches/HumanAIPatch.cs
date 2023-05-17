@@ -44,7 +44,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int cargo1 = 0;
                     int capacity1 = 0;
                     int outside1 = 0;
-                    CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryLow, ref count1, ref cargo1, ref capacity1, ref outside1);
+                    ExtedndedVehicleManager.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryLow, ref count1, ref cargo1, ref capacity1, ref outside1);
                     ExtendedTransferManager.Offer transferOffer1 = default;
                     transferOffer1.Citizen = citizenID;
                     transferOffer1.Position = homeBuildingData.m_position;
@@ -59,7 +59,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int cargo2 = 0;
                     int capacity2 = 0;
                     int outside2 = 0;
-                    CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryMedium, ref count2, ref cargo2, ref capacity2, ref outside2);
+                    ExtedndedVehicleManager.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryMedium, ref count2, ref cargo2, ref capacity2, ref outside2);
                     ExtendedTransferManager.Offer transferOffer2 = default;
                     transferOffer2.Citizen = citizenID;
                     transferOffer2.Position = homeBuildingData.m_position;
@@ -73,7 +73,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int cargo3 = 0;
                     int capacity3 = 0;
                     int outside3 = 0;
-                    CalculateVehicles.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryHigh, ref count3, ref cargo3, ref capacity3, ref outside3);
+                    ExtedndedVehicleManager.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryHigh, ref count3, ref cargo3, ref capacity3, ref outside3);
                     ExtendedTransferManager.Offer transferOffer3 = default;
                     transferOffer3.Citizen = citizenID;
                     transferOffer3.Position = homeBuildingData.m_position;
