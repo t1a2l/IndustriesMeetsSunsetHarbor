@@ -31,6 +31,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 m_CachedPanels.Add(restaurantAIdynamicPanelInfo.name, restaurantAIdynamicPanelInfo);
             }
+            var warehouseAIdynamicPanelInfo = CreateDynamicPanelInfo(__instance, view, "ExtendedWarehouseWorldInfoPanel", "WarehouseWorldInfoPanel");
+            if(warehouseAIdynamicPanelInfo != null)
+            {
+                m_CachedPanels.Add(warehouseAIdynamicPanelInfo.name, warehouseAIdynamicPanelInfo);
+            }
             typeof(UIDynamicPanels).GetField("m_CachedPanels", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(__instance, m_CachedPanels);
         }
 
@@ -50,10 +55,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, false);
             dynamicPanelInfo.viewOwner = view;
 	    GameObject gameObject = Object.Instantiate(dynamicPanelInfo.panelRoot.gameObject);
-            var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
-            Object.DestroyImmediate(old_component);
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
+                var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
+                Object.DestroyImmediate(old_component);
                 var newUniqueFactoryComp = gameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, newUniqueFactoryComp, false);
                 for (int i = 0; i < gameObject.transform.childCount; i++)
@@ -87,6 +92,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else if(customWorldInfoPanelName == "RestaurantAIWorldInfoPanel")
             {
+                var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
+                Object.DestroyImmediate(old_component);
                 var restaurantComp = gameObject.AddComponent<RestaurantAIWorldInfoPanel>();
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
                 for (int i = 0; i < gameObject.transform.childCount; i++)
@@ -114,6 +121,41 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         if(bind != null)
                         {
                             bind.dataTarget.component = restaurantComp;
+                        }
+                    }
+                }
+            }
+            else if(customWorldInfoPanelName == "ExtendedWarehouseWorldInfoPanel")
+            {
+                var old_component = gameObject.GetComponent<WarehouseWorldInfoPanel>();
+                Object.DestroyImmediate(old_component);
+                var extendedWarehouseComp = gameObject.AddComponent<ExtendedWarehouseWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, extendedWarehouseComp, false);
+                for (int i = 0; i < gameObject.transform.childCount; i++)
+                {
+                    var child = gameObject.transform.GetChild(i);
+                    if(child != null)
+                    {
+                        if(child.name == "Caption")
+                        {
+                            for (int j = 0; j < child.transform.childCount; j++)
+                            {
+                                var caption_child = child.transform.GetChild(j);
+                                if(caption_child != null)
+                                {
+                                    var caption_child_bind = caption_child.GetComponent<BindEvent>();
+                                    if(caption_child_bind != null)
+                                    {
+                                        caption_child_bind.dataTarget.component = extendedWarehouseComp;
+                                    }
+                                }
+                            }
+                            
+                        }
+                        var bind = child.GetComponent<BindEvent>();
+                        if(bind != null)
+                        {
+                            bind.dataTarget.component = extendedWarehouseComp;
                         }
                     }
                 }
