@@ -88,7 +88,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [NonSerialized]
         private bool m_hasBufferStatusMeshes;
 
-        public Dictionary<ushort, List<uint>> deliveries = default;
+        public List<ushort> delivery_vehicles = default;
 
         [CustomizableProperty("Extended Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
@@ -338,34 +338,41 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow || material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium || material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
             {
-                // add deliceries until reaching 10 the spawn a vehicle
-                if(deliveries.TryGetValue(buildingID, out var citizens))
+                var waitingVehicle = delivery_vehicles.Find(delegate(ushort deliveryVehicle)
                 {
-                    citizens.Add(offer.Citizen);
-                    if(citizens.Count >= 10)
-                    {
-                        DispatchDeliveryVehicle(buildingID, ref data, material, offer);
-                    }
+                    var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
+                    return (vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0;
+                });
+                uint citizen = offer.Citizen;
+                ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
+                RestaurantDeliveriesManager.RestaurantDeliveries.Add( new RestaurantDeliveriesManager.RestaurantDeliveryData {
+                    deliveryVehicleId = waitingVehicle,
+                    buildingId = buildingByLocation,
+                    citizenId = citizen
+                });
+                var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[waitingVehicle];
+                vehicle.m_transferSize++;
+                RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = vehicle.Info.GetAI() as RestaurantDeliveryVehicleAI;
+                // the default transfer size of a created vehicle is 0
+                // so here it takes -1 which is the min value
+                // it then passes the -1 to ModifyMaterialBuffer and remove 1 from resturant meals capacity
+                // and then here again takes that 1 and add it to the transfer size of the vehicle
+                // the delivery vehicle now have 1 extra meal which is 100 goods per citizen
+                int num = -1;
+                BuildingManager instance = Singleton<BuildingManager>.instance;
+		BuildingInfo info = instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding].Info;
+                RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
+                ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(vehicle.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding], (ExtendedTransferManager.TransferReason)vehicle.m_transferType, ref num);
+		num = Mathf.Max(0, -num);
+		vehicle.m_transferSize += (ushort)num;
+                // all orders have been collected - drive to the first building
+                if(restaurantDeliveryVehicleAI.m_deliveryCapacity >= vehicle.m_transferSize)
+                {
+                    var deliveryData = RestaurantDeliveriesManager.RestaurantDeliveries.Find(item => item.deliveryVehicleId == waitingVehicle);
+                    vehicle.m_flags &= ~Vehicle.Flags.WaitingCargo;
+                    restaurantDeliveryVehicleAI.SetTarget(waitingVehicle, ref vehicle, deliveryData.buildingId);
                 }
-            }
-        }
 
-        private void DispatchDeliveryVehicle(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
-        {
-            VehicleInfo vehicleInfo = base.GetSelectedVehicle(buildingID);
-            if (vehicleInfo == null)
-            {
-                vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level1);
-            }
-            if (vehicleInfo != null)
-            {
-                Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                var material_byte = (byte)material;
-                if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
-                {
-                    restaurantDeliveryVehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
-                    ((IExtendedVehicleAI)restaurantDeliveryVehicleAI).ExtendedStartTransfer(num, ref vehicles.m_buffer[(int)num], material, offer);
-                }
             }
         }
 
@@ -508,7 +515,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh ||
                 material == ExtendedTransferManager.TransferReason.Meals)
             {
-                int m_customBuffer8 = custom_buffers.m_customBuffer8;
+                int m_customBuffer8 = custom_buffers.m_customBuffer8; // 20
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer8, m_outputCount - m_customBuffer8);
                 m_customBuffer8 += amountDelta;
                 custom_buffers.m_customBuffer8 = (ushort)m_customBuffer8;
@@ -603,7 +610,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo1 = 0;
                 int capacity1 = 0;
                 int outside1 = 0;
-                CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count1, ref cargo1, ref capacity1, ref outside1);
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count1, ref cargo1, ref capacity1, ref outside1);
                 int InputSize1 = custom_buffers.m_customBuffer1 + cargo1;
                 if (InputSize1 <= m_resourceThreshold)
                 {
@@ -625,7 +632,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo2 = 0;
                 int capacity2 = 0;
                 int outside2 = 0;
-                CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
                 int InputSize2 = custom_buffers.m_customBuffer2 + cargo2;
                 if (InputSize2 <= m_resourceThreshold)
                 {
@@ -647,7 +654,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo3 = 0;
                 int capacity3 = 0;
                 int outside3 = 0;
-                CalculateVehicles.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
                 int InputSize3 = custom_buffers.m_customBuffer3 + cargo3;
                 if (InputSize3 <= m_resourceThreshold)
                 {
@@ -772,56 +779,61 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 if (m_DeliveryVehicleCount != 0)
                 {
-                    if (custom_buffers.m_customBuffer8 >= m_outputCount - 5)
-                    {
-                        problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoPlaceforGoods);
-                        if (m_info.m_class.m_service == ItemClass.Service.PlayerIndustry)
-                        {
-                            GuideController properties = Singleton<GuideManager>.instance.m_properties;
-                            if (properties != null)
-                            {
-                                Singleton<BuildingManager>.instance.m_warehouseNeeded.Activate(properties.m_warehouseNeeded, buildingID);
-                            }
-                        }
-                    }
                     int count8 = 0;
                     int cargo8 = 0;
                     int capacity8 = 0;
                     int outside8 = 0;
-                    CalculateVehicles.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count8, ref cargo8, ref capacity8, ref outside8);
+                    ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count8, ref cargo8, ref capacity8, ref outside8);
                     buildingData.m_tempExport = (byte)Mathf.Clamp(outside8, buildingData.m_tempExport, 255);
                     if (custom_buffers.m_customBuffer8 >= 20 && count8 < m_DeliveryVehicleCount && allow_delivery)
                     {
-                        if (quality == 1 && deliveries.Count < m_DeliveryVehicleCount)
+                        var material = ExtendedTransferManager.TransferReason.None;
+                        if (quality == 1)
                         {
                             ExtendedTransferManager.Offer offer8 = default;
                             offer8.Building = buildingID;
                             offer8.Position = buildingData.m_position;
                             offer8.Amount = 10;
                             offer8.Active = true;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryLow, offer8);
-                            deliveries.Add(buildingID, default);
+                            material = ExtendedTransferManager.TransferReason.MealsDeliveryLow;
+                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer8);
                         }
-                        else if (quality == 2 && deliveries.Count < m_DeliveryVehicleCount)
+                        else if (quality == 2)
                         {
                             ExtendedTransferManager.Offer offer9 = default;
                             offer9.Building = buildingID;
                             offer9.Position = buildingData.m_position;
                             offer9.Amount = 10;
                             offer9.Active = true;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryMedium, offer9);
-                            deliveries.Add(buildingID, default);
+                            material = ExtendedTransferManager.TransferReason.MealsDeliveryMedium;
+                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer9);
                         }
-                        else if (quality == 3 && deliveries.Count < m_DeliveryVehicleCount)
+                        else if (quality == 3)
                         {
                             ExtendedTransferManager.Offer offer10 = default;
                             offer10.Building = buildingID;
                             offer10.Position = buildingData.m_position;
                             offer10.Amount = 10;
                             offer10.Active = true;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryHigh, offer10);
-                            deliveries.Add(buildingID, default);
+                            material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
+                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer10);
                         }
+                        if(!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None)
+                        {
+                            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level1);
+                            if (vehicleInfo != null)
+                            {
+                                Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
+                                var material_byte = (byte)material;
+                                if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
+                                {
+                                    vehicles.m_buffer[(int)num].m_flags |= Vehicle.Flags.WaitingCargo;
+                                    restaurantDeliveryVehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
+                                    delivery_vehicles.Add(num);
+                                }
+                            }
+                        }
+                        
                     }
                 }
                 var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
@@ -958,7 +970,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                CalculateVehicles.CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref used_count, ref cargo, ref capacity, ref outside);
+                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref used_count, ref cargo, ref capacity, ref outside);
                 text = text + Environment.NewLine + "delivery vehicles in use " + used_count + "/" + delivery_vehicle_count;
             }
             return text;
@@ -1062,6 +1074,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
             };
         }
 
+        private bool CheckIfDeliveryVehicleWaiting()
+        {
+            foreach(var deliveryVehicle in delivery_vehicles)
+            {
+                var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
+                if((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }
