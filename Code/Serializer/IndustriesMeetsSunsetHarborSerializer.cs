@@ -40,25 +40,49 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                         if (SaveGameFileVersion <= DataVersion)
                         {
-                            CheckStartTuple("AquacultureFarmSerializer", SaveGameFileVersion, Data, ref Index);
-                            AquacultureFarmSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
-                            CheckEndTuple("AquacultureFarmSerializer", SaveGameFileVersion, Data, ref Index);
+                            while(Index < Data.Length)
+                            {
+                                CheckStartTuple("AquacultureFarmSerializer", SaveGameFileVersion, Data, ref Index);
+                                AquacultureFarmSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("AquacultureFarmSerializer", SaveGameFileVersion, Data, ref Index);
 
-                            CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
-                            MarketBuffersSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
-                            CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                if(Index == Data.Length)
+                                {
+                                    break;
+                                }
 
-                            CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
-                            AquacultureExtractorSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
-                            CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                MarketBuffersSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
 
-                            CheckStartTuple("CustomBuffersSerializer", SaveGameFileVersion, Data, ref Index);
-                            CustomBuffersSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
-                            CheckEndTuple("CustomBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                if(Index == Data.Length)
+                                {
+                                    break;
+                                }
 
-                            CheckStartTuple("RestaurantDeliveriesSerializer", SaveGameFileVersion, Data, ref Index);
-                            RestaurantDeliveriesSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
-                            CheckEndTuple("RestaurantDeliveriesSerializer", SaveGameFileVersion, Data, ref Index);
+                                CheckStartTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                AquacultureExtractorSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("MarketBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if(Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("CustomBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+                                CustomBuffersSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("CustomBuffersSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if(Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("RestaurantDeliveriesSerializer", SaveGameFileVersion, Data, ref Index);
+                                RestaurantDeliveriesSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("RestaurantDeliveriesSerializer", SaveGameFileVersion, Data, ref Index);
+                                break;
+                            }
                         }
                         else
                         {
