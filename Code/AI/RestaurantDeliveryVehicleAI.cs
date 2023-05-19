@@ -252,11 +252,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     var citizen_unit = c_instance.m_units.m_buffer[building_citizen_units];
                     uint citizenId = citizen_unit.GetCitizen(i);
                     var citizen = c_instance.m_citizens.m_buffer[citizenId];
-                    if (citizenId != 0U && citizenId == deliveryData.citizenId && citizen.CurrentLocation != Citizen.Location.Moving && (citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
+                    if (citizenId != 0U && citizenId == deliveryData.citizenId && citizen.CurrentLocation != Citizen.Location.Moving)
                     {
                         citizen_unit.m_goods += (ushort)m_goodsMeal;
                         citizen.m_flags &= ~Citizen.Flags.NeedGoods;
-                        citizen.m_flags &= ~HumanAIPatch.waitingDelivery;
                         data.m_transferSize -= 1;
                     }
                 }
@@ -503,8 +502,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         continue;
                     }
-                    var citizen = instance.m_citizens.m_buffer[citizenId];
-                    if ((citizen.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None)
+                    var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenId);
+                    if (waiting_delivery != -1)
                     {
                         return true;
                     }
