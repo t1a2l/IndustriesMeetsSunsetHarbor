@@ -26,7 +26,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 m_CachedPanels.Add(newUniqueFactorydDynamicPanelInfo.name, newUniqueFactorydDynamicPanelInfo);
             }
-            var restaurantAIdynamicPanelInfo = CreateDynamicPanelInfo(__instance, view, "RestaurantAIWorldInfoPanel", "UniqueFactoryWorldInfoPanel");
+            var restaurantAIdynamicPanelInfo = CreateDynamicPanelInfo(__instance, view, "RestaurantWorldInfoPanel", "UniqueFactoryWorldInfoPanel");
             if(restaurantAIdynamicPanelInfo != null)
             {
                 m_CachedPanels.Add(restaurantAIdynamicPanelInfo.name, restaurantAIdynamicPanelInfo);
@@ -90,7 +90,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     }
                 }
             }
-            else if(customWorldInfoPanelName == "RestaurantAIWorldInfoPanel")
+            else if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
             {
                 var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);

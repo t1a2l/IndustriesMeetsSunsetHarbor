@@ -117,7 +117,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_outputSprite = Find<UISprite>("LuxuryProductIcon");
-            m_mainPanel = Find<UIPanel>("(Library) RestaurantAIWorldInfoPanel");
+            m_mainPanel = Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
             items = new List<string>();
         }
 
