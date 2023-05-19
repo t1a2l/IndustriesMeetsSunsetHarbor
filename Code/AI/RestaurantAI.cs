@@ -338,14 +338,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow || material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium || material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
             {
-                var waitingVehicle = delivery_vehicles.Find(delegate(ushort deliveryVehicle)
+                var waitingVehicle = delivery_vehicles.Find(delegate (ushort deliveryVehicle)
                 {
                     var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
                     return (vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0;
                 });
                 uint citizen = offer.Citizen;
                 ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
-                RestaurantDeliveriesManager.RestaurantDeliveries.Add( new RestaurantDeliveriesManager.RestaurantDeliveryData {
+                RestaurantDeliveriesManager.RestaurantDeliveries.Add(new RestaurantDeliveriesManager.RestaurantDeliveryData
+                {
                     deliveryVehicleId = waitingVehicle,
                     buildingId = buildingByLocation,
                     citizenId = citizen
@@ -360,13 +361,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 // the delivery vehicle now have 1 extra meal which is 100 goods per citizen
                 int num = -1;
                 BuildingManager instance = Singleton<BuildingManager>.instance;
-		BuildingInfo info = instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding].Info;
+                BuildingInfo info = instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding].Info;
                 RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
                 ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(vehicle.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding], (ExtendedTransferManager.TransferReason)vehicle.m_transferType, ref num);
-		num = Mathf.Max(0, -num);
-		vehicle.m_transferSize += (ushort)num;
+                num = Mathf.Max(0, -num);
+                vehicle.m_transferSize += (ushort)num;
                 // all orders have been collected - drive to the first building
-                if(restaurantDeliveryVehicleAI.m_deliveryCapacity >= vehicle.m_transferSize)
+                if (restaurantDeliveryVehicleAI.m_deliveryCapacity >= vehicle.m_transferSize)
                 {
                     var deliveryData = RestaurantDeliveriesManager.RestaurantDeliveries.Find(item => item.deliveryVehicleId == waitingVehicle);
                     vehicle.m_flags &= ~Vehicle.Flags.WaitingCargo;
@@ -597,7 +598,63 @@ namespace IndustriesMeetsSunsetHarbor.AI
             Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoResources | Notification.Problem1.NoPlaceforGoods | Notification.Problem1.NoInputProducts | Notification.Problem1.NoFishingGoods);
 
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-
+            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer1 = custom_buffers.m_customBuffer1;
+                int Input1ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
+                custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
+            }
+            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer2 = custom_buffers.m_customBuffer2;
+                int Input2ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
+                custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
+            }
+            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer3 = custom_buffers.m_customBuffer3;
+                int Input3ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
+                custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
+            }
+            if (m_inputResource4 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer4 = custom_buffers.m_customBuffer4;
+                int Input4ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
+                custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
+            }
+            if (m_inputResource5 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer5 = custom_buffers.m_customBuffer5;
+                int Input5ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
+                custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
+            }
+            if (m_inputResource6 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer6 = custom_buffers.m_customBuffer6;
+                int Input6ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
+                custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
+            }
+            if (m_inputResource7 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer7 = custom_buffers.m_customBuffer7;
+                int Input7ProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
+                custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
+            }
+            if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer8 = custom_buffers.m_customBuffer8;
+                int OutputProductionRate = (finalProductionRate + 99) / 100;
+                CustomBuffer8 = Mathf.Min(m_outputCount, CustomBuffer8 + OutputProductionRate);
+                custom_buffers.m_customBuffer8 = (ushort)CustomBuffer8;
+            }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
             int TempOutput = 0;
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
@@ -818,7 +875,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                             Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer10);
                         }
-                        if(!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None)
+                        if (!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None)
                         {
                             var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level1);
                             if (vehicleInfo != null)
@@ -833,7 +890,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 }
                             }
                         }
-                        
+
                     }
                 }
                 var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
@@ -1076,10 +1133,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private bool CheckIfDeliveryVehicleWaiting()
         {
-            foreach(var deliveryVehicle in delivery_vehicles)
+            foreach (var deliveryVehicle in delivery_vehicles)
             {
                 var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
-                if((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
+                if ((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
                 {
                     return true;
                 }
