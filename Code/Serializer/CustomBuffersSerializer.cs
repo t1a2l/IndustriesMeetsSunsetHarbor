@@ -62,16 +62,16 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         CheckStartTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                         ushort customBuffersId = StorageData.ReadUInt16(Data, ref iIndex);
                         CustomBuffersManager.CustomBuffer new_strcut = new();
-                        new_strcut.m_customBuffer1 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer2 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer3 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer4 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer5 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer6 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer7 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer8 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer9 =  StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer10 =  StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer1 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer2 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer3 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer4 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer5 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer6 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer7 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer8 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer9 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer10 = StorageData.ReadUInt16(Data, ref iIndex);
                         CustomBuffersManager.CustomBuffers.Add(customBuffersId, new_strcut);
                         CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                     }
