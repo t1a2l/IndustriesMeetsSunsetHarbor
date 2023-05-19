@@ -94,7 +94,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
-                var restaurantComp = gameObject.AddComponent<RestaurantAIWorldInfoPanel>();
+                var restaurantComp = gameObject.AddComponent<RestaurantWorldInfoPanel>();
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
                 for (int i = 0; i < gameObject.transform.childCount; i++)
                 {

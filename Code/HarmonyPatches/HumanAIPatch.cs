@@ -2,14 +2,13 @@ using ColossalFramework;
 using HarmonyLib;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
+using IndustriesMeetsSunsetHarbor.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
     [HarmonyPatch(typeof(HumanAI))]
     public static class HumanAIPatch
     {
-        public static Citizen.Flags waitingDelivery = (Citizen.Flags)1048576;
-
         [HarmonyPatch(typeof(HumanAI), "FindVisitPlace")]
         [HarmonyPrefix]
         public static bool FindVisitPlace(HumanAI __instance, uint citizenID, ushort sourceBuilding, TransferManager.TransferReason reason)
@@ -17,22 +16,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             bool get_delivery = false;
             var homeBuildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)sourceBuilding];
             var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenID];
-            if ((citizen.m_flags & waitingDelivery) != Citizen.Flags.None) // already waiting for delivery do nothing
+            var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
+            if (waiting_delivery != -1) // already waiting for delivery do nothing
             {
                 return false;
             }
-            if ((citizen.m_flags & waitingDelivery) == Citizen.Flags.None) // not waiting for delivery 50% chance ordering a delivery
+            else // not waiting for delivery 50% chance ordering a delivery
             {
                 if (Singleton<SimulationManager>.instance.m_randomizer.Int32(100U) < Mod.DeliveryChance)
                 {
                     get_delivery = true;
-                    citizen.m_flags |= waitingDelivery; // raise flag as getting delivery for citizen
                     // if building not already waiting for delivery
                     if ((homeBuildingData.m_flags & Building.Flags.Incoming) == Building.Flags.None)
                     {
                         homeBuildingData.m_flags |= Building.Flags.Incoming; // raise flag as building waiting for delivery
                     }
-
                 }
             }
             if (get_delivery)
@@ -50,7 +48,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     transferOffer1.Position = homeBuildingData.m_position;
                     transferOffer1.Amount = 1;
                     transferOffer1.Active = false;
-
                     Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryLow, transferOffer1);
                 }
                 else if (level == 2)

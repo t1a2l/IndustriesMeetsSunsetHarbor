@@ -18,6 +18,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id.Building].Info;
                 NewUniqueFactoryAI newUniqueFactoryAI = info.m_buildingAI as NewUniqueFactoryAI;
                 RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
+                ExtendedWarehouseAI extendedWarehouseAI = info.m_buildingAI as ExtendedWarehouseAI;
                 if (Singleton<InstanceManager>.instance.SelectInstance(id))
                 {
                     if(newUniqueFactoryAI != null)
@@ -27,7 +28,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		    }
                     else if(restaurantAI != null)
 		    {
-		        WorldInfoPanel.Show<RestaurantAIWorldInfoPanel>(position, id);
+		        WorldInfoPanel.Show<RestaurantWorldInfoPanel>(position, id);
+                        return false;
+		    }
+                    else if(extendedWarehouseAI != null)
+		    {
+		        WorldInfoPanel.Show<ExtendedWarehouseWorldInfoPanel>(position, id);
                         return false;
 		    }
                 }

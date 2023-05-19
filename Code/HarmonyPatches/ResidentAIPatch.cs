@@ -1,5 +1,6 @@
 using ColossalFramework;
 using HarmonyLib;
+using IndustriesMeetsSunsetHarbor.Managers;
 using System;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -17,8 +18,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 CitizenManager instance = Singleton<CitizenManager>.instance;
                 uint citizen = citizenData.m_citizen;
+                var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizen);
                 // if citizen is waiting for delivery do nothing - the goods transfer will happen when the delivery vehicle will arrive at the house
-                if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None) && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None))
+                if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None) && waiting_delivery != -1)
                 {
                     return false;
                 }
@@ -41,7 +43,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		case TransferManager.TransferReason.ShoppingG:
 		case TransferManager.TransferReason.ShoppingH:
                     {
-                        if((data.m_flags & HumanAIPatch.waitingDelivery) != Citizen.Flags.None) // don't start moving if waiting for delivery
+                        var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
+                        if(waiting_delivery != -1) // don't start moving if waiting for delivery
                         {
                              return false;
                         }
@@ -49,8 +52,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     }
                     
                 default:
-                     return true;
-                   
+                     return true; 
             }
         }
 
