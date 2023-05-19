@@ -49,7 +49,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     var clonedAI = clonedObject.GetComponent<WarehouseAI>();
                     Object.DestroyImmediate(clonedAI);
                     var newAI = (PrefabAI)clonedObject.AddComponent<ExtendedWarehouseAI>();
-                    PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 } 
             }
             catch (Exception e)
