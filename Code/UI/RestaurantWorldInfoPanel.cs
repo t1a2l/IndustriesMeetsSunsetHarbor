@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
-    public class RestaurantAIWorldInfoPanel : BuildingWorldInfoPanel
+    public class RestaurantWorldInfoPanel : BuildingWorldInfoPanel
     {
         private UIPanel m_mainPanel;
 
