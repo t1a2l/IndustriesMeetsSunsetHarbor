@@ -35,8 +35,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIProgressBar m_productBuffer;
 
-        private UISlider m_productionSlider;
-
         private UILabel m_productionRateLabel;
 
         private UILabel m_workplaces;
@@ -104,8 +102,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
             m_productLabel = Find<UILabel>("ProductLabel");
             m_productBuffer = Find<UIProgressBar>("ProductBuffer");
-            m_productionSlider = Find<UISlider>("ProductionSlider");
-            m_productionSlider.eventValueChanged += OnProductionRateChanged;
             m_productionRateLabel = Find<UILabel>("LabelProductionRate");
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
@@ -163,11 +159,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     uISprite.atlas = atlas;
                 }
                 uISprite.spriteName = GetInputResourceSpriteName(ref items, i);
-            }
-            byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
-            if (productionRate > 0)
-            {
-                m_productionSlider.value = (int)productionRate;
             }
         }
 
@@ -291,16 +282,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             m_income.text = restaurantAI.m_outputCount.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
-            {
-                m_productionSlider.isEnabled = true;
-                m_productionSlider.tooltip = string.Empty;
-            }
-            else
-            {
-                m_productionSlider.isEnabled = false;
-                m_productionSlider.tooltip = Locale.Get("UNIQUEFACTORYPANEL_SLIDERDISABLEDTOOLTIP");
-            }
         }
 
         private string GetInputResourceType(ref List<string> items, int resourceIndex)
