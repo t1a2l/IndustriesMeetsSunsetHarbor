@@ -36,7 +36,19 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		        WorldInfoPanel.Show<ExtendedWarehouseWorldInfoPanel>(position, id);
                         return false;
 		    }
+                    else
+                    {
+                        WorldInfoPanel.Hide<NewUniqueFactoryWorldInfoPanel>();
+                        WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
+                    }
                 }
+            }
+            else
+            {
+                WorldInfoPanel.Hide<NewUniqueFactoryWorldInfoPanel>();
+                WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
             }
             return true;
         }
