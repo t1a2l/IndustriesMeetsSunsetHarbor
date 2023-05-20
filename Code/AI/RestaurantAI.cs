@@ -341,8 +341,20 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 var waitingVehicle = delivery_vehicles.Find(delegate (ushort deliveryVehicle)
                 {
                     var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
-                    return (vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0;
+                    if((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
+                    {
+                        return true;
+                    }
+                    return false;
                 });
+                if(waitingVehicle == 0)
+                {
+                    waitingVehicle = CreateDeliveryVehicle(buildingID, data, material);
+                }
+                if(waitingVehicle == 0)
+                {
+                    return;
+                }
                 uint citizen = offer.Citizen;
                 ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
                 RestaurantDeliveriesManager.RestaurantDeliveries.Add(new RestaurantDeliveriesManager.RestaurantDeliveryData
@@ -877,20 +889,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                         if (!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None)
                         {
-                            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level1);
-                            if (vehicleInfo != null)
-                            {
-                                Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                                var material_byte = (byte)material;
-                                if (Singleton<VehicleManager>.instance.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, (TransferManager.TransferReason)material_byte, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
-                                {
-                                    vehicles.m_buffer[(int)num].m_flags |= Vehicle.Flags.WaitingCargo;
-                                    restaurantDeliveryVehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);
-                                    delivery_vehicles.Add(num);
-                                }
-                            }
+                            CreateDeliveryVehicle(buildingID, buildingData, material);
                         }
-
                     }
                 }
                 var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
@@ -1149,6 +1149,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
             return false;
+        }
+
+        private ushort CreateDeliveryVehicle(ushort buildingID, Building buildingData, ExtendedTransferManager.TransferReason material)
+        {
+            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level1);
+            if (vehicleInfo != null)
+            {
+                Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
+                if (ExtedndedVehicleManager.CreateVehicle(out ushort vehicleId, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, material, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
+                {
+                    vehicles.m_buffer[(int)vehicleId].m_flags |= Vehicle.Flags.WaitingCargo;
+                    restaurantDeliveryVehicleAI.SetSource(vehicleId, ref vehicles.m_buffer[(int)vehicleId], buildingID);
+                    delivery_vehicles.Add(vehicleId);
+                    return vehicleId;
+                }
+            }
+            return 0;
         }
     }
 
