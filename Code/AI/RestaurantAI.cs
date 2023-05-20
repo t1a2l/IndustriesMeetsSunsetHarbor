@@ -363,8 +363,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     buildingId = buildingByLocation,
                     citizenId = citizen
                 });
-                var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[waitingVehicle];
-                vehicle.m_transferSize++;
+                ref var vehicle = ref Singleton<VehicleManager>.instance.m_vehicles.m_buffer[waitingVehicle];
                 RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = vehicle.Info.GetAI() as RestaurantDeliveryVehicleAI;
                 // the default transfer size of a created vehicle is 0
                 // so here it takes -1 which is the min value
