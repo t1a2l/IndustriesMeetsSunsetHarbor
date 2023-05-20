@@ -265,14 +265,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     break;
                 }
             }
-            if (!IsCitizenWaitingForDelivery(data.m_targetBuilding))
-            {
-                var home_building = b_instance.m_buildings.m_buffer[(int)data.m_targetBuilding];
-                home_building.m_flags &= ~Building.Flags.Incoming;
-            }
             for (int j = 0; j < m_deliveryPersonCount; j++)
             {
-                CreateDeliveryGuy(vehicleID, ref data, Citizen.AgePhase.Adult0);
+                CreateDeliveryPerson(vehicleID, ref data, Citizen.AgePhase.Young0);
             }
             data.m_flags |= Vehicle.Flags.Stopped;
             // check if there are other deliveries for this vehicle
@@ -360,11 +355,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return flag;
         }
 
-        private void CreateDeliveryGuy(ushort vehicleID, ref Vehicle data, Citizen.AgePhase agePhase)
+        private void CreateDeliveryPerson(ushort vehicleID, ref Vehicle data, Citizen.AgePhase agePhase)
         {
             SimulationManager instance = Singleton<SimulationManager>.instance;
             CitizenManager instance2 = Singleton<CitizenManager>.instance;
-            CitizenInfo groupCitizenInfo = instance2.GetGroupCitizenInfo(ref instance.m_randomizer, m_info.m_class.m_service, Citizen.Gender.Male, Citizen.SubCulture.Generic, agePhase);
+            CitizenInfo groupCitizenInfo = instance2.GetGroupCitizenInfo(ref instance.m_randomizer, ItemClass.Service.Commercial, Citizen.Gender.Male, Citizen.SubCulture.Generic, agePhase);
             if (groupCitizenInfo == null)
             {
                 return;
@@ -481,40 +476,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 result.Building = vehicleData.m_targetBuilding;
             }
             return result;
-        }
-
-        public bool IsCitizenWaitingForDelivery(ushort target_building)
-        {
-            CitizenManager instance = Singleton<CitizenManager>.instance;
-            BuildingManager b_instance = Singleton<BuildingManager>.instance;
-            var home_building = b_instance.m_buildings.m_buffer[target_building];
-            uint num = home_building.m_citizenUnits;
-            int num2 = 0;
-            while (num != 0U)
-            {
-                uint nextUnit = instance.m_units.m_buffer[(int)(UIntPtr)num].m_nextUnit;
-                var citizen_unit = instance.m_units.m_buffer[(int)((UIntPtr)num)];
-                for (int i = 0; i < 5; i++)
-                {
-                    uint citizenId = citizen_unit.GetCitizen(i);
-                    if (citizenId == 0)
-                    {
-                        continue;
-                    }
-                    var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenId);
-                    if (waiting_delivery != -1)
-                    {
-                        return true;
-                    }
-                }
-                num = nextUnit;
-                if (++num2 > 524288)
-                {
-                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                    break;
-                }
-            }
-            return false;
         }
 
     }
