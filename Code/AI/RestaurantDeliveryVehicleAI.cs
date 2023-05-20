@@ -1,8 +1,6 @@
 using ColossalFramework;
 using ColossalFramework.Math;
-using IndustriesMeetsSunsetHarbor.HarmonyPatches;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons;
 using System;
 using UnityEngine;
 
@@ -128,6 +126,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 data.m_targetPos1.w = 2f;
                 data.m_targetPos2 = data.m_targetPos1;
                 data.m_targetPos3 = data.m_targetPos1;
+                data.m_flags |= Vehicle.Flags.WaitingCargo;
                 FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[sourceBuilding].AddOwnVehicle(vehicleID, ref data);
             }

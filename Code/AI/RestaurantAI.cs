@@ -379,7 +379,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 num = Mathf.Max(0, -num);
                 vehicle.m_transferSize += (ushort)num;
                 // all orders have been collected - drive to the first building
-                if (restaurantDeliveryVehicleAI.m_deliveryCapacity >= vehicle.m_transferSize)
+                if (vehicle.m_transferSize >= restaurantDeliveryVehicleAI.m_deliveryCapacity)
                 {
                     var deliveryData = RestaurantDeliveriesManager.RestaurantDeliveries.Find(item => item.deliveryVehicleId == waitingVehicle);
                     vehicle.m_flags &= ~Vehicle.Flags.WaitingCargo;
@@ -1159,7 +1159,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                 if (ExtedndedVehicleManager.CreateVehicle(out ushort vehicleId, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, material, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
                 {
-                    vehicles.m_buffer[(int)vehicleId].m_flags |= Vehicle.Flags.WaitingCargo;
                     restaurantDeliveryVehicleAI.SetSource(vehicleId, ref vehicles.m_buffer[(int)vehicleId], buildingID);
                     delivery_vehicles.Add(vehicleId);
                     return vehicleId;
