@@ -429,7 +429,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
-            DistrictManager instance = Singleton<DistrictManager>.instance;
             if (finalProductionRate != 0)
             {
                 HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount);

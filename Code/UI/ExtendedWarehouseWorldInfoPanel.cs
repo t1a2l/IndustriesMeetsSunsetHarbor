@@ -277,13 +277,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             string[] array = new string[m_transferReasons.Length];
             for (int i = 0; i < m_transferReasons.Length; i++)
             {
-                string text = (array[i] =  m_transferReasons[i].ToString());
+                array[i] = m_transferReasons[i].ToString();
             }
             m_dropdownResource.items = array;
             array = new string[m_warehouseModes.Length];
             for (int j = 0; j < m_warehouseModes.Length; j++)
             {
-                string text2 = (array[j] =  m_transferReasons[j].ToString());
+                array[j] = m_warehouseModes[j].ToString();
             }
             m_dropdownMode.items = array;
         }
@@ -761,7 +761,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             text += Environment.NewLine;
             text = text + "- " + Locale.Get("RESOURCE_CANNOTBEIMPORTED");
             text += Environment.NewLine;
-            text = Locale.Get("RESOURCE_CANNOTBEEXPORTED");
+            text += Environment.NewLine;
+            text = "Cannot be exported";
             if (isForWarehousePanel)
             {
                 return text;
