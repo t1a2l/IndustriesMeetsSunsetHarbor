@@ -17,7 +17,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 {
                     __instance.m_class.m_service = ItemClass.Service.Commercial;
                     __instance.m_class.m_subService = ItemClass.SubService.None;
-                    __instance.m_class.m_level = ItemClass.Level.Level5;
+                    __instance.m_class.m_level = ItemClass.Level.Level3;
                 }
                 if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
                 {

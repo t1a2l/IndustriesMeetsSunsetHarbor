@@ -1153,7 +1153,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private ushort CreateDeliveryVehicle(ushort buildingID, Building buildingData, ExtendedTransferManager.TransferReason material)
         {
-            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level5);
+            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level3);
             if (vehicleInfo != null)
             {
                 Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
