@@ -117,25 +117,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             items = new List<string>();
         }
 
-        private void OnProductionRateChanged(UIComponent component, float value)
-        {
-            m_productionRateLabel.text = value + "%";
-            if (Singleton<SimulationManager>.exists && m_InstanceID.Building != 0)
-            {
-                Singleton<SimulationManager>.instance.AddAction(SetProductionRate(m_InstanceID.Building, Mathf.RoundToInt(value)));
-            }
-        }
-
-        private IEnumerator SetProductionRate(ushort id, int value)
-        {
-            if (Singleton<BuildingManager>.exists)
-            {
-                BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id].Info;
-                info.m_buildingAI.SetProductionRate(id, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[id], (byte)value);
-            }
-            yield return 0;
-        }
-
         protected override void OnSetTarget()
         {
             base.OnSetTarget();
