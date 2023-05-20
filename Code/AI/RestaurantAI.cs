@@ -1133,12 +1133,19 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private bool CheckIfDeliveryVehicleWaiting()
         {
-            foreach (var deliveryVehicle in delivery_vehicles)
+            if(delivery_vehicles == null)
             {
-                var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
-                if ((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
+                delivery_vehicles = new List<ushort>();
+            }
+            else
+            {
+                foreach (var deliveryVehicle in delivery_vehicles)
                 {
-                    return true;
+                    var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
+                    if ((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
