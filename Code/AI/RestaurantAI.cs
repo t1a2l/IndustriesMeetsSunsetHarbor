@@ -612,6 +612,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
                 int CustomBuffer1 = custom_buffers.m_customBuffer1;
+                if(CustomBuffer1 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input1ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
                 custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
@@ -619,6 +623,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
                 int CustomBuffer2 = custom_buffers.m_customBuffer2;
+                if(CustomBuffer2 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input2ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
                 custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
@@ -626,6 +634,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
                 int CustomBuffer3 = custom_buffers.m_customBuffer3;
+                if(CustomBuffer3 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input3ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
                 custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
@@ -633,6 +645,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource4 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer4 = custom_buffers.m_customBuffer4;
+                if(CustomBuffer4 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input4ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
                 custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
@@ -640,6 +656,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource5 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer5 = custom_buffers.m_customBuffer5;
+                if(CustomBuffer5 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input5ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
                 custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
@@ -647,6 +667,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource6 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer6 = custom_buffers.m_customBuffer6;
+                if(CustomBuffer6 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input6ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
                 custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
@@ -654,6 +678,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource7 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer7 = custom_buffers.m_customBuffer7;
+                if(CustomBuffer7 == 0)
+                {
+                    finalProductionRate = 0;
+                }
                 int Input7ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
                 custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
@@ -1016,7 +1044,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             int m_customBuffer8 = custom_buffers.m_customBuffer8;
-            string text = "meals produced " + m_customBuffer8;
+            string text = "meals cooked " + m_customBuffer8;
             if (m_outputResource != ExtendedTransferManager.TransferReason.None && m_DeliveryVehicleCount != 0)
             {
                 int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
@@ -1026,7 +1054,20 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref used_count, ref cargo, ref capacity, ref outside);
+                var material = m_outputResource;
+                if(quality == 1)
+                {
+                    material = ExtendedTransferManager.TransferReason.MealsDeliveryLow;
+                }
+                if(quality == 2)
+                {
+                    material = ExtendedTransferManager.TransferReason.MealsDeliveryMedium;
+                }
+                if(quality == 3)
+                {
+                    material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
+                }
+                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material, ref used_count, ref cargo, ref capacity, ref outside);
                 text = text + Environment.NewLine + "delivery vehicles in use " + used_count + "/" + delivery_vehicle_count;
             }
             return text;
@@ -1152,7 +1193,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private ushort CreateDeliveryVehicle(ushort buildingID, Building buildingData, ExtendedTransferManager.TransferReason material)
         {
-            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.None, ItemClass.Level.Level3);
+            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.CommercialLow, ItemClass.Level.Level3);
             if (vehicleInfo != null)
             {
                 Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
