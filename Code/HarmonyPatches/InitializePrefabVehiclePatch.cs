@@ -13,13 +13,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         {
             try
             {
-                if (__instance.m_class.m_service == ItemClass.Service.Industrial && __instance.name.Contains("Delivery Vehicle"))
-                {
-                    __instance.m_class.m_service = ItemClass.Service.Commercial;
-                    __instance.m_class.m_subService = ItemClass.SubService.None;
-                    __instance.m_class.m_level = ItemClass.Level.Level3;
-                }
-                if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
+                if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry || __instance.m_class.m_service == ItemClass.Service.Industrial)
                 {
                     var oldAI = __instance.GetComponent<PrefabAI>();
                     UnityEngine.Object.DestroyImmediate(oldAI);

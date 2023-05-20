@@ -49,6 +49,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             var customOldUIClone = Object.Instantiate(customOldWorldInfoPanel.instance);
             customOldUIClone.gameObject.name = customWorldInfoPanelName;
+            if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
+            {
+                var ProductionBar = customOldUIClone.Find<UISlicedSprite>("ProductionBar");
+                Object.DestroyImmediate(ProductionBar);
+            }
             typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);
             typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customOldUIClone);
             typeof(DynamicPanelInfo).GetField("m_SingleInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, true);

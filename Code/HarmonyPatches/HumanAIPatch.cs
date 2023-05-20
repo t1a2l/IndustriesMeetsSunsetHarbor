@@ -26,11 +26,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 if (Singleton<SimulationManager>.instance.m_randomizer.Int32(100U) < Mod.DeliveryChance)
                 {
                     get_delivery = true;
-                    // if building not already waiting for delivery
-                    if ((homeBuildingData.m_flags & Building.Flags.Incoming) == Building.Flags.None)
-                    {
-                        homeBuildingData.m_flags |= Building.Flags.Incoming; // raise flag as building waiting for delivery
-                    }
                 }
             }
             if (get_delivery)
