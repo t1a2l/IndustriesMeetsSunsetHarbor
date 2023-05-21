@@ -688,15 +688,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return;
             }
-            ExtendedTransferManager.TransferReason seniors = (ExtendedTransferManager.TransferReason)data.m_seniors;
-            if (material != seniors)
+            ExtendedTransferManager.TransferReason transferReason = (ExtendedTransferManager.TransferReason)128;
+            if (material != transferReason)
             {
-                if (seniors != ExtendedTransferManager.TransferReason.None)
+                if (transferReason != ExtendedTransferManager.TransferReason.None)
                 {
                     ExtendedTransferManager.Offer offer = default;
                     offer.Building = buildingID;
-                    Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(seniors, offer);
-                    CancelIncomingTransfer(buildingID, ref data, seniors);
+                    Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(transferReason, offer);
+                    CancelIncomingTransfer(buildingID, ref data, transferReason);
                 }
                 data.m_seniors = (byte)material;
                 if (data.m_customBuffer1 == 0)

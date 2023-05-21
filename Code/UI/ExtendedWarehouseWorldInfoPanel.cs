@@ -334,8 +334,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Type.text = Singleton<BuildingManager>.instance.GetDefaultBuildingName(buildingId, InstanceID.Empty);
             m_Status.text = extendedWarehouseAI.GetLocalizedStatus(buildingId, ref instance.m_buildings.m_buffer[m_InstanceID.Building]);
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(extendedWarehouseAI.GetResourceRate(buildingId, ref instance.m_buildings.m_buffer[buildingId], EconomyManager.Resource.Maintenance), isDistanceBased: false);
-            m_Thumbnail.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-            m_Thumbnail.spriteName = extendedWarehouseAI.m_storageType.ToString();
+            m_Thumbnail.atlas = info.m_Atlas;
+            m_Thumbnail.spriteName = info.m_Thumbnail;
             if (m_Thumbnail.atlas != null && !string.IsNullOrEmpty(m_Thumbnail.spriteName))
             {
                 UITextureAtlas.SpriteInfo spriteInfo = m_Thumbnail.atlas[m_Thumbnail.spriteName];
