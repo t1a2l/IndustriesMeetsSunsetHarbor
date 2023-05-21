@@ -834,7 +834,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return m_storageType;
             }
-            return (ExtendedTransferManager.TransferReason)data.m_seniors;
+            return (ExtendedTransferManager.TransferReason)128;
         }
 
         public ExtendedTransferManager.TransferReason GetActualTransferReason(ushort buildingID, ref Building data)
@@ -843,7 +843,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return m_storageType;
             }
-            return (ExtendedTransferManager.TransferReason)data.m_adults;
+            return (ExtendedTransferManager.TransferReason)128;
         }
 
         private int GetMaxLoadSize()

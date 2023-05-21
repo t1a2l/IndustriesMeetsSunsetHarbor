@@ -104,14 +104,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UISprite m_resourceSprite;
 
-        private ExtendedTransferManager.TransferReason[] m_transferReasons = new ExtendedTransferManager.TransferReason[4]
-        {
-                ExtendedTransferManager.TransferReason.None,
-                ExtendedTransferManager.TransferReason.Bread,
-                ExtendedTransferManager.TransferReason.DrinkSupplies,
-                ExtendedTransferManager.TransferReason.FoodSupplies
-        };
-
         private WarehouseMode[] m_warehouseModes = new WarehouseMode[3]
         {
                 WarehouseMode.Balanced,
@@ -265,19 +257,33 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void OnDropdownResourceChanged(UIComponent component, int index)
         {
+            ExtendedTransferManager.TransferReason[] transferReasons = new ExtendedTransferManager.TransferReason[4]
+            {
+                    ExtendedTransferManager.TransferReason.None,
+                    ExtendedTransferManager.TransferReason.Bread,
+                    ExtendedTransferManager.TransferReason.DrinkSupplies,
+                    ExtendedTransferManager.TransferReason.FoodSupplies
+            };
             ExtendedWarehouseAI ai = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedWarehouseAI;
             Singleton<SimulationManager>.instance.AddAction(delegate
             {
-                ai.SetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building], m_transferReasons[index]);
+                ai.SetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building], transferReasons[index]);
             });
         }
 
         private void RefreshDropdownLists()
         {
-            string[] array = new string[m_transferReasons.Length];
-            for (int i = 0; i < m_transferReasons.Length; i++)
+            ExtendedTransferManager.TransferReason[] transferReasons = new ExtendedTransferManager.TransferReason[4]
             {
-                array[i] = m_transferReasons[i].ToString();
+                    ExtendedTransferManager.TransferReason.None,
+                    ExtendedTransferManager.TransferReason.Bread,
+                    ExtendedTransferManager.TransferReason.DrinkSupplies,
+                    ExtendedTransferManager.TransferReason.FoodSupplies
+            };
+            string[] array = new string[transferReasons.Length];
+            for (int i = 0; i < transferReasons.Length; i++)
+            {
+                array[i] = transferReasons[i].ToString();
             }
             m_dropdownResource.items = array;
             array = new string[m_warehouseModes.Length];
@@ -297,7 +303,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             if (m_resourcePanel.isVisible)
             {
                 int num = 0;
-                ExtendedTransferManager.TransferReason[] transferReasons = m_transferReasons;
+                ExtendedTransferManager.TransferReason[] transferReasons = new ExtendedTransferManager.TransferReason[4]
+                {
+                        ExtendedTransferManager.TransferReason.None,
+                        ExtendedTransferManager.TransferReason.Bread,
+                        ExtendedTransferManager.TransferReason.DrinkSupplies,
+                        ExtendedTransferManager.TransferReason.FoodSupplies
+                };
                 foreach (ExtendedTransferManager.TransferReason transferReason in transferReasons)
                 {
                     if (transferReason == extendedWarehouseAI.GetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]))

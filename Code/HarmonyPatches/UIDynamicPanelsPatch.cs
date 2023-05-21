@@ -148,6 +148,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                 var caption_child = child.transform.GetChild(j);
                                 if(caption_child != null)
                                 {
+                                    if(caption_child.name == "Panel")
+                                    {
+                                        for (int k = 0; k < caption_child.transform.childCount; k++)
+                                        {
+                                            var panel_child = caption_child.transform.GetChild(k);
+                                            if(panel_child != null)
+                                            {
+                                                var panel_child_bind = panel_child.GetComponent<BindEvent>();
+                                                if(panel_child_bind != null)
+                                                {
+                                                    panel_child_bind.dataTarget.component = extendedWarehouseComp;
+                                                }
+                                            }
+                                        }
+                                    }
                                     var caption_child_bind = caption_child.GetComponent<BindEvent>();
                                     if(caption_child_bind != null)
                                     {
