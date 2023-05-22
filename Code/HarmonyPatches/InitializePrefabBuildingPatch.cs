@@ -42,6 +42,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     var newAI = (PrefabAI)__instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
+                else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry &&  (__instance.name.Contains("Warehouse Yard 01") || __instance.name.Contains("Small Warehouse 01") || __instance.name.Contains("Medium Warehouse 01") || __instance.name.Contains("Large Warehouse 01")) && __instance.GetAI() is not ExtendedWarehouseAI && !__instance.name.Contains("Sub"))
+                {
+                    var oldAI = __instance.GetComponent<PrefabAI>();
+                    Object.DestroyImmediate(oldAI);
+                    var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedWarehouseAI>();
+                    PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                }
             }
             catch (Exception e)
             {

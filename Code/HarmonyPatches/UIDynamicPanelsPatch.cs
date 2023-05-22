@@ -31,11 +31,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 m_CachedPanels.Add(restaurantAIdynamicPanelInfo.name, restaurantAIdynamicPanelInfo);
             }
-            var warehouseAIdynamicPanelInfo = CreateDynamicPanelInfo(__instance, view, "ExtendedWarehouseWorldInfoPanel", "WarehouseWorldInfoPanel");
-            if(warehouseAIdynamicPanelInfo != null)
-            {
-                m_CachedPanels.Add(warehouseAIdynamicPanelInfo.name, warehouseAIdynamicPanelInfo);
-            }
             typeof(UIDynamicPanels).GetField("m_CachedPanels", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(__instance, m_CachedPanels);
         }
 
@@ -126,56 +121,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         if(bind != null)
                         {
                             bind.dataTarget.component = restaurantComp;
-                        }
-                    }
-                }
-            }
-            else if(customWorldInfoPanelName == "ExtendedWarehouseWorldInfoPanel")
-            {
-                var old_component = gameObject.GetComponent<WarehouseWorldInfoPanel>();
-                Object.DestroyImmediate(old_component);
-                var extendedWarehouseComp = gameObject.AddComponent<ExtendedWarehouseWorldInfoPanel>();
-                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, extendedWarehouseComp, false);
-                for (int i = 0; i < gameObject.transform.childCount; i++)
-                {
-                    var child = gameObject.transform.GetChild(i);
-                    if(child != null)
-                    {
-                        if(child.name == "Caption")
-                        {
-                            for (int j = 0; j < child.transform.childCount; j++)
-                            {
-                                var caption_child = child.transform.GetChild(j);
-                                if(caption_child != null)
-                                {
-                                    if(caption_child.name == "Panel")
-                                    {
-                                        for (int k = 0; k < caption_child.transform.childCount; k++)
-                                        {
-                                            var panel_child = caption_child.transform.GetChild(k);
-                                            if(panel_child != null)
-                                            {
-                                                var panel_child_bind = panel_child.GetComponent<BindEvent>();
-                                                if(panel_child_bind != null)
-                                                {
-                                                    panel_child_bind.dataTarget.component = extendedWarehouseComp;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    var caption_child_bind = caption_child.GetComponent<BindEvent>();
-                                    if(caption_child_bind != null)
-                                    {
-                                        caption_child_bind.dataTarget.component = extendedWarehouseComp;
-                                    }
-                                }
-                            }
-                            
-                        }
-                        var bind = child.GetComponent<BindEvent>();
-                        if(bind != null)
-                        {
-                            bind.dataTarget.component = extendedWarehouseComp;
                         }
                     }
                 }
