@@ -144,9 +144,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             Building building2 = instance.m_buildings.m_buffer[building];
             BuildingInfo info = building2.Info;
             BuildingAI buildingAI = info.m_buildingAI;
+            ExtendedWarehouseAI extendedWarehouseAI = buildingAI as ExtendedWarehouseAI;
             ___m_Type.text = Singleton<BuildingManager>.instance.GetDefaultBuildingName(building, InstanceID.Empty);
-            ___m_Status.text = buildingAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-            ___m_Upkeep.text = LocaleFormatter.FormatUpkeep(buildingAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
+            ___m_Status.text = extendedWarehouseAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[___m_InstanceID.Building]);
+            ___m_Upkeep.text = LocaleFormatter.FormatUpkeep(extendedWarehouseAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
             ___m_Thumbnail.atlas = info.m_Atlas;
             ___m_Thumbnail.spriteName = info.m_Thumbnail;
             if (___m_Thumbnail.atlas != null && !string.IsNullOrEmpty(___m_Thumbnail.spriteName))
@@ -160,7 +161,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             ___m_BuildingDesc.text = info.GetLocalizedDescriptionShort();
             if ((building2.m_flags & Building.Flags.Collapsed) != 0)
             {
-                ___m_RebuildButton.tooltip = ((!IsDisasterServiceRequired(___m_InstanceID)) ? LocaleFormatter.FormatCost(buildingAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
+                ___m_RebuildButton.tooltip = ((!IsDisasterServiceRequired(___m_InstanceID)) ? LocaleFormatter.FormatCost(extendedWarehouseAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
                 ___m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
                 ___m_RebuildButton.isEnabled = __instance.CanRebuild();
                 ___m_ActionPanel.isVisible = false;
@@ -170,7 +171,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_RebuildButton.isVisible = false;
                 ___m_ActionPanel.isVisible = true;
             }
-            ExtendedWarehouseAI extendedWarehouseAI = buildingAI as ExtendedWarehouseAI;
+           
             int num = building2.m_customBuffer1 * 100;
             ___m_resourceProgressBar.value = num / extendedWarehouseAI.m_storageCapacity;
 
@@ -207,7 +208,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_buffer.tooltip = text;
                 ___m_capacityLabel.text = text;
             }
-            ___m_Info.text = buildingAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
+            ___m_Info.text = extendedWarehouseAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
             if (extendedWarehouseAI != null)
             {
                 UpdateWorkers(__instance, building, extendedWarehouseAI, ref instance.m_buildings.m_buffer[building], ref ___m_OverWorkSituation, ref ___m_UneducatedPlaces, ref ___m_EducatedPlaces, ref ___m_WellEducatedPlaces, ref ___m_HighlyEducatedPlaces, ref ___m_UneducatedWorkers, ref ___m_EducatedWorkers, ref ___m_WellEducatedWorkers, ref ___m_HighlyEducatedWorkers, ref ___m_JobsAvailLegend, ref ___m_WorkPlacesEducationChart, ref ___m_WorkersEducationChart, ref ___m_workersInfoLabel);
