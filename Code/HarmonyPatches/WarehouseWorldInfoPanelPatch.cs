@@ -22,7 +22,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private delegate void BuildingWorldInfoPanelUpdateBindingsDelegate(BuildingWorldInfoPanel instance);
         private static BuildingWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<BuildingWorldInfoPanelUpdateBindingsDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-        private enum WarehouseMode
+        public enum WarehouseMode
         {
             Balanced,
             Import,
@@ -77,12 +77,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "RefreshDropdownLists")]
         [HarmonyPrefix]
-        public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance)
+        public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance, ref UIDropDown m_dropdownResource, ref UIDropDown m_dropdownMode, ref WarehouseMode[] m_warehouseModes)
         {
-            var m_dropdownResource = (UIDropDown)typeof(WarehouseWorldInfoPanel).GetField("m_dropdownResource", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_dropdownMode = (UIDropDown)typeof(WarehouseWorldInfoPanel).GetField("m_dropdownMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_warehouseModes = (WarehouseMode[])typeof(WarehouseWorldInfoPanel).GetField("m_dropdownMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-
             string[] array = new string[m_transferReasons.Length + m_extendedTransferReasons.Length];
             for (int i = 0; i < m_transferReasons.Length; i++)
             {
@@ -99,23 +95,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 string text2 = (array[j] = Locale.Get("WAREHOUSEPANEL_MODE", m_warehouseModes[j].ToString()));
             }
             m_dropdownMode.items = array;
-
-            typeof(WarehouseWorldInfoPanel).GetField("m_dropdownResource", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_dropdownResource);
-            typeof(WarehouseWorldInfoPanel).GetField("m_dropdownMode", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_dropdownMode);
-
             return false;
         }
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "OnSetTarget")]
         [HarmonyPrefix]
-        public static bool OnSetTarget(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID)
+        public static bool OnSetTarget(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UIPanel m_resourcePanel, ref float m_originalHeight, ref UIDropDown m_dropdownResource, ref UIDropDown m_dropdownMode, ref WarehouseMode warehouseMode)
         {
-            var m_resourcePanel = (UIPanel)typeof(WarehouseWorldInfoPanel).GetField("m_resourcePanel", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_originalHeight = (float)typeof(WarehouseWorldInfoPanel).GetField("m_originalHeight", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_dropdownResource = (UIDropDown)typeof(WarehouseWorldInfoPanel).GetField("m_dropdownResource", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_dropdownMode = (UIDropDown)typeof(WarehouseWorldInfoPanel).GetField("m_dropdownMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var warehouseMode = (WarehouseMode)typeof(WarehouseWorldInfoPanel).GetField("warehouseMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-
             BaseOnSetTarget(__instance);
             ExtendedWarehouseAI extendedWarehouseAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].Info.m_buildingAI as ExtendedWarehouseAI;
             m_resourcePanel.isVisible = (extendedWarehouseAI.m_storageType == TransferManager.TransferReason.None && extendedWarehouseAI.m_extendedStorageType == ExtendedTransferManager.TransferReason.None);
@@ -145,69 +131,48 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 }
             }
             m_dropdownMode.selectedIndex = (int)warehouseMode;
-
-            typeof(WarehouseWorldInfoPanel).GetField("m_dropdownResource", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_dropdownResource);
-            typeof(WarehouseWorldInfoPanel).GetField("m_dropdownMode", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_dropdownMode);
-
             return false;
         }
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "UpdateBindings")]
         [HarmonyPrefix]
-        public static bool UpdateBindings(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID)
+        public static bool UpdateBindings(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UILabel ___m_Type, ref UILabel ___m_Status, ref UILabel ___m_Upkeep, ref UISprite ___m_Thumbnail, ref UILabel ___m_BuildingDesc, ref UIButton ___m_RebuildButton, ref UIPanel ___m_ActionPanel, ref UIProgressBar ___m_resourceProgressBar, ref UILabel ___m_resourceLabel, ref UIPanel ___m_emptyingOldResource, ref UILabel ___m_resourceDescription, ref UISprite ___m_resourceSprite, ref UIPanel ___m_buffer, ref UILabel ___m_capacityLabel, ref UILabel ___m_Info, ref UILabel ___m_OverWorkSituation, ref UILabel ___m_UneducatedPlaces, ref UILabel ___m_EducatedPlaces, ref UILabel ___m_WellEducatedPlaces, ref UILabel ___m_HighlyEducatedPlaces, ref UILabel ___m_UneducatedWorkers, ref UILabel ___m_EducatedWorkers, ref UILabel ___m_WellEducatedWorkers, ref UILabel ___m_HighlyEducatedWorkers, ref UILabel ___m_JobsAvailLegend, ref UIRadialChart ___m_WorkPlacesEducationChart, ref UIRadialChart ___m_WorkersEducationChart, ref UILabel ___m_workersInfoLabel)
         {
-            var m_Type = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_Type", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_Status = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_Status", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_Upkeep = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_Upkeep", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_Thumbnail = (UISprite)typeof(WarehouseWorldInfoPanel).GetField("m_Thumbnail", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_BuildingDesc = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_BuildingDesc", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_RebuildButton = (UIButton)typeof(WarehouseWorldInfoPanel).GetField("m_RebuildButton", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_ActionPanel = (UIPanel)typeof(WarehouseWorldInfoPanel).GetField("m_ActionPanel", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_resourceProgressBar = (UIProgressBar)typeof(WarehouseWorldInfoPanel).GetField("m_resourceProgressBar", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_resourceLabel = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_resourceLabel", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_emptyingOldResource = (UIPanel)typeof(WarehouseWorldInfoPanel).GetField("m_emptyingOldResource", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_resourceDescription = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_resourceDescription", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_resourceSprite = (UISprite)typeof(WarehouseWorldInfoPanel).GetField("m_resourceSprite", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_buffer = (UIPanel)typeof(WarehouseWorldInfoPanel).GetField("m_buffer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_capacityLabel = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_capacityLabel", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_Info = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_Info", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-
-
             BaseUpdateBindings(__instance);
             ushort building = ___m_InstanceID.Building;
             BuildingManager instance = Singleton<BuildingManager>.instance;
             Building building2 = instance.m_buildings.m_buffer[building];
             BuildingInfo info = building2.Info;
             BuildingAI buildingAI = info.m_buildingAI;
-            m_Type.text = Singleton<BuildingManager>.instance.GetDefaultBuildingName(building, InstanceID.Empty);
-            m_Status.text = buildingAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-            m_Upkeep.text = LocaleFormatter.FormatUpkeep(buildingAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
-            m_Thumbnail.atlas = info.m_Atlas;
-            m_Thumbnail.spriteName = info.m_Thumbnail;
-            if (m_Thumbnail.atlas != null && !string.IsNullOrEmpty(m_Thumbnail.spriteName))
+            ___m_Type.text = Singleton<BuildingManager>.instance.GetDefaultBuildingName(building, InstanceID.Empty);
+            ___m_Status.text = buildingAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[___m_InstanceID.Building]);
+            ___m_Upkeep.text = LocaleFormatter.FormatUpkeep(buildingAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
+            ___m_Thumbnail.atlas = info.m_Atlas;
+            ___m_Thumbnail.spriteName = info.m_Thumbnail;
+            if (___m_Thumbnail.atlas != null && !string.IsNullOrEmpty(___m_Thumbnail.spriteName))
             {
-                UITextureAtlas.SpriteInfo spriteInfo = m_Thumbnail.atlas[m_Thumbnail.spriteName];
+                UITextureAtlas.SpriteInfo spriteInfo = ___m_Thumbnail.atlas[___m_Thumbnail.spriteName];
                 if (spriteInfo != null)
                 {
-                    m_Thumbnail.size = spriteInfo.pixelSize;
+                    ___m_Thumbnail.size = spriteInfo.pixelSize;
                 }
             }
-            m_BuildingDesc.text = info.GetLocalizedDescriptionShort();
+            ___m_BuildingDesc.text = info.GetLocalizedDescriptionShort();
             if ((building2.m_flags & Building.Flags.Collapsed) != 0)
             {
-                m_RebuildButton.tooltip = ((!IsDisasterServiceRequired(___m_InstanceID)) ? LocaleFormatter.FormatCost(buildingAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
-                m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
-                m_RebuildButton.isEnabled = __instance.CanRebuild();
-                m_ActionPanel.isVisible = false;
+                ___m_RebuildButton.tooltip = ((!IsDisasterServiceRequired(___m_InstanceID)) ? LocaleFormatter.FormatCost(buildingAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
+                ___m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
+                ___m_RebuildButton.isEnabled = __instance.CanRebuild();
+                ___m_ActionPanel.isVisible = false;
             }
             else
             {
-                m_RebuildButton.isVisible = false;
-                m_ActionPanel.isVisible = true;
+                ___m_RebuildButton.isVisible = false;
+                ___m_ActionPanel.isVisible = true;
             }
             ExtendedWarehouseAI extendedWarehouseAI = buildingAI as ExtendedWarehouseAI;
             int num = building2.m_customBuffer1 * 100;
-            m_resourceProgressBar.value = num / extendedWarehouseAI.m_storageCapacity;
+            ___m_resourceProgressBar.value = num / extendedWarehouseAI.m_storageCapacity;
 
             TransferManager.TransferReason transferReason = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
             ExtendedTransferManager.TransferReason extendedTransferReason = extendedWarehouseAI.GetExtendedTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
@@ -217,52 +182,36 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
             if (actualTransferReason != TransferManager.TransferReason.None)
             {
-                m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(actualTransferReason);
-                m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
-                m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
-                m_resourceDescription.isVisible = transferReason != TransferManager.TransferReason.None;
-                m_resourceDescription.text = GenerateResourceDescription(transferReason, isForWarehousePanel: true);
-                m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(actualTransferReason);
+                ___m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(actualTransferReason);
+                ___m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
+                ___m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
+                ___m_resourceDescription.isVisible = transferReason != TransferManager.TransferReason.None;
+                ___m_resourceDescription.text = GenerateResourceDescription(transferReason, isForWarehousePanel: true);
+                ___m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(actualTransferReason);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, actualTransferReason));
-                m_buffer.tooltip = text;
-                m_capacityLabel.text = text;
+                ___m_buffer.tooltip = text;
+                ___m_capacityLabel.text = text;
             }
             else if (actualExtendedTransferReason != ExtendedTransferManager.TransferReason.None)
             {
-                m_resourceProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
-                m_resourceLabel.text = actualExtendedTransferReason.ToString();
-                m_emptyingOldResource.isVisible = extendedTransferReason != actualExtendedTransferReason;
-                m_resourceDescription.isVisible = extendedTransferReason != ExtendedTransferManager.TransferReason.None;
-                m_resourceDescription.text = GenerateExtendedResourceDescription(extendedTransferReason, isForWarehousePanel: true);
-                m_resourceSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-                m_resourceSprite.spriteName = extendedWarehouseAI.m_extendedStorageType.ToString();
+                ___m_resourceProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+                ___m_resourceLabel.text = actualExtendedTransferReason.ToString();
+                ___m_emptyingOldResource.isVisible = extendedTransferReason != actualExtendedTransferReason;
+                ___m_resourceDescription.isVisible = extendedTransferReason != ExtendedTransferManager.TransferReason.None;
+                ___m_resourceDescription.text = GenerateExtendedResourceDescription(extendedTransferReason, isForWarehousePanel: true);
+                ___m_resourceSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+                ___m_resourceSprite.spriteName = extendedWarehouseAI.m_extendedStorageType.ToString();
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)num);
                 var formatResourceWithUnit = FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                m_buffer.tooltip = text;
-                m_capacityLabel.text = text;
+                ___m_buffer.tooltip = text;
+                ___m_capacityLabel.text = text;
             }
-            m_Info.text = buildingAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
+            ___m_Info.text = buildingAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
             if (extendedWarehouseAI != null)
             {
-                UpdateWorkers(__instance, building, extendedWarehouseAI, ref instance.m_buildings.m_buffer[building]);
+                UpdateWorkers(__instance, building, extendedWarehouseAI, ref instance.m_buildings.m_buffer[building], ref ___m_OverWorkSituation, ref ___m_UneducatedPlaces, ref ___m_EducatedPlaces, ref ___m_WellEducatedPlaces, ref ___m_HighlyEducatedPlaces, ref ___m_UneducatedWorkers, ref ___m_EducatedWorkers, ref ___m_WellEducatedWorkers, ref ___m_HighlyEducatedWorkers, ref ___m_JobsAvailLegend, ref ___m_WorkPlacesEducationChart, ref ___m_WorkersEducationChart, ref ___m_workersInfoLabel);
             }
-
-            typeof(WarehouseWorldInfoPanel).GetField("m_Type", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_Type);
-            typeof(WarehouseWorldInfoPanel).GetField("m_Status", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_Status);
-            typeof(WarehouseWorldInfoPanel).GetField("m_Upkeep", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_Upkeep);
-            typeof(WarehouseWorldInfoPanel).GetField("m_Thumbnail", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_Thumbnail);
-            typeof(WarehouseWorldInfoPanel).GetField("m_BuildingDesc", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_BuildingDesc);
-            typeof(WarehouseWorldInfoPanel).GetField("m_RebuildButton", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_RebuildButton);
-            typeof(WarehouseWorldInfoPanel).GetField("m_ActionPanel", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_ActionPanel);
-            typeof(WarehouseWorldInfoPanel).GetField("m_resourceProgressBar", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_resourceProgressBar);
-            typeof(WarehouseWorldInfoPanel).GetField("m_resourceLabel", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_resourceLabel);
-            typeof(WarehouseWorldInfoPanel).GetField("m_emptyingOldResource", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_emptyingOldResource);
-            typeof(WarehouseWorldInfoPanel).GetField("m_resourceDescription", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_resourceDescription);
-            typeof(WarehouseWorldInfoPanel).GetField("m_resourceSprite", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_resourceSprite);
-            typeof(WarehouseWorldInfoPanel).GetField("m_buffer", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_buffer);
-            typeof(WarehouseWorldInfoPanel).GetField("m_capacityLabel", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_capacityLabel);
-            typeof(WarehouseWorldInfoPanel).GetField("m_Info", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_Info);
 
             return false;
         }
@@ -342,7 +291,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return false;
         }
 
-        private static void UpdateWorkers(WarehouseWorldInfoPanel __instance, ushort buildingID, ExtendedWarehouseAI extendedWarehouseAI, ref Building building)
+        private static void UpdateWorkers(WarehouseWorldInfoPanel __instance, ushort buildingID, ExtendedWarehouseAI extendedWarehouseAI, ref Building building, ref UILabel m_OverWorkSituation, ref UILabel m_UneducatedPlaces, ref UILabel m_EducatedPlaces, ref UILabel m_WellEducatedPlaces, ref UILabel m_HighlyEducatedPlaces, ref UILabel m_UneducatedWorkers, ref UILabel m_EducatedWorkers, ref UILabel m_WellEducatedWorkers, ref UILabel m_HighlyEducatedWorkers, ref UILabel m_JobsAvailLegend, ref UIRadialChart m_WorkPlacesEducationChart, ref UIRadialChart m_WorkersEducationChart, ref UILabel m_workersInfoLabel)
         {
             if (!Singleton<CitizenManager>.exists)
             {
@@ -419,21 +368,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 num13 += Mathf.Max(0, Mathf.Min(num14, num12 - num8));
             }
             string format = Locale.Get((num13 != 1) ? "ZONEDBUILDING_OVEREDUCATEDWORKERS" : "ZONEDBUILDING_OVEREDUCATEDWORKER");
-
-            var m_OverWorkSituation = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_OverWorkSituation", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_UneducatedPlaces = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_UneducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_EducatedPlaces = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_EducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_WellEducatedPlaces = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_WellEducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_HighlyEducatedPlaces = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_HighlyEducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_UneducatedWorkers = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_UneducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_EducatedWorkers = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_EducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_WellEducatedWorkers = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_WellEducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_HighlyEducatedWorkers = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_HighlyEducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_JobsAvailLegend = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_JobsAvailLegend", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_WorkPlacesEducationChart = (UIRadialChart)typeof(WarehouseWorldInfoPanel).GetField("m_WorkPlacesEducationChart", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_WorkersEducationChart = (UIRadialChart)typeof(WarehouseWorldInfoPanel).GetField("m_WorkersEducationChart", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_workersInfoLabel = (UILabel)typeof(WarehouseWorldInfoPanel).GetField("m_workersInfoLabel", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-
             m_OverWorkSituation.text = StringUtils.SafeFormat(format, num13);
             m_OverWorkSituation.isVisible = num13 > 0;
             m_UneducatedPlaces.text = num5.ToString();
@@ -464,21 +398,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             num17 = 100 - num18;
             m_WorkersEducationChart.SetValues(value4, value5, value6, value7, num17);
             m_workersInfoLabel.text = StringUtils.SafeFormat(Locale.Get("ZONEDBUILDING_WORKERS"), num3, num4);
-
-            typeof(WarehouseWorldInfoPanel).GetField("m_OverWorkSituation", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_OverWorkSituation);
-            typeof(WarehouseWorldInfoPanel).GetField("m_UneducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_UneducatedPlaces);
-            typeof(WarehouseWorldInfoPanel).GetField("m_EducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_EducatedPlaces);
-            typeof(WarehouseWorldInfoPanel).GetField("m_WellEducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_WellEducatedPlaces);
-            typeof(WarehouseWorldInfoPanel).GetField("m_HighlyEducatedPlaces", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_HighlyEducatedPlaces);
-            typeof(WarehouseWorldInfoPanel).GetField("m_UneducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_UneducatedWorkers);
-            typeof(WarehouseWorldInfoPanel).GetField("m_EducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_EducatedWorkers);
-            typeof(WarehouseWorldInfoPanel).GetField("m_WellEducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_WellEducatedWorkers);
-            typeof(WarehouseWorldInfoPanel).GetField("m_HighlyEducatedWorkers", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_HighlyEducatedWorkers);
-            typeof(WarehouseWorldInfoPanel).GetField("m_JobsAvailLegend", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_JobsAvailLegend);
-            typeof(WarehouseWorldInfoPanel).GetField("m_WorkPlacesEducationChart", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_WorkPlacesEducationChart);
-            typeof(WarehouseWorldInfoPanel).GetField("m_WorkersEducationChart", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_WorkersEducationChart);
-            typeof(WarehouseWorldInfoPanel).GetField("m_workersInfoLabel", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_workersInfoLabel);
-
         }
 
         private static int GetValue(int value, int total)
