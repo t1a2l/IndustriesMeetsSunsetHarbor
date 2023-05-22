@@ -77,7 +77,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "RefreshDropdownLists")]
         [HarmonyPrefix]
-        public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance, ref UIDropDown m_dropdownResource, ref UIDropDown m_dropdownMode, ref WarehouseMode[] m_warehouseModes)
+        public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode, ref WarehouseMode[] ___m_warehouseModes)
         {
             string[] array = new string[m_transferReasons.Length + m_extendedTransferReasons.Length];
             for (int i = 0; i < m_transferReasons.Length; i++)
@@ -88,25 +88,25 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 string text = (array[j] = m_extendedTransferReasons[j].ToString());
             }
-            m_dropdownResource.items = array;
-            array = new string[m_warehouseModes.Length];
-            for (int j = 0; j < m_warehouseModes.Length; j++)
+            ___m_dropdownResource.items = array;
+            array = new string[___m_warehouseModes.Length];
+            for (int j = 0; j < ___m_warehouseModes.Length; j++)
             {
-                string text2 = (array[j] = Locale.Get("WAREHOUSEPANEL_MODE", m_warehouseModes[j].ToString()));
+                string text2 = (array[j] = Locale.Get("WAREHOUSEPANEL_MODE", ___m_warehouseModes[j].ToString()));
             }
-            m_dropdownMode.items = array;
+            ___m_dropdownMode.items = array;
             return false;
         }
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "OnSetTarget")]
         [HarmonyPrefix]
-        public static bool OnSetTarget(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UIPanel m_resourcePanel, ref float m_originalHeight, ref UIDropDown m_dropdownResource, ref UIDropDown m_dropdownMode, ref WarehouseMode warehouseMode)
+        public static bool OnSetTarget(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UIPanel ___m_resourcePanel, ref float ___m_originalHeight, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode, ref WarehouseMode ___warehouseMode)
         {
             BaseOnSetTarget(__instance);
             ExtendedWarehouseAI extendedWarehouseAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].Info.m_buildingAI as ExtendedWarehouseAI;
-            m_resourcePanel.isVisible = (extendedWarehouseAI.m_storageType == TransferManager.TransferReason.None && extendedWarehouseAI.m_extendedStorageType == ExtendedTransferManager.TransferReason.None);
-            __instance.component.height = ((!m_resourcePanel.isVisible) ? (m_originalHeight - m_resourcePanel.height) : m_originalHeight);
-            if (m_resourcePanel.isVisible)
+            ___m_resourcePanel.isVisible = (extendedWarehouseAI.m_storageType == TransferManager.TransferReason.None && extendedWarehouseAI.m_extendedStorageType == ExtendedTransferManager.TransferReason.None);
+            __instance.component.height = ((!___m_resourcePanel.isVisible) ? (___m_originalHeight - ___m_resourcePanel.height) : ___m_originalHeight);
+            if (___m_resourcePanel.isVisible)
             {
                 int num = 0;
                 TransferManager.TransferReason[] transferReasons = m_transferReasons;
@@ -115,7 +115,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 {
                     if (transferReason == extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]))
                     {
-                        m_dropdownResource.selectedIndex = num;
+                        ___m_dropdownResource.selectedIndex = num;
                         break;
                     }
                     num++;
@@ -124,13 +124,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 {
                     if (extendedTransferReason == extendedWarehouseAI.GetExtendedTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]))
                     {
-                        m_dropdownResource.selectedIndex = num;
+                        ___m_dropdownResource.selectedIndex = num;
                         break;
                     }
                     num++;
                 }
             }
-            m_dropdownMode.selectedIndex = (int)warehouseMode;
+            ___m_dropdownMode.selectedIndex = (int)___warehouseMode;
             return false;
         }
 
