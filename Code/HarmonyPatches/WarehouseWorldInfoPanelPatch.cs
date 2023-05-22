@@ -22,13 +22,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private delegate void BuildingWorldInfoPanelUpdateBindingsDelegate(BuildingWorldInfoPanel instance);
         private static BuildingWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<BuildingWorldInfoPanelUpdateBindingsDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-        public enum WarehouseMode
-        {
-            Balanced,
-            Import,
-            Export
-        }
-
         private static TransferManager.TransferReason[] m_transferReasons = new TransferManager.TransferReason[16]
         {
             TransferManager.TransferReason.None,
@@ -77,22 +70,23 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "RefreshDropdownLists")]
         [HarmonyPrefix]
-        public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode, ref WarehouseMode[] ___m_warehouseModes)
+        public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode)
         {
+            var m_warehouseModes = (int[])typeof(WarehouseWorldInfoPanel).GetField("m_warehouseModes", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             string[] array = new string[m_transferReasons.Length + m_extendedTransferReasons.Length];
             for (int i = 0; i < m_transferReasons.Length; i++)
             {
                 string text = (array[i] = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_transferReasons[i].ToString()));
             }
-            for (int j = m_transferReasons.Length; j < m_extendedTransferReasons.Length; j++)
+            for (int j = m_transferReasons.Length; j < array.Length; j++)
             {
-                string text = (array[j] = m_extendedTransferReasons[j].ToString());
+                string text = (array[j] = m_extendedTransferReasons[j - m_transferReasons.Length].ToString());
             }
             ___m_dropdownResource.items = array;
-            array = new string[___m_warehouseModes.Length];
-            for (int j = 0; j < ___m_warehouseModes.Length; j++)
+            array = new string[m_warehouseModes.Length];
+            for (int k = 0; k < m_warehouseModes.Length; k++)
             {
-                string text2 = (array[j] = Locale.Get("WAREHOUSEPANEL_MODE", ___m_warehouseModes[j].ToString()));
+                string text2 = (array[k] = m_warehouseModes[k].ToString());
             }
             ___m_dropdownMode.items = array;
             return false;
@@ -100,7 +94,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "OnSetTarget")]
         [HarmonyPrefix]
-        public static bool OnSetTarget(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UIPanel ___m_resourcePanel, ref float ___m_originalHeight, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode, ref WarehouseMode ___warehouseMode)
+        public static bool OnSetTarget(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UIPanel ___m_resourcePanel, ref float ___m_originalHeight, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode)
         {
             BaseOnSetTarget(__instance);
             ExtendedWarehouseAI extendedWarehouseAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].Info.m_buildingAI as ExtendedWarehouseAI;
@@ -130,7 +124,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     num++;
                 }
             }
-            ___m_dropdownMode.selectedIndex = (int)___warehouseMode;
+            var warehouseMode = (int)typeof(WarehouseWorldInfoPanel).GetProperty("warehouseMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance, null);
+            ___m_dropdownMode.selectedIndex = warehouseMode;
             return false;
         }
 
