@@ -943,22 +943,42 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return;
             }
-            TransferManager.TransferReason seniors = (TransferManager.TransferReason)data.m_seniors;
-            if (material != seniors)
+            // remove old transfer reason
+            if(data.m_seniors < 200)  // normal transfer manager
             {
-                if (seniors != TransferManager.TransferReason.None)
+                TransferManager.TransferReason seniors = (TransferManager.TransferReason)data.m_seniors;
+                if (material != seniors)
                 {
-                    TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
-                    offer.Building = buildingID;
-                    Singleton<TransferManager>.instance.RemoveIncomingOffer(seniors, offer);
-                    CancelIncomingTransfer(buildingID, ref data, seniors);
+                    if (seniors != TransferManager.TransferReason.None)
+                    {
+                        TransferManager.TransferOffer offer = default;
+                        offer.Building = buildingID;
+                        Singleton<TransferManager>.instance.RemoveIncomingOffer(seniors, offer);
+                        CancelIncomingTransfer(buildingID, ref data, seniors);
+                    }
                 }
-                data.m_seniors = (byte)material;
-                if (data.m_customBuffer1 == 0)
+            }
+            else  // extended transfer manager
+            {
+                if(data.m_seniors != 255) // not none
                 {
-                    data.m_adults = (byte)material;
-                    SetContentFlags(buildingID, ref data, material);
+                    var material_byte =  data.m_seniors - 200;
+                    ExtendedTransferManager.TransferReason extended = (ExtendedTransferManager.TransferReason)material_byte;
+                    if (extended != ExtendedTransferManager.TransferReason.None)
+                    {
+                        ExtendedTransferManager.Offer offer = default;
+                        offer.Building = buildingID;
+                        Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(extended, offer);
+                        CancelExtendedIncomingTransfer(buildingID, ref data, extended);
+                    }
                 }
+            }
+            // set new transfer reason
+            data.m_seniors = (byte)material;
+            if (data.m_customBuffer1 == 0)
+            {
+                data.m_adults = (byte)material;
+                SetContentFlags(buildingID, ref data, material);
             }
             Notification.ProblemStruct problems = data.m_problems;
             if (material == TransferManager.TransferReason.None)
@@ -981,22 +1001,42 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return;
             }
-            ExtendedTransferManager.TransferReason transferReason = (ExtendedTransferManager.TransferReason)128;
-            if (material != transferReason)
+            // remove old transfer reason
+            if(data.m_seniors >= 200)  // extended transfer manager
             {
-                if (transferReason != ExtendedTransferManager.TransferReason.None)
+                if(data.m_seniors != 255) // not none
                 {
-                    ExtendedTransferManager.Offer offer = default;
+                    var material_byte =  data.m_seniors - 200;
+                    ExtendedTransferManager.TransferReason extended = (ExtendedTransferManager.TransferReason)material_byte;
+                    if (material != extended)
+                    {
+                        if (extended != ExtendedTransferManager.TransferReason.None)
+                        {
+                            ExtendedTransferManager.Offer offer = default;
+                            offer.Building = buildingID;
+                            Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(extended, offer);
+                            CancelExtendedIncomingTransfer(buildingID, ref data, extended);
+                        }
+                    }
+                }
+            }
+            else // normal transfer manager
+            {
+                TransferManager.TransferReason seniors = (TransferManager.TransferReason)data.m_seniors;
+                if (seniors != TransferManager.TransferReason.None)
+                {
+                    TransferManager.TransferOffer offer = default;
                     offer.Building = buildingID;
-                    Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(transferReason, offer);
-                    CancelExtendedIncomingTransfer(buildingID, ref data, transferReason);
+                    Singleton<TransferManager>.instance.RemoveIncomingOffer(seniors, offer);
+                    CancelIncomingTransfer(buildingID, ref data, seniors);
                 }
-                data.m_seniors = (byte)material;
-                if (data.m_customBuffer1 == 0)
-                {
-                    data.m_adults = (byte)material;
-                    SetExtendedContentFlags(buildingID, ref data, material);
-                }
+            }
+            // set new transfer reason
+            data.m_seniors = (byte)((byte)material + 200);
+            if (data.m_customBuffer1 == 0)
+            {
+                data.m_adults = (byte)((byte)material + 200);
+                SetExtendedContentFlags(buildingID, ref data, material);
             }
             Notification.ProblemStruct problems = data.m_problems;
             if (material == ExtendedTransferManager.TransferReason.None)
@@ -1238,7 +1278,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return m_extendedStorageType;
             }
-            return (ExtendedTransferManager.TransferReason)128;
+            return data.m_seniors != 255 ? (ExtendedTransferManager.TransferReason)(data.m_seniors - 200) : (ExtendedTransferManager.TransferReason)data.m_seniors;
         }
 
         public TransferManager.TransferReason GetActualTransferReason(ushort buildingID, ref Building data)
@@ -1256,7 +1296,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return m_extendedStorageType;
             }
-            return (ExtendedTransferManager.TransferReason)128;
+            return data.m_adults != 255 ? (ExtendedTransferManager.TransferReason)(data.m_adults - 200) : (ExtendedTransferManager.TransferReason)data.m_adults;
         }
 
         private int GetMaxLoadSize()
