@@ -101,20 +101,26 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         case InfoManager.SubInfoMode.Default:
                             {
-                                TransferManager.TransferReason actualTransferReason = GetActualTransferReason(buildingID, ref data);
-                                ExtendedTransferManager.TransferReason actualTransferReason2 = GetActualExtendedTransferReason(buildingID, ref data);
-                                if ((actualTransferReason != TransferManager.TransferReason.None || actualTransferReason2 != ExtendedTransferManager.TransferReason.None) && (data.m_tempImport != 0 || data.m_finalImport != 0))
+                                byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+                                if (actualTransferReason != 255 && (data.m_tempImport != 0 || data.m_finalImport != 0))
                                 {
-                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason2];
+                                    if(actualTransferReason >= 200)
+                                    {
+                                        actualTransferReason = (byte)(actualTransferReason - 200);
+                                    }
+                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason];
                                 }
                                 return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                             }
                         case InfoManager.SubInfoMode.WaterPower:
                             {
-                                TransferManager.TransferReason actualTransferReason = GetActualTransferReason(buildingID, ref data);
-                                ExtendedTransferManager.TransferReason actualTransferReason2 = GetActualExtendedTransferReason(buildingID, ref data);
-                                if ((actualTransferReason != TransferManager.TransferReason.None || actualTransferReason2 != ExtendedTransferManager.TransferReason.None) && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                                byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+                                if (actualTransferReason != 255 && (data.m_tempExport != 0 || data.m_finalExport != 0))
                                 {
+                                    if(actualTransferReason >= 200)
+                                    {
+                                        actualTransferReason = (byte)(actualTransferReason - 200);
+                                    }
                                     return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason];
                                 }
                                 return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
@@ -168,27 +174,27 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override string GetDebugString(ushort buildingID, ref Building data)
         {
-            TransferManager.TransferReason actualTransferReason = GetActualTransferReason(buildingID, ref data);
-            ExtendedTransferManager.TransferReason actualTransferReason2 = GetActualExtendedTransferReason(buildingID, ref data);
-            if (actualTransferReason != TransferManager.TransferReason.None)
+            byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+            if (actualTransferReason != 255 && actualTransferReason < 200)
             {
                 int count = 0;
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                CalculateGuestVehicles(buildingID, ref data, actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
+                CalculateGuestVehicles(buildingID, ref data, (TransferManager.TransferReason)actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
                 int num = data.m_customBuffer1 * 100;
-                return StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", base.GetDebugString(buildingID, ref data), actualTransferReason, num, cargo);
+                return StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", base.GetDebugString(buildingID, ref data), (TransferManager.TransferReason)actualTransferReason, num, cargo);
             }
-            else if (actualTransferReason2 != ExtendedTransferManager.TransferReason.None)
+            else if (actualTransferReason != 255 && actualTransferReason >= 200)
             {
+                byte material_byte = (byte)(actualTransferReason - 200);
                 int count = 0;
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, actualTransferReason2, ref count, ref cargo, ref capacity, ref outside);
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                 int num = data.m_customBuffer1 * 100;
-                return StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", base.GetDebugString(buildingID, ref data), actualTransferReason2, num, cargo);
+                return StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", base.GetDebugString(buildingID, ref data), (ExtendedTransferManager.TransferReason)material_byte, num, cargo);
             }
             else
             {
@@ -236,7 +242,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, 0, 0, 0);
             data.m_seniors = byte.MaxValue;
             data.m_adults = byte.MaxValue;
-            if (GetTransferReason(buildingID, ref data) == TransferManager.TransferReason.None && GetExtendedTransferReason(buildingID, ref data) == ExtendedTransferManager.TransferReason.None)
+            if (GetTransferReason(buildingID, ref data) == 255)
             {
                 data.m_problems = Notification.AddProblems(data.m_problems, Notification.Problem1.ResourceNotSelected);
             }
@@ -315,7 +321,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void StartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (material != GetActualTransferReason(buildingID, ref data))
+            if ((byte)material != GetActualTransferReason(buildingID, ref data))
             {
                 base.StartTransfer(buildingID, ref data, material, offer);
                 return;
@@ -342,7 +348,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
-            if (material != GetActualExtendedTransferReason(buildingID, ref data))
+            if ((byte)material != GetActualTransferReason(buildingID, ref data))
             {
                 return;
             }
@@ -430,7 +436,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
-            if (material == GetActualTransferReason(buildingID, ref data))
+            if ((byte)material == GetActualTransferReason(buildingID, ref data))
             {
                 int num = data.m_customBuffer1 * 100;
                 amountDelta = Mathf.Clamp(amountDelta, -num, m_storageCapacity - num);
@@ -444,7 +450,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         void IExtendedBuildingAI.ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
-            if (material == GetActualExtendedTransferReason(buildingID, ref data))
+            if ((byte)material == GetActualTransferReason(buildingID, ref data))
             {
                 int num = data.m_customBuffer1 * 100;
                 amountDelta = Mathf.Clamp(amountDelta, -num, m_storageCapacity - num);
@@ -454,23 +460,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
         {
-            TransferManager.TransferReason actualTransferReason = GetActualTransferReason(buildingID, ref data);
-            ExtendedTransferManager.TransferReason actualTransferReason2 = GetActualExtendedTransferReason(buildingID, ref data);
-            if (actualTransferReason != TransferManager.TransferReason.None)
+            byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+            if (actualTransferReason != 255 && actualTransferReason < 200)
             {
                 TransferManager.TransferOffer offer = default;
                 offer.Building = buildingID;
-                Singleton<TransferManager>.instance.RemoveIncomingOffer(actualTransferReason, offer);
-                Singleton<TransferManager>.instance.RemoveOutgoingOffer(actualTransferReason, offer);
-                RemoveGuestVehicles(buildingID, ref data, actualTransferReason);
+                Singleton<TransferManager>.instance.RemoveIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer);
+                Singleton<TransferManager>.instance.RemoveOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer);
+                RemoveGuestVehicles(buildingID, ref data, (TransferManager.TransferReason)actualTransferReason);
             }
-            else if (actualTransferReason2 != ExtendedTransferManager.TransferReason.None)
+            else if (actualTransferReason != 255 && actualTransferReason >= 200)
             {
+                byte material_byte = (byte)(actualTransferReason - 200);
                 ExtendedTransferManager.Offer offer = default;
                 offer.Building = buildingID;
-                Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(actualTransferReason2, offer);
-                Singleton<ExtendedTransferManager>.instance.RemoveOutgoingOffer(actualTransferReason2, offer);
-                RemoveExtendedGuestVehicles(buildingID, ref data, actualTransferReason2);
+                Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer((ExtendedTransferManager.TransferReason)material_byte, offer);
+                Singleton<ExtendedTransferManager>.instance.RemoveOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer);
+                RemoveExtendedGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte);
             }
             ReleaseAnimals(buildingID, ref data);
             if (data.m_subBuilding != 0 && data.m_parentBuilding == 0)
@@ -545,7 +551,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             base.CheckRoadAccess(buildingID, ref data);
             Notification.ProblemStruct problems = data.m_problems;
-            if (GetTransferReason(buildingID, ref data) == TransferManager.TransferReason.None && GetExtendedTransferReason(buildingID, ref data) == ExtendedTransferManager.TransferReason.None)
+            if (GetTransferReason(buildingID, ref data) == 255)
             {
                 data.m_problems = Notification.AddProblems(data.m_problems, Notification.Problem1.ResourceNotSelected);
             }
@@ -578,11 +584,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (finalProductionRate != 0)
             {
                 HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount);
-                TransferManager.TransferReason actualTransferReason = GetActualTransferReason(buildingID, ref buildingData);
-                ExtendedTransferManager.TransferReason actualTransferReason2 = GetActualExtendedTransferReason(buildingID, ref buildingData);
-                TransferManager.TransferReason transferReason = GetTransferReason(buildingID, ref buildingData);
-                ExtendedTransferManager.TransferReason transferReason2 = GetExtendedTransferReason(buildingID, ref buildingData);
-                if (actualTransferReason != TransferManager.TransferReason.None)
+                byte actualTransferReason = GetActualTransferReason(buildingID, ref buildingData);
+                byte transferReason = GetTransferReason(buildingID, ref buildingData);
+                if (actualTransferReason != 255 && actualTransferReason < 200)
                 {
                     int maxLoadSize = GetMaxLoadSize();
                     bool flag = IsFull(buildingID, ref buildingData);
@@ -590,43 +594,43 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num2 = (finalProductionRate * m_truckCount + 99) / 100;
                     if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
                     {
-                        RemoveGuestVehicles(buildingID, ref buildingData, actualTransferReason);
+                        RemoveGuestVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)actualTransferReason);
                     }
                     int count = 0;
                     int cargo = 0;
                     int capacity = 0;
                     int outside = 0;
-                    CalculateOwnVehicles(buildingID, ref buildingData, actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
+                    CalculateOwnVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
                     buildingData.m_tempExport = (byte)Mathf.Clamp(outside, buildingData.m_tempExport, 255);
                     int count2 = 0;
                     int cargo2 = 0;
                     int capacity2 = 0;
                     int outside2 = 0;
-                    CalculateGuestVehicles(buildingID, ref buildingData, actualTransferReason, ref count2, ref cargo2, ref capacity2, ref outside2);
+                    CalculateGuestVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)actualTransferReason, ref count2, ref cargo2, ref capacity2, ref outside2);
                     buildingData.m_tempImport = (byte)Mathf.Clamp(outside2, buildingData.m_tempImport, 255);
                     if (b != 0)
                     {
-                        instance.m_parks.m_buffer[b].AddBufferStatus(actualTransferReason, num, cargo2, m_storageCapacity);
+                        instance.m_parks.m_buffer[b].AddBufferStatus((TransferManager.TransferReason)actualTransferReason, num, cargo2, m_storageCapacity);
                     }
                     if (transferReason != actualTransferReason)
                     {
                         if (num > 0 && count < num2)
                         {
-                            TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer = default;
                             offer.Priority = 8;
                             offer.Building = buildingID;
                             offer.Position = buildingData.m_position;
                             offer.Amount = Mathf.Min(Mathf.Max(1, num / Mathf.Max(1, maxLoadSize)), num2 - count);
                             offer.Active = true;
                             offer.Exclude = true;
-                            Singleton<TransferManager>.instance.AddOutgoingOffer(actualTransferReason, offer);
+                            Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer);
                         }
                     }
                     else
                     {
                         if (num >= maxLoadSize && count < num2)
                         {
-                            TransferManager.TransferOffer offer2 = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer2 = default;
                             if ((buildingData.m_flags & Building.Flags.Filling) != 0)
                             {
                                 offer2.Priority = 0;
@@ -644,7 +648,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer2.Amount = Mathf.Min(num / Mathf.Max(1, maxLoadSize), num2 - count);
                             offer2.Active = true;
                             offer2.Exclude = true;
-                            Singleton<TransferManager>.instance.AddOutgoingOffer(actualTransferReason, offer2);
+                            Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer2);
                         }
                         num += cargo2;
                         if (num < m_storageCapacity)
@@ -667,7 +671,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer3.Amount = Mathf.Min(num2 - count, 1);
                             offer3.Active = false;
                             offer3.Exclude = true;
-                            Singleton<TransferManager>.instance.AddIncomingOffer(actualTransferReason, offer3);
+                            Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer3);
                         }
                     }
                     bool flag2 = IsFull(buildingID, ref buildingData);
@@ -685,28 +689,35 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             m_fullPassMilestone.Relock();
                         }
                     }
+                    if (actualTransferReason != transferReason && buildingData.m_customBuffer1 == 0)
+                    {
+                        buildingData.m_adults = buildingData.m_seniors;
+                        SetContentFlags(buildingID, ref buildingData, (TransferManager.TransferReason)transferReason);
+                    }
                 }
-                else if (actualTransferReason2 != ExtendedTransferManager.TransferReason.None)
+                else if (actualTransferReason != 255 && actualTransferReason >= 200)
                 {
+                    byte material_byte = (byte)(actualTransferReason - 200);
+                    byte material_byte2 = (byte)(transferReason - 200);
                     int maxLoadSize = GetMaxLoadSize();
                     bool flag = IsFull(buildingID, ref buildingData);
                     int num = buildingData.m_customBuffer1 * 100;
                     int num2 = (finalProductionRate * m_truckCount + 99) / 100;
                     if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
                     {
-                        RemoveExtendedGuestVehicles(buildingID, ref buildingData, actualTransferReason2);
+                        RemoveExtendedGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte);
                     }
                     int count = 0;
                     int cargo = 0;
                     int capacity = 0;
                     int outside = 0;
-                    ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, actualTransferReason2, ref count, ref cargo, ref capacity, ref outside);
+                    ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                     int count2 = 0;
                     int cargo2 = 0;
                     int capacity2 = 0;
                     int outside2 = 0;
-                    ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, actualTransferReason2, ref count2, ref cargo2, ref capacity2, ref outside2);
-                    if (transferReason2 != actualTransferReason2)
+                    ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count2, ref cargo2, ref capacity2, ref outside2);
+                    if (material_byte2 != material_byte)
                     {
                         if (num > 0 && count < num2)
                         {
@@ -715,7 +726,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer.Position = buildingData.m_position;
                             offer.Amount = Mathf.Min(Mathf.Max(1, num / Mathf.Max(1, maxLoadSize)), num2 - count);
                             offer.Active = true;
-                            Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(actualTransferReason2, offer);
+                            Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer);
                         }
                     }
                     else
@@ -727,7 +738,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer2.Position = buildingData.m_position;
                             offer2.Amount = Mathf.Min(num / Mathf.Max(1, maxLoadSize), num2 - count);
                             offer2.Active = true;
-                            Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(actualTransferReason2, offer2);
+                            Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer2);
                         }
                         num += cargo2;
                         if (num < m_storageCapacity)
@@ -737,7 +748,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer3.Position = buildingData.m_position;
                             offer3.Amount = Mathf.Min(num2 - count, 1);
                             offer3.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(actualTransferReason2, offer3);
+                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer((ExtendedTransferManager.TransferReason)material_byte, offer3);
                         }
                     }
                     bool flag2 = IsFull(buildingID, ref buildingData);
@@ -755,16 +766,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             m_fullPassMilestone.Relock();
                         }
                     }
-                }
-                if (actualTransferReason != transferReason && buildingData.m_customBuffer1 == 0)
-                {
-                    buildingData.m_adults = buildingData.m_seniors;
-                    SetContentFlags(buildingID, ref buildingData, transferReason);
-                }
-                if (actualTransferReason2 != transferReason2 && buildingData.m_customBuffer1 == 0)
-                {
-                    buildingData.m_adults = buildingData.m_seniors;
-                    SetExtendedContentFlags(buildingID, ref buildingData, transferReason2);
+                    if (material_byte != material_byte2 && buildingData.m_customBuffer1 == 0)
+                    {
+                        buildingData.m_adults = buildingData.m_seniors;
+                        SetExtendedContentFlags(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte2);
+                    }
                 }
                 int num3 = finalProductionRate * m_noiseAccumulation / 100;
                 if (num3 != 0)
@@ -1220,9 +1226,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
             string text = string.Empty;
-            TransferManager.TransferReason actualTransferReason = GetActualTransferReason(buildingID, ref data);
-            ExtendedTransferManager.TransferReason actualTransferReason2 = GetActualExtendedTransferReason(buildingID, ref data);
-            if (actualTransferReason != TransferManager.TransferReason.None)
+            byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+            if (actualTransferReason != 255 && actualTransferReason < 200)
             {
                 int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
                 int productionRate = GetProductionRate(100, budget);
@@ -1231,7 +1236,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                CalculateOwnVehicles(buildingID, ref data, actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
+                CalculateOwnVehicles(buildingID, ref data, (TransferManager.TransferReason)actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
                 int num2 = data.m_customBuffer1 * 100;
                 int num3 = 0;
                 if (num2 != 0)
@@ -1241,8 +1246,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 text = text + LocaleFormatter.FormatGeneric("AIINFO_FULL", num3) + Environment.NewLine;
                 text += LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", count, num);
             }
-            else if (actualTransferReason2 != ExtendedTransferManager.TransferReason.None)
+            else if (actualTransferReason != 255 && actualTransferReason >= 200)
             {
+                byte material_byte = (byte)(actualTransferReason - 200);
                 int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
                 int productionRate = GetProductionRate(100, budget);
                 int num = (productionRate * m_truckCount + 99) / 100;
@@ -1250,7 +1256,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, actualTransferReason2, ref count, ref cargo, ref capacity, ref outside);
+                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                 int num2 = data.m_customBuffer1 * 100;
                 int num3 = 0;
                 if (num2 != 0)
@@ -1263,40 +1269,30 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return text;
         }
 
-        public TransferManager.TransferReason GetTransferReason(ushort buildingID, ref Building data)
+        public byte GetTransferReason(ushort buildingID, ref Building data)
         {
             if (m_storageType != TransferManager.TransferReason.None)
             {
-                return m_storageType;
+                return (byte)m_storageType;
             }
-            return (TransferManager.TransferReason)data.m_seniors;
-        }
-
-        public ExtendedTransferManager.TransferReason GetExtendedTransferReason(ushort buildingID, ref Building data)
-        {
             if (m_extendedStorageType != ExtendedTransferManager.TransferReason.None)
             {
-                return m_extendedStorageType;
+                return (byte)m_extendedStorageType;
             }
-            return data.m_seniors != 255 ? (ExtendedTransferManager.TransferReason)(data.m_seniors - 200) : (ExtendedTransferManager.TransferReason)data.m_seniors;
+            return data.m_seniors;
         }
 
-        public TransferManager.TransferReason GetActualTransferReason(ushort buildingID, ref Building data)
+        public byte GetActualTransferReason(ushort buildingID, ref Building data)
         {
             if (m_storageType != TransferManager.TransferReason.None)
             {
-                return m_storageType;
+                return (byte)m_storageType;
             }
-            return (TransferManager.TransferReason)data.m_adults;
-        }
-
-        public ExtendedTransferManager.TransferReason GetActualExtendedTransferReason(ushort buildingID, ref Building data)
-        {
             if (m_extendedStorageType != ExtendedTransferManager.TransferReason.None)
             {
-                return m_extendedStorageType;
+                return (byte)m_extendedStorageType;
             }
-            return data.m_adults != 255 ? (ExtendedTransferManager.TransferReason)(data.m_adults - 200) : (ExtendedTransferManager.TransferReason)data.m_adults;
+            return data.m_adults;
         }
 
         private int GetMaxLoadSize()
