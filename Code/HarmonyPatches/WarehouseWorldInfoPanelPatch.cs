@@ -105,23 +105,35 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 int num = 0;
                 TransferManager.TransferReason[] transferReasons = m_transferReasons;
                 ExtendedTransferManager.TransferReason[] extendedTransferReasons2 = m_extendedTransferReasons;
-                foreach (TransferManager.TransferReason transferReason in transferReasons)
+                var material_byte = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
+                if(material_byte != 255)
                 {
-                    if (transferReason == extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]))
+                    if(material_byte < 200)
                     {
-                        ___m_dropdownResource.selectedIndex = num;
-                        break;
+                        foreach (TransferManager.TransferReason transferReason in transferReasons)
+                        {
+                            if ((byte)transferReason == material_byte)
+                            {
+                                ___m_dropdownResource.selectedIndex = num;
+                                break;
+                            }
+                            num++;
+                        }
                     }
-                    num++;
-                }
-                foreach (ExtendedTransferManager.TransferReason extendedTransferReason in extendedTransferReasons2)
-                {
-                    if (extendedTransferReason == extendedWarehouseAI.GetExtendedTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]))
+                    if(material_byte >= 200)
                     {
-                        ___m_dropdownResource.selectedIndex = num;
-                        break;
+                        num = 16;
+                        byte extended_material_byte = (byte)(material_byte - 200);
+                        foreach (ExtendedTransferManager.TransferReason extendedTransferReason in extendedTransferReasons2)
+                        {
+                            if ((byte)extendedTransferReason == extended_material_byte)
+                            {
+                                ___m_dropdownResource.selectedIndex = num;
+                                break;
+                            }
+                            num++;
+                        }
                     }
-                    num++;
                 }
             }
             var warehouseMode = (int)typeof(WarehouseWorldInfoPanel).GetProperty("warehouseMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance, null);
@@ -170,33 +182,33 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             int num = building2.m_customBuffer1 * 100;
             ___m_resourceProgressBar.value = num / extendedWarehouseAI.m_storageCapacity;
 
-            TransferManager.TransferReason transferReason = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-            ExtendedTransferManager.TransferReason extendedTransferReason = extendedWarehouseAI.GetExtendedTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
+            byte transferReason = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
+            byte actualTransferReason = extendedWarehouseAI.GetActualTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
 
-            TransferManager.TransferReason actualTransferReason = extendedWarehouseAI.GetActualTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-            ExtendedTransferManager.TransferReason actualExtendedTransferReason = extendedWarehouseAI.GetActualExtendedTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-
-            if (actualTransferReason != TransferManager.TransferReason.None)
+            if (actualTransferReason != 255 && actualTransferReason < 200)
             {
-                ___m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(actualTransferReason);
+                ___m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)actualTransferReason);
                 ___m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
                 ___m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
-                ___m_resourceDescription.isVisible = transferReason != TransferManager.TransferReason.None;
-                ___m_resourceDescription.text = GenerateResourceDescription(transferReason, isForWarehousePanel: true);
-                ___m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(actualTransferReason);
-                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, actualTransferReason));
+                ___m_resourceDescription.isVisible = transferReason != 255;
+                ___m_resourceDescription.text = GenerateResourceDescription((TransferManager.TransferReason)transferReason, isForWarehousePanel: true);
+                ___m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName((TransferManager.TransferReason)actualTransferReason);
+                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, (TransferManager.TransferReason)actualTransferReason));
                 ___m_buffer.tooltip = text;
                 ___m_capacityLabel.text = text;
             }
-            else if (actualExtendedTransferReason != ExtendedTransferManager.TransferReason.None)
+            else if (actualTransferReason != 255 && actualTransferReason >= 200)
             {
+                byte actual_material_byte = (byte)(actualTransferReason - 200);
+                byte material_byte = (byte)(transferReason - 200);
                 ___m_resourceProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
-                ___m_resourceLabel.text = actualExtendedTransferReason.ToString();
-                ___m_emptyingOldResource.isVisible = extendedTransferReason != actualExtendedTransferReason;
-                ___m_resourceDescription.isVisible = extendedTransferReason != ExtendedTransferManager.TransferReason.None;
-                ___m_resourceDescription.text = GenerateExtendedResourceDescription(extendedTransferReason, isForWarehousePanel: true);
+                var extendedTransferReason = (ExtendedTransferManager.TransferReason)actual_material_byte;
+                ___m_resourceLabel.text = extendedTransferReason.ToString();
+                ___m_emptyingOldResource.isVisible = material_byte != actual_material_byte;
+                ___m_resourceDescription.isVisible = material_byte != 255;
+                ___m_resourceDescription.text = GenerateExtendedResourceDescription((ExtendedTransferManager.TransferReason)actual_material_byte, isForWarehousePanel: true);
                 ___m_resourceSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-                ___m_resourceSprite.spriteName = extendedWarehouseAI.m_extendedStorageType.ToString();
+                ___m_resourceSprite.spriteName = extendedTransferReason.ToString();
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)num);
                 var formatResourceWithUnit = FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
