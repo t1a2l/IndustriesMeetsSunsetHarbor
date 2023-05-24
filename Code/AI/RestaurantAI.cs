@@ -610,11 +610,56 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
-                int CustomBuffer1 = custom_buffers.m_customBuffer1;
-                if(CustomBuffer1 == 0)
+                if(custom_buffers.m_customBuffer1 == 0)
                 {
                     finalProductionRate = 0;
                 }
+            }
+            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+            {
+                if(custom_buffers.m_customBuffer2 == 0)
+                {
+                    finalProductionRate = 0;
+                }
+            }
+            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            {
+                if(custom_buffers.m_customBuffer3 == 0)
+                {
+                    finalProductionRate = 0;
+                }
+            }
+            if (m_inputResource4 != TransferManager.TransferReason.None)
+            {
+                if(custom_buffers.m_customBuffer4 == 0)
+                {
+                    finalProductionRate = 0;
+                }
+            }
+            if (m_inputResource5 != TransferManager.TransferReason.None)
+            {
+                if(custom_buffers.m_customBuffer5 == 0)
+                {
+                    finalProductionRate = 0;
+                }
+            }
+            if (m_inputResource6 != TransferManager.TransferReason.None)
+            {
+                if(custom_buffers.m_customBuffer6 == 0)
+                {
+                    finalProductionRate = 0;
+                }
+            }
+            if (m_inputResource7 != TransferManager.TransferReason.None)
+            {
+                if(custom_buffers.m_customBuffer7 == 0)
+                {
+                    finalProductionRate = 0;
+                }
+            }
+            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer1 = custom_buffers.m_customBuffer1;
                 int Input1ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
                 custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
@@ -622,10 +667,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
                 int CustomBuffer2 = custom_buffers.m_customBuffer2;
-                if(CustomBuffer2 == 0)
-                {
-                    finalProductionRate = 0;
-                }
                 int Input2ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
                 custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
@@ -633,10 +674,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
                 int CustomBuffer3 = custom_buffers.m_customBuffer3;
-                if(CustomBuffer3 == 0)
-                {
-                    finalProductionRate = 0;
-                }
                 int Input3ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
                 custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
@@ -644,10 +681,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource4 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer4 = custom_buffers.m_customBuffer4;
-                if(CustomBuffer4 == 0)
-                {
-                    finalProductionRate = 0;
-                }
                 int Input4ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
                 custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
@@ -655,10 +688,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource5 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer5 = custom_buffers.m_customBuffer5;
-                if(CustomBuffer5 == 0)
-                {
-                    finalProductionRate = 0;
-                }
                 int Input5ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
                 custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
@@ -666,10 +695,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource6 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer6 = custom_buffers.m_customBuffer6;
-                if(CustomBuffer6 == 0)
-                {
-                    finalProductionRate = 0;
-                }
                 int Input6ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
                 custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
@@ -677,10 +702,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource7 != TransferManager.TransferReason.None)
             {
                 int CustomBuffer7 = custom_buffers.m_customBuffer7;
-                if(CustomBuffer7 == 0)
-                {
-                    finalProductionRate = 0;
-                }
                 int Input7ProductionRate = (finalProductionRate + 99) / 100;
                 CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
                 custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
