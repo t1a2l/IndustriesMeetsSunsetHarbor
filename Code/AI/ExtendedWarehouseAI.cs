@@ -450,7 +450,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         void IExtendedBuildingAI.ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
-            if ((byte)material == GetActualTransferReason(buildingID, ref data))
+            var actual_reason_byte = (byte)(GetActualTransferReason(buildingID, ref data) - 200);
+            ExtendedTransferManager.TransferReason actualTransferReason = (ExtendedTransferManager.TransferReason)actual_reason_byte;
+            if (material == actualTransferReason)
             {
                 int num = data.m_customBuffer1 * 100;
                 amountDelta = Mathf.Clamp(amountDelta, -num, m_storageCapacity - num);
