@@ -51,6 +51,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public ManualMilestone m_fullPassMilestone;
 
+        [NonSerialized]
+        private int m_subStations = -1;
+
         public override bool GetUseServicePoint(ushort buildingAI, ref Building data)
         {
             return false;
@@ -100,44 +103,44 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     switch (subInfoMode)
                     {
                         case InfoManager.SubInfoMode.Default:
+                        {
+                            byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+                            if (actualTransferReason != 255 && (data.m_tempImport != 0 || data.m_finalImport != 0))
                             {
-                                byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
-                                if (actualTransferReason != 255 && (data.m_tempImport != 0 || data.m_finalImport != 0))
+                                if (actualTransferReason >= 200)
                                 {
-                                    if(actualTransferReason >= 200)
-                                    {
-                                        actualTransferReason = (byte)(actualTransferReason - 200);
-                                    }
-                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason];
+                                    actualTransferReason = (byte)(actualTransferReason - 200);
                                 }
-                                return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason];
                             }
+                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        }
                         case InfoManager.SubInfoMode.WaterPower:
+                        {
+                            byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
+                            if (actualTransferReason != 255 && (data.m_tempExport != 0 || data.m_finalExport != 0))
                             {
-                                byte actualTransferReason = GetActualTransferReason(buildingID, ref data);
-                                if (actualTransferReason != 255 && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                                if (actualTransferReason >= 200)
                                 {
-                                    if(actualTransferReason >= 200)
-                                    {
-                                        actualTransferReason = (byte)(actualTransferReason - 200);
-                                    }
-                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason];
+                                    actualTransferReason = (byte)(actualTransferReason - 200);
                                 }
-                                return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)actualTransferReason];
                             }
+                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        }
                         default:
                             return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                     }
                 case InfoManager.InfoMode.Pollution:
-                    {
-                        int pollutionAccumulation = m_pollutionAccumulation;
-                        return ColorUtils.LinearLerp(Singleton<InfoManager>.instance.m_properties.m_neutralColor, Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor, Mathf.Clamp01((float)pollutionAccumulation * 0.03f));
-                    }
+                {
+                    int pollutionAccumulation = m_pollutionAccumulation;
+                    return ColorUtils.LinearLerp(Singleton<InfoManager>.instance.m_properties.m_neutralColor, Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor, Mathf.Clamp01((float)pollutionAccumulation * 0.03f));
+                }
                 case InfoManager.InfoMode.NoisePollution:
-                    {
-                        int noiseAccumulation = m_noiseAccumulation;
-                        return GetNoisePollutionColor(noiseAccumulation);
-                    }
+                {
+                    int noiseAccumulation = m_noiseAccumulation;
+                    return GetNoisePollutionColor(noiseAccumulation);
+                }
                 case InfoManager.InfoMode.Industry:
                     if (subInfoMode == IndustryBuildingAI.ServiceToInfoMode(m_info.m_class.m_subService))
                     {
@@ -616,72 +619,94 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         instance.m_parks.m_buffer[b].AddBufferStatus((TransferManager.TransferReason)actualTransferReason, num, cargo2, m_storageCapacity);
                     }
-                    if (transferReason != actualTransferReason)
+                    ushort num3 = buildingID;
+                    if (m_subStations > 0)
                     {
-                        if (num > 0 && count < num2)
+                        uint num4 = Singleton<SimulationManager>.instance.m_randomizer.UInt32((uint)(m_subStations * 5 + 1));
+                        if (num4 != 0)
                         {
-                            TransferManager.TransferOffer offer = default;
-                            offer.Priority = 8;
-                            offer.Building = buildingID;
+                            for (ushort subBuilding = buildingData.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
+                            {
+                                BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
+                                if (info != null && info.m_buildingAI is WarehouseStationAI)
+                                {
+                                    if (num4 <= 5)
+                                    {
+                                        num3 = subBuilding;
+                                        break;
+                                    }
+                                    num4 -= 5;
+                                }
+                            }
+                        }
+                    }
+                    bool flag2 = num3 == buildingID;
+                    if (transferReason == actualTransferReason)
+                    {
+                        if (num >= maxLoadSize && (count < num2 || !flag2) && (buildingData.m_flags & Building.Flags.Filling) == 0)
+                        {
+                            TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                            if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
+                            {
+                                offer.Priority = Mathf.Clamp(num / Mathf.Max(1, m_storageCapacity >> 2) + 2, 0, 2);
+                                if (!flag2)
+                                {
+                                    offer.Priority += 2;
+                                }
+                            }
+                            else
+                            {
+                                offer.Priority = Mathf.Clamp(num / Mathf.Max(1, m_storageCapacity >> 2) - 1, 0, 2);
+                            }
+                            offer.Building = num3;
                             offer.Position = buildingData.m_position;
-                            offer.Amount = Mathf.Min(Mathf.Max(1, num / Mathf.Max(1, maxLoadSize)), num2 - count);
+                            offer.Amount = ((!flag2) ? Mathf.Clamp(num / maxLoadSize, 1, 15) : Mathf.Min(Mathf.Max(1, num / maxLoadSize), num2 - count));
                             offer.Active = true;
-                            offer.Exclude = true;
+                            offer.Exclude = flag2;
+                            offer.Unlimited = !flag2;
                             Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer);
                         }
-                    }
-                    else
-                    {
-                        if (num >= maxLoadSize && count < num2)
-                        {
-                            TransferManager.TransferOffer offer2 = default;
-                            if ((buildingData.m_flags & Building.Flags.Filling) != 0)
-                            {
-                                offer2.Priority = 0;
-                            }
-                            else if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
-                            {
-                                offer2.Priority = Mathf.Clamp(num / Mathf.Max(1, m_storageCapacity >> 2) + 2, 0, 2);
-                            }
-                            else
-                            {
-                                offer2.Priority = Mathf.Clamp(num / Mathf.Max(1, m_storageCapacity >> 2) - 1, 0, 2);
-                            }
-                            offer2.Building = buildingID;
-                            offer2.Position = buildingData.m_position;
-                            offer2.Amount = Mathf.Min(num / Mathf.Max(1, maxLoadSize), num2 - count);
-                            offer2.Active = true;
-                            offer2.Exclude = true;
-                            Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer2);
-                        }
                         num += cargo2;
-                        if (num < m_storageCapacity)
+                        if (num < m_storageCapacity && (buildingData.m_flags & Building.Flags.Downgrading) == 0)
                         {
-                            TransferManager.TransferOffer offer3 = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer2 = default(TransferManager.TransferOffer);
                             if ((buildingData.m_flags & Building.Flags.Filling) != 0)
                             {
-                                offer3.Priority = Mathf.Clamp((m_storageCapacity - num) / Mathf.Max(1, m_storageCapacity >> 2) + 1, 0, 2);
-                            }
-                            else if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
-                            {
-                                offer3.Priority = 0;
+                                offer2.Priority = Mathf.Clamp((m_storageCapacity - num) / Mathf.Max(1, m_storageCapacity >> 2) + 1, 0, 2);
+                                if (!flag2)
+                                {
+                                    offer2.Priority += 2;
+                                }
                             }
                             else
                             {
-                                offer3.Priority = Mathf.Clamp((m_storageCapacity - num) / Mathf.Max(1, m_storageCapacity >> 2) - 1, 0, 2);
+                                offer2.Priority = Mathf.Clamp((m_storageCapacity - num) / Mathf.Max(1, m_storageCapacity >> 2) - 1, 0, 2);
                             }
-                            offer3.Building = buildingID;
-                            offer3.Position = buildingData.m_position;
-                            offer3.Amount = Mathf.Min(num2 - count, 1);
-                            offer3.Active = false;
-                            offer3.Exclude = true;
-                            Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer3);
+                            offer2.Building = num3;
+                            offer2.Position = buildingData.m_position;
+                            offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
+                            offer2.Active = false;
+                            offer2.Exclude = flag2;
+                            offer2.Unlimited = !flag2;
+                            Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer2);
                         }
                     }
-                    bool flag2 = IsFull(buildingID, ref buildingData);
-                    if (flag != flag2)
+                    else if (num > 0 && (count < num2 || !flag2))
                     {
-                        if (flag2)
+                        TransferManager.TransferOffer offer3 = default(TransferManager.TransferOffer);
+                        offer3.Priority = 8;
+                        offer3.Building = num3;
+                        offer3.Position = buildingData.m_position;
+                        offer3.Amount = ((!flag2) ? Mathf.Clamp(num / maxLoadSize, 1, 15) : Mathf.Min(Mathf.Max(1, num / maxLoadSize), num2 - count));
+                        offer3.Active = true;
+                        offer3.Exclude = flag2;
+                        offer3.Unlimited = !flag2;
+                        Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer3);
+                    }
+                    bool flag3 = IsFull(buildingID, ref buildingData);
+                    if (flag != flag3)
+                    {
+                        if (flag3)
                         {
                             if ((object)m_fullPassMilestone != null)
                             {
@@ -694,10 +719,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                     if (actualTransferReason != transferReason && buildingData.m_customBuffer1 == 0)
-                    {
-                        buildingData.m_adults = buildingData.m_seniors;
-                        SetContentFlags(buildingID, ref buildingData, (TransferManager.TransferReason)transferReason);
-                    }
+		    {
+			buildingData.m_adults = buildingData.m_seniors;
+			SetContentFlags(buildingID, ref buildingData, (TransferManager.TransferReason)transferReason);
+		    }
                 }
                 else if (actualTransferReason != 255 && actualTransferReason >= 200)
                 {
@@ -716,49 +741,74 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int capacity = 0;
                     int outside = 0;
                     ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
+                    buildingData.m_tempExport = (byte)Mathf.Clamp(outside, buildingData.m_tempExport, 255);
                     int count2 = 0;
                     int cargo2 = 0;
                     int capacity2 = 0;
                     int outside2 = 0;
                     ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count2, ref cargo2, ref capacity2, ref outside2);
-                    if (material_byte2 != material_byte)
+                    buildingData.m_tempImport = (byte)Mathf.Clamp(outside2, buildingData.m_tempImport, 255);
+                    if (b != 0)
                     {
-                        if (num > 0 && count < num2)
+                        instance.m_parks.m_buffer[b].AddBufferStatus((TransferManager.TransferReason)actualTransferReason, num, cargo2, m_storageCapacity);
+                    }
+                    ushort num3 = buildingID;
+                    if (m_subStations > 0)
+                    {
+                        uint num4 = Singleton<SimulationManager>.instance.m_randomizer.UInt32((uint)(m_subStations * 5 + 1));
+                        if (num4 != 0)
+                        {
+                            for (ushort subBuilding = buildingData.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
+                            {
+                                BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
+                                if (info != null && info.m_buildingAI is WarehouseStationAI)
+                                {
+                                    if (num4 <= 5)
+                                    {
+                                        num3 = subBuilding;
+                                        break;
+                                    }
+                                    num4 -= 5;
+                                }
+                            }
+                        }
+                    }
+                    bool flag2 = num3 == buildingID;
+                    if (material_byte == material_byte2)
+                    {
+                        if (num >= maxLoadSize && (count < num2 || !flag2) && (buildingData.m_flags & Building.Flags.Filling) == 0)
                         {
                             ExtendedTransferManager.Offer offer = default;
-                            offer.Building = buildingID;
+                            offer.Building = num3;
                             offer.Position = buildingData.m_position;
-                            offer.Amount = Mathf.Min(Mathf.Max(1, num / Mathf.Max(1, maxLoadSize)), num2 - count);
+                            offer.Amount = ((!flag2) ? Mathf.Clamp(num / maxLoadSize, 1, 15) : Mathf.Min(Mathf.Max(1, num / maxLoadSize), num2 - count));
                             offer.Active = true;
                             Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer);
                         }
-                    }
-                    else
-                    {
-                        if (num >= maxLoadSize && count < num2)
+                        num += cargo2;
+                        if (num < m_storageCapacity && (buildingData.m_flags & Building.Flags.Downgrading) == 0)
                         {
                             ExtendedTransferManager.Offer offer2 = default;
-                            offer2.Building = buildingID;
+                            offer2.Building = num3;
                             offer2.Position = buildingData.m_position;
-                            offer2.Amount = Mathf.Min(num / Mathf.Max(1, maxLoadSize), num2 - count);
-                            offer2.Active = true;
-                            Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer2);
-                        }
-                        num += cargo2;
-                        if (num < m_storageCapacity)
-                        {
-                            ExtendedTransferManager.Offer offer3 = default;
-                            offer3.Building = buildingID;
-                            offer3.Position = buildingData.m_position;
-                            offer3.Amount = Mathf.Min(num2 - count, 1);
-                            offer3.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer((ExtendedTransferManager.TransferReason)material_byte, offer3);
+                            offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
+                            offer2.Active = false;
+                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer((ExtendedTransferManager.TransferReason)material_byte, offer2);
                         }
                     }
-                    bool flag2 = IsFull(buildingID, ref buildingData);
-                    if (flag != flag2)
+                    else if (num > 0 && (count < num2 || !flag2))
                     {
-                        if (flag2)
+                        ExtendedTransferManager.Offer offer3 = default;
+                        offer3.Building = num3;
+                        offer3.Position = buildingData.m_position;
+                        offer3.Amount = ((!flag2) ? Mathf.Clamp(num / maxLoadSize, 1, 15) : Mathf.Min(Mathf.Max(1, num / maxLoadSize), num2 - count));
+                        offer3.Active = true;
+                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer3);
+                    }
+                    bool flag3 = IsFull(buildingID, ref buildingData);
+                    if (flag != flag3)
+                    {
+                        if (flag3)
                         {
                             if ((object)m_fullPassMilestone != null)
                             {
@@ -771,15 +821,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                     if (material_byte != material_byte2 && buildingData.m_customBuffer1 == 0)
-                    {
-                        buildingData.m_adults = buildingData.m_seniors;
-                        SetExtendedContentFlags(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte2);
-                    }
+		    {
+			buildingData.m_adults = buildingData.m_seniors;
+			SetExtendedContentFlags(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte2);
+		    }
                 }
-                int num3 = finalProductionRate * m_noiseAccumulation / 100;
-                if (num3 != 0)
+                int num5 = finalProductionRate * m_noiseAccumulation / 100;
+                if (num5 != 0)
                 {
-                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, num3, buildingData.m_position, m_noiseRadius);
+                    Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, num5, buildingData.m_position, m_noiseRadius);
                 }
             }
             base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
@@ -954,7 +1004,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 return;
             }
             // remove old transfer reason
-            if(data.m_seniors < 200)  // normal transfer manager
+            if (data.m_seniors < 200)  // normal transfer manager
             {
                 TransferManager.TransferReason seniors = (TransferManager.TransferReason)data.m_seniors;
                 if (material != seniors)
@@ -970,9 +1020,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else  // extended transfer manager
             {
-                if(data.m_seniors != 255) // not none
+                if (data.m_seniors != 255) // not none
                 {
-                    var material_byte =  data.m_seniors - 200;
+                    var material_byte = data.m_seniors - 200;
                     ExtendedTransferManager.TransferReason extended = (ExtendedTransferManager.TransferReason)material_byte;
                     if (extended != ExtendedTransferManager.TransferReason.None)
                     {
@@ -1012,11 +1062,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 return;
             }
             // remove old transfer reason
-            if(data.m_seniors >= 200)  // extended transfer manager
+            if (data.m_seniors >= 200)  // extended transfer manager
             {
-                if(data.m_seniors != 255) // not none
+                if (data.m_seniors != 255) // not none
                 {
-                    var material_byte =  data.m_seniors - 200;
+                    var material_byte = data.m_seniors - 200;
                     ExtendedTransferManager.TransferReason extended = (ExtendedTransferManager.TransferReason)material_byte;
                     if (material != extended)
                     {
