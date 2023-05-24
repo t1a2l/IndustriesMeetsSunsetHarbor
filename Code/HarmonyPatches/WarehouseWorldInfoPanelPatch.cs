@@ -106,35 +106,33 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 TransferManager.TransferReason[] transferReasons = m_transferReasons;
                 ExtendedTransferManager.TransferReason[] extendedTransferReasons2 = m_extendedTransferReasons;
                 var material_byte = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-                if(material_byte != 255)
+                if(material_byte < 200 || material_byte == 255)
                 {
-                    if(material_byte < 200)
+                    foreach (TransferManager.TransferReason transferReason in transferReasons)
                     {
-                        foreach (TransferManager.TransferReason transferReason in transferReasons)
+                        if ((byte)transferReason == material_byte)
                         {
-                            if ((byte)transferReason == material_byte)
-                            {
-                                ___m_dropdownResource.selectedIndex = num;
-                                break;
-                            }
-                            num++;
+                            ___m_dropdownResource.selectedIndex = num;
+                            break;
                         }
-                    }
-                    if(material_byte >= 200)
-                    {
-                        num = 16;
-                        byte extended_material_byte = (byte)(material_byte - 200);
-                        foreach (ExtendedTransferManager.TransferReason extendedTransferReason in extendedTransferReasons2)
-                        {
-                            if ((byte)extendedTransferReason == extended_material_byte)
-                            {
-                                ___m_dropdownResource.selectedIndex = num;
-                                break;
-                            }
-                            num++;
-                        }
+                        num++;
                     }
                 }
+                else if(material_byte >= 200)
+                {
+                    num = 16;
+                    byte extended_material_byte = (byte)(material_byte - 200);
+                    foreach (ExtendedTransferManager.TransferReason extendedTransferReason in extendedTransferReasons2)
+                    {
+                        if ((byte)extendedTransferReason == extended_material_byte)
+                        {
+                            ___m_dropdownResource.selectedIndex = num;
+                            break;
+                        }
+                        num++;
+                    }
+                }
+                
             }
             var warehouseMode = (int)typeof(WarehouseWorldInfoPanel).GetProperty("warehouseMode", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance, null);
             ___m_dropdownMode.selectedIndex = warehouseMode;
@@ -205,7 +203,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             else
             {
                 ___m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)actualTransferReason);
-                ___m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
+                ___m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", ((TransferManager.TransferReason)actualTransferReason).ToString());
                 ___m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
                 ___m_resourceDescription.isVisible = transferReason != 255;
                 ___m_resourceDescription.text = GenerateResourceDescription((TransferManager.TransferReason)transferReason, isForWarehousePanel: true);
