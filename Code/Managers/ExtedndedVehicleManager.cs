@@ -60,7 +60,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        public static bool CreateVehicle(out ushort vehicle, ref Randomizer r, VehicleInfo info, Vector3 position, ExtendedTransferManager.TransferReason type, bool transferToSource, bool transferToTarget)
+        public static bool CreateVehicle(out ushort vehicle, ref Randomizer r, VehicleInfo info, Vector3 position, byte type, bool transferToSource, bool transferToTarget)
         {
             VehicleManager instance = Singleton<VehicleManager>.instance;
             if (instance.m_vehicles.CreateItem(out var item, ref r))
@@ -88,7 +88,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 instance.m_vehicles.m_buffer[vehicle].m_targetPos3 = Vector4.zero;
                 instance.m_vehicles.m_buffer[vehicle].m_sourceBuilding = 0;
                 instance.m_vehicles.m_buffer[vehicle].m_targetBuilding = 0;
-                instance.m_vehicles.m_buffer[vehicle].m_transferType = (byte)type;
+                instance.m_vehicles.m_buffer[vehicle].m_transferType = type;
                 instance.m_vehicles.m_buffer[vehicle].m_transferSize = 0;
                 instance.m_vehicles.m_buffer[vehicle].m_waitCounter = 0;
                 instance.m_vehicles.m_buffer[vehicle].m_blockCounter = 0;

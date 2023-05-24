@@ -69,7 +69,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
                         }
                     }
-                    if (IndustryBuildingAI.ResourceToInfoMode((TransferManager.TransferReason)data.m_transferType) == subInfoMode)
+                    var transferType = data.m_transferType;
+                    if (data.m_transferType >= 200)
+                    {
+                        transferType = (byte)(data.m_transferType - 200);
+                    }
+                    if (IndustryBuildingManager.ResourceToInfoMode(transferType) == subInfoMode)
                     {
                         return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
                     }
@@ -514,7 +519,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         void IExtendedVehicleAI.ExtendedStartTransfer(ushort vehicleID, ref Vehicle data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
-            if (material == (ExtendedTransferManager.TransferReason)data.m_transferType)
+            var transferType = data.m_transferType;
+            if (data.m_transferType >= 200)
+            {
+                transferType = (byte)(data.m_transferType - 200);
+            }
+            if (material == (ExtendedTransferManager.TransferReason)transferType)
             {
                 if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
                 {
@@ -840,8 +850,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             bool vehicle_created;
             if (vehicleData.m_transferType >= 200)
             {
-                byte transferType = (byte)(vehicleData.m_transferType - 200);
-                vehicle_created = ExtedndedVehicleManager.CreateVehicle(out vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, vector, (ExtendedTransferManager.TransferReason)transferType, transferToSource: false, transferToTarget: true);
+                vehicle_created = ExtedndedVehicleManager.CreateVehicle(out vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, vector, vehicleData.m_transferType, transferToSource: false, transferToTarget: true);
             }
             else
             {

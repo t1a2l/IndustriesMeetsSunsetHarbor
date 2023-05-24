@@ -1196,7 +1196,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (vehicleInfo != null)
             {
                 Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                if (ExtedndedVehicleManager.CreateVehicle(out ushort vehicleId, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, material, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
+                if (ExtedndedVehicleManager.CreateVehicle(out ushort vehicleId, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, (byte)material, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
                 {
                     restaurantDeliveryVehicleAI.SetSource(vehicleId, ref vehicles.m_buffer[(int)vehicleId], buildingID);
                     delivery_vehicles.Add(vehicleId);

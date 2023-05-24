@@ -395,7 +395,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (transferVehicleService != null)
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                    if (ExtedndedVehicleManager.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, material, false, true) && transferVehicleService.m_vehicleAI is ExtendedCargoTruckAI cargoTruckAI)
+                    byte transferType = (byte)(material + 200);
+                    if (ExtedndedVehicleManager.CreateVehicle(out ushort num, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, transferType, false, true) && transferVehicleService.m_vehicleAI is ExtendedCargoTruckAI cargoTruckAI)
                     {
                         vehicles.m_buffer[(int)num].m_gateIndex = (byte)m_variationGroupID;
                         transferVehicleService.m_vehicleAI.SetSource(num, ref vehicles.m_buffer[(int)num], buildingID);

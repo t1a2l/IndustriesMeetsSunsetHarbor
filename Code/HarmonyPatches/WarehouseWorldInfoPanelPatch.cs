@@ -184,20 +184,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
             byte transferReason = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
             byte actualTransferReason = extendedWarehouseAI.GetActualTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-
-            if (actualTransferReason != 255 && actualTransferReason < 200)
-            {
-                ___m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)actualTransferReason);
-                ___m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
-                ___m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
-                ___m_resourceDescription.isVisible = transferReason != 255;
-                ___m_resourceDescription.text = GenerateResourceDescription((TransferManager.TransferReason)transferReason, isForWarehousePanel: true);
-                ___m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName((TransferManager.TransferReason)actualTransferReason);
-                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, (TransferManager.TransferReason)actualTransferReason));
-                ___m_buffer.tooltip = text;
-                ___m_capacityLabel.text = text;
-            }
-            else if (actualTransferReason != 255 && actualTransferReason >= 200)
+            if (actualTransferReason != 255 && actualTransferReason >= 200)
             {
                 byte actual_material_byte = (byte)(actualTransferReason - 200);
                 byte material_byte = (byte)(transferReason - 200);
@@ -212,6 +199,18 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)num);
                 var formatResourceWithUnit = FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                ___m_buffer.tooltip = text;
+                ___m_capacityLabel.text = text;
+            }
+            else
+            {
+                ___m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)actualTransferReason);
+                ___m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
+                ___m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
+                ___m_resourceDescription.isVisible = transferReason != 255;
+                ___m_resourceDescription.text = GenerateResourceDescription((TransferManager.TransferReason)transferReason, isForWarehousePanel: true);
+                ___m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName((TransferManager.TransferReason)actualTransferReason);
+                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, (TransferManager.TransferReason)actualTransferReason));
                 ___m_buffer.tooltip = text;
                 ___m_capacityLabel.text = text;
             }
