@@ -151,6 +151,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                case InfoManager.InfoMode.Transport:
+                    if (m_subStations > 0)
+                    {
+                        for (ushort subBuilding = data.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
+                        {
+                            BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
+                            if (info != null)
+                            {
+                                ExtendedWarehouseStationAI extendedWarehouseStationAI = info.m_buildingAI as ExtendedWarehouseStationAI;
+                                if (extendedWarehouseStationAI != null)
+                                {
+                                    return extendedWarehouseStationAI.GetColor(subBuilding, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding], infoMode, subInfoMode);
+                                }
+                            }
+                        }
+                    }
+                    return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
                 default:
                     return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
             }
@@ -195,7 +212,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
+                CalculateGuestVehiclesExtended(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                 int num = data.m_customBuffer1 * 100;
                 return StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", base.GetDebugString(buildingID, ref data), (ExtendedTransferManager.TransferReason)material_byte, num, cargo);
             }
@@ -249,6 +266,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 data.m_problems = Notification.AddProblems(data.m_problems, Notification.Problem1.ResourceNotSelected);
             }
+            CountStations();
         }
 
         public override void BuildingLoaded(ushort buildingID, ref Building data, uint version)
@@ -256,6 +274,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             base.BuildingLoaded(buildingID, ref data, version);
             int workCount = m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
             EnsureCitizenUnits(buildingID, ref data, 0, workCount, 0, 0);
+            CountStations();
         }
 
         public override void ReleaseBuilding(ushort buildingID, ref Building data)
@@ -628,7 +647,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             for (ushort subBuilding = buildingData.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
                             {
                                 BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
-                                if (info != null && info.m_buildingAI is WarehouseStationAI)
+                                if (info != null && info.m_buildingAI is ExtendedWarehouseStationAI)
                                 {
                                     if (num4 <= 5)
                                     {
@@ -719,10 +738,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                     if (actualTransferReason != transferReason && buildingData.m_customBuffer1 == 0)
-		    {
-			buildingData.m_adults = buildingData.m_seniors;
-			SetContentFlags(buildingID, ref buildingData, (TransferManager.TransferReason)transferReason);
-		    }
+                    {
+                        buildingData.m_adults = buildingData.m_seniors;
+                        SetContentFlags(buildingID, ref buildingData, (TransferManager.TransferReason)transferReason);
+                    }
                 }
                 else if (actualTransferReason != 255 && actualTransferReason >= 200)
                 {
@@ -746,7 +765,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int cargo2 = 0;
                     int capacity2 = 0;
                     int outside2 = 0;
-                    ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count2, ref cargo2, ref capacity2, ref outside2);
+                    CalculateGuestVehiclesExtended(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count2, ref cargo2, ref capacity2, ref outside2);
                     buildingData.m_tempImport = (byte)Mathf.Clamp(outside2, buildingData.m_tempImport, 255);
                     if (b != 0)
                     {
@@ -761,7 +780,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             for (ushort subBuilding = buildingData.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
                             {
                                 BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
-                                if (info != null && info.m_buildingAI is WarehouseStationAI)
+                                if (info != null && info.m_buildingAI is ExtendedWarehouseStationAI)
                                 {
                                     if (num4 <= 5)
                                     {
@@ -821,10 +840,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                     if (material_byte != material_byte2 && buildingData.m_customBuffer1 == 0)
-		    {
-			buildingData.m_adults = buildingData.m_seniors;
-			SetExtendedContentFlags(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte2);
-		    }
+                    {
+                        buildingData.m_adults = buildingData.m_seniors;
+                        SetExtendedContentFlags(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte2);
+                    }
                 }
                 int num5 = finalProductionRate * m_noiseAccumulation / 100;
                 if (num5 != 0)
@@ -833,6 +852,48 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
             base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+        }
+
+        public override void CalculateGuestVehicles(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside)
+        {
+            base.CalculateGuestVehicles(buildingID, ref data, material, ref count, ref cargo, ref capacity, ref outside);
+            if (m_subStations <= 0)
+            {
+                return;
+            }
+            for (ushort subBuilding = data.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
+            {
+                BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
+                if (info != null)
+                {
+                    ExtendedWarehouseStationAI extendedWarehouseStationAI = info.m_buildingAI as ExtendedWarehouseStationAI;
+                    if (extendedWarehouseStationAI != null)
+                    {
+                        extendedWarehouseStationAI.CalculateGuestVehicles(subBuilding, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding], material, ref count, ref cargo, ref capacity, ref outside);
+                    }
+                }
+            }
+        }
+
+        public void CalculateGuestVehiclesExtended(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside)
+        {
+            ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material, ref count, ref cargo, ref capacity, ref outside);
+            if (m_subStations <= 0)
+            {
+                return;
+            }
+            for (ushort subBuilding = data.m_subBuilding; subBuilding != 0; subBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].m_subBuilding)
+            {
+                BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding].Info;
+                if (info != null)
+                {
+                    ExtendedWarehouseStationAI extendedWarehouseStationAI = info.m_buildingAI as ExtendedWarehouseStationAI;
+                    if (extendedWarehouseStationAI != null)
+                    {
+                        ExtedndedVehicleManager.CalculateGuestVehicles(subBuilding, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[subBuilding], material, ref count, ref cargo, ref capacity, ref outside);
+                    }
+                }
+            }
         }
 
         protected override bool CanEvacuate()
@@ -1357,6 +1418,27 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override bool RequireRoadAccess()
         {
             return true;
+        }
+
+        private void CountStations()
+        {
+            if (m_subStations != -1)
+            {
+                return;
+            }
+            m_subStations = 0;
+            if (m_info.m_subBuildings == null)
+            {
+                return;
+            }
+            for (int i = 0; i < m_info.m_subBuildings.Length; i++)
+            {
+                BuildingInfo buildingInfo = m_info.m_subBuildings[i].m_buildingInfo;
+                if (buildingInfo != null && buildingInfo.m_buildingAI is ExtendedWarehouseStationAI)
+                {
+                    m_subStations++;
+                }
+            }
         }
     }
 }

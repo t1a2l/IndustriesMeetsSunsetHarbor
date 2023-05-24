@@ -796,7 +796,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     return num;
                 }
-                if (info.m_buildingAI is WarehouseStationAI)
+                if (info.m_buildingAI is ExtendedWarehouseStationAI)
                 {
                     return num;
                 }
