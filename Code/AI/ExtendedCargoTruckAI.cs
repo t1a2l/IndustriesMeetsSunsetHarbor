@@ -116,17 +116,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         if ((data.m_flags & Vehicle.Flags.Exporting) != 0 || (flags & Building.Flags.IncomingOutgoing) != 0)
                         {
                             target = InstanceID.Empty;
-                            return ColossalFramework.Globalization.Locale.Get("VEHICLE_STATUS_CARGOTRUCK_EXPORT", transferReason.ToString());
+                            return "Exporting " +  transferReason.ToString();
                         }
                         if ((data.m_flags & Vehicle.Flags.Importing) != 0)
                         {
                             target = InstanceID.Empty;
                             target.Building = targetBuilding;
-                            return ColossalFramework.Globalization.Locale.Get("VEHICLE_STATUS_CARGOTRUCK_IMPORT", transferReason.ToString());
+                            return "Importing " +  transferReason.ToString() + " to";
                         }
                         target = InstanceID.Empty;
                         target.Building = targetBuilding;
-                        return ColossalFramework.Globalization.Locale.Get("VEHICLE_STATUS_CARGOTRUCK_DELIVER", transferReason.ToString());
+                        return "Delivering " +  transferReason.ToString() + " to";
                     }
                     else
                     {
