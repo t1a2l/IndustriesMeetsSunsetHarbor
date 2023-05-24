@@ -297,14 +297,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_generatedInfo.text = newUniqueFactoryAI.GetLocalizedStats(buildingId, ref building);
             long inputs_expenses = 0;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource1) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource2) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate3 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource3) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate4 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(newUniqueFactoryAI.m_inputResource4) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate5 * 16 / 100;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate6 * 16 / 100;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate7 * 16 / 100;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate8 * 16 / 100;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate1 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource1) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate2 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource2) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate3 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource3) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate4 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource4) / 10000;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate5 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource5) / 10000;;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate6 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource6) / 10000;;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate7 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource7) / 10000;;
+            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate8 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource8) / 10000;;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             int num9 = building.m_education3 * newUniqueFactoryAI.m_outputRate * 16 / 100;
             m_income.text = num9.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
