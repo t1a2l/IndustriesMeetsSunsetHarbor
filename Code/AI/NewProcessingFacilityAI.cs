@@ -3,9 +3,7 @@ using ColossalFramework;
 using ColossalFramework.DataBinding;
 using UnityEngine;
 using MoreTransferReasons;
-using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
-using ColossalFramework.Math;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {

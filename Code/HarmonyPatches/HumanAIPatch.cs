@@ -1,7 +1,6 @@
 using ColossalFramework;
 using HarmonyLib;
 using MoreTransferReasons;
-using IndustriesMeetsSunsetHarbor.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -124,7 +123,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             return 2;
         }
-
 
     }
 }

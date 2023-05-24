@@ -4,7 +4,7 @@ using MoreTransferReasons;
 using UnityEngine;
 using ColossalFramework.Math;
 
-namespace IndustriesMeetsSunsetHarbor.Utils
+namespace IndustriesMeetsSunsetHarbor.Managers
 {
     public static class ExtedndedVehicleManager
     {

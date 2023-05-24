@@ -5,7 +5,6 @@ using static Notification;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
-
     [HarmonyPatch(typeof(Notification))]
     public static class NotificationPatch
     {
@@ -92,6 +91,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             return false;
         }
+
     }
 
 }

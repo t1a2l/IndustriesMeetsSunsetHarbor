@@ -1,7 +1,7 @@
 using MoreTransferReasons;
 using UnityEngine;
 using ColossalFramework;
-using IndustriesMeetsSunsetHarbor.Utils;
+using IndustriesMeetsSunsetHarbor.Managers;
 using ColossalFramework.Math;
 using System;
 using ColossalFramework.DataBinding;
