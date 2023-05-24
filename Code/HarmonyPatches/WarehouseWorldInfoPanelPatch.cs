@@ -16,6 +16,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(WarehouseWorldInfoPanel))]
     public static class WarehouseWorldInfoPanelPatch
     {
+        private enum WarehouseMode
+	{
+	    Balanced,
+	    Import,
+	    Export
+	}
+
+        
+
         private delegate void BuildingWorldInfoPanelOnSetTargetDelegate(BuildingWorldInfoPanel instance);
         private static BuildingWorldInfoPanelOnSetTargetDelegate BaseOnSetTarget = AccessTools.MethodDelegate<BuildingWorldInfoPanelOnSetTargetDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("OnSetTarget", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
@@ -72,7 +81,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool RefreshDropdownLists(WarehouseWorldInfoPanel __instance, ref UIDropDown ___m_dropdownResource, ref UIDropDown ___m_dropdownMode)
         {
-            var m_warehouseModes = (int[])typeof(WarehouseWorldInfoPanel).GetField("m_warehouseModes", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             string[] array = new string[m_transferReasons.Length + m_extendedTransferReasons.Length];
             for (int i = 0; i < m_transferReasons.Length; i++)
             {
@@ -83,10 +91,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 string text = (array[j] = m_extendedTransferReasons[j - m_transferReasons.Length].ToString());
             }
             ___m_dropdownResource.items = array;
+            WarehouseMode[] m_warehouseModes = new WarehouseMode[3]
+	    {
+	        WarehouseMode.Balanced,
+	        WarehouseMode.Import,
+	        WarehouseMode.Export
+	    };
             array = new string[m_warehouseModes.Length];
             for (int k = 0; k < m_warehouseModes.Length; k++)
             {
-                string text2 = (array[k] = m_warehouseModes[k].ToString());
+                string text2 = (array[k] = Locale.Get("WAREHOUSEPANEL_MODE", m_warehouseModes[k].ToString()));
             }
             ___m_dropdownMode.items = array;
             return false;
@@ -211,6 +225,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
                 ___m_resourceDescription.isVisible = transferReason != 255;
                 ___m_resourceDescription.text = GenerateResourceDescription((TransferManager.TransferReason)transferReason, isForWarehousePanel: true);
+                ___m_resourceSprite.atlas = info.m_Atlas;
                 ___m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName((TransferManager.TransferReason)actualTransferReason);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, (TransferManager.TransferReason)actualTransferReason));
                 ___m_buffer.tooltip = text;
