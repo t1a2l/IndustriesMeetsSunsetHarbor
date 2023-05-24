@@ -141,7 +141,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "UpdateBindings")]
         [HarmonyPrefix]
-        public static bool UpdateBindings(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UILabel ___m_Type, ref UILabel ___m_Status, ref UILabel ___m_Upkeep, ref UISprite ___m_Thumbnail, ref UILabel ___m_BuildingDesc, ref UIButton ___m_RebuildButton, ref UIPanel ___m_ActionPanel, ref UIProgressBar ___m_resourceProgressBar, ref UILabel ___m_resourceLabel, ref UIPanel ___m_emptyingOldResource, ref UILabel ___m_resourceDescription, ref UISprite ___m_resourceSprite, ref UIPanel ___m_buffer, ref UILabel ___m_capacityLabel, ref UILabel ___m_Info, ref UILabel ___m_OverWorkSituation, ref UILabel ___m_UneducatedPlaces, ref UILabel ___m_EducatedPlaces, ref UILabel ___m_WellEducatedPlaces, ref UILabel ___m_HighlyEducatedPlaces, ref UILabel ___m_UneducatedWorkers, ref UILabel ___m_EducatedWorkers, ref UILabel ___m_WellEducatedWorkers, ref UILabel ___m_HighlyEducatedWorkers, ref UILabel ___m_JobsAvailLegend, ref UIRadialChart ___m_WorkPlacesEducationChart, ref UIRadialChart ___m_WorkersEducationChart, ref UILabel ___m_workersInfoLabel)
+        public static bool UpdateBindings(WarehouseWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UILabel ___m_Type, ref UILabel ___m_Status, ref UILabel ___m_Upkeep, ref UISprite ___m_Thumbnail, ref UILabel ___m_BuildingDesc, ref UIButton ___m_RebuildButton, ref UIPanel ___m_ActionPanel, ref UIProgressBar ___m_resourceProgressBar, ref UILabel ___m_resourceLabel, ref UIPanel ___m_emptyingOldResource, ref UILabel ___m_resourceDescription, ref UISprite ___m_resourceSprite, ref UIPanel ___m_buffer, ref UILabel ___m_capacityLabel, ref UILabel ___m_Info, ref UILabel ___m_OverWorkSituation, ref UILabel ___m_UneducatedPlaces, ref UILabel ___m_EducatedPlaces, ref UILabel ___m_WellEducatedPlaces, ref UILabel ___m_HighlyEducatedPlaces, ref UILabel ___m_UneducatedWorkers, ref UILabel ___m_EducatedWorkers, ref UILabel ___m_WellEducatedWorkers, ref UILabel ___m_HighlyEducatedWorkers, ref UILabel ___m_JobsAvailLegend, ref UIRadialChart ___m_WorkPlacesEducationChart, ref UIRadialChart ___m_WorkersEducationChart, ref UILabel ___m_workersInfoLabel, ref UITextField ___m_NameField)
         {
             BaseUpdateBindings(__instance);
             ushort building = ___m_InstanceID.Building;
@@ -178,7 +178,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
            
             int num = building2.m_customBuffer1 * 100;
-            ___m_resourceProgressBar.value = num / extendedWarehouseAI.m_storageCapacity;
+            ___m_resourceProgressBar.value = (float)num / (float)extendedWarehouseAI.m_storageCapacity;
 
             byte transferReason = extendedWarehouseAI.GetTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
             byte actualTransferReason = extendedWarehouseAI.GetActualTransferReason(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
@@ -188,6 +188,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 byte material_byte = (byte)(transferReason - 200);
                 ___m_resourceProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
                 var extendedTransferReason = (ExtendedTransferManager.TransferReason)actual_material_byte;
+                if(extendedTransferReason == ExtendedTransferManager.TransferReason.DrinkSupplies && ___m_NameField.text.Contains("Lemonade Factory"))
+                {
+                    ___m_NameField.text = "Drinks Factory";
+                }
                 ___m_resourceLabel.text = extendedTransferReason.ToString();
                 ___m_emptyingOldResource.isVisible = material_byte != actual_material_byte;
                 ___m_resourceDescription.isVisible = material_byte != 255;
