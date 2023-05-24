@@ -602,11 +602,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (data.m_transferType >= 200)
             {
                 byte transferType = (byte)(data.m_transferType - 200);
-                ((IExtendedBuildingAI)info.m_buildingAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)transferType, ref amountDelta);
+                ((IExtendedBuildingAI)info.m_buildingAI).ExtendedModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[data.m_targetBuilding], (ExtendedTransferManager.TransferReason)transferType, ref amountDelta);
             }
             else
             {
-                info.m_buildingAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref amountDelta);
+                info.m_buildingAI.ModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[data.m_targetBuilding], (TransferManager.TransferReason)data.m_transferType, ref amountDelta);
             }
             if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0)
             {
