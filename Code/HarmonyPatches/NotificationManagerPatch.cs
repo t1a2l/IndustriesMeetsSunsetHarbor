@@ -10,25 +10,24 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(NotificationManager))]
     public static class NotificationManagerPatch
     {
+        public static readonly int NotificationArrayLength = 69;
+
 
         private delegate void SimulationManagerInitializePropertiesBaseDelegate(SimulationManagerBase<NotificationManager, NotificationProperties> __instance, NotificationProperties properties);
         private static readonly SimulationManagerInitializePropertiesBaseDelegate InitializePropertiesBase = AccessTools.MethodDelegate<SimulationManagerInitializePropertiesBaseDelegate>(typeof(SimulationManagerBase<NotificationManager, NotificationProperties>).GetMethod("InitializeProperties", BindingFlags.Instance | BindingFlags.Public), null, false);
 
-        [HarmonyPatch(typeof(NotificationManager), "PopulateGroupData")]
+        [HarmonyPatch(typeof(NotificationManager), "Awake")]
         [HarmonyPostfix]
-        public static void Awake(NotificationManager __instance)
+        public static void Awake(NotificationManager __instance, ref NotificationManager.GroupData[] ___m_groupData2)
         {
             int num = 25;
-            __instance.m_groupData = new NotificationManager.GroupData[num * num * 69];
-            var m_groupData2 = new NotificationManager.GroupData[num * num * 69];
-            typeof(NotificationManager).GetField("m_groupData2", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_groupData2);
-
+            __instance.m_groupData = new NotificationManager.GroupData[num * num * NotificationArrayLength];
+            ___m_groupData2 = new NotificationManager.GroupData[num * num * NotificationArrayLength];
         }
-
 
         [HarmonyPatch(typeof(NotificationManager), "InitializeProperties")]
         [HarmonyPrefix]
-        public static bool InitializeProperties(NotificationManager __instance, NotificationProperties properties)
+        public static bool InitializeProperties(NotificationManager __instance, NotificationProperties properties, ref CameraController ___m_cameraController)
         {
             InitializePropertiesBase(__instance, properties);
             Notification.ProblemStruct new_problemStruct = new();
@@ -37,7 +36,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             Notification.ProblemStruct.All.AddItem(new_problemStruct);
             Notification.ProblemStruct all = Notification.ProblemStruct.All;
             var DeliveryNotificationAtlas = TextureUtils.GetAtlas("DeliveryNotificationAtlas");
-            for (int i = 0; i < 69; i++)
+            for (int i = 0; i < NotificationArrayLength; i++)
             {
                 Notification.ProblemStruct problemStruct = all[i];
                 if(i == 68)
@@ -114,62 +113,53 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             GameObject gameObject = GameObject.FindGameObjectWithTag("MainCamera");
             if (gameObject != null)
             {
-                typeof(NotificationManager).GetField("m_cameraController", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, gameObject.GetComponent<CameraController>());
+                ___m_cameraController = gameObject.GetComponent<CameraController>();
             }
             return false;
         }
 
         [HarmonyPatch(typeof(NotificationManager), "EndRenderingImpl")]
         [HarmonyPrefix]
-        public static bool EndRenderingImpl(NotificationManager __instance, RenderManager.CameraInfo cameraInfo)
+        public static bool EndRenderingImpl(NotificationManager __instance, RenderManager.CameraInfo cameraInfo, ref NotificationManager.GroupData[] ___m_groupData2, ref byte[] ___m_groupDataCount, ref FastList<NotificationEvent> ___m_events, ref CameraController ___m_cameraController)
         {
             FastList<RenderGroup> renderedGroups = Singleton<RenderManager>.instance.m_renderedGroups;
-            var m_groupData2 = (NotificationManager.GroupData[])typeof(NotificationManager).GetField("m_groupData2", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_groupDataCount = (byte[])typeof(NotificationManager).GetField("m_groupDataCount", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
             for (int i = 0; i < renderedGroups.m_size; i++)
             {
                 RenderGroup renderGroup = renderedGroups.m_buffer[i];
-                if ((renderGroup.m_layersRendered & (renderGroup.m_instanceMask = 0) & (1 << __instance.m_notificationLayer)) != 0)
+                if ((renderGroup.m_layersRendered & ~renderGroup.m_instanceMask & (1 << __instance.m_notificationLayer)) == 0)
+		{
+			continue;
+		}
+                int num = 25;
+                int num2 = 45 - num >> 1;
+                int num3 = renderGroup.m_x - num2;
+                int num4 = renderGroup.m_z - num2;
+                if (num3 >= 0 && num4 >= 0 && num3 < num && num4 < num)
                 {
-                    int num = 25;
-                    int num2 = 45 - num >> 1;
-                    int num3 = renderGroup.m_x - num2;
-                    int num4 = renderGroup.m_z - num2;
-                    if (num3 >= 0 && num4 >= 0 && num3 < num && num4 < num)
+                    int num5 = num4 * num + num3;
+                    int num6 = (int)___m_groupDataCount[num5];
+                    num5 *= NotificationArrayLength;
+                    for (int j = 0; j < num6; j++)
                     {
-                        int num5 = num4 * num + num3;
-                        int num6 = (int)m_groupDataCount[num5];
-                        num5 *= 69;
-                        for (int j = 0; j < num6; j++)
+                        NotificationManager.GroupData groupData = ___m_groupData2[num5 + j];
+                        if (groupData.m_problems.IsNotNone)
                         {
-                            NotificationManager.GroupData groupData = m_groupData2[num5 + j];
-                            if (groupData.m_problems.IsNotNone)
-                            {
-                                Vector3 vector;
-                                vector.x = (groupData.m_minPos.x + groupData.m_maxPos.x) * 0.5f;
-                                vector.y = groupData.m_maxPos.y;
-                                vector.z = (groupData.m_minPos.z + groupData.m_maxPos.z) * 0.5f;
-                                Notification.RenderInstance(cameraInfo, groupData.m_problems, vector, groupData.m_size);
-                            }
+                            Vector3 vector;
+                            vector.x = (groupData.m_minPos.x + groupData.m_maxPos.x) * 0.5f;
+                            vector.y = groupData.m_maxPos.y;
+                            vector.z = (groupData.m_minPos.z + groupData.m_maxPos.z) * 0.5f;
+                            Notification.RenderInstance(cameraInfo, groupData.m_problems, vector, groupData.m_size);
                         }
                     }
                 }
             }
-            typeof(NotificationManager).GetField("m_groupData2", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_groupData2);
-            typeof(NotificationManager).GetField("m_groupDataCount", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_groupDataCount);
-
-
-            var m_events = (FastList<NotificationEvent>)typeof(NotificationManager).GetField("m_events", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-            var m_cameraController = (CameraController)typeof(NotificationManager).GetField("m_cameraController", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-
-
-            for (int k = 0; k < m_events.m_size; k++)
+            for (int k = 0; k < ___m_events.m_size; k++)
             {
-                m_events.m_buffer[k].RenderInstance(cameraInfo);
+                ___m_events.m_buffer[k].RenderInstance(cameraInfo);
             }
-            if (m_cameraController != null)
+            if (___m_cameraController != null)
             {
-                InstanceID target = m_cameraController.GetTarget();
+                InstanceID target = ___m_cameraController.GetTarget();
                 if (!target.IsEmpty && target.Type != InstanceType.Disaster && target != WorldInfoPanel.GetCurrentInstanceID() && InstanceManager.GetPosition(target, out Vector3 vector2, out Quaternion quaternion, out Vector3 vector3))
                 {
                     vector2.y += vector3.y * 0.85f + 2f;
@@ -181,7 +171,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(NotificationManager), "CalculateGroupData")]
         [HarmonyPrefix]
-        public static bool CalculateGroupData(NotificationManager __instance, int groupX, int groupZ, int layer, ref int vertexCount, ref int triangleCount, ref int objectCount, ref RenderGroup.VertexArrays vertexArrays)
+        public static bool CalculateGroupData(NotificationManager __instance, int groupX, int groupZ, int layer, ref int vertexCount, ref int triangleCount, ref int objectCount, ref RenderGroup.VertexArrays vertexArrays, ref bool __result)
         {
             if (layer == __instance.m_notificationLayer)
             {
@@ -191,8 +181,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 groupZ -= num2;
                 if (groupX >= 0 && groupZ >= 0 && groupX < num && groupZ < num)
                 {
-                    int num3 = (groupZ * num + groupX) * 69;
-                    for (int i = 0; i < 69; i++)
+                    int num3 = (groupZ * num + groupX) * NotificationArrayLength;
+                    for (int i = 0; i < NotificationArrayLength; i++)
                     {
                         NotificationManager.GroupData groupData;
                         groupData.m_problems = Notification.ProblemStruct.None;
@@ -203,12 +193,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     }
                 }
             }
+            __result = false;
             return false;
         }
 
         [HarmonyPatch(typeof(NotificationManager), "PopulateGroupData")]
         [HarmonyPrefix]
-        public static bool PopulateGroupData(NotificationManager __instance, int groupX, int groupZ, int layer, ref int vertexIndex, ref int triangleIndex, Vector3 groupPosition, RenderGroup.MeshData data, ref Vector3 min, ref Vector3 max, ref float maxRenderDistance, ref float maxInstanceDistance, ref bool requireSurfaceMaps)
+        public static bool PopulateGroupData(NotificationManager __instance, int groupX, int groupZ, int layer, ref int vertexIndex, ref int triangleIndex, Vector3 groupPosition, RenderGroup.MeshData data, ref Vector3 min, ref Vector3 max, ref float maxRenderDistance, ref float maxInstanceDistance, ref bool requireSurfaceMaps, ref NotificationManager.GroupData[] ___m_groupData2, ref byte[] ___m_groupDataCount)
         {
             if (layer == __instance.m_notificationLayer)
             {
@@ -218,9 +209,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 groupZ -= num2;
                 if (groupX >= 0 && groupZ >= 0 && groupX < num && groupZ < num)
                 {
-                    int num3 = (groupZ * num + groupX) * 69;
+                    int num3 = (groupZ * num + groupX) * NotificationArrayLength;
                     int num4 = 0;
-                    for (int i = 0; i < 69; i++)
+                    for (int i = 0; i < NotificationArrayLength; i++)
                     {
                         NotificationManager.GroupData groupData = __instance.m_groupData[num3 + i];
                         if (groupData.m_problems.IsNotNone)
@@ -245,25 +236,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             }
                         }
                     }
-
-                    var m_groupData2 = (NotificationManager.GroupData[])typeof(NotificationManager).GetField("m_groupData2", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-                    var m_groupDataCount = (byte[])typeof(NotificationManager).GetField("m_groupDataCount", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
-
                     for (int k = 0; k < num4; k++)
                     {
                         NotificationManager.GroupData groupData3 = __instance.m_groupData[num3 + k];
                         groupData3.m_size = Mathf.Min(2f, Mathf.Sqrt(groupData3.m_size));
-                        m_groupData2[num3 + k] = groupData3;
+                        ___m_groupData2[num3 + k] = groupData3;
                     }
-                    for (int l = num4; l < 69; l++)
+                    for (int l = num4; l < NotificationArrayLength; l++)
                     {
-                        m_groupData2[num3 + l] = default(NotificationManager.GroupData);
+                        ___m_groupData2[num3 + l] = default;
                     }
-                    m_groupDataCount[groupZ * num + groupX] = (byte)num4;
-
-                    typeof(NotificationManager).GetField("m_groupData2", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_groupData2);
-                    typeof(NotificationManager).GetField("m_groupDataCount", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, m_groupDataCount);
-
+                    ___m_groupDataCount[groupZ * num + groupX] = (byte)num4;
                 }
             }
             return false;

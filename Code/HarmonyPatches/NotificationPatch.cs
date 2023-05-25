@@ -29,8 +29,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 return false;
             }
-            int num3 = (groupZ * num + groupX) * 69;
-            for (int i = 0; i < 69; i++)
+            int num3 = (groupZ * num + groupX) * NotificationManagerPatch.NotificationArrayLength;
+            for (int i = 0; i < NotificationManagerPatch.NotificationArrayLength; i++)
             {
                 ProblemStruct problemStruct = problems[i];
                 if (problemStruct.IsNotNone)
@@ -65,7 +65,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 }
                 else if ((problems & ProblemStruct.Major).IsNotNone)
                 {
-                    num2 = 69;
+                    num2 = NotificationManagerPatch.NotificationArrayLength;
                     vector.x = 0.2f;
                     vector.z = 6f;
                 }
@@ -75,7 +75,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     vector.y = Mathf.Max(0f, 1f - num3 * num3);
                 }
                 num = (int)Time.realtimeSinceStartup % num;
-                for (int i = 0; i < 69; i++)
+                for (int i = 0; i < NotificationManagerPatch.NotificationArrayLength; i++)
                 {
                     if (problems[i].IsNotNone && num-- == 0)
                     {
@@ -85,7 +85,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         bufferedItem.m_distanceSqr = Vector3.SqrMagnitude(position - cameraInfo.m_position);
                         bufferedItem.m_regionIndex = num2 + i;
                         instance.m_bufferedItems.Add(bufferedItem);
-                        return false;
+                        break;
                     }
                 }
             }
