@@ -798,6 +798,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         if (num >= maxLoadSize && (count < num2 || !flag2) && (buildingData.m_flags & Building.Flags.Filling) == 0)
                         {
                             ExtendedTransferManager.Offer offer = default;
+                            if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
+                            {
+                                offer.IsWarehouse = false;
+                            }
+                            else
+                            {
+                                offer.IsWarehouse = true;
+                            }
                             offer.Building = num3;
                             offer.Position = buildingData.m_position;
                             offer.Amount = ((!flag2) ? Mathf.Clamp(num / maxLoadSize, 1, 15) : Mathf.Min(Mathf.Max(1, num / maxLoadSize), num2 - count));
@@ -808,6 +816,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         if (num < m_storageCapacity && (buildingData.m_flags & Building.Flags.Downgrading) == 0)
                         {
                             ExtendedTransferManager.Offer offer2 = default;
+                            if ((buildingData.m_flags & Building.Flags.Filling) != 0)
+                            {
+                                offer2.IsWarehouse = false;
+                            }
+                            else
+                            {
+                                offer2.IsWarehouse = true;
+                            }
                             offer2.Building = num3;
                             offer2.Position = buildingData.m_position;
                             offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
