@@ -432,9 +432,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case TransferManager.TransferReason.ShoppingG:
                 case TransferManager.TransferReason.ShoppingH:
                     {
+                        // citizen eat one meal
                         int m_customBuffer8 = custom_buffers.m_customBuffer8;
-                        amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer8, 0);
-                        m_customBuffer8 += amountDelta;
+                        amountDelta = Mathf.Clamp(amountDelta, 0, m_customBuffer8);
+                        m_customBuffer8 -= amountDelta;
                         custom_buffers.m_customBuffer8 = (ushort)m_customBuffer8;
                         data.m_outgoingProblemTimer = 0;
                         byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
@@ -443,7 +444,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempGoodsSold -= (uint)amountDelta;
                         }
                         int cashCapacity = 4000 * 4;
-                        data.m_cashBuffer = Math.Min(data.m_cashBuffer - amountDelta, cashCapacity);
+                        // take money if citizen eat the meal
+                        if(amountDelta != 0)
+                        {
+                            var customMealPrice = Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
+                            data.m_cashBuffer = Math.Min(data.m_cashBuffer + customMealPrice, cashCapacity);
+                        }
                         return;
                     }
                 case TransferManager.TransferReason.Cash:
@@ -592,7 +598,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
-            int amountDelta = -Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
+            int amountDelta = 1;
             ModifyMaterialBuffer(buildingID, ref data, TransferManager.TransferReason.Shopping, ref amountDelta);
             base.VisitorEnter(buildingID, ref data, citizen);
         }
@@ -938,6 +944,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             CreateDeliveryVehicle(buildingID, buildingData, material);
                         }
+
                     }
                 }
                 var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
