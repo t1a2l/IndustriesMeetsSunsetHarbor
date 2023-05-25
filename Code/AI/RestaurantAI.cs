@@ -6,7 +6,7 @@ using UnityEngine;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using ICities;
-using System.Collections.Generic;
+using System.Collections.Generic; 
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -17,7 +17,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Educated Workers", "Workers", 1)]
         public int m_workPlaceCount1 = 2;
-
+        
         [CustomizableProperty("Well Educated Workers", "Workers", 2)]
         public int m_workPlaceCount2 = 3;
 
@@ -83,7 +83,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Allow delivery")]
         public bool allow_delivery = true;
-
+        
         [NonSerialized]
         private bool m_hasBufferStatusMeshes;
 
@@ -346,7 +346,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     return false;
                 });
-                if(waitingVehicle == 0)
+                // no waiting vehicle and did not exceed number of vehicles
+                if(waitingVehicle == 0 && delivery_vehicles.Count < m_DeliveryVehicleCount)
                 {
                     waitingVehicle = CreateDeliveryVehicle(buildingID, data, material);
                 }
@@ -381,6 +382,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     var deliveryData = RestaurantDeliveriesManager.RestaurantDeliveries.Find(item => item.deliveryVehicleId == waitingVehicle);
                     vehicle.m_flags &= ~Vehicle.Flags.WaitingCargo;
+                    vehicle.m_flags &= ~Vehicle.Flags.WaitingLoading;
                     restaurantDeliveryVehicleAI.SetTarget(waitingVehicle, ref vehicle, deliveryData.buildingId);
                 }
 
@@ -940,7 +942,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                             Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer10);
                         }
-                        if (!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None)
+                        if (!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None && delivery_vehicles.Count < m_DeliveryVehicleCount)
                         {
                             CreateDeliveryVehicle(buildingID, buildingData, material);
                         }

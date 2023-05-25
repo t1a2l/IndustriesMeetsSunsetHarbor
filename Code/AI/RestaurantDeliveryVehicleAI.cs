@@ -58,6 +58,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             base.CreateVehicle(vehicleID, ref data);
             data.m_flags |= Vehicle.Flags.WaitingTarget;
+            data.m_flags |= Vehicle.Flags.WaitingCargo;
+            data.m_flags |= Vehicle.Flags.WaitingLoading;
+	    data.m_flags |= Vehicle.Flags.Stopped;
             Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, 0, vehicleID, 0, 0, 0, m_deliveryPersonCount, 0);
         }
 
@@ -126,7 +129,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 data.m_targetPos1.w = 2f;
                 data.m_targetPos2 = data.m_targetPos1;
                 data.m_targetPos3 = data.m_targetPos1;
-                data.m_flags |= Vehicle.Flags.WaitingCargo;
                 FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[sourceBuilding].AddOwnVehicle(vehicleID, ref data);
             }
