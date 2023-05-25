@@ -943,15 +943,33 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
                 if (custom_buffers.m_customBuffer8 >= m_outputCount / 2 && outgoingTransferReason != TransferManager.TransferReason.None)
                 {
-                    int num60 = buildingData.m_customBuffer1 - aliveVisitorCount * 100;
-                    int num61 = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
-                    if (num60 >= 100 && num61 > 0)
+                    int totalGoods = m_outputCount * 100;
+                    // people that are not visiting the building but have the oppertunity to visit if they want
+                    var citizenWhoCanVisit = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
+                    var d = visitPlaceCount * 500;
+                    int f = Mathf.Max(d, totalGoods * 4);
+                    var g = f;
+                    if(finalProductionRate != 0)
+                    {
+                        g = Mathf.Min(g, f - buildingData.m_customBuffer2);
+                        finalProductionRate = Mathf.Max(0, Mathf.Min(finalProductionRate, (g * 200 + f - 1) / f));
+                        int num11 = (visitPlaceCount * finalProductionRate + 9) / 10;
+                        if (Singleton<SimulationManager>.instance.m_isNightTime)
+		        {
+			        num11 = num11 + 1 >> 1;
+		        }
+                        num11 = Mathf.Max(0, Mathf.Min(num11, g));
+                        buildingData.m_customBuffer2 += (ushort)num11;
+                        finalProductionRate = (num11 + 9) / 10;
+                    }
+                    int num28 = buildingData.m_customBuffer2 - aliveVisitorCount * 100;
+                    if (num28 >= 100 && citizenWhoCanVisit > 0)
                     {
                         TransferManager.TransferOffer offer6 = default;
-                        offer6.Priority = Mathf.Max(1, num60 * 8 / m_outputCount);
+                        offer6.Priority = Mathf.Max(1, num28 * 8 / f);
                         offer6.Building = buildingID;
                         offer6.Position = buildingData.m_position;
-                        offer6.Amount = Mathf.Min(num60 / 100, num61);
+                        offer6.Amount = Mathf.Min(num28 / 100, citizenWhoCanVisit);
                         offer6.Active = true;
                         Singleton<TransferManager>.instance.AddOutgoingOffer(outgoingTransferReason, offer6);
                     }
