@@ -6,7 +6,8 @@ using UnityEngine;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using ICities;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -17,7 +18,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Educated Workers", "Workers", 1)]
         public int m_workPlaceCount1 = 2;
-        
+
         [CustomizableProperty("Well Educated Workers", "Workers", 2)]
         public int m_workPlaceCount2 = 3;
 
@@ -72,6 +73,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Output Meals Count")]
         public int m_outputCount = 50;
 
+        [NonSerialized]
+        public int m_finalProductionRate;
+
         [CustomizableProperty("Input Resource Threshold")]
         public int m_resourceThreshold = 10;
 
@@ -83,11 +87,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Allow delivery")]
         public bool allow_delivery = true;
-        
+
         [NonSerialized]
         private bool m_hasBufferStatusMeshes;
 
-        public List<ushort> delivery_vehicles = default;
+        public VehicleInfo delivery_vehicle;
 
         [CustomizableProperty("Extended Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
@@ -168,13 +172,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             }
                             break;
                         case InfoManager.SubInfoMode.WaterPower:
+                        {
+                            if (m_outputResource != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
                             {
-                                if (m_outputResource != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
-                                {
-                                    return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource];
-                                }
-                                break;
+                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource];
                             }
+                            break;
+                        }
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                 case InfoManager.InfoMode.BuildingLevel:
@@ -202,19 +206,19 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 }
                                 return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                             case InfoManager.SubInfoMode.WaterPower:
+                            {
+                                DistrictManager instance = Singleton<DistrictManager>.instance;
+                                byte district = instance.GetDistrict(data.m_position);
+                                DistrictPolicies.CityPlanning cityPlanningPolicies = instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
+                                DistrictPolicies.Taxation taxationPolicies = instance.m_districts.m_buffer[district].m_taxationPolicies;
+                                int taxRate = GetTaxRate(buildingID, ref data, taxationPolicies);
+                                GetAccumulation(new Randomizer(buildingID), data.m_adults * 100, taxRate, cityPlanningPolicies, taxationPolicies, out var _, out var attractiveness);
+                                if (attractiveness != 0)
                                 {
-                                    DistrictManager instance = Singleton<DistrictManager>.instance;
-                                    byte district = instance.GetDistrict(data.m_position);
-                                    DistrictPolicies.CityPlanning cityPlanningPolicies = instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
-                                    DistrictPolicies.Taxation taxationPolicies = instance.m_districts.m_buffer[district].m_taxationPolicies;
-                                    int taxRate = GetTaxRate(buildingID, ref data, taxationPolicies);
-                                    GetAccumulation(new Randomizer(buildingID), data.m_adults * 100, taxRate, cityPlanningPolicies, taxationPolicies, out var _, out var attractiveness);
-                                    if (attractiveness != 0)
-                                    {
-                                        return CommonBuildingAI.GetAttractivenessColor(attractiveness);
-                                    }
-                                    return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                                    return CommonBuildingAI.GetAttractivenessColor(attractiveness);
                                 }
+                                return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                            }
                             default:
                                 return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                         }
@@ -228,10 +232,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                 case InfoManager.InfoMode.NoisePollution:
-                    {
-                        int noiseAccumulation = m_noiseAccumulation;
-                        return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
-                    }
+                {
+                    int noiseAccumulation = m_noiseAccumulation;
+                    return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
+                }
                 default:
                     return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
             }
@@ -337,55 +341,54 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow || material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium || material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
             {
-                var waitingVehicle = delivery_vehicles.Find(delegate (ushort deliveryVehicle)
-                {
-                    var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
-                    if((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
-                    {
-                        return true;
-                    }
-                    return false;
-                });
-                // no waiting vehicle and did not exceed number of vehicles
-                if(waitingVehicle == 0 && delivery_vehicles.Count < m_DeliveryVehicleCount)
-                {
-                    waitingVehicle = CreateDeliveryVehicle(buildingID, data, material);
-                }
-                if(waitingVehicle == 0)
-                {
-                    return;
-                }
                 uint citizen = offer.Citizen;
                 ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
+                // new citizen order
                 RestaurantDeliveriesManager.RestaurantDeliveries.Add(new RestaurantDeliveriesManager.RestaurantDeliveryData
                 {
-                    deliveryVehicleId = waitingVehicle,
+                    deliveryVehicleId = 0,
                     buildingId = buildingByLocation,
                     citizenId = citizen
                 });
-                ref var vehicle = ref Singleton<VehicleManager>.instance.m_vehicles.m_buffer[waitingVehicle];
-                RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = vehicle.Info.GetAI() as RestaurantDeliveryVehicleAI;
-                // the default transfer size of a created vehicle is 0
-                // so here it takes -1 which is the min value
-                // it then passes the -1 to ModifyMaterialBuffer and remove 1 from resturant meals capacity
-                // and then here again takes that 1 and add it to the transfer size of the vehicle
-                // the delivery vehicle now have 1 extra meal which is 100 goods per citizen
-                int num = -1;
-                BuildingManager instance = Singleton<BuildingManager>.instance;
-                BuildingInfo info = instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding].Info;
-                RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
-                ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(vehicle.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)vehicle.m_sourceBuilding], (ExtendedTransferManager.TransferReason)vehicle.m_transferType, ref num);
-                num = Mathf.Max(0, -num);
-                vehicle.m_transferSize += (ushort)num;
-                // all orders have been collected - drive to the first building
-                if (vehicle.m_transferSize >= restaurantDeliveryVehicleAI.m_deliveryCapacity)
+                // cook meal for this citizen who ordered
+                CookOrderMeal(buildingID);
+                // check if we got to the number of orders to vehicle can carry
+                if (!CheckIfDeliveryOrderInProgress())
                 {
-                    var deliveryData = RestaurantDeliveriesManager.RestaurantDeliveries.Find(item => item.deliveryVehicleId == waitingVehicle);
-                    vehicle.m_flags &= ~Vehicle.Flags.WaitingCargo;
-                    vehicle.m_flags &= ~Vehicle.Flags.WaitingLoading;
-                    restaurantDeliveryVehicleAI.SetTarget(waitingVehicle, ref vehicle, deliveryData.buildingId);
-                }
+                    Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
+		    if (ExtedndedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, delivery_vehicle, data.m_position, (byte)ExtendedTransferManager.TransferReason.Meals, transferToSource: false, transferToTarget: true))
+		    {
+                        // get a list of indexes where vehicle id is 0
+                        var index_list = Enumerable.Range(0, RestaurantDeliveriesManager.RestaurantDeliveries.Count).Where(i => RestaurantDeliveriesManager.RestaurantDeliveries[i].deliveryVehicleId == 0).ToList();
 
+                        var first_delivery = false;
+                        RestaurantDeliveriesManager.RestaurantDeliveryData deliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
+                        {
+                            deliveryVehicleId = 0,
+                            buildingId = 0,
+                            citizenId = 0
+                        };
+                        // assign the new delivery vehicle id to all the orders
+                        foreach(var index in index_list)
+                        {
+                            var item = RestaurantDeliveriesManager.RestaurantDeliveries[index];
+                            item.deliveryVehicleId = vehicle;
+                            RestaurantDeliveriesManager.RestaurantDeliveries[index] = item;
+                            if(!first_delivery)
+                            {
+                                // assign first order to drive to
+                                deliveryData = item;
+                                first_delivery = true;
+                            }
+                        }
+                        if(first_delivery && deliveryData.buildingId != 0)
+                        {
+                            // go to first delivery
+                            delivery_vehicle.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[vehicle], buildingID);
+                            delivery_vehicle.m_vehicleAI.SetTarget(vehicle, ref vehicles.m_buffer[vehicle], deliveryData.buildingId);
+                        }
+		    }
+                }
             }
         }
 
@@ -433,34 +436,34 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case TransferManager.TransferReason.ShoppingF:
                 case TransferManager.TransferReason.ShoppingG:
                 case TransferManager.TransferReason.ShoppingH:
+                {
+                    // citizen eat one meal
+                    int m_customBuffer9 = custom_buffers.m_customBuffer9;
+                    amountDelta = Mathf.Clamp(amountDelta, 0, m_customBuffer9);
+                    m_customBuffer9 -= amountDelta;
+                    custom_buffers.m_customBuffer8 = (ushort)m_customBuffer9;
+                    data.m_outgoingProblemTimer = 0;
+                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone)
                     {
-                        // citizen eat one meal
-                        int m_customBuffer8 = custom_buffers.m_customBuffer8;
-                        amountDelta = Mathf.Clamp(amountDelta, 0, m_customBuffer8);
-                        m_customBuffer8 -= amountDelta;
-                        custom_buffers.m_customBuffer8 = (ushort)m_customBuffer8;
-                        data.m_outgoingProblemTimer = 0;
-                        byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
-                        if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone)
-                        {
-                            Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempGoodsSold -= (uint)amountDelta;
-                        }
-                        int cashCapacity = 4000 * 4;
-                        // take money if citizen eat the meal
-                        if(amountDelta != 0)
-                        {
-                            var customMealPrice = Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
-                            data.m_cashBuffer = Math.Min(data.m_cashBuffer + customMealPrice, cashCapacity);
-                        }
-                        return;
+                        Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempGoodsSold -= (uint)amountDelta;
                     }
+                    int cashCapacity = 4000 * 4;
+                    // take money if citizen eat the meal
+                    if (amountDelta != 0)
+                    {
+                        var customMealPrice = Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
+                        data.m_cashBuffer = Math.Min(data.m_cashBuffer + customMealPrice, cashCapacity);
+                    }
+                    return;
+                }
                 case TransferManager.TransferReason.Cash:
-                    {
-                        int cashBuffer = data.m_cashBuffer;
-                        amountDelta = Mathf.Clamp(amountDelta, -cashBuffer, 0);
-                        data.m_cashBuffer = cashBuffer + amountDelta;
-                        return;
-                    }
+                {
+                    int cashBuffer = data.m_cashBuffer;
+                    amountDelta = Mathf.Clamp(amountDelta, -cashBuffer, 0);
+                    data.m_cashBuffer = cashBuffer + amountDelta;
+                    return;
+                }
                 default:
                     if (material == m_inputResource4)
                     {
@@ -534,7 +537,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh ||
                 material == ExtendedTransferManager.TransferReason.Meals)
             {
-                int m_customBuffer8 = custom_buffers.m_customBuffer8; // 20
+                int m_customBuffer8 = custom_buffers.m_customBuffer8;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer8, m_outputCount - m_customBuffer8);
                 m_customBuffer8 += amountDelta;
                 custom_buffers.m_customBuffer8 = (ushort)m_customBuffer8;
@@ -601,6 +604,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
             int amountDelta = 1;
+            CookCustomerMeal(buildingID);
             ModifyMaterialBuffer(buildingID, ref data, TransferManager.TransferReason.Shopping, ref amountDelta);
             base.VisitorEnter(buildingID, ref data, citizen);
         }
@@ -618,110 +622,54 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer1 == 0)
+                if (custom_buffers.m_customBuffer1 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
             if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer2 == 0)
+                if (custom_buffers.m_customBuffer2 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
             if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer3 == 0)
+                if (custom_buffers.m_customBuffer3 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
             if (m_inputResource4 != TransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer4 == 0)
+                if (custom_buffers.m_customBuffer4 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
             if (m_inputResource5 != TransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer5 == 0)
+                if (custom_buffers.m_customBuffer5 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
             if (m_inputResource6 != TransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer6 == 0)
+                if (custom_buffers.m_customBuffer6 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
             if (m_inputResource7 != TransferManager.TransferReason.None)
             {
-                if(custom_buffers.m_customBuffer7 == 0)
+                if (custom_buffers.m_customBuffer7 == 0)
                 {
                     finalProductionRate = 0;
                 }
             }
-            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
-            {
-                int CustomBuffer1 = custom_buffers.m_customBuffer1;
-                int Input1ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
-                custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
-            }
-            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
-            {
-                int CustomBuffer2 = custom_buffers.m_customBuffer2;
-                int Input2ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
-                custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
-            }
-            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
-            {
-                int CustomBuffer3 = custom_buffers.m_customBuffer3;
-                int Input3ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
-                custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
-            }
-            if (m_inputResource4 != TransferManager.TransferReason.None)
-            {
-                int CustomBuffer4 = custom_buffers.m_customBuffer4;
-                int Input4ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
-                custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
-            }
-            if (m_inputResource5 != TransferManager.TransferReason.None)
-            {
-                int CustomBuffer5 = custom_buffers.m_customBuffer5;
-                int Input5ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
-                custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
-            }
-            if (m_inputResource6 != TransferManager.TransferReason.None)
-            {
-                int CustomBuffer6 = custom_buffers.m_customBuffer6;
-                int Input6ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
-                custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
-            }
-            if (m_inputResource7 != TransferManager.TransferReason.None)
-            {
-                int CustomBuffer7 = custom_buffers.m_customBuffer7;
-                int Input7ProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
-                custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
-            }
-            if (m_outputResource != ExtendedTransferManager.TransferReason.None)
-            {
-                int CustomBuffer8 = custom_buffers.m_customBuffer8;
-                int OutputProductionRate = (finalProductionRate + 99) / 100;
-                CustomBuffer8 = Mathf.Min(m_outputCount, CustomBuffer8 + OutputProductionRate);
-                custom_buffers.m_customBuffer8 = (ushort)CustomBuffer8;
-            }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            m_finalProductionRate = finalProductionRate;
             base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
             int TempOutput = 0;
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
@@ -909,7 +857,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int outside8 = 0;
                     ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count8, ref cargo8, ref capacity8, ref outside8);
                     buildingData.m_tempExport = (byte)Mathf.Clamp(outside8, buildingData.m_tempExport, 255);
-                    if (custom_buffers.m_customBuffer8 >= 20 && count8 < m_DeliveryVehicleCount && allow_delivery)
+                    if (count8 < m_DeliveryVehicleCount && allow_delivery)
                     {
                         var material = ExtendedTransferManager.TransferReason.None;
                         if (quality == 1)
@@ -942,9 +890,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                             Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer10);
                         }
-                        if (!CheckIfDeliveryVehicleWaiting() && material != ExtendedTransferManager.TransferReason.None && delivery_vehicles.Count < m_DeliveryVehicleCount)
+                        if (!CheckIfDeliveryOrderInProgress() && material != ExtendedTransferManager.TransferReason.None)
                         {
-                            CreateDeliveryVehicle(buildingID, buildingData, material);
+                            CreateDeliveryOrder();
                         }
 
                     }
@@ -958,15 +906,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     var d = visitPlaceCount * 500;
                     int f = Mathf.Max(d, totalGoods * 4);
                     var g = f;
-                    if(finalProductionRate != 0)
+                    if (finalProductionRate != 0)
                     {
                         g = Mathf.Min(g, f - buildingData.m_customBuffer2);
                         finalProductionRate = Mathf.Max(0, Mathf.Min(finalProductionRate, (g * 200 + f - 1) / f));
                         int num11 = (visitPlaceCount * finalProductionRate + 9) / 10;
                         if (Singleton<SimulationManager>.instance.m_isNightTime)
-		        {
-			        num11 = num11 + 1 >> 1;
-		        }
+                        {
+                            num11 = num11 + 1 >> 1;
+                        }
                         num11 = Mathf.Max(0, Mathf.Min(num11, g));
                         buildingData.m_customBuffer2 += (ushort)num11;
                         finalProductionRate = (num11 + 9) / 10;
@@ -1102,15 +1050,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int capacity = 0;
                 int outside = 0;
                 var material = m_outputResource;
-                if(quality == 1)
+                if (quality == 1)
                 {
                     material = ExtendedTransferManager.TransferReason.MealsDeliveryLow;
                 }
-                if(quality == 2)
+                if (quality == 2)
                 {
                     material = ExtendedTransferManager.TransferReason.MealsDeliveryMedium;
                 }
-                if(quality == 3)
+                if (quality == 3)
                 {
                     material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                 }
@@ -1218,40 +1166,148 @@ namespace IndustriesMeetsSunsetHarbor.AI
             };
         }
 
-        private bool CheckIfDeliveryVehicleWaiting()
+        private bool CheckIfDeliveryOrderInProgress()
         {
-            if(delivery_vehicles == null)
+            var orders_with_no_vehicle = RestaurantDeliveriesManager.RestaurantDeliveries.FindAll(item => item.deliveryVehicleId == 0);
+            RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
+            if (orders_with_no_vehicle.Count <= restaurantDeliveryVehicleAI.m_deliveryCapacity)
             {
-                delivery_vehicles = new List<ushort>();
-            }
-            else
-            {
-                foreach (var deliveryVehicle in delivery_vehicles)
-                {
-                    var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[deliveryVehicle];
-                    if ((vehicle.m_flags & Vehicle.Flags.WaitingCargo) != 0)
-                    {
-                        return true;
-                    }
-                }
+                return true;
             }
             return false;
         }
 
-        private ushort CreateDeliveryVehicle(ushort buildingID, Building buildingData, ExtendedTransferManager.TransferReason material)
+        private void CreateDeliveryOrder()
         {
             var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.CommercialLow, ItemClass.Level.Level3);
             if (vehicleInfo != null)
             {
-                Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                if (ExtedndedVehicleManager.CreateVehicle(out ushort vehicleId, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, buildingData.m_position, (byte)material, false, true) && vehicleInfo.m_vehicleAI is RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI)
-                {
-                    restaurantDeliveryVehicleAI.SetSource(vehicleId, ref vehicles.m_buffer[(int)vehicleId], buildingID);
-                    delivery_vehicles.Add(vehicleId);
-                    return vehicleId;
-                }
+                delivery_vehicle = vehicleInfo;
             }
-            return 0;
+        }
+
+        private void CookCustomerMeal(ushort buildingID)
+        {
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer1 = custom_buffers.m_customBuffer1;
+                int Input1ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
+                custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
+            }
+            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer2 = custom_buffers.m_customBuffer2;
+                int Input2ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
+                custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
+            }
+            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer3 = custom_buffers.m_customBuffer3;
+                int Input3ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
+                custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
+            }
+            if (m_inputResource4 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer4 = custom_buffers.m_customBuffer4;
+                int Input4ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
+                custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
+            }
+            if (m_inputResource5 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer5 = custom_buffers.m_customBuffer5;
+                int Input5ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
+                custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
+            }
+            if (m_inputResource6 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer6 = custom_buffers.m_customBuffer6;
+                int Input6ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
+                custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
+            }
+            if (m_inputResource7 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer7 = custom_buffers.m_customBuffer7;
+                int Input7ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
+                custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
+            }
+            if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer9 = custom_buffers.m_customBuffer9;
+                int OutputProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer9 = Mathf.Min(m_outputCount, CustomBuffer9 + OutputProductionRate);
+                custom_buffers.m_customBuffer8 = (ushort)CustomBuffer9;
+            }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+        }
+
+        private void CookOrderMeal(ushort buildingID)
+        {
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer1 = custom_buffers.m_customBuffer1;
+                int Input1ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
+                custom_buffers.m_customBuffer1 = (ushort)CustomBuffer1;
+            }
+            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer2 = custom_buffers.m_customBuffer2;
+                int Input2ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
+                custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
+            }
+            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer3 = custom_buffers.m_customBuffer3;
+                int Input3ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
+                custom_buffers.m_customBuffer3 = (ushort)CustomBuffer3;
+            }
+            if (m_inputResource4 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer4 = custom_buffers.m_customBuffer4;
+                int Input4ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
+                custom_buffers.m_customBuffer4 = (ushort)CustomBuffer4;
+            }
+            if (m_inputResource5 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer5 = custom_buffers.m_customBuffer5;
+                int Input5ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
+                custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
+            }
+            if (m_inputResource6 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer6 = custom_buffers.m_customBuffer6;
+                int Input6ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
+                custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
+            }
+            if (m_inputResource7 != TransferManager.TransferReason.None)
+            {
+                int CustomBuffer7 = custom_buffers.m_customBuffer7;
+                int Input7ProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
+                custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
+            }
+            if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+            {
+                int CustomBuffer8 = custom_buffers.m_customBuffer8;
+                int OutputProductionRate = (m_finalProductionRate + 99) / 100;
+                CustomBuffer8 = Mathf.Min(m_outputCount, CustomBuffer8 + OutputProductionRate);
+                custom_buffers.m_customBuffer9 = (ushort)CustomBuffer8;
+            }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
     }
 

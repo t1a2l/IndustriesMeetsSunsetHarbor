@@ -35,8 +35,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIProgressBar m_productBuffer;
 
-        private UILabel m_productionRateLabel;
-
         private UILabel m_workplaces;
 
         private UILabel m_generatedInfo;
@@ -102,7 +100,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
             m_productLabel = Find<UILabel>("ProductLabel");
             m_productBuffer = Find<UIProgressBar>("ProductBuffer");
-            m_productionRateLabel = Find<UILabel>("LabelProductionRate");
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
             m_RebuildButton = Find<UIButton>("RebuildButton");
@@ -216,7 +213,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
             int outputBufferSize = restaurantAI.m_outputCount;
-            m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer8, outputBufferSize);
+            var food_cooked = custom_buffers.m_customBuffer8 + custom_buffers.m_customBuffer9;
+            m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(food_cooked, outputBufferSize);
             m_productStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer8 + "/" + outputBufferSize;
             m_productLabel.text = restaurantAI.m_outputResource.ToString();
             m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");

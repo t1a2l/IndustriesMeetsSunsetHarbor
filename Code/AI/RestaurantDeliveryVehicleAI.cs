@@ -1,6 +1,7 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 using IndustriesMeetsSunsetHarbor.Managers;
+using MoreTransferReasons;
 using System;
 using UnityEngine;
 
@@ -129,6 +130,19 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 data.m_targetPos1.w = 2f;
                 data.m_targetPos2 = data.m_targetPos1;
                 data.m_targetPos3 = data.m_targetPos1;
+                // the default transfer size of a created vehicle is 0, the delivery capacity is 8 for example
+                // so here it takes -8 which is the min value
+                // it then passes the -8 to ModifyMaterialBuffer and remove 8 meals from resturant meals capacity
+                // and then here again takes that 8 and add it to the transfer size of the vehicle
+                // the delivery vehicle now have 8 meals (which is 100 goods per citizen = 1 meal)
+                if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0)
+		{
+		    int num = Mathf.Min(0, (int)data.m_transferSize - m_deliveryCapacity);
+                    RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
+                    ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
+		    num = Mathf.Max(0, -num);
+		    data.m_transferSize += (ushort)num;
+		}
                 FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[sourceBuilding].AddOwnVehicle(vehicleID, ref data);
             }
