@@ -15,9 +15,9 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static string[] NotificationSpriteNames = new string[]
         {
-            "BuildingNotificationNotEnoughFoodDeliveryCritical",
-            "BuildingNotificationNotEnoughFoodDelivery",
-            "BuildingNotificationNotEnoughFoodDeliveryFirst"
+            "BuildingNotificationWaitingDeliveryCritical",
+            "BuildingNotificationWaitingDelivery",
+            "BuildingNotificationWaitingDeliveryFirst"
         };
 
         public static void CreateAtlas()
