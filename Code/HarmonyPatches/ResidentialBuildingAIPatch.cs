@@ -28,18 +28,18 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private static void HandleFoodDelivery(ResidentialBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, CustomBuffersManager.WaitingDelivery);
+            Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoGoods);
             var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.buildingId == buildingID);
             if(waiting_delivery != -1)
             {
                 custom_buffers.m_customBuffer1 = (byte)Mathf.Min(255, (int)(custom_buffers.m_customBuffer1 + 1));
                 if (custom_buffers.m_customBuffer1 >= 128)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, CustomBuffersManager.WaitingDelivery);
+                    problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoGoods | Notification.Problem1.MajorProblem);
                 }
                 else if (custom_buffers.m_customBuffer1 >= 64)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, CustomBuffersManager.WaitingDelivery);
+                    problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoGoods);
                 }
             }
             else

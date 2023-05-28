@@ -21,8 +21,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public ushort m_customBuffer10;
         }
 
-        public static Problem2 WaitingDelivery = (Problem2)64UL;
-
         public static void Init()
         {
             if(CustomBuffers == null)
