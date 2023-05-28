@@ -898,7 +898,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                 }
                 var outgoingTransferReason = GetOutgoingTransferReason(buildingID);
-                if (custom_buffers.m_customBuffer8 >= m_outputCount / 2 && outgoingTransferReason != TransferManager.TransferReason.None)
+                if (outgoingTransferReason != TransferManager.TransferReason.None)
                 {
                     int totalGoods = m_outputCount * 100;
                     // people that are not visiting the building but have the oppertunity to visit if they want
@@ -918,17 +918,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         num11 = Mathf.Max(0, Mathf.Min(num11, g));
                         buildingData.m_customBuffer2 += (ushort)num11;
                         finalProductionRate = (num11 + 9) / 10;
-                    }
-                    int num28 = buildingData.m_customBuffer2 - aliveVisitorCount * 100;
-                    if (num28 >= 100 && citizenWhoCanVisit > 0)
-                    {
-                        TransferManager.TransferOffer offer6 = default;
-                        offer6.Priority = Mathf.Max(1, num28 * 8 / f);
-                        offer6.Building = buildingID;
-                        offer6.Position = buildingData.m_position;
-                        offer6.Amount = Mathf.Min(num28 / 100, citizenWhoCanVisit);
-                        offer6.Active = true;
-                        Singleton<TransferManager>.instance.AddOutgoingOffer(outgoingTransferReason, offer6);
+                        int num28 = buildingData.m_customBuffer2 - aliveVisitorCount * 100;
+                        if (num28 >= 100 && citizenWhoCanVisit > 0)
+                        {
+                            TransferManager.TransferOffer offer6 = default;
+                            offer6.Priority = Mathf.Max(1, num28 * 8 / f);
+                            offer6.Building = buildingID;
+                            offer6.Position = buildingData.m_position;
+                            offer6.Amount = Mathf.Min(num28 / 100, citizenWhoCanVisit);
+                            offer6.Active = true;
+                            Singleton<TransferManager>.instance.AddOutgoingOffer(outgoingTransferReason, offer6);
+                        }
                     }
                 }
                 if (Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.FinanceExpansion) && Singleton<UnlockManager>.instance.Unlocked(ItemClass.SubService.PoliceDepartmentBank) && buildingData.m_fireIntensity == 0)
