@@ -87,7 +87,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Quality (values: 1-3 including 1 and 3)")]
         public int quality = 2;
 
-        [CustomizableProperty("Allow delivery")]
+        [CustomizableProperty("Allow Delivery")]
         public bool allow_delivery = true;
 
         [NonSerialized]
@@ -95,13 +95,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public VehicleInfo delivery_vehicle;
 
-        [CustomizableProperty("Extended Input Resource 1")]
+        [CustomizableProperty("Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
 
-        [CustomizableProperty("Extended Input Resource 2")]
+        [CustomizableProperty("Input Resource 2")]
         public ExtendedTransferManager.TransferReason m_inputResource2 = ExtendedTransferManager.TransferReason.FoodSupplies;
 
-        [CustomizableProperty("Extended Input Resource 3")]
+        [CustomizableProperty("Input Resource 3")]
         public ExtendedTransferManager.TransferReason m_inputResource3 = ExtendedTransferManager.TransferReason.None;
 
         [CustomizableProperty("Input Resource 4")]
@@ -116,11 +116,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Input Resource 7")]
         public TransferManager.TransferReason m_inputResource7 = TransferManager.TransferReason.None;
 
-        [CustomizableProperty("Extended Output Resource")]
-        public ExtendedTransferManager.TransferReason m_outputResource1 = ExtendedTransferManager.TransferReason.MealsDeliveryLow; // consumed by citizens 
+        [CustomizableProperty("Delivery Output Resource")]
+        public ExtendedTransferManager.TransferReason m_outputResource1 = ExtendedTransferManager.TransferReason.MealsDeliveryLow; // food delivery
 
-        [CustomizableProperty("Extended Output Resource")]
-        public ExtendedTransferManager.TransferReason m_outputResource2 = ExtendedTransferManager.TransferReason.MealsLow; // delivery
+        [CustomizableProperty("Food Output Resource")]
+        public ExtendedTransferManager.TransferReason m_outputResource2 = ExtendedTransferManager.TransferReason.MealsLow; // eat in place
 
         public override void InitializePrefab()
         {
