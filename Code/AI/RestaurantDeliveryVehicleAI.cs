@@ -257,29 +257,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
             BuildingManager b_instance = Singleton<BuildingManager>.instance;
             CitizenManager c_instance = Singleton<CitizenManager>.instance;
             var target_building = b_instance.m_buildings.m_buffer[buildingId];
-            uint building_citizen_units = target_building.m_citizenUnits;
-            int num2 = 0;
-            while (building_citizen_units != 0U)
+            var citizen_data = c_instance.m_citizens.m_buffer[deliveryData.citizenId];
+            var citizen_unit_id = citizen_data.GetContainingUnit(buildingId, target_building.m_citizenUnits, CitizenUnit.Flags.Home);
+            var citizen_unit = c_instance.m_units.m_buffer[citizen_unit_id];
+            if(citizen_data.CurrentLocation != Citizen.Location.Moving)
             {
-                uint nextUnit = c_instance.m_units.m_buffer[building_citizen_units].m_nextUnit;
-                for (int i = 0; i < 5; i++)
-                {
-                    var citizen_unit = c_instance.m_units.m_buffer[building_citizen_units];
-                    uint citizenId = citizen_unit.GetCitizen(i);
-                    var citizen = c_instance.m_citizens.m_buffer[citizenId];
-                    if (citizenId != 0U && citizenId == deliveryData.citizenId && citizen.CurrentLocation != Citizen.Location.Moving)
-                    {
-                        citizen_unit.m_goods += (ushort)m_goodsMeal;
-                        citizen.m_flags &= ~Citizen.Flags.NeedGoods;
-                        data.m_transferSize -= 1;
-                    }
-                }
-                building_citizen_units = nextUnit;
-                if (++num2 > 524288)
-                {
-                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
-                    break;
-                }
+                citizen_unit.m_goods += (ushort)m_goodsMeal;
+                citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
+                data.m_transferSize -= 1;
             }
             for (int j = 0; j < m_deliveryPersonCount; j++)
             {
