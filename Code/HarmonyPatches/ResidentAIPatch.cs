@@ -2,6 +2,7 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
 using System;
+using IndustriesMeetsSunsetHarbor.AI;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -17,43 +18,38 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             if ((ulong)((currentFrameIndex >> 4) & 63U) == (ulong)((long)(instanceID & 63)))
             {
                 CitizenManager instance = Singleton<CitizenManager>.instance;
+                BuildingManager instance2 = Singleton<BuildingManager>.instance;
+                var building_info = instance2.m_buildings.m_buffer[citizenData.m_targetBuilding].Info;
                 uint citizen = citizenData.m_citizen;
                 var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizen);
                 // if citizen is waiting for delivery do nothing - the goods transfer will happen when the delivery vehicle will arrive at the house
-                if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None) && waiting_delivery != -1)
+                if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None))
                 {
-                    return false;
+                    if(waiting_delivery != -1)
+                    {
+                         return false;
+                    }
+                    else if(building_info.m_buildingAI is RestaurantAI)
+                    {
+                         return false;
+                    }
                 }
             }
             return true;
         }
 
-        [HarmonyPatch(typeof(ResidentAI), "StartTransfer")]
+
+        [HarmonyPatch(typeof(ResidentAI), "StartMoving")]
         [HarmonyPrefix]
-        public static bool StartTransfer(uint citizenID, ref Citizen data, TransferManager.TransferReason reason, TransferManager.TransferOffer offer)
+        public static bool StartMoving(uint citizenID, ref Citizen data, ushort sourceBuilding, TransferManager.TransferOffer offer, ref bool __result)
         {
-            switch (reason)
+            var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
+            if(waiting_delivery != -1) // don't start moving if waiting for delivery
             {
-                case TransferManager.TransferReason.Shopping:
-                case TransferManager.TransferReason.ShoppingB:
-		case TransferManager.TransferReason.ShoppingC:
-		case TransferManager.TransferReason.ShoppingD:
-		case TransferManager.TransferReason.ShoppingE:
-		case TransferManager.TransferReason.ShoppingF:
-		case TransferManager.TransferReason.ShoppingG:
-		case TransferManager.TransferReason.ShoppingH:
-                    {
-                        var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
-                        if(waiting_delivery != -1) // don't start moving if waiting for delivery
-                        {
-                             return false;
-                        }
-                        return true;
-                    }
-                    
-                default:
-                     return true; 
+                __result = false;
+                return false;
             }
+            return true;
         }
 
 

@@ -12,7 +12,9 @@ namespace IndustriesMeetsSunsetHarbor
 
         public static bool inGame = false;
 
-        public static float DeliveryChance = 1f;
+        public static float DeliveryChance = 50f;
+
+        public static float VisitChance = 50f;
 
         string IUserMod.Name => "Industries meets Sunset Harbor Mod";
 
@@ -81,6 +83,12 @@ namespace IndustriesMeetsSunsetHarbor
                 group.AddSlider("Delivery Chance", 0.0f, 100.0f, 5.0f, 50.0f, sel =>
                 {
                     DeliveryChance = sel;
+                    ModSettings.Save();
+                });
+
+                group.AddSlider("Visit Chance", 0.0f, 100.0f, 5.0f, 50.0f, sel =>
+                {
+                    VisitChance = sel;
                     ModSettings.Save();
                 });
 

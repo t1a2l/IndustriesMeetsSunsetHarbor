@@ -31,6 +31,13 @@ namespace IndustriesMeetsSunsetHarbor.Serializer {
             set => Mod.DeliveryChance = value;
         } 
 
+        [XmlElement("VisitChanceSlider")]
+        public float VisitChance
+        {
+            get => Mod.VisitChance;
+
+            set => Mod.VisitChance = value;
+        } 
         /// <summary>
         /// Load settings from XML file.
         /// </summary>

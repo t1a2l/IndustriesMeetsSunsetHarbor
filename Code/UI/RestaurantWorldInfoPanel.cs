@@ -31,9 +31,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private int m_inputResourceCount;
 
-        private UILabel m_productLabel;
+        private UILabel m_deliveryMealsLabel;
 
-        private UIProgressBar m_productBuffer;
+        private UILabel m_mealsLabel;
+
+        private UIProgressBar m_deliveryMealsBuffer;
+
+        private UIProgressBar m_mealsBuffer;
 
         private UILabel m_workplaces;
 
@@ -43,7 +47,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIButton m_MoveButton;
 
-        private UIPanel m_productStorage;
+        private UIPanel m_deliveryMealsStorage;
+
+        private UIPanel m_mealsStorage;
 
         private UILabel m_Upkeep;
 
@@ -53,7 +59,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIComponent m_MovingPanel;
 
-        private UISprite m_outputSprite;
+        private UISprite m_deliveryMealsSprite;
+
+        private UISprite m_mealsSprite;
 
         private List<string> items;
 
@@ -98,18 +106,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_horizontalLine = Find<UIPanel>("HorizontalLinePanel");
             m_inputContainer = Find<UIPanel>("LayoutPanel");
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
-            m_productLabel = Find<UILabel>("ProductLabel");
-            m_productBuffer = Find<UIProgressBar>("ProductBuffer");
+            m_deliveryMealsLabel = Find<UILabel>("ProductLabel");
+            m_mealsLabel = Find<UILabel>("ProductLabel");
+            m_deliveryMealsBuffer = Find<UIProgressBar>("ProductBuffer");
+            m_mealsBuffer = Find<UIProgressBar>("ProductBuffer");
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
             m_RebuildButton = Find<UIButton>("RebuildButton");
             m_OnOff = Find<UICheckBox>("On/Off");
             m_OnOff.eventCheckChanged += OnOnOffChanged;
-            m_productStorage = Find<UIPanel>("ProductStorage");
+            m_deliveryMealsStorage = Find<UIPanel>("ProductStorage");
+            m_mealsStorage = Find<UIPanel>("ProductStorage");
             m_Upkeep = Find<UILabel>("Upkeep");
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
-            m_outputSprite = Find<UISprite>("LuxuryProductIcon");
+            m_deliveryMealsSprite = Find<UISprite>("LuxuryProductIcon");
+            m_mealsSprite = Find<UISprite>("LuxuryProductIcon");
             m_mainPanel = Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
             items = new List<string>();
         }
@@ -125,7 +137,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
-            m_productBuffer.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+            m_deliveryMealsBuffer.progressColor = Color.Lerp(Color.magenta, Color.black, 0.2f);
+            m_mealsBuffer.progressColor = Color.Lerp(Color.cyan, Color.black, 0.2f);
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
@@ -212,13 +225,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(restaurantAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-            int outputBufferSize = restaurantAI.m_outputCount;
-            var food_cooked = custom_buffers.m_customBuffer8 + custom_buffers.m_customBuffer9;
-            m_productBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(food_cooked, outputBufferSize);
-            m_productStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer8 + "/" + outputBufferSize;
-            m_productLabel.text = restaurantAI.m_outputResource.ToString();
-            m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-            m_outputSprite.spriteName = restaurantAI.m_outputResource.ToString();
+            m_deliveryMealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer8, restaurantAI.m_outputDeliveryMealsCount);
+            m_deliveryMealsStorage.tooltip = "Delivery Meals Count is " + custom_buffers.m_customBuffer8 + "/" + restaurantAI.m_outputDeliveryMealsCount;
+            m_deliveryMealsLabel.text = restaurantAI.m_outputResource1.ToString();
+            m_deliveryMealsSprite.atlas = TextureUtils.GetAtlas("DeliveryNotificationAtlas");
+            m_deliveryMealsSprite.spriteName = "BuildingNotificationWaitingDeliveryFirst";
+
+            m_mealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputMealsCount);
+            m_mealsStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer9 + "/" + restaurantAI.m_outputMealsCount;
+            m_mealsLabel.text = restaurantAI.m_outputResource2.ToString();
+            m_mealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_mealsSprite.spriteName = "Meals";
+
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
@@ -260,7 +278,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
             inputs_expenses += IndustryBuildingAI.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            m_income.text = restaurantAI.m_outputCount.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            var TotalIncome = restaurantAI.m_outputDeliveryMealsCount + restaurantAI.m_outputMealsCount;
+            m_income.text = TotalIncome.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
         }
 
         private string GetInputResourceType(ref List<string> items, int resourceIndex)
