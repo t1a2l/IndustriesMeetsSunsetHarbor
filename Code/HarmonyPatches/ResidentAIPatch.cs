@@ -38,20 +38,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-
-        [HarmonyPatch(typeof(ResidentAI), "StartMoving")]
-        [HarmonyPrefix]
-        public static bool StartMoving(uint citizenID, ref Citizen data, ushort sourceBuilding, TransferManager.TransferOffer offer, ref bool __result)
-        {
-            var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
-            if(waiting_delivery != -1) // don't start moving if waiting for delivery
-            {
-                __result = false;
-                return false;
-            }
-            return true;
-        }
-
-
     }
 }
+
+
