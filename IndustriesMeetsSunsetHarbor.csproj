@@ -55,8 +55,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="MoreTransferReasons">
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\255710\2980644460\MoreTransferReasons.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>C:\Users\talrofeh\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\MoreTransferReasons\MoreTransferReasons.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
