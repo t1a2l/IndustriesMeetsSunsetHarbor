@@ -6,7 +6,6 @@ using UnityEngine;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using ICities;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.AI
@@ -441,7 +440,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int m_customBuffer9 = custom_buffers.m_customBuffer9;
                     amountDelta = Mathf.Clamp(amountDelta, 0, m_customBuffer9);
                     m_customBuffer9 -= amountDelta;
-                    custom_buffers.m_customBuffer8 = (ushort)m_customBuffer9;
+                    custom_buffers.m_customBuffer9 = (ushort)m_customBuffer9;
                     data.m_outgoingProblemTimer = 0;
                     byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
                     if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone)
@@ -1169,10 +1168,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
         private bool CheckIfDeliveryOrderInProgress()
         {
             var orders_with_no_vehicle = RestaurantDeliveriesManager.RestaurantDeliveries.FindAll(item => item.deliveryVehicleId == 0);
-            RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
-            if (orders_with_no_vehicle.Count <= restaurantDeliveryVehicleAI.m_deliveryCapacity)
+            if(delivery_vehicle != null)
             {
-                return true;
+                RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
+                if (orders_with_no_vehicle.Count <= restaurantDeliveryVehicleAI.m_deliveryCapacity)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -1243,7 +1245,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomBuffer9 = custom_buffers.m_customBuffer9;
                 int OutputProductionRate = (m_finalProductionRate + 99) / 100;
                 CustomBuffer9 = Mathf.Min(m_outputCount, CustomBuffer9 + OutputProductionRate);
-                custom_buffers.m_customBuffer8 = (ushort)CustomBuffer9;
+                custom_buffers.m_customBuffer9 = (ushort)CustomBuffer9;
             }
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
@@ -1305,7 +1307,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomBuffer8 = custom_buffers.m_customBuffer8;
                 int OutputProductionRate = (m_finalProductionRate + 99) / 100;
                 CustomBuffer8 = Mathf.Min(m_outputCount, CustomBuffer8 + OutputProductionRate);
-                custom_buffers.m_customBuffer9 = (ushort)CustomBuffer8;
+                custom_buffers.m_customBuffer8 = (ushort)CustomBuffer8;
             }
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
