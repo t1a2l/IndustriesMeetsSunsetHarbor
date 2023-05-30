@@ -864,7 +864,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             ExtendedTransferManager.Offer offer8 = default;
                             offer8.Building = buildingID;
                             offer8.Position = buildingData.m_position;
-                            offer8.Amount = 10;
+                            offer8.Amount = 1;
                             offer8.Active = true;
                             material = ExtendedTransferManager.TransferReason.MealsDeliveryLow;
                             Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer8);
@@ -874,7 +874,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             ExtendedTransferManager.Offer offer9 = default;
                             offer9.Building = buildingID;
                             offer9.Position = buildingData.m_position;
-                            offer9.Amount = 10;
+                            offer9.Amount = 1;
                             offer9.Active = true;
                             material = ExtendedTransferManager.TransferReason.MealsDeliveryMedium;
                             Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer9);
@@ -884,7 +884,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             ExtendedTransferManager.Offer offer10 = default;
                             offer10.Building = buildingID;
                             offer10.Position = buildingData.m_position;
-                            offer10.Amount = 10;
+                            offer10.Amount = 1;
                             offer10.Active = true;
                             material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                             Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer10);
