@@ -3,6 +3,7 @@ using HarmonyLib;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using System;
+using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -13,7 +14,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool FindVisitPlace(HumanAI __instance, uint citizenID, ushort sourceBuilding, TransferManager.TransferReason reason)
         {
-            if(reason == GetShoppingReason() || reason == GetEntertainmentReason())
+            if(IsShoppingOrEntertainmentReason(reason))
             {
                 bool get_delivery = false;
                 var homeBuildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)sourceBuilding];
@@ -174,32 +175,29 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return 2;
         }
 
-        private static TransferManager.TransferReason GetShoppingReason()
+        private static bool IsShoppingOrEntertainmentReason(TransferManager.TransferReason reason)
         {
-	    return Singleton<SimulationManager>.instance.m_randomizer.Int32(8u) switch
-	    {
-		0 => TransferManager.TransferReason.Shopping, 
-		1 => TransferManager.TransferReason.ShoppingB, 
-		2 => TransferManager.TransferReason.ShoppingC, 
-		3 => TransferManager.TransferReason.ShoppingD, 
-		4 => TransferManager.TransferReason.ShoppingE, 
-		5 => TransferManager.TransferReason.ShoppingF, 
-		6 => TransferManager.TransferReason.ShoppingG, 
-		7 => TransferManager.TransferReason.ShoppingH, 
-		_ => TransferManager.TransferReason.Shopping, 
-	    };
-        }
+            List<TransferManager.TransferReason> ShoppingList = new()
+            {
+                TransferManager.TransferReason.Shopping, 
+		TransferManager.TransferReason.ShoppingB, 
+		TransferManager.TransferReason.ShoppingC, 
+		TransferManager.TransferReason.ShoppingD, 
+		TransferManager.TransferReason.ShoppingE, 
+		TransferManager.TransferReason.ShoppingF, 
+		TransferManager.TransferReason.ShoppingG, 
+		TransferManager.TransferReason.ShoppingH
+            };
+            List<TransferManager.TransferReason> EntertainmentList = new()
+            {
+                TransferManager.TransferReason.Entertainment, 
+		TransferManager.TransferReason.EntertainmentB, 
+		TransferManager.TransferReason.EntertainmentC, 
+		TransferManager.TransferReason.EntertainmentD
+            };
 
-        private static TransferManager.TransferReason GetEntertainmentReason()
-        {
-	    return Singleton<SimulationManager>.instance.m_randomizer.Int32(4u) switch
-	    {
-		0 => TransferManager.TransferReason.Entertainment, 
-		1 => TransferManager.TransferReason.EntertainmentB, 
-		2 => TransferManager.TransferReason.EntertainmentC, 
-		3 => TransferManager.TransferReason.EntertainmentD, 
-		_ => TransferManager.TransferReason.Entertainment, 
-	    };
+            if(ShoppingList.Contains(reason) || EntertainmentList.Contains(reason)) return true;
+            return false;
         }
     }
 }
