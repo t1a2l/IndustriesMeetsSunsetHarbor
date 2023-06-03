@@ -1,4 +1,3 @@
-using ColossalFramework;
 using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.AI
@@ -17,13 +16,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (StartMoving(citizenID, ref data, 0, offer.Building))
                 {
                     data.SetVisitplace(citizenID, offer.Building, 0u);
-                    CitizenManager instance = Singleton<CitizenManager>.instance;
-                    BuildingManager instance2 = Singleton<BuildingManager>.instance;
-                    uint containingUnit = data.GetContainingUnit(citizenID, instance2.m_buildings.m_buffer[data.m_homeBuilding].m_citizenUnits, CitizenUnit.Flags.Home);
-                    if (containingUnit != 0)
-                    {
-                        instance.m_units.m_buffer[containingUnit].m_goods += 100;
-                    }
                 }
             }
         }
