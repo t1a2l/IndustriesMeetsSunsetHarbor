@@ -17,6 +17,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
     {
         private UIPanel m_mainPanel;
 
+        private UISprite m_deliveryMealsBigArrow;
+
+        private UISprite m_mealsBigArrow;
+
         private UILabel m_status;
 
         private UIButton m_RebuildButton;
@@ -106,22 +110,39 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_horizontalLine = Find<UIPanel>("HorizontalLinePanel");
             m_inputContainer = Find<UIPanel>("LayoutPanel");
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
+
+            m_deliveryMealsStorage = Find<UIPanel>("ProductStorage");
+
+            m_deliveryMealsBigArrow = Find<UISprite>("Big Arrow");
             m_deliveryMealsLabel = Find<UILabel>("ProductLabel");
-            m_mealsLabel = Find<UILabel>("ProductLabel");
             m_deliveryMealsBuffer = Find<UIProgressBar>("ProductBuffer");
-            m_mealsBuffer = Find<UIProgressBar>("ProductBuffer");
+            m_deliveryMealsSprite = Find<UISprite>("LuxuryProductIcon");
+
+            m_deliveryMealsBigArrow.relativePosition = new Vector3(288f, 217f);
+            m_deliveryMealsStorage.relativePosition = new Vector3(235f, 280f);
+
+            GameObject ProductStorage = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Find<UIPanel>("ProductStorage").transform);
+
+            m_mealsStorage = ProductStorage.GetComponent<UIPanel>();
+
+            var BigArrow = ProductStorage.transform.Find("Big Arrow");
+            var ProductLabel = ProductStorage.transform.Find("ProductLabel");
+            var ProductBuffer = ProductStorage.transform.Find("ProductBuffer");
+            var LuxuryProductIcon = ProductStorage.transform.Find("LuxuryProductIcon");
+
+            m_mealsBigArrow = BigArrow.GetComponent<UISprite>();
+            m_mealsLabel = ProductLabel.GetComponent<UILabel>();
+            m_mealsBuffer = ProductBuffer.GetComponent<UIProgressBar>();
+            m_mealsSprite = LuxuryProductIcon.GetComponent<UISprite>();
+    
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
             m_RebuildButton = Find<UIButton>("RebuildButton");
             m_OnOff = Find<UICheckBox>("On/Off");
             m_OnOff.eventCheckChanged += OnOnOffChanged;
-            m_deliveryMealsStorage = Find<UIPanel>("ProductStorage");
-            m_mealsStorage = Find<UIPanel>("ProductStorage");
             m_Upkeep = Find<UILabel>("Upkeep");
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
-            m_deliveryMealsSprite = Find<UISprite>("LuxuryProductIcon");
-            m_mealsSprite = Find<UISprite>("LuxuryProductIcon");
             m_mainPanel = Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
             items = new List<string>();
         }
@@ -227,13 +248,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
             m_deliveryMealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer8, restaurantAI.m_outputDeliveryMealsCount);
             m_deliveryMealsStorage.tooltip = "Delivery Meals Count is " + custom_buffers.m_customBuffer8 + "/" + restaurantAI.m_outputDeliveryMealsCount;
-            m_deliveryMealsLabel.text = restaurantAI.m_outputResource1.ToString();
+            m_deliveryMealsLabel.text = "Ordered Meals";
             m_deliveryMealsSprite.atlas = TextureUtils.GetAtlas("DeliveryNotificationAtlas");
             m_deliveryMealsSprite.spriteName = "BuildingNotificationWaitingDeliveryFirst";
 
             m_mealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputMealsCount);
             m_mealsStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer9 + "/" + restaurantAI.m_outputMealsCount;
-            m_mealsLabel.text = restaurantAI.m_outputResource2.ToString();
+            m_mealsLabel.text = "Meals";
             m_mealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_mealsSprite.spriteName = "Meals";
 
