@@ -7,6 +7,7 @@ using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using ICities;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -90,10 +91,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Allow Delivery")]
         public bool allow_delivery = true;
 
-        [NonSerialized]
-        private bool m_hasBufferStatusMeshes;
-
         public VehicleInfo delivery_vehicle;
+
+        public List<uint> FoodLine = new();
 
         [CustomizableProperty("Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
@@ -121,23 +121,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Food Output Resource")]
         public ExtendedTransferManager.TransferReason m_outputResource2 = ExtendedTransferManager.TransferReason.MealsLow; // eat in place
-
-        public override void InitializePrefab()
-        {
-            base.InitializePrefab();
-            m_hasBufferStatusMeshes = false;
-            if (m_info.m_subMeshes != null)
-            {
-                for (int i = 0; i < m_info.m_subMeshes.Length; i++)
-                {
-                    if ((m_info.m_subMeshes[i].m_flagsRequired & Building.Flags.CapacityFull) != Building.Flags.None)
-                    {
-                        m_hasBufferStatusMeshes = true;
-                        break;
-                    }
-                }
-            }
-        }
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
@@ -325,6 +308,19 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
             base.SimulationStep(buildingID, ref buildingData, ref frameData);
+            // there are people in line who didn't get food, and there is enough storage to cook meals
+            if(FoodLine != null)
+            {
+                var tempList = FoodLine.ToList();
+                foreach(var person in tempList)
+                {
+                    if(m_finalProductionRate > 0)
+                    {
+                        EatMeal(buildingID, ref buildingData, person);
+                        FoodLine.Remove(person);
+                    }
+                }
+            }
         }
 
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
@@ -529,24 +525,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
-            int amountDelta = 1;
-            CookCustomerMeal(buildingID);
-            CitizenManager instance = Singleton<CitizenManager>.instance;
-            var citizen_data = instance.m_citizens.m_buffer[citizen];
-            var material = ExtendedTransferManager.TransferReason.None;
-            if(citizen_data.WealthLevel == Citizen.Wealth.Low)
+            var meal_cooked = CookCustomerMeal(buildingID);
+            if(meal_cooked)
             {
-                material = ExtendedTransferManager.TransferReason.MealsLow;
+                EatMeal(buildingID, ref data, citizen);
             }
-            else if(citizen_data.WealthLevel == Citizen.Wealth.Medium)
+            else
             {
-                material = ExtendedTransferManager.TransferReason.MealsMedium;
+                FoodLine.Add(citizen);
             }
-            else if(citizen_data.WealthLevel == Citizen.Wealth.High)
-            {
-                material = ExtendedTransferManager.TransferReason.MealsHigh;
-            }
-            ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
             base.VisitorEnter(buildingID, ref data, citizen);
         }
 
@@ -1123,8 +1110,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        private void CookCustomerMeal(ushort buildingID)
+        private bool CookCustomerMeal(ushort buildingID)
         {
+            if(m_finalProductionRate == 0)
+            {
+                return false;
+            }
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
@@ -1183,6 +1174,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 custom_buffers.m_customBuffer9 = (ushort)CustomBuffer9;
             }
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            return true;
         }
 
         private void CookOrderMeal(ushort buildingID)
@@ -1245,6 +1237,33 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 custom_buffers.m_customBuffer8 = (ushort)CustomBuffer8;
             }
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+        }
+
+        private void EatMeal(ushort buildingID, ref Building data, uint citizen)
+        {
+            int amountDelta = 1;
+            CitizenManager instance = Singleton<CitizenManager>.instance;
+            var citizen_data = instance.m_citizens.m_buffer[citizen];
+            var material = ExtendedTransferManager.TransferReason.None;
+            if(citizen_data.WealthLevel == Citizen.Wealth.Low)
+            {
+                material = ExtendedTransferManager.TransferReason.MealsLow;
+            }
+            else if(citizen_data.WealthLevel == Citizen.Wealth.Medium)
+            {
+                material = ExtendedTransferManager.TransferReason.MealsMedium;
+            }
+            else if(citizen_data.WealthLevel == Citizen.Wealth.High)
+            {
+                material = ExtendedTransferManager.TransferReason.MealsHigh;
+            }
+            ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
+            BuildingManager instance2 = Singleton<BuildingManager>.instance;
+            uint containingUnit = citizen_data.GetContainingUnit(citizen, instance2.m_buildings.m_buffer[citizen_data.m_homeBuilding].m_citizenUnits, CitizenUnit.Flags.Home);
+            if (containingUnit != 0)
+            {
+                instance.m_units.m_buffer[containingUnit].m_goods += 100;
+            }
         }
     }
 
