@@ -95,6 +95,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public List<uint> FoodLine = new();
 
+        public double WaitingForProductTimer = SimulationManager.instance.m_currentGameTime.TimeOfDay.TotalHours;
+
+        public double WaitInLineTimer = SimulationManager.instance.m_currentGameTime.TimeOfDay.TotalHours + 30;
+
         [CustomizableProperty("Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
 
@@ -308,16 +312,30 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
             base.SimulationStep(buildingID, ref buildingData, ref frameData);
+            WaitingForProductTimer = SimulationManager.instance.m_currentGameTime.TimeOfDay.TotalHours;
             // there are people in line who didn't get food, and there is enough storage to cook meals
             if(FoodLine != null)
             {
-                var tempList = FoodLine.ToList();
-                foreach(var person in tempList)
+                if(WaitingForProductTimer >= WaitInLineTimer)
                 {
-                    if(m_finalProductionRate > 0)
+                    CitizenManager instance = Singleton<CitizenManager>.instance;
+                    foreach(var person in FoodLine)
                     {
-                        EatMeal(buildingID, ref buildingData, person);
-                        FoodLine.Remove(person);
+                        var person_data = instance.m_citizens.m_buffer[person];
+                        person_data.m_flags &= ~Citizen.Flags.NeedGoods;
+                    }
+                    FoodLine.Clear();
+                }
+                else
+                {
+                    var tempList = FoodLine.ToList();
+                    foreach(var person in tempList)
+                    {
+                        if(m_finalProductionRate > 0)
+                        {
+                            EatMeal(buildingID, ref buildingData, person);
+                            FoodLine.Remove(person);
+                        }
                     }
                 }
             }
@@ -823,7 +841,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
             if (m_outputResource2 != ExtendedTransferManager.TransferReason.None)
-                {
+            {
                     int totalGoods = m_outputMealsCount * 100;
                     // people that are not visiting the building but have the oppertunity to visit if they want
                     var citizenWhoCanVisit = Mathf.Max(0, visitPlaceCount - totalVisitorCount);
@@ -904,6 +922,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
+            }
+            if(finalProductionRate != 0)
+            {
+                WaitingForProductTimer = SimulationManager.instance.m_currentGameTime.TimeOfDay.TotalHours;
+                WaitInLineTimer = SimulationManager.instance.m_currentGameTime.TimeOfDay.TotalHours + 30;
             }
             buildingData.m_problems = problemStruct;
             int healthAccumulation = 0;
@@ -1263,6 +1286,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (containingUnit != 0)
             {
                 instance.m_units.m_buffer[containingUnit].m_goods += 100;
+                citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
             }
         }
     }
