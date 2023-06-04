@@ -34,6 +34,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var level = GetRestaurantQuality(citizen.WealthLevel);
                 if (get_delivery)
                 {
+                    // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
                         int count1 = 0;
@@ -48,6 +49,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer1.Active = false;
                         Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryLow, transferOffer1);
                     }
+                    // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
                         int count2 = 0;
@@ -62,6 +64,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer2.Active = false;
                         Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryMedium, transferOffer2);
                     }
+                    // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
                         int count3 = 0;
@@ -80,6 +83,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 }
                 if(Singleton<SimulationManager>.instance.m_randomizer.Int32(100U) < Mod.VisitChance)
                 {
+                    // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
                         ExtendedTransferManager.Offer transferOffer4 = default;
@@ -89,6 +93,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer4.Active = false;
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsLow, transferOffer4);
                     }
+                    // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
                         ExtendedTransferManager.Offer transferOffer5 = default;
@@ -98,6 +103,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer5.Active = false;
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsMedium, transferOffer5);
                     }
+                    // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
                         ExtendedTransferManager.Offer transferOffer6 = default;
@@ -134,17 +140,18 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             switch (level)
             {
                 case Citizen.Wealth.Low:
-                    // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium
+                    // 80% chance of choosing a low end restaurant, 20% chance of choosing a medium end restaurant
                     if (random <= 80)
                     {
-                        return 1;
+                        return 1; 
                     }
                     else
                     {
                         return 2;
                     }
                 case Citizen.Wealth.Medium:
-                    // Quality 2 are ideal for medium wealth citizens, but possible for all
+                    // 40% chance of choosing a low end restaurant, 50% chance of choosing a medium end restaurant
+                    // 10% chance of choosing a high end restaurant
                     if (random > 50 && random <= 90)
                     {
                         return 1;
@@ -158,7 +165,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         return 2;
                     }
                 case Citizen.Wealth.High:
-                    // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
+                    // 10% chance of choosing a low end restaurant, 20% chance of choosing a medium end restaurant
+                    // 70% chance of choosing a high end restaurant
                     if (random > 70 && random <= 90)
                     {
                         return 2;
