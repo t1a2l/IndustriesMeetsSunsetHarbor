@@ -190,5 +190,21 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
+        public static string FormatResourceWithUnit(uint amount, TransferManager.TransferReason type)
+        {
+	    return string.Concat(str2: (type != TransferManager.TransferReason.Oil && type != TransferManager.TransferReason.Petroleum && type != TransferManager.TransferReason.Petrol) ? ColossalFramework.Globalization.Locale.Get("RESOURCEUNIT_TONS") : ColossalFramework.Globalization.Locale.Get("RESOURCEUNIT_BARRELS"), str0: FormatResource(amount), str1: " ");
+        }
+
+        public static string FormatExtendedResourceWithUnit(uint amount, ExtendedTransferManager.TransferReason type)
+        {
+	    return string.Concat(str2: ColossalFramework.Globalization.Locale.Get("RESOURCEUNIT_TONS"), str0: FormatResource(amount), str1: " ");
+        }
+
+        public static string FormatResource(ulong amount)
+        {
+	    float num = amount;
+	    num /= 1000f;
+	    return Mathf.Round(num).ToString();
+        }
     }
 }
