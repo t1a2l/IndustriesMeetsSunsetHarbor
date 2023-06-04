@@ -23,8 +23,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 	    Export
 	}
 
-        
-
         private delegate void BuildingWorldInfoPanelOnSetTargetDelegate(BuildingWorldInfoPanel instance);
         private static BuildingWorldInfoPanelOnSetTargetDelegate BaseOnSetTarget = AccessTools.MethodDelegate<BuildingWorldInfoPanelOnSetTargetDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("OnSetTarget", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
@@ -51,11 +49,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             TransferManager.TransferReason.Goods
         };
 
-        private static ExtendedTransferManager.TransferReason[] m_extendedTransferReasons = new ExtendedTransferManager.TransferReason[3]
+        private static ExtendedTransferManager.TransferReason[] m_extendedTransferReasons = new ExtendedTransferManager.TransferReason[4]
         {
             ExtendedTransferManager.TransferReason.Bread, // 16 - 0
             ExtendedTransferManager.TransferReason.DrinkSupplies, // 17 - 1
-            ExtendedTransferManager.TransferReason.FoodSupplies // 18 - 2
+            ExtendedTransferManager.TransferReason.FoodSupplies, // 18 - 2
+            ExtendedTransferManager.TransferReason.CannedFish
         };
 
         [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "OnDropdownResourceChanged")]

@@ -451,6 +451,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case ExtendedTransferManager.TransferReason.Bread:
                 case ExtendedTransferManager.TransferReason.DrinkSupplies:
                 case ExtendedTransferManager.TransferReason.FoodSupplies:
+                case ExtendedTransferManager.TransferReason.CannedFish:
                     service = ItemClass.Service.PlayerIndustry;
                     break;
                 default:
@@ -1256,6 +1257,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case ExtendedTransferManager.TransferReason.Bread:
                 case ExtendedTransferManager.TransferReason.FoodSupplies:
                 case ExtendedTransferManager.TransferReason.DrinkSupplies:
+                case ExtendedTransferManager.TransferReason.CannedFish:
                     data.m_flags = (data.m_flags & ~Building.Flags.Content06) | Building.Flags.Content06_Forbid;
                     break;
                 default:
