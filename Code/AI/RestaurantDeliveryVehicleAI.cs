@@ -389,10 +389,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Singleton<VehicleManager>.instance.ReleaseVehicle(vehicleID);
                 return true;
             }
-            int amountDelta = data.m_transferSize;
-            BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding].Info;
-            info.m_buildingAI.ModifyMaterialBuffer(data.m_sourceBuilding, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding], (TransferManager.TransferReason)data.m_transferType, ref amountDelta);
-            data.m_transferSize = (ushort)Mathf.Clamp(data.m_transferSize - amountDelta, 0, data.m_transferSize);
+            // remove all deliveries if any remaining
+            RestaurantDeliveriesManager.RestaurantDeliveries.RemoveAll(item => item.deliveryVehicleId == vehicleID);
+            // throw all meals to the trash.. (not using delivery food to other deliveries)
+            data.m_transferSize = 0;
             RemoveSource(vehicleID, ref data);
             return true;
         }
