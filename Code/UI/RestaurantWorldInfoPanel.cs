@@ -61,6 +61,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UILabel m_expenses;
 
+        private UILabel m_materialCost;
+
+        private UILabel m_productionValue;
+
         private UIComponent m_MovingPanel;
 
         private UISprite m_deliveryMealsSprite;
@@ -118,8 +122,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsBuffer = Find<UIProgressBar>("ProductBuffer");
             m_deliveryMealsSprite = Find<UISprite>("LuxuryProductIcon");
 
-            m_deliveryMealsBigArrow.relativePosition = new Vector3(428f, 200f);
-            m_deliveryMealsStorage.relativePosition = new Vector3(375f, 255f);
+            m_deliveryMealsBigArrow.anchor = UIAnchorStyle.None;
+            m_deliveryMealsStorage.anchor = UIAnchorStyle.None;
+            m_deliveryMealsBigArrow.relativePosition = new Vector3(408f, 200f);
+            m_deliveryMealsStorage.relativePosition = new Vector3(355f, 255f);
 
             var Diagram = Find<UIPanel>("Diagram");
 
@@ -138,8 +144,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_mealsBuffer = ProductBuffer.GetComponent<UIProgressBar>();
             m_mealsSprite = LuxuryProductIcon.GetComponent<UISprite>();
 
-            m_mealsBigArrow.relativePosition = new Vector3(208f, 220f);
-            m_mealsStorage.relativePosition = new Vector3(225f, 255f);
+            m_mealsBigArrow.anchor = UIAnchorStyle.None;
+            m_mealsStorage.anchor = UIAnchorStyle.None;
+            m_mealsBigArrow.relativePosition = new Vector3(248f, 200f);
+            m_mealsStorage.relativePosition = new Vector3(195f, 255f);
+
+            m_materialCost = Find<UILabel>("UFPANEL_MATERIALCOST_TOOLTIP");
+            m_productionValue = Find<UILabel>("UFPANEL_PRODUCTIONVALUE_TOOLTIP");
     
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
@@ -305,8 +316,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            m_expenses.tooltip = "Restaurant expenses per week";
+            m_materialCost.text = "RESTAURANT EXPENSES";
+            m_materialCost.tooltip = "Restaurant expenses per week";
             var TotalIncome = restaurantAI.m_outputDeliveryMealsCount + restaurantAI.m_outputMealsCount;
             m_income.text = TotalIncome.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+            m_income.tooltip = "Restaurant earnings per week";
+            m_productionValue.text = "RESTAURANT EARNINGS";
+            m_productionValue.tooltip = "Restaurant earnings per week";
         }
 
         private string GetInputResourceType(ref List<string> items, int resourceIndex)
@@ -694,5 +711,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
 	    return string.Concat(str2: "kg", str0: amount.ToString(), str1: " ");
         }
+
     }
 }
