@@ -14,7 +14,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool FindVisitPlace(HumanAI __instance, uint citizenID, ushort sourceBuilding, TransferManager.TransferReason reason)
         {
-            if(IsShoppingOrEntertainmentReason(reason))
+            if(IsShoppingReason(reason))
             {
                 bool get_delivery = false;
                 var homeBuildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)sourceBuilding];
@@ -183,7 +183,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return 2;
         }
 
-        private static bool IsShoppingOrEntertainmentReason(TransferManager.TransferReason reason)
+        private static bool IsShoppingReason(TransferManager.TransferReason reason)
         {
             List<TransferManager.TransferReason> ShoppingList = new()
             {
@@ -196,15 +196,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		TransferManager.TransferReason.ShoppingG, 
 		TransferManager.TransferReason.ShoppingH
             };
-            List<TransferManager.TransferReason> EntertainmentList = new()
-            {
-                TransferManager.TransferReason.Entertainment, 
-		TransferManager.TransferReason.EntertainmentB, 
-		TransferManager.TransferReason.EntertainmentC, 
-		TransferManager.TransferReason.EntertainmentD
-            };
 
-            if(ShoppingList.Contains(reason) || EntertainmentList.Contains(reason)) return true;
+            if(ShoppingList.Contains(reason)) return true;
             return false;
         }
     }
