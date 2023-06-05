@@ -265,7 +265,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         void IExtendedBuildingAI.ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
         {
-            for (int i = 0; i < m_incomingResources.Length; i++)
+            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
             {
                 if (material == m_incomingExtendedResources[i])
                 {
@@ -276,8 +276,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
                     int goodsCapacity = m_goodsCapacity;
-                    amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)marketBuffer.inputAmountBuffer[i]);
-                    marketBuffer.inputAmountBuffer[i] = (ushort)((int)marketBuffer.inputAmountBuffer[i] + amountDelta);
+                    amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length]);
+                    marketBuffer.inputAmountBuffer[i] = (ushort)((int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] + amountDelta);
                     ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
                 }
             }
