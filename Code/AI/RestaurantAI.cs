@@ -95,9 +95,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public List<uint> FoodLine = new();
 
-        public DateTime WaitingForProductTimer;
+        public DateTime CurrentGameTime;
 
         public DateTime WaitInLineTimer;
+
+        public DateTime WaitingForDeliveryVehicleTimer;
+
+        public int m_usedVehicles;
 
         [CustomizableProperty("Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
@@ -312,15 +316,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
             base.SimulationStep(buildingID, ref buildingData, ref frameData);
-            WaitingForProductTimer = SimulationManager.instance.m_currentGameTime;
+            CurrentGameTime = SimulationManager.instance.m_currentGameTime;
             if (m_finalProductionRate != 0)
             {
                 WaitInLineTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
             }
+            if(m_usedVehicles < m_DeliveryVehicleCount)
+            {
+                WaitingForDeliveryVehicleTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
+            }
+            if(CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
+            {
+                RestaurantDeliveriesManager.RestaurantDeliveries.RemoveAll(item => item.deliveryVehicleId == 0);
+            }
             // there are people in line who didn't get food, and there is enough storage to cook meals
             if (FoodLine != null)
             {
-                if (WaitingForProductTimer >= WaitInLineTimer && !IsNextDay())
+                if (CurrentGameTime >= WaitInLineTimer && !IsNextDay())
                 {
                     foreach (var person in FoodLine)
                     {
@@ -802,7 +814,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
             buildingData.m_tempImport |= (byte)TempOutput;
-            if (m_outputResource1 != ExtendedTransferManager.TransferReason.None && m_DeliveryVehicleCount != 0)
+            if (m_outputResource1 != ExtendedTransferManager.TransferReason.None && m_DeliveryVehicleCount != 0 && allow_delivery)
             {
                 int count8 = 0;
                 int cargo8 = 0;
@@ -810,7 +822,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int outside8 = 0;
                 ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource1, ref count8, ref cargo8, ref capacity8, ref outside8);
                 buildingData.m_tempExport = (byte)Mathf.Clamp(outside8, buildingData.m_tempExport, 255);
-                if (count8 < m_DeliveryVehicleCount && allow_delivery)
+                m_usedVehicles = count8;
+                if (count8 < m_DeliveryVehicleCount)
                 {
                     var material = ExtendedTransferManager.TransferReason.None;
                     if (quality == 1)
@@ -1120,7 +1133,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (delivery_vehicle != null)
             {
                 RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
-                if (orders_with_no_vehicle.Count <= restaurantDeliveryVehicleAI.m_deliveryCapacity)
+                if (orders_with_no_vehicle.Count < restaurantDeliveryVehicleAI.m_deliveryCapacity)
                 {
                     return true;
                 }
