@@ -14,11 +14,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool FindVisitPlace(HumanAI __instance, uint citizenID, ushort sourceBuilding, TransferManager.TransferReason reason)
         {
-            if(IsShoppingReason(reason))
+            var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenID];
+            if(IsShoppingReason(reason) && Citizen.GetAgeGroup(citizen.Age) == Citizen.AgeGroup.Senior || Citizen.GetAgeGroup(citizen.Age) == Citizen.AgeGroup.Adult || Citizen.GetAgeGroup(citizen.Age) == Citizen.AgeGroup.Young)
             {
                 bool get_delivery = false;
                 var homeBuildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)sourceBuilding];
-                var citizen = Singleton<CitizenManager>.instance.m_citizens.m_buffer[citizenID];
+                
                 var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
                 if (waiting_delivery != -1) // already waiting for delivery do nothing
                 {
