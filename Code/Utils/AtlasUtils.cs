@@ -10,7 +10,9 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             "Bread",
             "DrinkSupplies",
             "FoodSupplies",
-            "Meals"
+            "Meals",
+            "CannedFish",
+            "OrderedMeals"
         };
 
         public static string[] NotificationSpriteNames = new string[]

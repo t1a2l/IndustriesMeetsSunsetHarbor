@@ -266,8 +266,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer8, restaurantAI.m_outputDeliveryMealsCount);
             m_deliveryMealsStorage.tooltip = "Delivery Meals Count is " + custom_buffers.m_customBuffer8 + "/" + restaurantAI.m_outputDeliveryMealsCount;
             m_deliveryMealsLabel.text = "Ordered Meals";
-            m_deliveryMealsSprite.atlas = TextureUtils.GetAtlas("DeliveryNotificationAtlas");
-            m_deliveryMealsSprite.spriteName = "BuildingNotificationWaitingDeliveryFirst";
+            m_deliveryMealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_deliveryMealsSprite.spriteName = "OrderedMeals";
 
             m_mealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputMealsCount);
             m_mealsStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer9 + "/" + restaurantAI.m_outputMealsCount;
