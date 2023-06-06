@@ -373,6 +373,21 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                 }
             }
+            // go through deliveries where food was not prepared and try make food for the delivery
+            var DeliveriesList = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
+            for(var i = 0; i < DeliveriesList.Count; i++)
+            {
+                var delivery = DeliveriesList[i];
+                if(delivery.mealCooked == false)
+                {
+                    var delivery_meal_cooked = CookDeliveryMeal(buildingID);
+                    if(delivery_meal_cooked)
+                    {
+                        delivery.mealCooked = true;
+                        DeliveriesList[i] = delivery;
+                    }
+                }
+            }
         }
 
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
@@ -384,16 +399,20 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 // new citizen order
                 var DeliveriesList = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
 
-                DeliveriesList.Add(new RestaurantDeliveriesManager.RestaurantDeliveryData
+                var NewDelivery = new RestaurantDeliveriesManager.RestaurantDeliveryData
                 {
                     deliveryVehicleId = 0,
                     buildingId = buildingByLocation,
                     citizenId = citizen,
-                    restaurantId = buildingID
-                });
+                    restaurantId = buildingID,
+                    mealCooked = false
+                };
+                var delivery_meal_cooked = CookDeliveryMeal(buildingID);
+                if(delivery_meal_cooked)
+                {
+                    NewDelivery.mealCooked = true;
+                }
                 RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
-                // cook meal for the citizen who ordered
-                CookDeliveryMeal(buildingID);
                 // check if we got to the number of orders the vehicle can carry
                 if (!CheckIfDeliveryOrderInProgress(buildingID))
                 {
@@ -408,7 +427,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             deliveryVehicleId = 0,
                             buildingId = 0,
-                            citizenId = 0
+                            citizenId = 0,
+                            restaurantId = 0,
+                            mealCooked = false
                         };
                         // assign the new delivery vehicle id to all the orders
                         foreach (var index in index_list)
@@ -423,7 +444,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 first_delivery = true;
                             }
                         }
-                        if (first_delivery && deliveryData.buildingId != 0)
+                        if (first_delivery && deliveryData.buildingId != 0 && deliveryData.mealCooked)
                         {
                             // go to first delivery
                             delivery_vehicle.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[vehicle], buildingID);
@@ -1196,7 +1217,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         private bool CheckIfDeliveryOrderInProgress(ushort buildingID)
         {
             var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
-            var orders_with_no_vehicle = list.FindAll(item => item.deliveryVehicleId == 0);
+            var orders_with_no_vehicle = list.FindAll(item => item.deliveryVehicleId == 0 && item.mealCooked == true);
             if (delivery_vehicle != null)
             {
                 RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
@@ -1291,8 +1312,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return true;
         }
 
-        private void CookDeliveryMeal(ushort buildingID)
+        private bool CookDeliveryMeal(ushort buildingID)
         {
+            if (m_finalProductionRate == 0)
+            {
+                return false;
+            }
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
@@ -1358,6 +1383,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 custom_buffers.m_customBuffer9 = (ushort)CustomBuffer9;
             }
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            return true;
         }
 
         private void EatMeal(ushort buildingID, ref Building data, uint citizen)

@@ -33,6 +33,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     StorageData.WriteUInt32(item.citizenId, Data);
                     StorageData.WriteUInt16(item.deliveryVehicleId, Data);
                     StorageData.WriteUInt16(item.restaurantId, Data);
+                    StorageData.WriteBool(item.mealCooked, Data);
                 }
 
                 // Write end tuple
@@ -70,13 +71,15 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                                     uint citizenId = StorageData.ReadUInt32(Data, ref iIndex);
                                     ushort deliveryVehicleId = StorageData.ReadUInt16(Data, ref iIndex);
                                     ushort restaurantItemId = StorageData.ReadUInt16(Data, ref iIndex);
+                                    bool mealCooked = StorageData.ReadBool(Data, ref iIndex);
                         
                                     var restaurantDeliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
                                     {
                                         deliveryVehicleId = deliveryVehicleId,
                                         buildingId = buildingId,
                                         citizenId = citizenId,
-                                        restaurantId = restaurantItemId
+                                        restaurantId = restaurantItemId,
+                                        mealCooked = mealCooked
                                     };
                                     RestaurantDeliveryDataList.Add(restaurantDeliveryData);
                                 }

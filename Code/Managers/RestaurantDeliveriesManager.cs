@@ -11,6 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public ushort buildingId;
             public uint citizenId;
             public ushort restaurantId;
+            public bool mealCooked;
         }
 
         public static Dictionary<ushort, List<RestaurantDeliveryData>> RestaurantsDeliveries;
