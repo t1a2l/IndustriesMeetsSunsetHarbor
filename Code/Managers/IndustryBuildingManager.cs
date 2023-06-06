@@ -206,5 +206,34 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 	    num /= 1000f;
 	    return Mathf.Round(num).ToString();
         }
+
+        public static string ResourceSpriteName(ExtendedTransferManager.TransferReason transferReason)
+	{
+	    return transferReason.ToString();
+	}
+
+        public static Color GetExtendedResourceColor(ExtendedTransferManager.TransferReason resource)
+        {
+	    switch (resource)
+	    {
+		case ExtendedTransferManager.TransferReason.MealsDeliveryLow:
+                case ExtendedTransferManager.TransferReason.MealsDeliveryMedium:
+                case ExtendedTransferManager.TransferReason.MealsDeliveryHigh:
+                    return Color.Lerp(Color.magenta, Color.black, 0.2f);
+                case ExtendedTransferManager.TransferReason.MealsLow:
+                case ExtendedTransferManager.TransferReason.MealsMedium:
+                case ExtendedTransferManager.TransferReason.MealsHigh:
+                    return Color.Lerp(Color.cyan, Color.black, 0.2f);
+                case ExtendedTransferManager.TransferReason.DrinkSupplies:
+                    return Color.Lerp(Color.white, Color.black, 0.2f);
+                case ExtendedTransferManager.TransferReason.FoodSupplies:
+                    return Color.Lerp(Color.green, Color.red, 0.5f);
+                case ExtendedTransferManager.TransferReason.Bread:
+                    return Color.Lerp(Color.red, Color.yellow, 0.5f);
+                case ExtendedTransferManager.TransferReason.CannedFish:
+                    return Color.Lerp(Color.cyan, Color.blue, 0.5f);
+	    };
+            return Color.Lerp(Color.grey, Color.black, 0.2f);;
+        }
     }
 }

@@ -42,11 +42,5 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             }
         }
 
-        public static string ResourceSpriteName(ExtendedTransferManager.TransferReason transferReason)
-	{
-	    return transferReason.ToString();
-	}
-
-
     }
 }
