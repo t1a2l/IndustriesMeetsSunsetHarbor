@@ -149,8 +149,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_mealsBigArrow.relativePosition = new Vector3(248f, 200f);
             m_mealsStorage.relativePosition = new Vector3(195f, 255f);
 
-            m_materialCost = Find<UILabel>("UFPANEL_MATERIALCOST_TOOLTIP");
-            m_productionValue = Find<UILabel>("UFPANEL_PRODUCTIONVALUE_TOOLTIP");
+            m_materialCost = Find<UILabel>("MATERIAL COST");
+            m_productionValue = Find<UILabel>("PRODUCTION VALUE");
     
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
