@@ -91,7 +91,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer4.Citizen = citizenID;
                         transferOffer4.Position = homeBuildingData.m_position;
                         transferOffer4.Amount = 1;
-                        transferOffer4.Active = false;
+                        transferOffer4.Active = true;
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsLow, transferOffer4);
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
@@ -101,7 +101,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer5.Citizen = citizenID;
                         transferOffer5.Position = homeBuildingData.m_position;
                         transferOffer5.Amount = 1;
-                        transferOffer5.Active = false;
+                        transferOffer5.Active = true;
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsMedium, transferOffer5);
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
@@ -111,7 +111,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         transferOffer6.Citizen = citizenID;
                         transferOffer6.Position = homeBuildingData.m_position;
                         transferOffer6.Amount = 1;
-                        transferOffer6.Active = false;
+                        transferOffer6.Active = true;
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsHigh, transferOffer6);
                     }
                     return false;

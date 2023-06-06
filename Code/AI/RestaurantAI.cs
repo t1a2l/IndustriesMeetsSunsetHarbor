@@ -922,7 +922,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     if(material != ExtendedTransferManager.TransferReason.None)
                     {
-                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(material, offer9);
+                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer9);
                     }
                     if (!CheckIfDeliveryOrderInProgress(buildingID) && material != ExtendedTransferManager.TransferReason.None)
                     {
@@ -958,7 +958,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         offer10.Building = buildingID;
                         offer10.Position = buildingData.m_position;
                         offer10.Amount = Mathf.Min(num28 / 100, citizenWhoCanVisit);
-                        offer10.Active = true;
+                        offer10.Active = false;
 
                         if (quality == 1)
                         {
