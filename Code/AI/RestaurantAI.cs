@@ -321,6 +321,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Singleton<NotificationManager>.instance.AddEvent(NotificationEvent.Type.LoseHappiness, position, 1.5f);
                 Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Sad, ImmaterialResourceManager.Resource.DeathCare, -m_foodDeliveryAccumulation, m_foodDeliveryRadius);
             }
+
         }
 
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
@@ -337,7 +338,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if(CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
             {
-                RestaurantDeliveriesManager.RestaurantDeliveries.RemoveAll(item => item.deliveryVehicleId == 0);
+                RestaurantDeliveriesManager.RestaurantsDeliveries[buildingID].RemoveAll(item => item.deliveryVehicleId == 0);
             }
             // there are people in line who didn't get food, and there is enough storage to cook meals
             if (FoodLine != null)
@@ -379,22 +380,25 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 uint citizen = offer.Citizen;
                 ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
                 // new citizen order
-                RestaurantDeliveriesManager.RestaurantDeliveries.Add(new RestaurantDeliveriesManager.RestaurantDeliveryData
+                var DeliveriesList = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
+
+                DeliveriesList.Add(new RestaurantDeliveriesManager.RestaurantDeliveryData
                 {
                     deliveryVehicleId = 0,
                     buildingId = buildingByLocation,
-                    citizenId = citizen
+                    citizenId = citizen,
+                    restaurantId = buildingID
                 });
                 // cook meal for this citizen who ordered
                 CookOrderMeal(buildingID);
-                // check if we got to the number of orders to vehicle can carry
-                if (!CheckIfDeliveryOrderInProgress())
+                // check if we got to the number of orders the vehicle can carry
+                if (!CheckIfDeliveryOrderInProgress(buildingID))
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     if (ExtedndedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, delivery_vehicle, data.m_position, (byte)material, transferToSource: false, transferToTarget: true))
                     {
                         // get a list of indexes where vehicle id is 0
-                        var index_list = Enumerable.Range(0, RestaurantDeliveriesManager.RestaurantDeliveries.Count).Where(i => RestaurantDeliveriesManager.RestaurantDeliveries[i].deliveryVehicleId == 0).ToList();
+                        var index_list = Enumerable.Range(0, DeliveriesList.Count).Where(i => DeliveriesList[i].deliveryVehicleId == 0).ToList();
 
                         var first_delivery = false;
                         RestaurantDeliveriesManager.RestaurantDeliveryData deliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
@@ -406,9 +410,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         // assign the new delivery vehicle id to all the orders
                         foreach (var index in index_list)
                         {
-                            var item = RestaurantDeliveriesManager.RestaurantDeliveries[index];
+                            var item = DeliveriesList[index];
                             item.deliveryVehicleId = vehicle;
-                            RestaurantDeliveriesManager.RestaurantDeliveries[index] = item;
+                            DeliveriesList[index] = item;
                             if (!first_delivery)
                             {
                                 // assign first order to drive to
@@ -424,6 +428,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
+                RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
             }
         }
 
@@ -580,6 +585,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 Singleton<ExtendedTransferManager>.instance.RemoveOutgoingOffer(m_outputResource2, extended_offer);
             }
+            RestaurantDeliveriesManager.RestaurantsDeliveries[buildingID].Clear();
             base.BuildingDeactivated(buildingID, ref data);
         }
 
@@ -914,7 +920,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(material, offer9);
                     }
-                    if (!CheckIfDeliveryOrderInProgress() && material != ExtendedTransferManager.TransferReason.None)
+                    if (!CheckIfDeliveryOrderInProgress(buildingID) && material != ExtendedTransferManager.TransferReason.None)
                     {
                         CreateDeliveryOrder();
                     }
@@ -1066,8 +1072,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
             string text6 = (m_inputResource6 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource6);
             bool flag7 = m_inputResource7 != TransferManager.TransferReason.None;
             string text7 = (m_inputResource7 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource7);
-            bool flag8 = m_inputResource7 != TransferManager.TransferReason.None;
-            string text8 = (m_inputResource7 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource8);
+            bool flag8 = m_inputResource8 != TransferManager.TransferReason.None;
+            string text8 = (m_inputResource8 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource8);
             string addTooltip = TooltipHelper.Format("arrowVisible", "true", "input1Visible", flag1.ToString(), "input2Visible", flag2.ToString(), "input3Visible", flag3.ToString(), "input4Visible", flag4.ToString(), "input5Visible", flag5.ToString(), "input6Visible", flag6.ToString(), "input7Visible", flag7.ToString(), "input8Visible", flag8.ToString(), "outputVisible", "true");
             string addTooltip2 = TooltipHelper.Format("input1", text1, "input2", text2, "input3", text3, "input4", text4, "input5", text5, "input6", text6, "input7", text7, "input8", text8, "output", "Meals");
             string addTooltip3 = TooltipHelper.Format("input1", text1, "input2", text2, "input3", text3, "input4", text4, "input5", text5, "input6", text6, "input7", text7, "input8", text8, "output", "DeliveryMeals");
@@ -1103,12 +1109,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                 }
                 ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material, ref used_count, ref cargo, ref capacity, ref outside);
-                text = text + Environment.NewLine + "delivery vehicles in use " + used_count + "/" + delivery_vehicle_count;
-                text = text + Environment.NewLine + "ordered meals cooked " + custom_buffers.m_customBuffer8;
+                text = text + Environment.NewLine + "Delivery Vehicles In Use " + used_count + "/" + delivery_vehicle_count;
+                text = text + Environment.NewLine + "Ordered Meals Cooked " + custom_buffers.m_customBuffer8;
             }
             if (m_outputResource2 != ExtendedTransferManager.TransferReason.None)
             {
-                text = text + Environment.NewLine + "meals cooked " + custom_buffers.m_customBuffer9;
+                text = text + Environment.NewLine + "Customers Meals Cooked " + custom_buffers.m_customBuffer9;
             }
             return text;
         }
@@ -1179,9 +1185,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             };
         }
 
-        private bool CheckIfDeliveryOrderInProgress()
+        private bool CheckIfDeliveryOrderInProgress(ushort buildingID)
         {
-            var orders_with_no_vehicle = RestaurantDeliveriesManager.RestaurantDeliveries.FindAll(item => item.deliveryVehicleId == 0);
+            var orders_with_no_vehicle = RestaurantDeliveriesManager.RestaurantsDeliveries[buildingID].FindAll(item => item.deliveryVehicleId == 0);
             if (delivery_vehicle != null)
             {
                 RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
@@ -1403,6 +1409,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                return false;
             }
         }
+
     }
 
 }

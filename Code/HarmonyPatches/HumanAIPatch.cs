@@ -20,8 +20,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 bool get_delivery = false;
                 var homeBuildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)sourceBuilding];
                 
-                var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
-                if (waiting_delivery != -1) // already waiting for delivery do nothing
+                var waiting_delivery = RestaurantDeliveriesManager.IsCitizenWaitingForDelivery(citizenID);
+                if (waiting_delivery) // already waiting for delivery do nothing
                 {
                     return false;
                 }
@@ -126,8 +126,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool StartMoving(HumanAI __instance, uint citizenID, ref Citizen data, ushort sourceBuilding, TransferManager.TransferOffer offer, ref bool __result)
         {
-            var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizenID);
-            if(waiting_delivery != -1) // don't start moving if waiting for delivery
+            var waiting_delivery = RestaurantDeliveriesManager.IsCitizenWaitingForDelivery(citizenID);
+            if(waiting_delivery) // don't start moving if waiting for delivery
             {
                 __result = false;
                 return false;

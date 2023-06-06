@@ -21,11 +21,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 BuildingManager instance2 = Singleton<BuildingManager>.instance;
                 var building_info = instance2.m_buildings.m_buffer[citizenData.m_targetBuilding].Info;
                 uint citizen = citizenData.m_citizen;
-                var waiting_delivery = RestaurantDeliveriesManager.RestaurantDeliveries.FindIndex(item => item.citizenId == citizen);
+                var waiting_delivery = RestaurantDeliveriesManager.IsCitizenWaitingForDelivery(citizen);
                 // if citizen is waiting for delivery do nothing - the goods transfer will happen when the delivery vehicle will arrive at the house
                 if (citizen != 0U && ((instance.m_citizens.m_buffer[(int)((UIntPtr)citizen)].m_flags & Citizen.Flags.NeedGoods) != Citizen.Flags.None))
                 {
-                    if(waiting_delivery != -1)
+                    if(waiting_delivery)
                     {
                          return false;
                     }

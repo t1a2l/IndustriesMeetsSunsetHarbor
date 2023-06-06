@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
 
@@ -16,18 +17,23 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             // Write out metadata
             StorageData.WriteUInt16(iRESTAURANT_DELIVERIES_DATA_VERSION, Data);
-            StorageData.WriteInt32(RestaurantDeliveriesManager.RestaurantDeliveries.Count, Data);
+            StorageData.WriteInt32(RestaurantDeliveriesManager.RestaurantsDeliveries.Count, Data);
 
             // Write out each buildings settings
-            foreach (var item in RestaurantDeliveriesManager.RestaurantDeliveries)
+            foreach (KeyValuePair<ushort, List<RestaurantDeliveriesManager.RestaurantDeliveryData>> kvp in RestaurantDeliveriesManager.RestaurantsDeliveries)
             {
                 // Write start tuple
                 StorageData.WriteUInt32(uiTUPLE_START, Data);
 
                 // Write actual settings
-                StorageData.WriteUInt16(item.deliveryVehicleId, Data);
-                StorageData.WriteUInt16(item.buildingId, Data);
-                StorageData.WriteUInt32(item.citizenId, Data);
+                StorageData.WriteUInt16(kvp.Key, Data);
+                foreach(var item in kvp.Value)
+                {
+                    StorageData.WriteUInt16(item.buildingId, Data);
+                    StorageData.WriteUInt32(item.citizenId, Data);
+                    StorageData.WriteUInt16(item.deliveryVehicleId, Data);
+                    StorageData.WriteUInt16(item.restaurantId, Data);
+                }
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -43,24 +49,44 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 if (iRestaurantDeliveriesVersion <= iRESTAURANT_DELIVERIES_DATA_VERSION)
                 {
-                    if(RestaurantDeliveriesManager.RestaurantDeliveries == null)
+                    if(RestaurantDeliveriesManager.RestaurantsDeliveries == null)
                     {
-                        RestaurantDeliveriesManager.RestaurantDeliveries = new();
+                        RestaurantDeliveriesManager.RestaurantsDeliveries = new();
                     }
                     var RestaurantDeliveries_Count = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < RestaurantDeliveries_Count; i++)
                     {
                         CheckStartTuple($"Building({i})", iRestaurantDeliveriesVersion, Data, ref iIndex);
-                        ushort deliveryVehicleId = StorageData.ReadUInt16(Data, ref iIndex);
-                        ushort buildingId = StorageData.ReadUInt16(Data, ref iIndex);
-                        uint citizenId = StorageData.ReadUInt32(Data, ref iIndex);
-                        var restaurantDeliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
+                        ushort restaurantId = StorageData.ReadUInt16(Data, ref iIndex);
+                        List<RestaurantDeliveriesManager.RestaurantDeliveryData> RestaurantDeliveryDataList = new();
+                        if (Data.Length > iIndex + 4)
                         {
-                            deliveryVehicleId = deliveryVehicleId,
-                            buildingId = buildingId,
-                            citizenId = citizenId
-                        };
-                        RestaurantDeliveriesManager.RestaurantDeliveries.Add(restaurantDeliveryData);
+                            int iArrayCount = StorageData.ReadInt32(Data, ref iIndex);
+                            if (Data.Length >= iIndex + (iArrayCount * 2))
+                            {
+                                for (int j = 0; j < iArrayCount; j++)
+                                {
+                                    ushort buildingId = StorageData.ReadUInt16(Data, ref iIndex);
+                                    uint citizenId = StorageData.ReadUInt32(Data, ref iIndex);
+                                    ushort deliveryVehicleId = StorageData.ReadUInt16(Data, ref iIndex);
+                                    ushort restaurantItemId = StorageData.ReadUInt16(Data, ref iIndex);
+                        
+                                    var restaurantDeliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
+                                    {
+                                        deliveryVehicleId = deliveryVehicleId,
+                                        buildingId = buildingId,
+                                        citizenId = citizenId,
+                                        restaurantId = restaurantItemId
+                                    };
+                                    RestaurantDeliveryDataList.Add(restaurantDeliveryData);
+                                }
+                            } 
+                            else
+                            {
+                                LogHelper.Error("Data size not large enough aborting read. ArraySize: " + iArrayCount + " DataSize: " + Data.Length + " Index: " + iIndex);
+                            }
+                        }
+                        RestaurantDeliveriesManager.RestaurantsDeliveries.Add(restaurantId, RestaurantDeliveryDataList);
                         CheckEndTuple($"Building({i})", iRestaurantDeliveriesVersion, Data, ref iIndex);
                     }
                 }
