@@ -31,6 +31,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         int index = 0;
 
+        [CustomizableProperty("Input Resource Threshold")]
+        public int m_resourceThreshold = 4000;
+
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
             int attractivenessAccumulation = GetAttractivenessAccumulation(buildingID, ref data);
@@ -465,14 +468,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         productionRateArr[i] += (num17 + 9) / 10;
                     }
                 }
-                int count = 0;
-                int cargo = 0;
-                int capacity = 0;
-                int outside = 0;
-                int count1 = 0;
-                int cargo1 = 0;
-                int capacity1 = 0;
-                int outside1 = 0;
+                int[] countArr = new int[m_incomingResources.Length];
+                int[] cargoArr = new int[m_incomingResources.Length];
+                int[] capacityArr = new int[m_incomingResources.Length];
+                int[] outsideArr = new int[m_incomingResources.Length];
+                int[] extendedCountArr = new int[m_incomingExtendedResources.Length];
+                int[] extendedCargoArr = new int[m_incomingExtendedResources.Length];
+                int[] extendedCapacityArr = new int[m_incomingExtendedResources.Length];
+                int[] extendedOutsideArr = new int[m_incomingExtendedResources.Length];
                 for (int i = 0; i < merged_count; i++)
                 {
                     if (marketBuffer.inputAmountBuffer[i] > 0)
@@ -489,16 +492,16 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     if (m_incomingResources[i] != TransferManager.TransferReason.None)
                     {
-                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingResources[i], ref count, ref cargo, ref capacity, ref outside);
-                        buildingData.m_tempImport = (byte)Mathf.Clamp(outside, (int)buildingData.m_tempImport, 255);
+                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingResources[i], ref countArr[i], ref cargoArr[i], ref capacityArr[i], ref outsideArr[i]);
+                        buildingData.m_tempImport = (byte)Mathf.Clamp(outsideArr[i], (int)buildingData.m_tempImport, 255);
                     }
                 }
                 for (int i = 0; i < m_incomingExtendedResources.Length; i++)
                 {
                     if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
                     {
-                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingExtendedResources[i], ref count1, ref cargo1, ref capacity1, ref outside1);
-                        buildingData.m_tempImport = (byte)Mathf.Clamp(outside1, (int)buildingData.m_tempImport, 255);
+                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingExtendedResources[i], ref extendedCountArr[i], ref extendedCargoArr[i], ref extendedCapacityArr[i], ref extendedOutsideArr[i]);
+                        buildingData.m_tempImport = (byte)Mathf.Clamp(extendedOutsideArr[i], (int)buildingData.m_tempImport, 255);
                     }
                 }
                 buildingData.m_tempExport = (byte)Mathf.Clamp(behaviour.m_touristCount, (int)buildingData.m_tempExport, 255);
@@ -534,7 +537,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         problem2 = Notification.Problem1.NoFishingGoods;
                     }
-                    if (marketBuffer.inputAmountBuffer[i] == 0 && !isAmount)
+                    if (marketBuffer.inputAmountBuffer[i] < m_resourceThreshold && !isAmount)
                     {
                         buildingData.m_incomingProblemTimer = (byte)Mathf.Min(255, (int)(buildingData.m_incomingProblemTimer + 1));
                         if (buildingData.m_incomingProblemTimer < 64)
@@ -556,13 +559,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     if (buildingData.m_fireIntensity == 0 && m_incomingResources[i] != TransferManager.TransferReason.None)
                     {
-                        int num22 = goodsCapacity - (int)marketBuffer.inputAmountBuffer[i] - capacity;
-                        int num23 = m_goodsCapacity / 4;
-                        num22 -= num23 >> 1;
-                        if (num22 >= 0)
+                        int InputSize = (int)marketBuffer.inputAmountBuffer[i] + cargoArr[i];
+                        if (InputSize < m_resourceThreshold)
                         {
                             TransferManager.TransferOffer offer = default;
-                            offer.Priority = num22 * 8 / num23;
+                            offer.Priority =  Mathf.Max(1, InputSize * 8 / m_goodsCapacity);
                             offer.Building = buildingID;
                             offer.Position = buildingData.m_position;
                             offer.Amount = 1;
@@ -575,10 +576,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     if (buildingData.m_fireIntensity == 0 && m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
                     {
-                        int num22 = goodsCapacity - (int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] - capacity1;
-                        int num23 = m_goodsCapacity / 4;
-                        num22 -= num23 >> 1;
-                        if (num22 >= 0)
+                        int ExtendedInputSize = marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] + extendedCargoArr[i];
+                        if (ExtendedInputSize < m_resourceThreshold)
                         {
                             ExtendedTransferManager.Offer offer = default;
                             offer.Building = buildingID;
