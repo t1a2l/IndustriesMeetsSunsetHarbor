@@ -277,7 +277,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
                     int goodsCapacity = m_goodsCapacity;
                     amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length]);
-                    marketBuffer.inputAmountBuffer[i] = (ushort)((int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] + amountDelta);
+                    marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] = (ushort)((int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] + amountDelta);
                     ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
                 }
             }
@@ -311,7 +311,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 if (material == m_incomingExtendedResources[i])
                 {
-                    amount = ResourceMarketManager.MarketBuffers[buildingID].inputAmountBuffer[i];
+                    amount = ResourceMarketManager.MarketBuffers[buildingID].inputAmountBuffer[i + m_incomingResources.Length];
                     break;
                 }
             }
@@ -473,14 +473,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo1 = 0;
                 int capacity1 = 0;
                 int outside1 = 0;
-                for (int i = 0; i < m_incomingResources.Length; i++)
+                for (int i = 0; i < merged_count; i++)
                 {
                     if (marketBuffer.inputAmountBuffer[i] > 0)
                     {
                         isAmount = true;
                         break;
                     }
-                    if (i == m_incomingResources.Length - 1 && isAmount)
+                    if (i == merged_count - 1 && isAmount)
                     {
                         isAmount = false;
                     }
@@ -630,14 +630,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 name = name.Replace("Flours", "Flour");
                 name = name.Replace("AnimalProducts", "Meat");
                 num = (int)(marketBuffer.amountSold2[i] * 10);
-                str += name + " sold last week: " + num;
+                str += name + " Sold Last Week: " + num;
                 str += Environment.NewLine;
             }
             for (int i = 0; i < m_incomingExtendedResources.Length; i++)
             {
                 string name = m_incomingExtendedResources[i].ToString();
                 num = (int)(marketBuffer.amountSold2[i + m_incomingResources.Length] * 10);
-                str += name + " sold last week: " + num;
+                str += name + " Sold Last Week: " + num;
                 str += Environment.NewLine;
             }
             str += Environment.NewLine;
@@ -648,14 +648,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 name = name.Replace("Flours", "Flour");
                 name = name.Replace("AnimalProducts", "Meat");
                 num = (int)(marketBuffer.inputAmountBuffer[i]);
-                str += name + " stored in market: " + num + "/" + m_goodsCapacity;
+                str += name + " Stored In Market: " + num + "/" + m_goodsCapacity;
                 str += Environment.NewLine;
             }
             for (int i = 0; i < m_incomingExtendedResources.Length; i++)
             {
                 string name = m_incomingExtendedResources[i].ToString();
                 num = (int)(marketBuffer.inputAmountBuffer[i + m_incomingResources.Length]);
-                str += name + " stored in market: " + num + "/" + m_goodsCapacity;
+                str += name + " Stored In Market: " + num + "/" + m_goodsCapacity;
                 str += Environment.NewLine;
             }
             str += Environment.NewLine;
