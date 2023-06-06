@@ -152,7 +152,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             m_productLabel.text = (!Locale.Exists("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name)) ? Locale.Get("UNIQUEFACTORYPANEL_LUXURYGOODS") : Locale.Get("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name);
-            m_productBuffer.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+            m_productBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(newUniqueFactoryAI.m_outputResource);
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
@@ -277,9 +277,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 {
                     var inputResource = GetInputResourceExtended(ref items, i);
                     var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
-                    uIProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+                    uIProgressBar.progressColor = IndustryBuildingManager.GetExtendedResourceColor(inputResource);
                     text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + inputResource.ToString();
                 }
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (newUniqueFactoryAI.m_workPlaceCount0 + newUniqueFactoryAI.m_workPlaceCount1 + newUniqueFactoryAI.m_workPlaceCount2 + newUniqueFactoryAI.m_workPlaceCount3).ToString());
@@ -328,12 +328,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource2":
                 case "m_inputResource3":
                 case "m_inputResource4":
-                    return "TransferManager";
+                    return "ExtendedTransferManager";
                 case "m_inputResource5":
                 case "m_inputResource6":
                 case "m_inputResource7":
                 case "m_inputResource8":
-                    return "ExtendedTransferManager";
+                    return "TransferManager";
             }
             return "";
         }
@@ -444,7 +444,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource6":
                 case "m_inputResource7":
                 case "m_inputResource8":
-                    return AtlasUtils.ResourceSpriteName(GetInputResourceExtended(ref items, resourceIndex));
+                    return IndustryBuildingManager.ResourceSpriteName(GetInputResourceExtended(ref items, resourceIndex));
             }
             return null;
         }

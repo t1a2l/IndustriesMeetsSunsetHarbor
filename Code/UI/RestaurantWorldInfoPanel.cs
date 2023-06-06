@@ -175,8 +175,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
-            m_deliveryMealsBuffer.progressColor = Color.Lerp(Color.magenta, Color.black, 0.2f);
-            m_mealsBuffer.progressColor = Color.Lerp(Color.cyan, Color.black, 0.2f);
+            m_deliveryMealsBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
+            m_mealsBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource2);
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
@@ -218,7 +218,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource4 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource4 != ExtendedTransferManager.TransferReason.None)
             {
                 if(!items.Contains("m_inputResource4"))
                 {
@@ -247,6 +247,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 if(!items.Contains("m_inputResource7"))
                 {
                     items.Add("m_inputResource7");
+                }
+                count++;
+            }
+            if(ai.m_inputResource8 != TransferManager.TransferReason.None)
+            {
+                if(!items.Contains("m_inputResource8"))
+                {
+                    items.Add("m_inputResource8");
                 }
                 count++;
             }
@@ -280,18 +288,21 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
                 uIProgressBar.value = GetInputBufferProgress(ref items, i, out var amount, out var capacity);
                 var FormatResource = amount.ToString();
-                var inputResource = GetInputResource(ref items, i);
                 var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
+                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
                 if(GetInputResourceType(ref items, i) == "TransferManager")
                 {
+                    var inputResource = GetInputResource(ref items, i);
                     uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
+
                 }
                 else if(GetInputResourceType(ref items, i) == "ExtendedTransferManager")
                 {
-                    uIProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+                    var extendedInputResource = GetInputResourceExtended(ref items, i);
+                    uIProgressBar.progressColor = IndustryBuildingManager.GetExtendedResourceColor(extendedInputResource);
+                    uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + extendedInputResource.ToString();
                 }
-                string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (restaurantAI.m_workPlaceCount0 + restaurantAI.m_workPlaceCount1 + restaurantAI.m_workPlaceCount2 + restaurantAI.m_workPlaceCount3).ToString());
             if ((building.m_flags & Building.Flags.Collapsed) != 0)
@@ -311,10 +322,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
             inputs_expenses += IndustryBuildingManager.GetExtendedResourcePrice(restaurantAI.m_inputResource1) / 10000;
             inputs_expenses += IndustryBuildingManager.GetExtendedResourcePrice(restaurantAI.m_inputResource2) / 10000;
             inputs_expenses += IndustryBuildingManager.GetExtendedResourcePrice(restaurantAI.m_inputResource3) / 10000;
-            inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += IndustryBuildingManager.GetExtendedResourcePrice(restaurantAI.m_inputResource4) / 10000;
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource5) / 10000;
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
+            inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource8) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             m_expenses.tooltip = "Restaurant expenses per week";
             m_materialCost.text = "RESTAURANT EXPENSES";
@@ -333,12 +345,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource1":
                 case "m_inputResource2":
                 case "m_inputResource3":
-                    return "TransferManager";
                 case "m_inputResource4":
-                case "m_inputResource5":
+                    return "ExtendedTransferManager";
+                case "m_inputResource5": 
                 case "m_inputResource6":
                 case "m_inputResource7":
-                    return "ExtendedTransferManager";
+                case "m_inputResource8":
+                    return "TransferManager";
             }
             return "";
         }
@@ -379,6 +392,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     amount = custom_buffers.m_customBuffer7;
                     capacity = restaurantAI.m_inputCapacity7;
                     break;
+                case "m_inputResource8":
+                    amount = custom_buffers.m_customBuffer8;
+                    capacity = restaurantAI.m_inputCapacity8;
+                    break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
         }
@@ -396,8 +413,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource3":
                     return restaurantAI.m_inputResource3.ToString();
                 case "m_inputResource4":
-                    key = restaurantAI.m_inputResource4.ToString();
-                    break;
+                    return restaurantAI.m_inputResource4.ToString();
                 case "m_inputResource5":
                     key = restaurantAI.m_inputResource5.ToString();
                     break;
@@ -406,6 +422,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     break;
                 case "m_inputResource7":
                     key = restaurantAI.m_inputResource7.ToString();
+                    break;
+                case "m_inputResource8":
+                    key = restaurantAI.m_inputResource8.ToString();
                     break;
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);          
@@ -418,11 +437,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource1":
                 case "m_inputResource2":
                 case "m_inputResource3":
-                    return TextureUtils.GetAtlas("RestaurantAtlas");
                 case "m_inputResource4":
+                    return TextureUtils.GetAtlas("RestaurantAtlas");
                 case "m_inputResource5":
                 case "m_inputResource6":
                 case "m_inputResource7":
+                case "m_inputResource8":
                     return null;
             }
             return null;
@@ -435,11 +455,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource1":
                 case "m_inputResource2":
                 case "m_inputResource3":
-                    return AtlasUtils.ResourceSpriteName(GetInputResourceExtended(ref items, resourceIndex));
                 case "m_inputResource4":
+                    return IndustryBuildingManager.ResourceSpriteName(GetInputResourceExtended(ref items, resourceIndex));
                 case "m_inputResource5":
                 case "m_inputResource6":
                 case "m_inputResource7":
+                case "m_inputResource8":
                     return IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(ref items, resourceIndex));;
             }
             return null;
@@ -450,10 +471,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             return items[resourceIndex] switch
             {
-                "m_inputResource4" => restaurantAI.m_inputResource4,
                 "m_inputResource5" => restaurantAI.m_inputResource5,
                 "m_inputResource6" => restaurantAI.m_inputResource6,
                 "m_inputResource7" => restaurantAI.m_inputResource7,
+                "m_inputResource8" => restaurantAI.m_inputResource8,
                 _ => TransferManager.TransferReason.None,
             };
         }
@@ -466,6 +487,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 "m_inputResource1" => restaurantAI.m_inputResource1,
                 "m_inputResource2" => restaurantAI.m_inputResource2,
                 "m_inputResource3" => restaurantAI.m_inputResource3,
+                "m_inputResource4" => restaurantAI.m_inputResource4,
                 _ => ExtendedTransferManager.TransferReason.None,
             };
         }
