@@ -392,7 +392,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     restaurantId = buildingID
                 });
                 // cook meal for this citizen who ordered
-                CookOrderMeal(buildingID);
+                CookDeliveryMeal(buildingID);
                 // check if we got to the number of orders the vehicle can carry
                 if (!CheckIfDeliveryOrderInProgress(buildingID))
                 {
@@ -1287,7 +1287,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return true;
         }
 
-        private void CookOrderMeal(ushort buildingID)
+        private void CookDeliveryMeal(ushort buildingID)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
