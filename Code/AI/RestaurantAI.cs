@@ -96,7 +96,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public VehicleInfo delivery_vehicle;
 
-        public List<uint> FoodLine = new();
+        public List<uint> FoodLine;
 
         public DateTime CurrentGameTime;
 
@@ -602,6 +602,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else
             {
+                if(FoodLine == null)
+                {
+                    FoodLine = new();
+                }
                 FoodLine.Add(citizen);
             }
             base.VisitorEnter(buildingID, ref data, citizen);
