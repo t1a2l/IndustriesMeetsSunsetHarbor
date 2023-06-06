@@ -1114,11 +1114,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material, ref used_count, ref cargo, ref capacity, ref outside);
                 text = text + Environment.NewLine + "Delivery Vehicles In Use " + used_count + "/" + delivery_vehicle_count;
-                text = text + Environment.NewLine + "Ordered Meals Cooked " + custom_buffers.m_customBuffer8;
+                text = text + Environment.NewLine + "Ordered Meals Cooked " + custom_buffers.m_customBuffer9;
             }
             if (m_outputResource2 != ExtendedTransferManager.TransferReason.None)
             {
-                text = text + Environment.NewLine + "Customers Meals Cooked " + custom_buffers.m_customBuffer9;
+                text = text + Environment.NewLine + "Customers Meals Cooked " + custom_buffers.m_customBuffer10;
             }
             return text;
         }
