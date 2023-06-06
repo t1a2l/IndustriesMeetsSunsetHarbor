@@ -253,7 +253,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 return true;
             }
             var buildingId = data.m_targetBuilding;
-            var deliveryData = RestaurantDeliveriesManager.RestaurantsDeliveries[data.m_sourceBuilding].Find(item => item.deliveryVehicleId == vehicleID && item.buildingId == buildingId);
+            var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(data.m_sourceBuilding);
+            var deliveryData = list.Find(item => item.deliveryVehicleId == vehicleID && item.buildingId == buildingId);
             BuildingManager b_instance = Singleton<BuildingManager>.instance;
             CitizenManager c_instance = Singleton<CitizenManager>.instance;
             var target_building = b_instance.m_buildings.m_buffer[buildingId];
@@ -273,8 +274,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             data.m_flags |= Vehicle.Flags.Stopped;
             // check if there are other deliveries for this vehicle
             // and go to the next delivery or go back and remove data of current delivery
-            RestaurantDeliveriesManager.RestaurantsDeliveries[data.m_sourceBuilding].Remove(deliveryData);
-            var newData = RestaurantDeliveriesManager.RestaurantsDeliveries[data.m_sourceBuilding].Find(item => item.deliveryVehicleId == vehicleID);
+            list.Remove(deliveryData);
+            var newData = list.Find(item => item.deliveryVehicleId == vehicleID);
+            RestaurantDeliveriesManager.SetRestaurantDeliveriesList(data.m_sourceBuilding, list);
             if(newData.citizenId != 0)
             {
                 SetTarget(vehicleID, ref data, newData.buildingId);
@@ -390,7 +392,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 return true;
             }
             // remove all deliveries if any remaining
-            RestaurantDeliveriesManager.RestaurantsDeliveries[data.m_sourceBuilding].RemoveAll(item => item.deliveryVehicleId == vehicleID);
+            var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(data.m_sourceBuilding);
+            list.RemoveAll(item => item.deliveryVehicleId == vehicleID);
+            RestaurantDeliveriesManager.SetRestaurantDeliveriesList(data.m_sourceBuilding, list);
             // throw all meals to the trash.. (not using delivery food to other deliveries)
             data.m_transferSize = 0;
             RemoveSource(vehicleID, ref data);

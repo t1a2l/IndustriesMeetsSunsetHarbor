@@ -338,7 +338,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if(CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
             {
-                RestaurantDeliveriesManager.RestaurantsDeliveries[buildingID].RemoveAll(item => item.deliveryVehicleId == 0);
+                var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
+                list.RemoveAll(item => item.deliveryVehicleId == 0);
+                RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, list);
             }
             // there are people in line who didn't get food, and there is enough storage to cook meals
             if (FoodLine != null)
@@ -585,7 +587,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 Singleton<ExtendedTransferManager>.instance.RemoveOutgoingOffer(m_outputResource2, extended_offer);
             }
-            RestaurantDeliveriesManager.RestaurantsDeliveries[buildingID].Clear();
+            var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
+            list.Clear();
+            RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, list);
             base.BuildingDeactivated(buildingID, ref data);
         }
 
@@ -1187,7 +1191,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private bool CheckIfDeliveryOrderInProgress(ushort buildingID)
         {
-            var orders_with_no_vehicle = RestaurantDeliveriesManager.RestaurantsDeliveries[buildingID].FindAll(item => item.deliveryVehicleId == 0);
+            var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
+            var orders_with_no_vehicle = list.FindAll(item => item.deliveryVehicleId == 0);
             if (delivery_vehicle != null)
             {
                 RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
