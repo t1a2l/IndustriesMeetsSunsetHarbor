@@ -169,6 +169,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             base.OnSetTarget();
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             m_inputResourceCount = GetInputResourceCount(ref items, restaurantAI);
+            m_inputContainer = Find<UIPanel>("LayoutPanel");
             if(m_inputResourceCount > 4)
             {
                  m_mainPanel.width = m_inputContainer.width + 22;
@@ -271,14 +272,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(restaurantAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-            m_deliveryMealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer8, restaurantAI.m_outputDeliveryMealsCount);
-            m_deliveryMealsStorage.tooltip = "Delivery Meals Count is " + custom_buffers.m_customBuffer8 + "/" + restaurantAI.m_outputDeliveryMealsCount;
+            m_deliveryMealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputDeliveryMealsCount);
+            m_deliveryMealsStorage.tooltip = "Delivery Meals Count is " + custom_buffers.m_customBuffer9 + "/" + restaurantAI.m_outputDeliveryMealsCount;
             m_deliveryMealsLabel.text = "Ordered Meals";
             m_deliveryMealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_deliveryMealsSprite.spriteName = "OrderedMeals";
 
-            m_mealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputMealsCount);
-            m_mealsStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer9 + "/" + restaurantAI.m_outputMealsCount;
+            m_mealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer10, restaurantAI.m_outputMealsCount);
+            m_mealsStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer10 + "/" + restaurantAI.m_outputMealsCount;
             m_mealsLabel.text = "Meals";
             m_mealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_mealsSprite.spriteName = "Meals";

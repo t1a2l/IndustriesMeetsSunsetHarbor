@@ -525,10 +525,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium ||
                 material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
             {
-                int m_customBuffer9 = custom_buffers.m_customBuffer8;
+                int m_customBuffer9 = custom_buffers.m_customBuffer9;
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer9, m_outputDeliveryMealsCount - m_customBuffer9);
                 m_customBuffer9 += amountDelta;
-                custom_buffers.m_customBuffer8 = (ushort)m_customBuffer9;
+                custom_buffers.m_customBuffer9 = (ushort)m_customBuffer9;
             }
             else if (material == ExtendedTransferManager.TransferReason.MealsLow ||
                 material == ExtendedTransferManager.TransferReason.MealsMedium ||
