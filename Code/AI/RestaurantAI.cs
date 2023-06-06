@@ -391,7 +391,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     citizenId = citizen,
                     restaurantId = buildingID
                 });
-                // cook meal for this citizen who ordered
+                RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
+                // cook meal for the citizen who ordered
                 CookDeliveryMeal(buildingID);
                 // check if we got to the number of orders the vehicle can carry
                 if (!CheckIfDeliveryOrderInProgress(buildingID))
@@ -430,7 +431,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
-                RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
             }
         }
 
