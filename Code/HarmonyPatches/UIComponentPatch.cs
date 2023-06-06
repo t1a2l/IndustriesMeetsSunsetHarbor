@@ -1,3 +1,4 @@
+using ColossalFramework;
 using ColossalFramework.UI;
 using HarmonyLib;
 using System;
@@ -12,7 +13,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool Find(UIComponent __instance, string searchName, Type type, ref UIComponent __result)
         {
-            if (__instance.tooltipLocaleID == searchName && type.IsAssignableFrom(__instance.GetType()))
+            if(__instance is UILabel uiLabel && uiLabel.text == searchName && type.IsAssignableFrom(__instance.GetType()))
             {
                 __result = __instance;
                 return false;
