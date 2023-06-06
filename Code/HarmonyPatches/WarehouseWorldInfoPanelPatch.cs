@@ -9,6 +9,7 @@ using MoreTransferReasons;
 using ICities;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.Utils;
+using IndustriesMeetsSunsetHarbor.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -199,7 +200,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 byte actual_material_byte = (byte)(actualTransferReason - 200);
                 byte material_byte = (byte)(transferReason - 200);
-                ___m_resourceProgressBar.progressColor = Color.Lerp(Color.grey, Color.black, 0.2f);
+                ___m_resourceProgressBar.progressColor = IndustryBuildingManager.GetExtendedResourceColor((ExtendedTransferManager.TransferReason)actualTransferReason);
                 var extendedTransferReason = (ExtendedTransferManager.TransferReason)actual_material_byte;
                 if(extendedTransferReason == ExtendedTransferManager.TransferReason.DrinkSupplies && ___m_NameField.text.Contains("Lemonade Factory"))
                 {
