@@ -1358,23 +1358,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private void EatMeal(ushort buildingID, ref Building data, uint citizen)
         {
-            int amountDelta = 1;
+            int amountDelta = -1;
             CitizenManager instance = Singleton<CitizenManager>.instance;
             var citizen_data = instance.m_citizens.m_buffer[citizen];
-            var material = ExtendedTransferManager.TransferReason.None;
-            if (citizen_data.WealthLevel == Citizen.Wealth.Low)
-            {
-                material = ExtendedTransferManager.TransferReason.MealsLow;
-            }
-            else if (citizen_data.WealthLevel == Citizen.Wealth.Medium)
-            {
-                material = ExtendedTransferManager.TransferReason.MealsMedium;
-            }
-            else if (citizen_data.WealthLevel == Citizen.Wealth.High)
-            {
-                material = ExtendedTransferManager.TransferReason.MealsHigh;
-            }
-            ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
+            ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
             BuildingManager instance2 = Singleton<BuildingManager>.instance;
             uint containingUnit = citizen_data.GetContainingUnit(citizen, instance2.m_buildings.m_buffer[citizen_data.m_homeBuilding].m_citizenUnits, CitizenUnit.Flags.Home);
             if (containingUnit != 0)
