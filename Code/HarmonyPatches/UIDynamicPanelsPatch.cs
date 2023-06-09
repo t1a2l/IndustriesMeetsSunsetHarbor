@@ -54,7 +54,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             typeof(DynamicPanelInfo).GetField("m_SingleInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, true);
             typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, false);
             dynamicPanelInfo.viewOwner = view;
-	    GameObject gameObject = Object.Instantiate(dynamicPanelInfo.panelRoot.gameObject);
+	    GameObject gameObject = dynamicPanelInfo.panelRoot.gameObject;
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
                 var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();

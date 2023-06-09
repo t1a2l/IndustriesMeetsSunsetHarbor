@@ -169,13 +169,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             base.OnSetTarget();
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             m_inputResourceCount = GetInputResourceCount(ref items, restaurantAI);
-            m_inputContainer = Find<UIPanel>("LayoutPanel");
-            if(m_inputResourceCount > 4)
-            {
-                 m_mainPanel.width = m_inputContainer.width + 22;
-            }
             m_inputs.SetItemCount(m_inputResourceCount);
-            m_horizontalLine.width = m_inputContainer.width;
             m_deliveryMealsBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
             m_mealsBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource2);
             for (int i = 0; i < m_inputResourceCount; i++)
@@ -284,6 +278,16 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_mealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_mealsSprite.spriteName = "Meals";
 
+            m_horizontalLine.width = m_inputContainer.width;
+            if(m_inputResourceCount > 4)
+            {
+                 m_mainPanel.width = m_inputContainer.width + 22;
+            }
+            else
+            {
+                m_mainPanel.width = 540;
+            }
+
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
@@ -330,11 +334,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource8) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             m_expenses.tooltip = "Restaurant expenses per week";
+            m_materialCost.width += 10;
             m_materialCost.text = "RESTAURANT EXPENSES";
             m_materialCost.tooltip = "Restaurant expenses per week";
             var TotalIncome = restaurantAI.m_outputDeliveryMealsCount + restaurantAI.m_outputMealsCount;
             m_income.text = TotalIncome.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             m_income.tooltip = "Restaurant earnings per week";
+            m_productionValue.width += 10;
             m_productionValue.text = "RESTAURANT EARNINGS";
             m_productionValue.tooltip = "Restaurant earnings per week";
         }
