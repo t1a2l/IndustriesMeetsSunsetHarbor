@@ -11,7 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             // Write out metadata
             StorageData.WriteUInt16(iAQUACULTURE_EXTRACTOR_DATA_VERSION, Data);
-            StorageData.WriteList(AquacultureExtractorManager.AquacultureExtractorsWithNoFarm, Data);
+            StorageData.WriteUShortList(AquacultureExtractorManager.AquacultureExtractorsWithNoFarm, Data);
         }
 
         public static void LoadData(int iGlobalVersion, byte[] Data, ref int iIndex)
@@ -27,7 +27,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     {
                         AquacultureExtractorManager.AquacultureExtractorsWithNoFarm = new();
                     }
-                    AquacultureExtractorManager.AquacultureExtractorsWithNoFarm = StorageData.ReadList(Data, ref iIndex);
+                    AquacultureExtractorManager.AquacultureExtractorsWithNoFarm = StorageData.ReadUShortList(Data, ref iIndex);
                 }
             }
         }

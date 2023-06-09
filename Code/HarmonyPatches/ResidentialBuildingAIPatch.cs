@@ -29,7 +29,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoGoods);
-            var waiting_delivery = RestaurantDeliveriesManager.IsBuildingWaitingForDelivery(buildingID);
+            var waiting_delivery = RestaurantManager.IsBuildingWaitingForDelivery(buildingID);
             if(waiting_delivery)
             {
                 custom_buffers.m_customBuffer1 = (byte)Mathf.Min(255, (int)(custom_buffers.m_customBuffer1 + 1));
