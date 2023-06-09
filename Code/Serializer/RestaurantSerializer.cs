@@ -5,7 +5,7 @@ using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.Serializer
 {
-    public class RestaurantDeliveriesSerializer
+    public class RestaurantSerializer
     {
         // Some magic values to check we are line up correctly on the tuple boundaries
         private const uint uiTUPLE_START = 0xFEFEFEFE;
@@ -17,16 +17,19 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         {
             // Write out metadata
             StorageData.WriteUInt16(iRESTAURANT_DELIVERIES_DATA_VERSION, Data);
-            StorageData.WriteInt32(RestaurantDeliveriesManager.RestaurantsDeliveries.Count, Data);
 
-            // Write out each buildings settings
-            foreach (KeyValuePair<ushort, List<RestaurantDeliveriesManager.RestaurantDeliveryData>> kvp in RestaurantDeliveriesManager.RestaurantsDeliveries)
+            StorageData.WriteUInt32(uiTUPLE_START, Data);
+            StorageData.WriteInt32(RestaurantManager.RestaurantsDeliveries.Count, Data);
+
+            // Write out each building deliveries settings
+            foreach (KeyValuePair<ushort, List<RestaurantManager.RestaurantDeliveryData>> kvp in RestaurantManager.RestaurantsDeliveries)
             {
                 // Write start tuple
                 StorageData.WriteUInt32(uiTUPLE_START, Data);
 
                 // Write actual settings
                 StorageData.WriteUInt16(kvp.Key, Data);
+                StorageData.WriteInt32(kvp.Value.Count, Data);
                 foreach(var item in kvp.Value)
                 {
                     StorageData.WriteUInt16(item.buildingId, Data);
@@ -39,27 +42,49 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
             }
+
+            StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+            StorageData.WriteUInt32(uiTUPLE_START, Data);
+            StorageData.WriteInt32(RestaurantManager.RestaurantsLines.Count, Data);
+
+            // Write out each building customers line settings
+            foreach (KeyValuePair<ushort, List<uint>> kvp in RestaurantManager.RestaurantsLines)
+            {
+                // Write start tuple
+                StorageData.WriteUInt32(uiTUPLE_START, Data);
+
+                // Write actual settings
+                StorageData.WriteUInt16(kvp.Key, Data);
+                StorageData.WriteUIntList(kvp.Value, Data);
+
+                // Write end tuple
+                StorageData.WriteUInt32(uiTUPLE_END, Data);
+            }
+
+            StorageData.WriteUInt32(uiTUPLE_END, Data);
         }
 
         public static void LoadData(int iGlobalVersion, byte[] Data, ref int iIndex)
         {
             if (Data != null && Data.Length > iIndex)
             {
-                int iRestaurantDeliveriesVersion = StorageData.ReadUInt16(Data, ref iIndex);
-                LogHelper.Information("Global: " + iGlobalVersion + " BuildingVersion: " + iRestaurantDeliveriesVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
+                int iRestaurantVersion = StorageData.ReadUInt16(Data, ref iIndex);
+                LogHelper.Information("Global: " + iGlobalVersion + " BuildingVersion: " + iRestaurantVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
 
-                if (iRestaurantDeliveriesVersion <= iRESTAURANT_DELIVERIES_DATA_VERSION)
+                if (iRestaurantVersion <= iRESTAURANT_DELIVERIES_DATA_VERSION)
                 {
-                    if(RestaurantDeliveriesManager.RestaurantsDeliveries == null)
+                    CheckStartTuple($"RestaurantDeliveries Start", iRestaurantVersion, Data, ref iIndex);
+                    if(RestaurantManager.RestaurantsDeliveries == null)
                     {
-                        RestaurantDeliveriesManager.RestaurantsDeliveries = new();
+                        RestaurantManager.RestaurantsDeliveries = new();
                     }
-                    var RestaurantDeliveries_Count = StorageData.ReadInt32(Data, ref iIndex);
-                    for (int i = 0; i < RestaurantDeliveries_Count; i++)
+                    var RestaurantDeliveriesCount = StorageData.ReadInt32(Data, ref iIndex);
+                    for (int i = 0; i < RestaurantDeliveriesCount; i++)
                     {
-                        CheckStartTuple($"Building({i})", iRestaurantDeliveriesVersion, Data, ref iIndex);
+                        CheckStartTuple($"Building({i})", iRestaurantVersion, Data, ref iIndex);
                         ushort restaurantId = StorageData.ReadUInt16(Data, ref iIndex);
-                        List<RestaurantDeliveriesManager.RestaurantDeliveryData> RestaurantDeliveryDataList = new();
+                        List<RestaurantManager.RestaurantDeliveryData> RestaurantDeliveryDataList = new();
                         if (Data.Length > iIndex + 4)
                         {
                             int iArrayCount = StorageData.ReadInt32(Data, ref iIndex);
@@ -73,7 +98,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                                     ushort restaurantItemId = StorageData.ReadUInt16(Data, ref iIndex);
                                     bool mealCooked = StorageData.ReadBool(Data, ref iIndex);
                         
-                                    var restaurantDeliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
+                                    var restaurantDeliveryData = new RestaurantManager.RestaurantDeliveryData
                                     {
                                         deliveryVehicleId = deliveryVehicleId,
                                         buildingId = buildingId,
@@ -89,9 +114,28 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                                 LogHelper.Error("Data size not large enough aborting read. ArraySize: " + iArrayCount + " DataSize: " + Data.Length + " Index: " + iIndex);
                             }
                         }
-                        RestaurantDeliveriesManager.RestaurantsDeliveries.Add(restaurantId, RestaurantDeliveryDataList);
-                        CheckEndTuple($"Building({i})", iRestaurantDeliveriesVersion, Data, ref iIndex);
+                        RestaurantManager.RestaurantsDeliveries.Add(restaurantId, RestaurantDeliveryDataList);
+                        CheckEndTuple($"Building({i})", iRestaurantVersion, Data, ref iIndex);
                     }
+                    CheckEndTuple($"RestaurantDeliveries End", iRestaurantVersion, Data, ref iIndex);
+
+                    // ---------------------------------------------------------------------------------------------------------
+
+                    CheckStartTuple($"RestaurantsLines Start", iRestaurantVersion, Data, ref iIndex);
+                    if(RestaurantManager.RestaurantsLines == null)
+                    {
+                        RestaurantManager.RestaurantsLines = new();
+                    }
+                    var RestaurantsLinesCount = StorageData.ReadInt32(Data, ref iIndex);
+                    for (int i = 0; i < RestaurantsLinesCount; i++)
+                    {
+                        CheckStartTuple($"Building({i})", iRestaurantVersion, Data, ref iIndex);
+                        ushort restaurantId = StorageData.ReadUInt16(Data, ref iIndex);
+                        List<uint> RestaurantLineList = StorageData.ReadUIntList(Data, ref iIndex);
+                        RestaurantManager.RestaurantsLines.Add(restaurantId, RestaurantLineList);
+                        CheckEndTuple($"Building({i})", iRestaurantVersion, Data, ref iIndex);
+                    }
+                    CheckEndTuple($"RestaurantsLines End", iRestaurantVersion, Data, ref iIndex);
                 }
             }
         }

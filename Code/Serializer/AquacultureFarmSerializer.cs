@@ -27,7 +27,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 // Write actual settings
                 StorageData.WriteUInt16(kvp.Key, Data);
-                StorageData.WriteList(kvp.Value, Data);
+                StorageData.WriteUShortList(kvp.Value, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -52,7 +52,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     {
                         CheckStartTuple($"Building({i})", iAquacultureFarmVersion, Data, ref iIndex);
                         ushort aquaculturerFarmId = StorageData.ReadUInt16(Data, ref iIndex);
-                        List<ushort> aquaculturerFarmExtractors = StorageData.ReadList(Data, ref iIndex);
+                        List<ushort> aquaculturerFarmExtractors = StorageData.ReadUShortList(Data, ref iIndex);
                         AquacultureFarmManager.AquacultureFarms.Add(aquaculturerFarmId, aquaculturerFarmExtractors);
                         CheckEndTuple($"Building({i})", iAquacultureFarmVersion, Data, ref iIndex);
                     }

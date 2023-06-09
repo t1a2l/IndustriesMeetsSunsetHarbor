@@ -165,7 +165,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             }
         }
 
-        public static void WriteList(List<ushort> listUInt16, FastList<byte> Data)
+        public static void WriteUShortList(List<ushort> listUInt16, FastList<byte> Data)
         {
             // Write out list
             WriteInt32(listUInt16.Count, Data);
@@ -175,9 +175,19 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             }
         }
 
-        public static List<ushort> ReadList(byte[] Data, ref int iIndex)
+        public static void WriteUIntList(List<uint> listUInt32, FastList<byte> Data)
         {
-            List<ushort> list = new List<ushort>();
+            // Write out list
+            WriteInt32(listUInt32.Count, Data);
+            foreach (uint value in listUInt32)
+            {
+                WriteUInt32(value, Data);
+            }
+        }
+
+        public static List<ushort> ReadUShortList(byte[] Data, ref int iIndex)
+        {
+            List<ushort> list = new();
             if (Data.Length > iIndex + 4)
             {
                 int iArrayCount = ReadInt32(Data, ref iIndex);
@@ -186,6 +196,27 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     for (int i = 0; i < iArrayCount; i++)
                     {
                         list.Add(ReadUInt16(Data, ref iIndex));
+                    }
+                } 
+                else
+                {
+                    LogHelper.Error("Data size not large enough aborting read. ArraySize: " + iArrayCount + " DataSize: " + Data.Length + " Index: " + iIndex);
+                }
+            }
+            return list;
+        }
+
+        public static List<uint> ReadUIntList(byte[] Data, ref int iIndex)
+        {
+            List<uint> list = new();
+            if (Data.Length > iIndex + 4)
+            {
+                int iArrayCount = ReadInt32(Data, ref iIndex);
+                if (Data.Length >= iIndex + (iArrayCount * 2))
+                {
+                    for (int i = 0; i < iArrayCount; i++)
+                    {
+                        list.Add(ReadUInt32(Data, ref iIndex));
                     }
                 } 
                 else
