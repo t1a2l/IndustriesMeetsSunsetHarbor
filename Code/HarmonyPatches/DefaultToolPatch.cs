@@ -33,13 +33,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		    }
                     else if(extendedWarehouseAI != null)
 		    {
-		        WorldInfoPanel.Show<WarehouseWorldInfoPanel>(position, id);
+		        WorldInfoPanel.Show<ExtendedWarehouseWorldInfoPanel>(position, id);
                         return false;
 		    }
                     else
                     {
                         WorldInfoPanel.Hide<NewUniqueFactoryWorldInfoPanel>();
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                     }
                 }
             }
@@ -47,6 +48,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 WorldInfoPanel.Hide<NewUniqueFactoryWorldInfoPanel>();
                 WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
             }
             return true;
         }
