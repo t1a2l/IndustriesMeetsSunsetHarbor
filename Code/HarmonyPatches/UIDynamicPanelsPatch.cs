@@ -78,6 +78,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         }
                     }
                 }
+                var UniqueFactoryInputResource = newUniqueFactoryComp.Find<UIPanel>("UniqueFactoryInputResource");
+                Object.DestroyImmediate(UniqueFactoryInputResource);
                 var main_panel = newUniqueFactoryComp.Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
                 main_panel.cachedName = "(Library) NewUniqueFactoryWorldInfoPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
@@ -117,6 +119,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         }
                     }
                 }
+                var UniqueFactoryInputResource = restaurantComp.Find<UIPanel>("UniqueFactoryInputResource");
+                Object.DestroyImmediate(UniqueFactoryInputResource);
                 var main_panel = restaurantComp.Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
                 main_panel.cachedName = "(Library) RestaurantWorldInfoPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
