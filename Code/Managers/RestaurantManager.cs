@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
-    public static class RestaurantDeliveriesManager
+    public static class RestaurantManager
     {
 
         public struct RestaurantDeliveryData
@@ -16,6 +16,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static Dictionary<ushort, List<RestaurantDeliveryData>> RestaurantsDeliveries;
 
+        public static Dictionary<ushort, List<uint>> RestaurantsLines;
 
         public static void Init()
         {
@@ -23,11 +24,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 RestaurantsDeliveries = new();
             }
+            if(RestaurantsLines == null)
+            {
+                RestaurantsLines = new();
+            }
         }
 
         public static void Deinit()
         {
             RestaurantsDeliveries = new();
+            RestaurantsLines = new();
         }
 
         public static List<RestaurantDeliveryData> GetRestaurantDeliveriesList(ushort buildingID)
@@ -40,9 +46,24 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             return DeliveriesList;
         }
 
+        public static List<uint> GetRestaurantLineList(ushort buildingID)
+        {
+            if(!RestaurantsLines.TryGetValue(buildingID, out List<uint> LineList))
+            {
+                LineList = new List<uint>();
+                RestaurantsLines[buildingID] = LineList;
+            }
+            return LineList;
+        }
+
         public static void SetRestaurantDeliveriesList(ushort buildingID, List<RestaurantDeliveryData> DeliveriesList)
         {
             RestaurantsDeliveries[buildingID] = DeliveriesList;
+        }
+
+        public static void SetRestaurantLineList(ushort buildingID, List<uint> LineList)
+        {
+            RestaurantsLines[buildingID] = LineList;
         }
 
         public static bool IsCitizenWaitingForDelivery(uint citizenId)

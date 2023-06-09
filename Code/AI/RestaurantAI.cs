@@ -7,7 +7,6 @@ using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using ICities;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -95,8 +94,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public bool allow_delivery = true;
 
         public VehicleInfo delivery_vehicle;
-
-        public List<uint> FoodLine;
 
         public DateTime CurrentGameTime;
 
@@ -332,62 +329,78 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 WaitInLineTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
             }
-            if(m_usedVehicles < m_DeliveryVehicleCount)
+            else
             {
-                WaitingForDeliveryVehicleTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
-            }
-            if(CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
-            {
-                var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
-                list.RemoveAll(item => item.deliveryVehicleId == 0);
-                RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, list);
-            }
-            // there are people in line who didn't get food, and there is enough storage to cook meals
-            if (FoodLine != null)
-            {
+                // not enough storage check if 30 minutes have passed
+                var RestaurantLine = RestaurantManager.GetRestaurantLineList(buildingID);
                 if (CurrentGameTime >= WaitInLineTimer && !IsNextDay())
                 {
-                    foreach (var person in FoodLine)
+                    // 30 minutes have passed o search for other places to eat at
+                    foreach (var citizenId in RestaurantLine)
                     {
                         var reason = GetShoppingReason();
                         TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
                         offer.Priority = Singleton<SimulationManager>.instance.m_randomizer.Int32(8u);
-                        offer.Citizen = person;
+                        offer.Citizen = citizenId;
                         offer.Position = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position;
                         offer.Amount = 1;
                         offer.Active = true;
                         Singleton<TransferManager>.instance.AddIncomingOffer(reason, offer);
                     }
-                    FoodLine.Clear();
+                    RestaurantLine.Clear();
                 }
                 else
                 {
-                    var tempList = FoodLine.ToList();
-                    foreach (var person in tempList)
+                    // while 30 minutes has not passed try to cook meals for each customer and remove him from the line
+                    foreach (var citizenId in RestaurantLine)
                     {
-                        if (m_finalProductionRate > 0)
+                        var meal_cooked = CookCustomerMeal(buildingID);
+                        if (meal_cooked)
                         {
-                            EatMeal(buildingID, ref buildingData, person);
-                            FoodLine.Remove(person);
+                            EatMeal(buildingID, ref buildingData, citizenId);
+                            RestaurantLine.Remove(citizenId);
                         }
                     }
                 }
             }
-            // go through deliveries where food was not prepared and try make food for the delivery
-            var DeliveriesList = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
-            for(var i = 0; i < DeliveriesList.Count; i++)
+            if(m_usedVehicles < m_DeliveryVehicleCount)
             {
-                var delivery = DeliveriesList[i];
-                if(delivery.mealCooked == false)
+                WaitingForDeliveryVehicleTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
+            }
+            else
+            {
+                // no delviery vehicles avaliable 
+                var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
+                if(CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
                 {
-                    var delivery_meal_cooked = CookDeliveryMeal(buildingID);
-                    if(delivery_meal_cooked)
+                    // 30 minutes have passed clear all deliveries with no vehicle assigned to them
+                    DeliveriesList.RemoveAll(item => item.deliveryVehicleId == 0);
+                }
+                else
+                {
+                    //  while 30 minutes has not passed try to cook meals for all the deliveries
+                    for(var i = 0; i < DeliveriesList.Count; i++)
                     {
-                        delivery.mealCooked = true;
-                        DeliveriesList[i] = delivery;
+                        var delivery = DeliveriesList[i];
+                        if(delivery.mealCooked == false)
+                        {
+                            var delivery_meal_cooked = CookDeliveryMeal(buildingID);
+                            if(delivery_meal_cooked)
+                            {
+                                delivery.mealCooked = true;
+                                DeliveriesList[i] = delivery;
+                            }
+                        }
                     }
                 }
+                RestaurantManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
             }
+            
+
+
+            
+            // go through deliveries where food was not prepared and try make food for the delivery
+            
         }
 
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
@@ -397,9 +410,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 uint citizen = offer.Citizen;
                 ushort buildingByLocation = Singleton<CitizenManager>.instance.m_citizens.m_buffer[(int)(UIntPtr)citizen].GetBuildingByLocation();
                 // new citizen order
-                var DeliveriesList = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
+                var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
 
-                var NewDelivery = new RestaurantDeliveriesManager.RestaurantDeliveryData
+                var NewDelivery = new RestaurantManager.RestaurantDeliveryData
                 {
                     deliveryVehicleId = 0,
                     buildingId = buildingByLocation,
@@ -412,18 +425,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     NewDelivery.mealCooked = true;
                 }
-                RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
+                RestaurantManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
                 // check if we got to the number of orders the vehicle can carry
                 if (!CheckIfDeliveryOrderInProgress(buildingID))
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     if (ExtedndedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, delivery_vehicle, data.m_position, (byte)material, transferToSource: false, transferToTarget: true))
                     {
-                        // get a list of indexes where vehicle id is 0
-                        var index_list = Enumerable.Range(0, DeliveriesList.Count).Where(i => DeliveriesList[i].deliveryVehicleId == 0).ToList();
+                        // get a list of indexes where vehicle id is 0 and a meal was cooked and building and citizen exist
+                        var DeliveriesWithNoVehicleIndexList = Enumerable.Range(0, DeliveriesList.Count).Where(i => DeliveriesList[i].deliveryVehicleId == 0 && DeliveriesList[i].mealCooked == true && DeliveriesList[i].buildingId != 0 && DeliveriesList[i].citizenId != 0).ToList();
 
                         var first_delivery = false;
-                        RestaurantDeliveriesManager.RestaurantDeliveryData deliveryData = new RestaurantDeliveriesManager.RestaurantDeliveryData
+                        RestaurantManager.RestaurantDeliveryData deliveryData = new RestaurantManager.RestaurantDeliveryData
                         {
                             deliveryVehicleId = 0,
                             buildingId = 0,
@@ -432,11 +445,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             mealCooked = false
                         };
                         // assign the new delivery vehicle id to all the orders
-                        foreach (var index in index_list)
+                        foreach (var deliveryIndex in DeliveriesWithNoVehicleIndexList)
                         {
-                            var item = DeliveriesList[index];
+                            var item = DeliveriesList[deliveryIndex];
                             item.deliveryVehicleId = vehicle;
-                            DeliveriesList[index] = item;
+                            DeliveriesList[deliveryIndex] = item;
                             if (!first_delivery)
                             {
                                 // assign first order to drive to
@@ -444,7 +457,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 first_delivery = true;
                             }
                         }
-                        if (first_delivery && deliveryData.buildingId != 0 && deliveryData.mealCooked)
+                        if (first_delivery)
                         {
                             // go to first delivery
                             delivery_vehicle.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[vehicle], buildingID);
@@ -608,26 +621,30 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 Singleton<ExtendedTransferManager>.instance.RemoveOutgoingOffer(m_outputResource2, extended_offer);
             }
-            var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
-            list.Clear();
-            RestaurantDeliveriesManager.SetRestaurantDeliveriesList(buildingID, list);
+            var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
+            DeliveriesList.Clear();
+            RestaurantManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
+            var RestaurantLine = RestaurantManager.GetRestaurantLineList(buildingID);
+            RestaurantLine.Clear();
+            RestaurantManager.SetRestaurantLineList(buildingID, RestaurantLine);
             base.BuildingDeactivated(buildingID, ref data);
         }
 
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
+            // every visitor that enter try to cook a meal for him
             var meal_cooked = CookCustomerMeal(buildingID);
             if (meal_cooked)
             {
+                // meals was cooked - citizen eats the meal
                 EatMeal(buildingID, ref data, citizen);
             }
             else
             {
-                if(FoodLine == null)
-                {
-                    FoodLine = new();
-                }
-                FoodLine.Add(citizen);
+                // meal was not cooked add him to the line
+                var RestaurantLine = RestaurantManager.GetRestaurantLineList(buildingID);
+                RestaurantLine.Add(citizen);
+                RestaurantManager.SetRestaurantLineList(buildingID, RestaurantLine);
             }
             base.VisitorEnter(buildingID, ref data, citizen);
         }
@@ -1216,8 +1233,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private bool CheckIfDeliveryOrderInProgress(ushort buildingID)
         {
-            var list = RestaurantDeliveriesManager.GetRestaurantDeliveriesList(buildingID);
-            var orders_with_no_vehicle = list.FindAll(item => item.deliveryVehicleId == 0 && item.mealCooked == true);
+            var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
+            var orders_with_no_vehicle = DeliveriesList.FindAll(item => item.deliveryVehicleId == 0 && item.mealCooked == true);
             if (delivery_vehicle != null)
             {
                 RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
