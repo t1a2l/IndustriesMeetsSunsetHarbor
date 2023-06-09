@@ -279,15 +279,17 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_mealsSprite.spriteName = "Meals";
 
             m_horizontalLine.width = m_inputContainer.width;
-            if(m_inputResourceCount > 4)
+            if(m_mainPanel != null)
             {
-                 m_mainPanel.width = m_inputContainer.width + 22;
+                if(m_inputResourceCount > 4)
+                {
+                     m_mainPanel.width = m_inputContainer.width + 22;
+                }
+                else
+                {
+                    m_mainPanel.width = 540;
+                }
             }
-            else
-            {
-                m_mainPanel.width = 540;
-            }
-
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");

@@ -37,33 +37,23 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private static DynamicPanelInfo CreateDynamicPanelInfo(UIDynamicPanels __instance, UIView view, string customWorldInfoPanelName, string customOldWorldInfoPanelName)
         {
             DynamicPanelInfo dynamicPanelInfo = new();
+            dynamicPanelInfo.viewOwner = view;
             var customOldWorldInfoPanel = Array.Find(__instance.m_DynamicPanels, element => element.name == customOldWorldInfoPanelName);
             if(customOldWorldInfoPanel == null)
             {
                 return null;
             }
-            var customOldUIClone = Object.Instantiate(customOldWorldInfoPanel.instance);
-            customOldUIClone.gameObject.name = customWorldInfoPanelName;
-            if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
-            {
-                var ProductionBar = customOldUIClone.Find<UISlicedSprite>("ProductionBar");
-                Object.DestroyImmediate(ProductionBar);
-            }
-            typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);
-            typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customOldUIClone);
-            typeof(DynamicPanelInfo).GetField("m_SingleInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, true);
-            typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, false);
-            dynamicPanelInfo.viewOwner = view;
-	    GameObject gameObject = dynamicPanelInfo.panelRoot.gameObject;
+            GameObject ClonedGameObject = Object.Instantiate(customOldWorldInfoPanel.panelRoot.gameObject);
+            ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
-                var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
+                var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
-                var newUniqueFactoryComp = gameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
+                var newUniqueFactoryComp = ClonedGameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, newUniqueFactoryComp, false);
-                for (int i = 0; i < gameObject.transform.childCount; i++)
+                for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {
-                    var child = gameObject.transform.GetChild(i);
+                    var child = ClonedGameObject.transform.GetChild(i);
                     if(child != null)
                     {
                         if(child.name == "Caption")
@@ -80,7 +70,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                     }
                                 }
                             }
-                            
                         }
                         var bind = child.GetComponent<BindEvent>();
                         if(bind != null)
@@ -89,16 +78,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         }
                     }
                 }
+                var main_panel = newUniqueFactoryComp.Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
+                main_panel.cachedName = "(Library) NewUniqueFactoryWorldInfoPanel";
+                typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
             else if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
             {
-                var old_component = gameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
+                var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
-                var restaurantComp = gameObject.AddComponent<RestaurantWorldInfoPanel>();
+                var restaurantComp = ClonedGameObject.AddComponent<RestaurantWorldInfoPanel>();
+                var ProductionBar = restaurantComp.Find<UISlicedSprite>("ProductionBar");
+                Object.DestroyImmediate(ProductionBar);
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
-                for (int i = 0; i < gameObject.transform.childCount; i++)
+                for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {
-                    var child = gameObject.transform.GetChild(i);
+                    var child = ClonedGameObject.transform.GetChild(i);
                     if(child != null)
                     {
                         if(child.name == "Caption")
@@ -115,7 +109,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                     }
                                 }
                             }
-                            
                         }
                         var bind = child.GetComponent<BindEvent>();
                         if(bind != null)
@@ -124,10 +117,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         }
                     }
                 }
+                var main_panel = restaurantComp.Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
+                main_panel.cachedName = "(Library) RestaurantWorldInfoPanel";
+                typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
-	    gameObject.hideFlags = HideFlags.DontSave;
-	    gameObject.name = "(Library) " + customWorldInfoPanelName;
-            UIComponent uicomponent = view.AttachUIComponent(gameObject);
+            typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);
+            typeof(DynamicPanelInfo).GetField("m_SingleInstance", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, true);
+            typeof(DynamicPanelInfo).GetField("m_IsModal", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, false);
+	    ClonedGameObject.hideFlags = HideFlags.DontSave;
+            UIComponent uicomponent = view.AttachUIComponent(ClonedGameObject);
 	    uicomponent.isVisible = false;
 	    dynamicPanelInfo.AddInstance(uicomponent);
             return dynamicPanelInfo;

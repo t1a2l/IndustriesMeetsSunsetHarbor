@@ -144,11 +144,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             base.OnSetTarget();
             NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
-            m_inputResourceCount = GetInputResourceCount(ref items, newUniqueFactoryAI);
-            if(m_inputResourceCount > 4)
-            {
-                m_mainPanel.width = m_inputContainer.width + 22;
-            }
+            m_inputResourceCount = GetInputResourceCount(ref items, newUniqueFactoryAI); 
             m_inputs.SetItemCount(m_inputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             m_productLabel.text = (!Locale.Exists("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name)) ? Locale.Get("UNIQUEFACTORYPANEL_LUXURYGOODS") : Locale.Get("UNIQUEFACTORYPANEL_PRODUCT", newUniqueFactoryAI.m_info.name);
@@ -259,6 +255,19 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_productLabel.text = newUniqueFactoryAI.m_outputResource.ToString();
             m_outputSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_outputSprite.spriteName = newUniqueFactoryAI.m_outputResource.ToString();
+
+            if(m_mainPanel != null)
+            {
+                if(m_inputResourceCount > 4)
+                {
+                     m_mainPanel.width = m_inputContainer.width + 22;
+                }
+                else
+                {
+                    m_mainPanel.width = 540;
+                }
+            }
+
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
