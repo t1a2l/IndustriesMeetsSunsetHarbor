@@ -362,6 +362,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
+                RestaurantManager.SetRestaurantLineList(buildingID, RestaurantLine);
             }
             if(m_usedVehicles < m_DeliveryVehicleCount)
             {
@@ -395,12 +396,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 RestaurantManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
             }
-            
-
-
-            
-            // go through deliveries where food was not prepared and try make food for the delivery
-            
         }
 
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
@@ -425,6 +420,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     NewDelivery.mealCooked = true;
                 }
+                DeliveriesList.Add(NewDelivery);
                 RestaurantManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
                 // check if we got to the number of orders the vehicle can carry
                 if (!CheckIfDeliveryOrderInProgress(buildingID))

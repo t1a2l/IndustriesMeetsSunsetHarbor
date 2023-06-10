@@ -436,7 +436,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
                 m_resourceDescription.isVisible = transferReason != 255;
                 m_resourceDescription.text = GenerateResourceDescription((TransferManager.TransferReason)transferReason, isForWarehousePanel: true);
-                m_resourceSprite.atlas = info.m_Atlas;
+                m_resourceSprite.atlas = GetTextureAtlas("Ingame");
                 m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName((TransferManager.TransferReason)actualTransferReason);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity, (TransferManager.TransferReason)actualTransferReason));
                 m_buffer.tooltip = text;
@@ -900,6 +900,37 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private static string FormatResourceWithUnit(uint amount)
         {
 	    return string.Concat(str2: Locale.Get("RESOURCEUNIT_TONS"), str0: IndustryWorldInfoPanel.FormatResource(amount), str1: " ");
+        }
+
+        public static UITextureAtlas GetTextureAtlas(string atlasName)
+        {
+            // Selections.
+            int selectedAtlas = -1;
+            int selectedAtlasSpriteCount = 0;
+
+            // No cache entry - get game atlases and iterate through, looking for a name match.
+            UITextureAtlas[] atlases = Resources.FindObjectsOfTypeAll(typeof(UITextureAtlas)) as UITextureAtlas[];
+            for (int i = 0; i < atlases.Length; ++i)
+            {
+                if (atlases[i].name.Equals(atlasName))
+                {
+                    // Found a matching name - if the number of sprites of this atlas is greater than the last one found, use this.
+                    if (atlases[i].spriteNames.Length > selectedAtlasSpriteCount)
+                    {
+                        selectedAtlas = i;
+                        selectedAtlasSpriteCount = atlases[i].spriteNames.Length;
+                    }
+                }
+            }
+
+            // If we found a suitable atlas, add it to the cache and return it.
+            if (selectedAtlas >= 0)
+            {
+                return atlases[selectedAtlas];
+            }
+
+            // If we got here, we couldn't find the specified atlas.
+            return null;
         }
     }
 }
