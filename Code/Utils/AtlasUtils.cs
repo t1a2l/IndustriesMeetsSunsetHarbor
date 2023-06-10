@@ -53,7 +53,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 TextureUtils.InitialiseAtlas("RestaurantInfoIconButtonAtlas");
                 for (int i = 0; i < RestaurantInfoIconButton.Length; i++)
                 {
-                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i, 0, 32, 32), RestaurantInfoIconButton[i], "RestaurantInfoIconButtonAtlas");
+                    TextureUtils.AddSpriteToAtlas(new Rect(36 * i, 0, 36, 36), RestaurantInfoIconButton[i], "RestaurantInfoIconButtonAtlas");
                 }
             }
         }
