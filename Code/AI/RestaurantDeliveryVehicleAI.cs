@@ -19,7 +19,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override Color GetColor(ushort vehicleID, ref Vehicle data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
-            if (infoMode == InfoManager.InfoMode.Happiness)
+            if (infoMode == (InfoManager.InfoMode)41)
             {
                 return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
             }

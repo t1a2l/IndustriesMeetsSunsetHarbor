@@ -1,5 +1,4 @@
 using UnityEngine;
-using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.Utils
 {
@@ -22,6 +21,15 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             "BuildingNotificationWaitingDeliveryFirst"
         };
 
+        public static string[] RestaurantInfoIconButton = new string[]
+        {
+            "InfoIconRestaurantBase",
+	    "InfoIconRestaurantDisabled",
+	    "InfoIconRestaurantFocused",
+	    "InfoIconRestaurantHovered",
+	    "InfoIconRestaurantPressed",
+        };
+
         public static void CreateAtlas()
         {
             if (TextureUtils.GetAtlas("RestaurantAtlas") == null)
@@ -38,6 +46,14 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 for (int i = 0; i < NotificationSpriteNames.Length; i++)
                 {
                     TextureUtils.AddSpriteToAtlas(new Rect(82 * i, 0, 82, 82), NotificationSpriteNames[i], "DeliveryNotificationAtlas");
+                }
+            }
+            if (TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas") == null)
+            {
+                TextureUtils.InitialiseAtlas("RestaurantInfoIconButtonAtlas");
+                for (int i = 0; i < RestaurantInfoIconButton.Length; i++)
+                {
+                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i, 0, 32, 32), RestaurantInfoIconButton[i], "RestaurantInfoIconButtonAtlas");
                 }
             }
         }

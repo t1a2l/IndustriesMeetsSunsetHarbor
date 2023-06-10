@@ -243,6 +243,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int noiseAccumulation = m_noiseAccumulation;
                     return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
                 }
+                case (InfoManager.InfoMode)41: // Restaurant Info
+			if ((data.m_flags & Building.Flags.Active) != 0)
+			{
+				return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+			}
+			return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                 default:
                     return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
             }
@@ -264,8 +270,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void GetPlacementInfoMode(out InfoManager.InfoMode mode, out InfoManager.SubInfoMode subMode, float elevation)
         {
-            mode = InfoManager.InfoMode.Happiness;
-            subMode = InfoManager.SubInfoMode.WaterPower;
+            mode = (InfoManager.InfoMode)41;
+            subMode = InfoManager.SubInfoMode.Default;
         }
 
         public override void CreateBuilding(ushort buildingID, ref Building data)
