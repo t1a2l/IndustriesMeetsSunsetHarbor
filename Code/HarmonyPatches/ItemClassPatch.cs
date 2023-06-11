@@ -7,13 +7,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     public static class ItemClassPatch
     {
 
-        [HarmonyPatch(typeof(ItemClass), "GetPrivateSubServiceIndex")]
+        [HarmonyPatch(typeof(ItemClass), "GetPublicServiceIndex")]
         [HarmonyPrefix]
-        public static bool GetPrivateSubServiceIndex(SubService subService, ref int __result)
+        public static bool GetPublicServiceIndex(Service service, ref int __result)
         {
-	    if(subService == (SubService)28)
+	    if(service == (Service)28)
             {
-                __result = 20;
+                __result = 19;
                 return false;
             }
             return true;

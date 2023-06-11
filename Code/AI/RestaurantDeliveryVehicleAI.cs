@@ -362,7 +362,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             SimulationManager instance = Singleton<SimulationManager>.instance;
             CitizenManager instance2 = Singleton<CitizenManager>.instance;
-            CitizenInfo groupCitizenInfo = instance2.GetGroupCitizenInfo(ref instance.m_randomizer, ItemClass.Service.Commercial, Citizen.Gender.Male, Citizen.SubCulture.Generic, agePhase);
+            CitizenInfo groupCitizenInfo = instance2.GetGroupCitizenInfo(ref instance.m_randomizer, (ItemClass.Service)28, Citizen.Gender.Male, Citizen.SubCulture.Generic, agePhase);
             if (groupCitizenInfo == null)
             {
                 return;

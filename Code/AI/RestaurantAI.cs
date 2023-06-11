@@ -1250,7 +1250,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private void CreateDeliveryOrder()
         {
-            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Commercial, ItemClass.SubService.CommercialLow, ItemClass.Level.Level3);
+            var vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, (ItemClass.Service)28, ItemClass.SubService.None, ItemClass.Level.Level3);
             if (vehicleInfo != null)
             {
                 delivery_vehicle = vehicleInfo;
