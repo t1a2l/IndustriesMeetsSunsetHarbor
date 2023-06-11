@@ -36,6 +36,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 m_CachedPanels.Add(extendedWarehouseDynamicPanelInfo.name, extendedWarehouseDynamicPanelInfo);
             }
+            var restaurantInfoViewPanelDynamicPanelInfo = CreateDynamicPanelInfo(__instance, view, "RestaurantInfoViewPanel", "PostInfoViewPanel");
+            if(restaurantInfoViewPanelDynamicPanelInfo != null)
+            {
+                m_CachedPanels.Add(restaurantInfoViewPanelDynamicPanelInfo.name, restaurantInfoViewPanelDynamicPanelInfo);
+            }
             typeof(UIDynamicPanels).GetField("m_CachedPanels", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(__instance, m_CachedPanels);
         }
 
@@ -49,9 +54,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 return null;
             }
             GameObject ClonedGameObject = Object.Instantiate(customOldWorldInfoPanel.panelRoot.gameObject);
-            ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
+                ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var newUniqueFactoryComp = ClonedGameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
@@ -91,6 +96,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
             {
+                ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var restaurantComp = ClonedGameObject.AddComponent<RestaurantWorldInfoPanel>();
@@ -132,6 +138,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else if(customWorldInfoPanelName == "ExtendedWarehouseWorldInfoPanel")
             {
+                ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<WarehouseWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var extendedWarehouseComp = ClonedGameObject.AddComponent<ExtendedWarehouseWorldInfoPanel>();
@@ -176,6 +183,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 }
                 var main_panel = extendedWarehouseComp.Find<UIPanel>("(Library) ExtendedWarehouseWorldInfoPanel");
                 main_panel.cachedName = "(Library) ExtendedWarehouseWorldInfoPanel";
+                typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
+            }
+            else if(customWorldInfoPanelName == "RestaurantInfoViewPanel")
+            {
+                ClonedGameObject.name = customWorldInfoPanelName;
+                var old_component = ClonedGameObject.GetComponent<PostInfoViewPanel>();
+                Object.DestroyImmediate(old_component);
+                var restaurantInfoViewPanelComp = ClonedGameObject.AddComponent<RestaurantInfoViewPanel>();
+                PrefabUtil.TryCopyAttributes<InfoViewPanel>(old_component, restaurantInfoViewPanelComp, false);
+                var main_panel = restaurantInfoViewPanelComp.Find<UIPanel>("PostInfoViewPanel");
+                main_panel.cachedName = "PostInfoViewPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
             typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);
