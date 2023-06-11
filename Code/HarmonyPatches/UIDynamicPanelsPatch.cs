@@ -37,7 +37,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 m_CachedPanels.Add(extendedWarehouseDynamicPanelInfo.name, extendedWarehouseDynamicPanelInfo);
             }
             var restaurantInfoViewPanelDynamicPanelInfo = CreateDynamicPanelInfo(__instance, view, "RestaurantInfoViewPanel", "PostInfoViewPanel");
-            if(restaurantInfoViewPanelDynamicPanelInfo != null)
+            if (restaurantInfoViewPanelDynamicPanelInfo != null)
             {
                 m_CachedPanels.Add(restaurantInfoViewPanelDynamicPanelInfo.name, restaurantInfoViewPanelDynamicPanelInfo);
             }
@@ -54,9 +54,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 return null;
             }
             GameObject ClonedGameObject = Object.Instantiate(customOldWorldInfoPanel.panelRoot.gameObject);
+            ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
             if(customWorldInfoPanelName == "NewUniqueFactoryWorldInfoPanel")
             {
-                ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var newUniqueFactoryComp = ClonedGameObject.AddComponent<NewUniqueFactoryWorldInfoPanel>();
@@ -96,7 +96,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
             {
-                ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var restaurantComp = ClonedGameObject.AddComponent<RestaurantWorldInfoPanel>();
@@ -138,7 +137,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else if(customWorldInfoPanelName == "ExtendedWarehouseWorldInfoPanel")
             {
-                ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<WarehouseWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var extendedWarehouseComp = ClonedGameObject.AddComponent<ExtendedWarehouseWorldInfoPanel>();
@@ -170,7 +168,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                             }
                                         }
                                     }
-                                    
                                 }
                             }
                         }
@@ -187,13 +184,39 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else if(customWorldInfoPanelName == "RestaurantInfoViewPanel")
             {
-                ClonedGameObject.name = customWorldInfoPanelName;
                 var old_component = ClonedGameObject.GetComponent<PostInfoViewPanel>();
                 Object.DestroyImmediate(old_component);
                 var restaurantInfoViewPanelComp = ClonedGameObject.AddComponent<RestaurantInfoViewPanel>();
                 PrefabUtil.TryCopyAttributes<InfoViewPanel>(old_component, restaurantInfoViewPanelComp, false);
-                var main_panel = restaurantInfoViewPanelComp.Find<UIPanel>("PostInfoViewPanel");
-                main_panel.cachedName = "PostInfoViewPanel";
+                for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
+                {
+                    var child = ClonedGameObject.transform.GetChild(i);
+                    if(child != null)
+                    {
+                        if(child.name == "Caption")
+                        {
+                            for (int j = 0; j < child.transform.childCount; j++)
+                            {
+                                var caption_child = child.transform.GetChild(j);
+                                if(caption_child != null)
+                                {
+                                    var caption_child_bind = caption_child.GetComponent<BindEvent>();
+                                    if(caption_child_bind != null)
+                                    {
+                                        caption_child_bind.dataTarget.component = restaurantInfoViewPanelComp;
+                                    }
+                                }
+                            }
+                        }
+                        var bind = child.GetComponent<BindEvent>();
+                        if(bind != null)
+                        {
+                            bind.dataTarget.component = restaurantInfoViewPanelComp;
+                        }
+                    }
+                }
+                var main_panel = restaurantInfoViewPanelComp.Find<UIPanel>("(Library) RestaurantInfoViewPanel");
+                main_panel.cachedName = "RestaurantInfoViewPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
             typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);

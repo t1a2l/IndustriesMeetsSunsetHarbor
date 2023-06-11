@@ -4,7 +4,6 @@ using ColossalFramework.UI;
 using UnityEngine;
 using System.Reflection;
 using System;
-using IndustriesMeetsSunsetHarbor.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -19,7 +18,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         private delegate UIButton SpawnButtonEntryInfoViewsPanelDelegate(InfoViewsPanel instance, string name, string spriteBase, string localeID, int index, bool enabled);
         private static SpawnButtonEntryInfoViewsPanelDelegate InfoViewsPanelSpawnButtonEntry = AccessTools.MethodDelegate<SpawnButtonEntryInfoViewsPanelDelegate>(typeof(InfoViewsPanel).GetMethod("SpawnButtonEntry", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
 
         [HarmonyPatch(typeof(GameInfoViewsPanel), "RefreshPanel")]
         [HarmonyPrefix]
@@ -44,7 +42,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     ___m_buttonToResource[num] = i;
                     ___m_resourceToButton[i] = num;
                     num++;
-
                 }
                 else
                 {
@@ -75,13 +72,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 if (Singleton<InfoManager>.instance.NextMode != ___m_cachedMode)
                 {
                     ___m_cachedMode = Singleton<InfoManager>.instance.NextMode;
-                    if(___m_cachedMode == (InfoManager.InfoMode)41)
+                    if (___m_cachedMode == (InfoManager.InfoMode)41)
                     {
                         ___m_cachedIndex = 38;
                     }
                     else
                     {
-                         ___m_cachedIndex = ColossalFramework.Utils.GetEnumIndexByValue(___m_cachedMode, "Game");
+                        ___m_cachedIndex = ColossalFramework.Utils.GetEnumIndexByValue(___m_cachedMode, "Game");
                     }
                 }
                 int num = ___m_cachedIndex;
@@ -96,7 +93,5 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             InfoViewsPanelShowSelectedIndex(__instance);
         }
-
-
     }
 }

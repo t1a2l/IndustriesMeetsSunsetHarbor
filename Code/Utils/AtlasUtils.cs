@@ -23,7 +23,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static string[] InfoIconRestaurantButton = new string[]
         {
-            "InfoIconRestaurantBase",
+            "InfoIconRestaurant",
 	    "InfoIconRestaurantDisabled",
 	    "InfoIconRestaurantFocused",
 	    "InfoIconRestaurantHovered",
