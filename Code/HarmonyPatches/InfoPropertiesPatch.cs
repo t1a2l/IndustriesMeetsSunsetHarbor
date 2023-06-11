@@ -20,6 +20,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             Array.Resize(ref __instance.m_modeProperties, __instance.m_modeProperties.Length + 1);
             Array.Resize(ref names, names.Length + 1);
             int num = Mathf.Min(__instance.m_modeProperties.Length, names.Length);
+            names[names.Length - 1] = "Restaurant";
+            __instance.m_modeProperties[names.Length - 1] = __instance.m_modeProperties[35];
             for (int i = 0; i < num; i++)
             {
                 Shader.SetGlobalColor("_InfoColor" + names[i], __instance.m_modeProperties[i].m_activeColor.linear);
