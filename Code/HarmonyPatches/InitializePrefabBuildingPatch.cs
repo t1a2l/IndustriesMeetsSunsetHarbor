@@ -96,6 +96,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                     }
                 }
+                else if (__instance.m_class.m_service == ItemClass.Service.Commercial)
+                {
+                    var component = __instance.GetComponent<PrefabAI>();
+                    if(component != null && component is RestaurantAI)
+                    {
+                        __instance.m_class.m_subService = (ItemClass.SubService)28;
+                        __instance.m_class.m_level = ItemClass.Level.Level3;
+                    }
+                }
             }
             catch (Exception e)
             {

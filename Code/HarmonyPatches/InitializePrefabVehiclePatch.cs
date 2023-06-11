@@ -20,6 +20,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedCargoTruckAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
+                else if (__instance.m_class.m_service == ItemClass.Service.Commercial)
+                {
+                    var component = __instance.GetComponent<PrefabAI>();
+                    if(component != null && component is RestaurantDeliveryVehicleAI)
+                    {
+                        __instance.m_class.m_subService = (ItemClass.SubService)28;
+                        __instance.m_class.m_level = ItemClass.Level.Level3;
+                    }
+                }
             }
             catch (Exception e)
             {

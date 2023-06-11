@@ -28,6 +28,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     var newAI = __instance.gameObject.AddComponent<ExtendedTouristAI>();
                     PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                 }
+                if(component != null && component is RestaurantDeliveryPersonAI)
+                {
+                    __instance.m_class.m_service = ItemClass.Service.Commercial;
+                    __instance.m_class.m_subService = (ItemClass.SubService)28;
+                    __instance.m_class.m_level = ItemClass.Level.Level3;
+                }
             }
             catch (Exception e)
             {

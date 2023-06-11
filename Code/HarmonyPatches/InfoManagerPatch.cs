@@ -16,7 +16,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 ___m_currentMode = mode;
                 ___m_currentSubMode = subMode;
-                Singleton<CoverageManager>.instance.SetMode(ItemClass.Service.Commercial, ItemClass.SubService.CommercialLow, ItemClass.SubService.None, ItemClass.Level.Level3, 500f, invertDirection: false);
+                Singleton<CoverageManager>.instance.SetMode(ItemClass.Service.Commercial, (ItemClass.SubService)28, ItemClass.SubService.None, ItemClass.Level.Level3, 500f, invertDirection: false);
                 return false;
             }
             return true;
