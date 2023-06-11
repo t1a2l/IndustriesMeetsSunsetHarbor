@@ -11,6 +11,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(GameInfoViewsPanel))]
     public static class GameInfoViewsPanelPatch
     {
+        private delegate void SelectByIndexInfoViewsPanelDelegate(InfoViewsPanel instance, int value, bool focusAdvisor);
+        private static SelectByIndexInfoViewsPanelDelegate InfoViewsPanelSelectByIndex = AccessTools.MethodDelegate<SelectByIndexInfoViewsPanelDelegate>(typeof(InfoViewsPanel).GetMethod("SelectByIndex", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+        private delegate void ShowSelectedIndexInfoViewsPanelDelegate(InfoViewsPanel instance);
+        private static ShowSelectedIndexInfoViewsPanelDelegate InfoViewsPanelShowSelectedIndex = AccessTools.MethodDelegate<ShowSelectedIndexInfoViewsPanelDelegate>(typeof(InfoViewsPanel).GetMethod("ShowSelectedIndex", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+        private delegate UIButton SpawnButtonEntryInfoViewsPanelDelegate(InfoViewsPanel instance, string name, string spriteBase, string localeID, int index, bool enabled);
+        private static SpawnButtonEntryInfoViewsPanelDelegate InfoViewsPanelSpawnButtonEntry = AccessTools.MethodDelegate<SpawnButtonEntryInfoViewsPanelDelegate>(typeof(InfoViewsPanel).GetMethod("SpawnButtonEntry", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+
         [HarmonyPatch(typeof(GameInfoViewsPanel), "RefreshPanel")]
         [HarmonyPrefix]
         public static bool RefreshPanel(GameInfoViewsPanel __instance, ref PositionData<InfoManager.InfoMode>[] ___kResources, ref int[] ___m_buttonToResource, ref int[] ___m_resourceToButton)
@@ -24,18 +34,27 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             int num = 0;
             for (int i = 0; i < ___kResources.Length; i++)
             {
-                if (!__instance.IgnoreInfoView(___kResources[i].enumValue))
+                if (i == old_length)
                 {
-                    if (i == old_length)
-                    {
-                        ___kResources[i].enumName = "Restaurant";
-                        ___kResources[i].enumCategory = "Game";
-                        ___kResources[i].index = 38;
-                    }
-                    uIButton = SpawnButtonEntry(__instance, ___kResources[i].enumName, "InfoIcon", "INFOVIEWS", num, true);
+                    ___kResources[i].enumName = "Restaurant";
+                    ___kResources[i].enumCategory = "Game";
+                    ___kResources[i].index = 38;
+                    ___kResources[i].enumValue = (InfoManager.InfoMode)41;
+                    uIButton = InfoViewsPanelSpawnButtonEntry(__instance, "Restaurant", "InfoIcon", "INFOVIEWS", num, true);
                     ___m_buttonToResource[num] = i;
                     ___m_resourceToButton[i] = num;
                     num++;
+
+                }
+                else
+                {
+                    if (!__instance.IgnoreInfoView(___kResources[i].enumValue))
+                    {
+                        uIButton = InfoViewsPanelSpawnButtonEntry(__instance, ___kResources[i].enumName, "InfoIcon", "INFOVIEWS", num, true);
+                        ___m_buttonToResource[num] = i;
+                        ___m_resourceToButton[i] = num;
+                        num++;
+                    }
                 }
             }
 
@@ -47,56 +66,37 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return false;
         }
 
-        public static UIButton SpawnButtonEntry(InfoViewsPanel __instance, string name, string spriteBase, string localeID, int index, bool enabled)
+        [HarmonyPatch(typeof(GameInfoViewsPanel), "ShowSelectedIndex")]
+        [HarmonyPrefix]
+        public static void ShowSelectedIndex(GameInfoViewsPanel __instance, ref InfoManager.InfoMode ___m_cachedMode, ref int ___m_cachedIndex, ref int[] ___m_resourceToButton)
         {
-
-            var m_ObjectIndex = (int)typeof(InfoViewsPanel).GetField("m_ObjectIndex", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(__instance);
-
-            UIButton uIButton;
-            if (__instance.m_ChildContainer.childCount > m_ObjectIndex)
+            if (Singleton<InfoManager>.exists)
             {
-                uIButton = __instance.m_ChildContainer.components[m_ObjectIndex] as UIButton;
+                if (Singleton<InfoManager>.instance.NextMode != ___m_cachedMode)
+                {
+                    ___m_cachedMode = Singleton<InfoManager>.instance.NextMode;
+                    if(___m_cachedMode == (InfoManager.InfoMode)41)
+                    {
+                        ___m_cachedIndex = 38;
+                    }
+                    else
+                    {
+                         ___m_cachedIndex = ColossalFramework.Utils.GetEnumIndexByValue(___m_cachedMode, "Game");
+                    }
+                }
+                int num = ___m_cachedIndex;
+                if (num >= 0 && num < ___m_resourceToButton.Length)
+                {
+                    num = ___m_resourceToButton[num];
+                }
+                if (num != __instance.selectedIndex)
+                {
+                    InfoViewsPanelSelectByIndex(__instance, num, focusAdvisor: false);
+                }
             }
-            else
-            {
-                GameObject asGameObject = UITemplateManager.GetAsGameObject("InfoViewButtonTemplate");
-                uIButton = __instance.m_ChildContainer.AttachUIComponent(asGameObject) as UIButton;
-            }
-            TutorialUITag tutorialUITag = uIButton.gameObject.GetComponent<TutorialUITag>();
-            if (tutorialUITag == null)
-            {
-                tutorialUITag = uIButton.gameObject.AddComponent<TutorialUITag>();
-            }
-            tutorialUITag.tutorialTag = "Info" + name;
-            tutorialUITag.m_ParentOverride = __instance.m_ParentButton;
-            uIButton.pivot = UIPivotPoint.TopCenter;
-            if(name == "Restaurant")
-            {
-                uIButton.atlas = TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas");
-            }
-            else
-            {
-                uIButton.atlas = __instance.m_Atlas;
-            }
-            uIButton.text = string.Empty;
-            uIButton.playAudioEvents = true;
-            uIButton.name = name;
-            uIButton.tooltipAnchor = UITooltipAnchor.Anchored;
-            uIButton.tabStrip = true;
-            uIButton.horizontalAlignment = UIHorizontalAlignment.Center;
-            uIButton.verticalAlignment = UIVerticalAlignment.Middle;
-            uIButton.zOrder = index;
-            uIButton.isEnabled = enabled;
-            string text2 = (uIButton.normalFgSprite = spriteBase + name);
-            uIButton.focusedFgSprite = text2 + "Focused";
-            uIButton.hoveredFgSprite = text2 + "Hovered";
-            uIButton.pressedFgSprite = text2 + "Pressed";
-            uIButton.disabledFgSprite = text2 + "Disabled";
-            uIButton.tooltip = ColossalFramework.Globalization.Locale.Get(localeID, name);
-            uIButton.group = __instance.component;
-            m_ObjectIndex++;
-            typeof(InfoViewsPanel).GetField("m_ObjectIndex", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(__instance, m_ObjectIndex);
-            return uIButton;
+            InfoViewsPanelShowSelectedIndex(__instance);
         }
+
+
     }
 }

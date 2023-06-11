@@ -21,7 +21,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             "BuildingNotificationWaitingDeliveryFirst"
         };
 
-        public static string[] RestaurantInfoIconButton = new string[]
+        public static string[] InfoIconRestaurantButton = new string[]
         {
             "InfoIconRestaurantBase",
 	    "InfoIconRestaurantDisabled",
@@ -37,7 +37,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 TextureUtils.InitialiseAtlas("RestaurantAtlas");
                 for (int i = 0; i < SpriteNames.Length; i++)
                 {
-                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i, 0, 32, 32), SpriteNames[i], "RestaurantAtlas");
+                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i + 2, 2, 30, 30), SpriteNames[i], "RestaurantAtlas");
                 }
             }
             if (TextureUtils.GetAtlas("DeliveryNotificationAtlas") == null)
@@ -50,10 +50,10 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             }
             if (TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas") == null)
             {
-                TextureUtils.InitialiseAtlas("RestaurantInfoIconButtonAtlas");
-                for (int i = 0; i < RestaurantInfoIconButton.Length; i++)
+                TextureUtils.InitialiseAtlas("InfoIconRestaurantButtonAtlas");
+                for (int i = 0; i < InfoIconRestaurantButton.Length; i++)
                 {
-                    TextureUtils.AddSpriteToAtlas(new Rect(36 * i, 0, 36, 36), RestaurantInfoIconButton[i], "RestaurantInfoIconButtonAtlas");
+                    TextureUtils.AddSpriteToAtlas(new Rect(34 * i + 6, 2, 32, 32), InfoIconRestaurantButton[i], "InfoIconRestaurantButtonAtlas");
                 }
             }
         }
