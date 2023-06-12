@@ -216,7 +216,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     }
                 }
                 var main_panel = restaurantInfoViewPanelComp.Find<UIPanel>("(Library) RestaurantInfoViewPanel");
-                main_panel.cachedName = "RestaurantInfoViewPanel";
+                main_panel.cachedName = "(Library) RestaurantInfoViewPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
             typeof(DynamicPanelInfo).GetField("m_Name", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, customWorldInfoPanelName);
