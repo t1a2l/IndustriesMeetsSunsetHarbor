@@ -298,6 +298,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 return true;
             }
+            if(info.m_class.m_service == ItemClass.Service.Fishing)
+            {
+                return true;
+            }
             return false;
         }
 

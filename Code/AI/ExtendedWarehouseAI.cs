@@ -626,10 +626,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     bool flag = IsFull(buildingID, ref buildingData);
                     int num = buildingData.m_customBuffer1 * 100;
                     int num2 = (finalProductionRate * m_truckCount + 99) / 100;
-                    if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
-                    {
-                        RemoveGuestVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)actualTransferReason);
-                    }
                     int count = 0;
                     int cargo = 0;
                     int capacity = 0;
@@ -670,10 +666,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     bool flag2 = num3 == buildingID;
                     if (transferReason == actualTransferReason)
                     {
-                        if (num >= maxLoadSize && (count < num2 || !flag2) && (buildingData.m_flags & Building.Flags.Filling) == 0)
+                        if (num >= maxLoadSize && (count < num2 || !flag2))
                         {
                             TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
-                            if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
+                            if ((buildingData.m_flags & Building.Flags.Filling) != Building.Flags.None)
+			    {
+				offer.Priority = 0;
+			    }
+                            else if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
                             {
                                 offer.Priority = Mathf.Clamp(num / Mathf.Max(1, m_storageCapacity >> 2) + 2, 0, 2);
                                 if (!flag2)
@@ -693,11 +693,48 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer.Unlimited = !flag2;
                             Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer);
                         }
+                        if ((buildingData.m_flags & Building.Flags.Downgrading) != Building.Flags.None)
+			{
+			    Vehicle[] buffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
+			    ushort num14 = buildingData.m_guestVehicles;
+			    int num15 = 0;
+			    while (num14 != 0 && cargo2 > 0 && (float)(num + cargo2) > (float)m_storageCapacity * 0.2f + (float)maxLoadSize)
+			    {
+				ushort nextGuestVehicle = buffer[(int)num14].m_nextGuestVehicle;
+				if (buffer[(int)num14].m_targetBuilding == buildingID && (byte)buffer[(int)num14].m_transferType == actualTransferReason)
+				{
+				    VehicleInfo info2 = buffer[(int)num14].Info;
+				    if (info2 != null)
+				    {
+					cargo2 = Mathf.Max(0, cargo2 - (int)buffer[(int)num14].m_transferSize);
+					info2.m_vehicleAI.SetTarget(num14, ref buffer[(int)num14], 0);
+				    }
+				}
+				num14 = nextGuestVehicle;
+				if (++num15 > 16384)
+				{
+				    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+				    break;
+				}
+			    }
+			}
                         num += cargo2;
-                        if (num < m_storageCapacity && (buildingData.m_flags & Building.Flags.Downgrading) == 0)
+                        if (num < m_storageCapacity)
                         {
                             TransferManager.TransferOffer offer2 = default(TransferManager.TransferOffer);
-                            if ((buildingData.m_flags & Building.Flags.Filling) != 0)
+                            bool flag3 = true;
+			    if ((buildingData.m_flags & Building.Flags.Downgrading) != Building.Flags.None)
+			    {
+				if ((float)num < (float)m_storageCapacity * 0.2f)
+				{
+				    offer2.Priority = 0;
+				}
+				else
+				{
+				    flag3 = false;
+				}
+			    }
+                            else if ((buildingData.m_flags & Building.Flags.Filling) != Building.Flags.None)
                             {
                                 offer2.Priority = Mathf.Clamp((m_storageCapacity - num) / Mathf.Max(1, m_storageCapacity >> 2) + 1, 0, 2);
                                 if (!flag2)
@@ -709,13 +746,16 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             {
                                 offer2.Priority = Mathf.Clamp((m_storageCapacity - num) / Mathf.Max(1, m_storageCapacity >> 2) - 1, 0, 2);
                             }
-                            offer2.Building = num3;
-                            offer2.Position = buildingData.m_position;
-                            offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
-                            offer2.Active = false;
-                            offer2.Exclude = flag2;
-                            offer2.Unlimited = !flag2;
-                            Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer2);
+                            if(flag3)
+                            {
+                                offer2.Building = num3;
+                                offer2.Position = buildingData.m_position;
+                                offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
+                                offer2.Active = false;
+                                offer2.Exclude = flag2;
+                                offer2.Unlimited = !flag2;
+                                Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer2); 
+                            }
                         }
                     }
                     else if (num > 0 && (count < num2 || !flag2))
@@ -730,10 +770,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         offer3.Unlimited = !flag2;
                         Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer3);
                     }
-                    bool flag3 = IsFull(buildingID, ref buildingData);
-                    if (flag != flag3)
+                    bool flag4 = IsFull(buildingID, ref buildingData);
+                    if (flag != flag4)
                     {
-                        if (flag3)
+                        if (flag4)
                         {
                             if ((object)m_fullPassMilestone != null)
                             {
@@ -759,10 +799,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     bool flag = IsFull(buildingID, ref buildingData);
                     int num = buildingData.m_customBuffer1 * 100;
                     int num2 = (finalProductionRate * m_truckCount + 99) / 100;
-                    if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
-                    {
-                        RemoveExtendedGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte);
-                    }
                     int count = 0;
                     int cargo = 0;
                     int capacity = 0;
@@ -803,10 +839,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     bool flag2 = num3 == buildingID;
                     if (material_byte == material_byte2)
                     {
-                        if (num >= maxLoadSize && (count < num2 || !flag2) && (buildingData.m_flags & Building.Flags.Filling) == 0)
+                        if (num >= maxLoadSize && (count < num2 || !flag2))
                         {
                             ExtendedTransferManager.Offer offer = default;
-                            if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
+                            if ((buildingData.m_flags & Building.Flags.Filling) != Building.Flags.None)
+			    {
+				offer.IsWarehouse = false;
+			    }
+                            else if ((buildingData.m_flags & Building.Flags.Downgrading) != 0)
                             {
                                 offer.IsWarehouse = false;
                             }
@@ -820,11 +860,48 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer.Active = true;
                             Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer);
                         }
+                        if ((buildingData.m_flags & Building.Flags.Downgrading) != Building.Flags.None)
+			{
+			    Vehicle[] buffer = Singleton<VehicleManager>.instance.m_vehicles.m_buffer;
+			    ushort num14 = buildingData.m_guestVehicles;
+			    int num15 = 0;
+			    while (num14 != 0 && cargo2 > 0 && (float)(num + cargo2) > (float)m_storageCapacity * 0.2f + (float)maxLoadSize)
+			    {
+				ushort nextGuestVehicle = buffer[(int)num14].m_nextGuestVehicle;
+				if (buffer[(int)num14].m_targetBuilding == buildingID && (byte)buffer[(int)num14].m_transferType == actualTransferReason)
+				{
+				    VehicleInfo info2 = buffer[(int)num14].Info;
+				    if (info2 != null)
+				    {
+					cargo2 = Mathf.Max(0, cargo2 - (int)buffer[(int)num14].m_transferSize);
+					info2.m_vehicleAI.SetTarget(num14, ref buffer[(int)num14], 0);
+				    }
+				}
+				num14 = nextGuestVehicle;
+				if (++num15 > 16384)
+				{
+				    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+				    break;
+				}
+			    }
+			}
                         num += cargo2;
-                        if (num < m_storageCapacity && (buildingData.m_flags & Building.Flags.Downgrading) == 0)
+                        if (num < m_storageCapacity)
                         {
                             ExtendedTransferManager.Offer offer2 = default;
-                            if ((buildingData.m_flags & Building.Flags.Filling) != 0)
+                            bool flag3 = true;
+			    if ((buildingData.m_flags & Building.Flags.Downgrading) != Building.Flags.None)
+			    {
+				if ((float)num < (float)m_storageCapacity * 0.2f)
+				{
+				    offer2.IsWarehouse = false;
+				}
+				else
+				{
+				    flag3 = false;
+				}
+			    }
+                            else if ((buildingData.m_flags & Building.Flags.Filling) != 0)
                             {
                                 offer2.IsWarehouse = false;
                             }
@@ -832,11 +909,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             {
                                 offer2.IsWarehouse = true;
                             }
-                            offer2.Building = num3;
-                            offer2.Position = buildingData.m_position;
-                            offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
-                            offer2.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer((ExtendedTransferManager.TransferReason)material_byte, offer2);
+                            if(flag3)
+                            {
+                                offer2.Building = num3;
+                                offer2.Position = buildingData.m_position;
+                                offer2.Amount = Mathf.Max(1, (m_storageCapacity - num) / maxLoadSize);
+                                offer2.Active = false;
+                                Singleton<ExtendedTransferManager>.instance.AddIncomingOffer((ExtendedTransferManager.TransferReason)material_byte, offer2);
+                            }
                         }
                     }
                     else if (num > 0 && (count < num2 || !flag2))
@@ -848,10 +928,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         offer3.Active = true;
                         Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer((ExtendedTransferManager.TransferReason)material_byte, offer3);
                     }
-                    bool flag3 = IsFull(buildingID, ref buildingData);
-                    if (flag != flag3)
+                    bool flag4 = IsFull(buildingID, ref buildingData);
+                    if (flag != flag4)
                     {
-                        if (flag3)
+                        if (flag4)
                         {
                             if ((object)m_fullPassMilestone != null)
                             {

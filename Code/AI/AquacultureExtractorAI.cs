@@ -39,7 +39,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void ReleaseBuilding(ushort buildingID, ref Building data)
         {
             base.ReleaseBuilding(buildingID, ref data);
-            if (!Singleton<UnlockManager>.instance.m_properties.m_ServicePolicyMilestones[28].IsPassed() && m_info.m_class.m_service == ItemClass.Service.Fishing && m_info.m_class.m_subService == ItemClass.SubService.None && m_info.m_class.m_level == ItemClass.Level.Level3)
+            if (Singleton<UnlockManager>.instance.m_properties != null && !Singleton<UnlockManager>.instance.m_properties.m_ServicePolicyMilestones[28].IsPassed() && m_info.m_class.m_service == ItemClass.Service.Fishing && m_info.m_class.m_subService == ItemClass.SubService.None && m_info.m_class.m_level == ItemClass.Level.Level3)
             {
                 DistrictManager instance = Singleton<DistrictManager>.instance;
                 for (int i = 0; i < instance.m_districts.m_size; i++)
