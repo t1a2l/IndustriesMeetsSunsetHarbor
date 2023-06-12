@@ -42,7 +42,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             else
             {
-                ___m_VehicleType.atlas = info.m_Atlas;
+                ___m_VehicleType.atlas = TextureUtils.GetGameTextureAtlas("Ingame");
                 ___m_VehicleType.spriteName = GetVehicleIcon(__instance, info.GetService(), info.GetSubService(), info.m_vehicleType);
             }
             InstanceID ownerID = info.m_vehicleAI.GetOwnerID(firstVehicle, ref Singleton<VehicleManager>.instance.m_vehicles.m_buffer[firstVehicle]);

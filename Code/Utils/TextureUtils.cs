@@ -180,5 +180,36 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             }
             return null;
         }
+
+        public static UITextureAtlas GetGameTextureAtlas(string atlasName)
+        {
+            // Selections.
+            int selectedAtlas = -1;
+            int selectedAtlasSpriteCount = 0;
+
+            // No cache entry - get game atlases and iterate through, looking for a name match.
+            UITextureAtlas[] atlases = Resources.FindObjectsOfTypeAll(typeof(UITextureAtlas)) as UITextureAtlas[];
+            for (int i = 0; i < atlases.Length; ++i)
+            {
+                if (atlases[i].name.Equals(atlasName))
+                {
+                    // Found a matching name - if the number of sprites of this atlas is greater than the last one found, use this.
+                    if (atlases[i].spriteNames.Length > selectedAtlasSpriteCount)
+                    {
+                        selectedAtlas = i;
+                        selectedAtlasSpriteCount = atlases[i].spriteNames.Length;
+                    }
+                }
+            }
+
+            // If we found a suitable atlas, add it to the cache and return it.
+            if (selectedAtlas >= 0)
+            {
+                return atlases[selectedAtlas];
+            }
+
+            // If we got here, we couldn't find the specified atlas.
+            return null;
+        }
     }
 }
