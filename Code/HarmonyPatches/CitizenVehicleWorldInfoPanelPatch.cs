@@ -14,10 +14,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private delegate string VehicleWorldInfoPanelUpdateBindingsDelegate(VehicleWorldInfoPanel instance);
         private static VehicleWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<VehicleWorldInfoPanelUpdateBindingsDelegate>(typeof(VehicleWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-        private delegate string GetVehicleTypeIconDelegate(CitizenVehicleWorldInfoPanel instance, VehicleInfo.VehicleType type);
-        private static GetVehicleTypeIconDelegate GetVehicleTypeIcon = AccessTools.MethodDelegate<GetVehicleTypeIconDelegate>(typeof(CitizenVehicleWorldInfoPanel).GetMethod("GetVehicleTypeIcon", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-        [HarmonyPatch(typeof(CitizenVehicleWorldInfoPanel), "GetVehicleTypeIcon")]
+        [HarmonyPatch(typeof(CitizenVehicleWorldInfoPanel), "UpdateBindings")]
         [HarmonyPrefix]
         public static bool UpdateBindings(CitizenVehicleWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UISprite ___m_VehicleType)
         {
@@ -39,7 +36,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     else
                     {
                         ___m_VehicleType.atlas = info.m_Atlas;
-                        ___m_VehicleType.spriteName = GetVehicleTypeIcon(__instance, info.m_vehicleType);
+                        ___m_VehicleType.spriteName = IconType(info.m_vehicleType);
                     }
                 }
             }
@@ -54,11 +51,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 else
                 {
                     ___m_VehicleType.atlas = vehicleParked.Info.m_Atlas;
-                    ___m_VehicleType.spriteName = GetVehicleTypeIcon(__instance, vehicleParked.Info.m_vehicleType);
+                    ___m_VehicleType.spriteName = IconType(vehicleParked.Info.m_vehicleType);
                 }
             }
             return false;
         }
+
+        public static string IconType(VehicleInfo.VehicleType type)
+	{
+	    return type switch
+	    {
+		VehicleInfo.VehicleType.Car => "IconCitizenVehicle", 
+		VehicleInfo.VehicleType.Bicycle => "IconCitizenBicycleVehicle", 
+		_ => "IconCitizenVehicle", 
+	    };
+	}
 
     }
 }
