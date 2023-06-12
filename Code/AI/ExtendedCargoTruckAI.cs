@@ -1144,8 +1144,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
             PathUnit.Position pathPosB;
             float distanceSqrA;
             float distanceSqrB;
-            bool flag = PathManager.FindPathPosition(startPos, ItemClass.Service.Road, NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle, VehicleInfo.VehicleType.Car, vehicleData.Info.vehicleCategory, allowUnderground, requireConnect: false, 32f, excludeLaneWidth: false, out pathPosA, out pathPosB, out distanceSqrA, out distanceSqrB) && !startNotUseTruck;
-            if (PathManager.FindPathPosition(startPos, ItemClass.Service.PublicTransport, NetInfo.LaneType.Vehicle, VehicleInfo.VehicleType.Train | VehicleInfo.VehicleType.Ship | VehicleInfo.VehicleType.Plane, vehicleData.Info.vehicleCategory | VehicleInfo.VehicleCategory.Cargo, allowUnderground, requireConnect: false, 32f, excludeLaneWidth: false, out var pathPosA2, out var pathPosB2, out var distanceSqrA2, out var distanceSqrB2))
+            bool flag = PathManager.FindPathPosition(startPos, ItemClass.Service.Road, NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle, VehicleInfo.VehicleType.Car, vehicleData.Info.vehicleCategory, allowUnderground, requireConnect: false, 32f, excludeLaneWidth: false, checkPedestrianStreet: false, out pathPosA, out pathPosB, out distanceSqrA, out distanceSqrB) && !startNotUseTruck;
+            if (PathManager.FindPathPosition(startPos, ItemClass.Service.PublicTransport, NetInfo.LaneType.Vehicle, VehicleInfo.VehicleType.Train | VehicleInfo.VehicleType.Ship | VehicleInfo.VehicleType.Plane, vehicleData.Info.vehicleCategory | VehicleInfo.VehicleCategory.Cargo, allowUnderground, requireConnect: false, 32f, excludeLaneWidth: false, checkPedestrianStreet: false, out var pathPosA2, out var pathPosB2, out var distanceSqrA2, out var distanceSqrB2))
             {
                 if (!flag || (distanceSqrA2 < distanceSqrA && (Mathf.Abs(startPos.x) > 4800f || Mathf.Abs(startPos.z) > 4800f)))
                 {
@@ -1160,8 +1160,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
             PathUnit.Position pathPosB3;
             float distanceSqrA3;
             float distanceSqrB3;
-            bool flag2 = PathManager.FindPathPosition(endPos, ItemClass.Service.Road, NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle, VehicleInfo.VehicleType.Car, vehicleData.Info.vehicleCategory, undergroundTarget, requireConnect: false, 32f, excludeLaneWidth: false, out pathPosA3, out pathPosB3, out distanceSqrA3, out distanceSqrB3) && !endNotUseTruck;
-            if (PathManager.FindPathPosition(endPos, ItemClass.Service.PublicTransport, NetInfo.LaneType.Vehicle, VehicleInfo.VehicleType.Train | VehicleInfo.VehicleType.Ship | VehicleInfo.VehicleType.Plane, vehicleData.Info.vehicleCategory | VehicleInfo.VehicleCategory.Cargo, undergroundTarget, requireConnect: false, 32f, excludeLaneWidth: false, out var pathPosA4, out var pathPosB4, out var distanceSqrA4, out var distanceSqrB4))
+            bool flag2 = PathManager.FindPathPosition(endPos, ItemClass.Service.Road, NetInfo.LaneType.Vehicle | NetInfo.LaneType.TransportVehicle, VehicleInfo.VehicleType.Car, vehicleData.Info.vehicleCategory, undergroundTarget, requireConnect: false, 32f, excludeLaneWidth: false, checkPedestrianStreet: false, out pathPosA3, out pathPosB3, out distanceSqrA3, out distanceSqrB3) && !endNotUseTruck;
+            if (PathManager.FindPathPosition(endPos, ItemClass.Service.PublicTransport, NetInfo.LaneType.Vehicle, VehicleInfo.VehicleType.Train | VehicleInfo.VehicleType.Ship | VehicleInfo.VehicleType.Plane, vehicleData.Info.vehicleCategory | VehicleInfo.VehicleCategory.Cargo, undergroundTarget, requireConnect: false, 32f, excludeLaneWidth: false, checkPedestrianStreet: false, out var pathPosA4, out var pathPosB4, out var distanceSqrA4, out var distanceSqrB4))
             {
                 if (!flag2 || (distanceSqrA4 < distanceSqrA3 && (Mathf.Abs(endPos.x) > 4800f || Mathf.Abs(endPos.z) > 4800f)))
                 {
