@@ -14,7 +14,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UIPanel m_mainPanel = Find<UIPanel>("(Library) RestaurantInfoViewPanel");
                 m_mainPanel.width = 550;
-
                 UISprite uISprite = Find<UISprite>("ColorActive");
                 UISprite uISprite2 = Find<UISprite>("ColorInactive");
                 UILabel mainLabel = Find<UILabel>("Label");
