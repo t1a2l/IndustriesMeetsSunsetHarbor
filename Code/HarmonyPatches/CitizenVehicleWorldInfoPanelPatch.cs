@@ -11,7 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(CitizenVehicleWorldInfoPanel))]
     public static class CitizenVehicleWorldInfoPanelPatch
     {
-        private delegate string VehicleWorldInfoPanelUpdateBindingsDelegate(VehicleWorldInfoPanel instance);
+        private delegate void VehicleWorldInfoPanelUpdateBindingsDelegate(VehicleWorldInfoPanel instance);
         private static VehicleWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<VehicleWorldInfoPanelUpdateBindingsDelegate>(typeof(VehicleWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
         [HarmonyPatch(typeof(CitizenVehicleWorldInfoPanel), "UpdateBindings")]

@@ -34,11 +34,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 if (___m_currentMode == (InfoMode)41)
                 {
-                    UIView.library.Hide("(Library) RestaurantInfoViewPanel");
+                    UIView.library.Hide("RestaurantInfoViewPanel");
                 }
                 if(mode == (InfoMode)41)
                 {
-                    UIView.library.Show("(Library) RestaurantInfoViewPanel", bringToFront: true, onlyWhenInvisible: true);
+                    UIView.library.Show("RestaurantInfoViewPanel", bringToFront: true, onlyWhenInvisible: true);
                     return false;
                 } 
             }
