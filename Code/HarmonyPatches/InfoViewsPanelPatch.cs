@@ -33,10 +33,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             if (name == "Restaurant")
             {
                 uIButton.atlas = TextureUtils.GetAtlas("InfoIconRestaurantButtonAtlas");
+                uIButton.tooltip = "Restaurant Locations";
             }
             else
             {
                 uIButton.atlas = __instance.m_Atlas;
+                uIButton.tooltip = ColossalFramework.Globalization.Locale.Get(localeID, name);
             }
             uIButton.text = string.Empty;
             uIButton.playAudioEvents = true;
@@ -52,7 +54,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             uIButton.hoveredFgSprite = text2 + "Hovered";
             uIButton.pressedFgSprite = text2 + "Pressed";
             uIButton.disabledFgSprite = text2 + "Disabled";
-            uIButton.tooltip = ColossalFramework.Globalization.Locale.Get(localeID, name);
             uIButton.group = __instance.component;
             ___m_ObjectIndex++;
             __result = uIButton;
