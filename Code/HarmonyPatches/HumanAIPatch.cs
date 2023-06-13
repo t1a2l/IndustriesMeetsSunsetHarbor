@@ -2,8 +2,10 @@ using ColossalFramework;
 using HarmonyLib;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.AI;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -130,6 +132,30 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             if(waiting_delivery) // don't start moving if waiting for delivery
             {
                 __result = false;
+                return false;
+            }
+            return true;
+        }
+
+
+        [HarmonyPatch(typeof(HumanAI), "GetColor")]
+        [HarmonyPrefix]
+        public static bool GetColor(ushort instanceID, ref CitizenInstance data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode, ref Color __result)
+        {
+            if (infoMode == (InfoManager.InfoMode)41)
+            {
+                BuildingManager instance2 = Singleton<BuildingManager>.instance;
+                uint citizen = data.m_citizen;
+                var building_info = instance2.m_buildings.m_buffer[data.m_targetBuilding].Info;
+                var waiting_delivery = RestaurantManager.IsCitizenWaitingForDelivery(citizen);
+                if (waiting_delivery || building_info.GetAI() is RestaurantAI)
+		{
+		    __result = Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_targetColor;
+		}
+                else
+                {
+                    __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                }
                 return false;
             }
             return true;
