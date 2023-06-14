@@ -357,35 +357,35 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    amount = custom_buffers.m_customBuffer1;
+                    amount = (int)custom_buffers.m_customBuffer1;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate1);
                     break;
                 case "m_inputResource2":
-                    amount = custom_buffers.m_customBuffer2;
+                    amount = (int)custom_buffers.m_customBuffer2;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate2);
                     break;
                 case "m_inputResource3":
-                    amount = custom_buffers.m_customBuffer3;
+                    amount = (int)custom_buffers.m_customBuffer3;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate3);
                     break;
                 case "m_inputResource4":
-                    amount = custom_buffers.m_customBuffer4;
+                    amount = (int)custom_buffers.m_customBuffer4;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate4);
                     break;
                 case "m_inputResource5":
-                    amount = custom_buffers.m_customBuffer5;
+                    amount = (int)custom_buffers.m_customBuffer5;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate5);
                     break;
                 case "m_inputResource6":
-                    amount = custom_buffers.m_customBuffer6;
+                    amount = (int)custom_buffers.m_customBuffer6;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate6);
                     break;
                 case "m_inputResource7":
-                    amount = custom_buffers.m_customBuffer7;
+                    amount = (int)custom_buffers.m_customBuffer7;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate7);
                     break;
                 case "m_inputResource8":
-                    amount = custom_buffers.m_customBuffer8;
+                    amount = (int)custom_buffers.m_customBuffer8;
                     capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate8);
                     break;
             }

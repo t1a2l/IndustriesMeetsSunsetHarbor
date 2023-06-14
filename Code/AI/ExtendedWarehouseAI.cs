@@ -387,13 +387,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 transferVehicleService.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[vehicle], buildingID);
                 ((IExtendedVehicleAI)cargoTruckAI).ExtendedStartTransfer(vehicle, ref vehicles.m_buffer[(int)vehicle], material, offer);
-              //  ushort building = offer.Building;
-                //if (building != 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_flags & Building.Flags.IncomingOutgoing) != 0)
-               // {
-              //      transferVehicleService.m_vehicleAI.GetSize(vehicle, ref vehicles.m_buffer[vehicle], out var size, out var _);
-              //      CommonBuildingAI.ExportResource(buildingID, ref data, material, size);
-             //   }
-              //  data.m_outgoingProblemTimer = 0;
             }
         }
 

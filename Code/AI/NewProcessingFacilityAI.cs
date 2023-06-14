@@ -164,7 +164,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource1 != TransferManager.TransferReason.None)
             {
                 int inputBufferSize1 = GetInputBufferSize(ref data, m_inputRate1);
-                int customBuffer1 = custom_buffers.m_customBuffer1;
+                int customBuffer1 = (int)custom_buffers.m_customBuffer1;
                 int count1 = 0;
                 int cargo1 = 0;
                 int capacity1 = 0;
@@ -182,7 +182,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource2 != TransferManager.TransferReason.None)
             {
                 int inputBufferSize1 = GetInputBufferSize(ref data, m_inputRate2);
-                int customBuffer2 = custom_buffers.m_customBuffer2;
+                int customBuffer2 = (int)custom_buffers.m_customBuffer2;
                 int count2 = 0;
                 int cargo2 = 0;
                 int capacity2 = 0;
@@ -200,7 +200,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource3 != TransferManager.TransferReason.None)
             {
                 int inputBufferSize3 = GetInputBufferSize(ref data, m_inputRate3);
-                int customBuffer3 = custom_buffers.m_customBuffer3;
+                int customBuffer3 = (int)custom_buffers.m_customBuffer3;
                 int count3 = 0;
                 int cargo3 = 0;
                 int capacity3 = 0;
@@ -218,7 +218,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource4 != TransferManager.TransferReason.None)
             {
                 int inputBufferSize4 = GetInputBufferSize(ref data, m_inputRate4);
-                int customBuffer4 = custom_buffers.m_customBuffer4;
+                int customBuffer4 = (int)custom_buffers.m_customBuffer4;
                 int count4 = 0;
                 int cargo4 = 0;
                 int capacity4 = 0;
@@ -236,7 +236,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource5 != ExtendedTransferManager.TransferReason.None)
             {
                 int inputBufferSize5 = GetInputBufferSize(ref data, m_inputRate5);
-                int customBuffer5 = custom_buffers.m_customBuffer5;
+                int customBuffer5 = (int)custom_buffers.m_customBuffer5;
                 int count5 = 0;
                 int cargo5 = 0;
                 int capacity5 = 0;
@@ -254,7 +254,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource6 != ExtendedTransferManager.TransferReason.None)
             {
                 int inputBufferSize6 = GetInputBufferSize(ref data, m_inputRate6);
-                int customBuffer6 = custom_buffers.m_customBuffer6;
+                int customBuffer6 = (int)custom_buffers.m_customBuffer6;
                 int count6 = 0;
                 int cargo6 = 0;
                 int capacity6 = 0;
@@ -272,7 +272,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource7 != ExtendedTransferManager.TransferReason.None)
             {
                 int inputBufferSize7 = GetInputBufferSize(ref data, m_inputRate7);
-                int customBuffer7 = custom_buffers.m_customBuffer7;
+                int customBuffer7 = (int)custom_buffers.m_customBuffer7;
                 int count7 = 0;
                 int cargo7 = 0;
                 int capacity7 = 0;
@@ -290,7 +290,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_inputResource8 != ExtendedTransferManager.TransferReason.None)
             {
                 int inputBufferSize8 = GetInputBufferSize(ref data, m_inputRate8);
-                int customBuffer8 = custom_buffers.m_customBuffer8;
+                int customBuffer8 = (int)custom_buffers.m_customBuffer8;
                 int count8 = 0;
                 int cargo8 = 0;
                 int capacity8 = 0;
@@ -308,7 +308,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (m_outputResource != ExtendedTransferManager.TransferReason.None)
             {
                 int outputBufferSize = GetOutputBufferSize(ref data);
-                int outputBuffer = custom_buffers.m_customBuffer9;
+                int outputBuffer = (int)custom_buffers.m_customBuffer9;
                 int count9 = 0;
                 int cargo9 = 0;
                 int capacity9 = 0;
@@ -660,7 +660,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource1 != TransferManager.TransferReason.None)
                 {
                     InputBufferSize1 = GetInputBufferSize(ref buildingData, m_inputRate1);
-                    CustomBuffer1 = custom_buffers.m_customBuffer1;
+                    CustomBuffer1 = (int)custom_buffers.m_customBuffer1;
                     int Input1ProductionRate = (m_inputRate1 * finalProductionRate + 99) / 100;
                     if (CustomBuffer1 < Input1ProductionRate)
                     {
@@ -673,7 +673,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource2 != TransferManager.TransferReason.None)
                 {
                     InputBufferSize2 = GetInputBufferSize(ref buildingData, m_inputRate2);
-                    CustomBuffer2 = custom_buffers.m_customBuffer2;
+                    CustomBuffer2 = (int)custom_buffers.m_customBuffer2;
                     int Input2ProductionRate = (m_inputRate2 * finalProductionRate + 99) / 100;
                     if (CustomBuffer2 < Input2ProductionRate)
                     {
@@ -686,7 +686,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource3 != TransferManager.TransferReason.None)
                 {
                     InputBufferSize3 = GetInputBufferSize(ref buildingData, m_inputRate3);
-                    CustomBuffer3 = custom_buffers.m_customBuffer3;
+                    CustomBuffer3 = (int)custom_buffers.m_customBuffer3;
                     int Input3ProductionRate = (m_inputRate3 * finalProductionRate + 99) / 100;
                     if (CustomBuffer3 < Input3ProductionRate)
                     {
@@ -699,7 +699,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource4 != TransferManager.TransferReason.None)
                 {
                     InputBufferSize4 = GetInputBufferSize(ref buildingData, m_inputRate4);
-                    CustomBuffer4 = custom_buffers.m_customBuffer4;
+                    CustomBuffer4 = (int)custom_buffers.m_customBuffer4;
                     int Input4ProductionRate = (m_inputRate4 * finalProductionRate + 99) / 100;
                     if (CustomBuffer4 < Input4ProductionRate)
                     {
@@ -712,7 +712,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource5 != ExtendedTransferManager.TransferReason.None)
                 {
                     InputBufferSize5 = GetInputBufferSize(ref buildingData, m_inputRate5);
-                    CustomBuffer5 = custom_buffers.m_customBuffer5;
+                    CustomBuffer5 = (int)custom_buffers.m_customBuffer5;
                     int Input5ProductionRate = (m_inputRate5 * finalProductionRate + 99) / 100;
                     if (CustomBuffer5 < Input5ProductionRate)
                     {
@@ -725,7 +725,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource6 != ExtendedTransferManager.TransferReason.None)
                 {
                     InputBufferSize6 = GetInputBufferSize(ref buildingData, m_inputRate6);
-                    CustomBuffer6 = custom_buffers.m_customBuffer6;
+                    CustomBuffer6 = (int)custom_buffers.m_customBuffer6;
                     int Input6ProductionRate = (m_inputRate6 * finalProductionRate + 99) / 100;
                     if (CustomBuffer6 < Input6ProductionRate)
                     {
@@ -738,7 +738,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource7 != ExtendedTransferManager.TransferReason.None)
                 {
                     InputBufferSize7 = GetInputBufferSize(ref buildingData, m_inputRate7);
-                    CustomBuffer7 = custom_buffers.m_customBuffer7;
+                    CustomBuffer7 = (int)custom_buffers.m_customBuffer7;
                     int Input7ProductionRate = (m_inputRate7 * finalProductionRate + 99) / 100;
                     if (CustomBuffer7 < Input7ProductionRate)
                     {
@@ -751,7 +751,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_inputResource8 != ExtendedTransferManager.TransferReason.None)
                 {
                     InputBufferSize8 = GetInputBufferSize(ref buildingData, m_inputRate5);
-                    CustomBuffer8 = custom_buffers.m_customBuffer8;
+                    CustomBuffer8 = (int)custom_buffers.m_customBuffer8;
                     int Input8ProductionRate = (m_inputRate8 * finalProductionRate + 99) / 100;
                     if (CustomBuffer8 < Input8ProductionRate)
                     {
@@ -1231,7 +1231,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            int m_customBuffer9 = custom_buffers.m_customBuffer9;
+            int m_customBuffer9 = (int)custom_buffers.m_customBuffer9;
             int output_production_rate = m_customBuffer9 * m_outputRate * 16 / 100;
             string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", new object[] { output_production_rate });
             if (m_outputResource != ExtendedTransferManager.TransferReason.None && m_outputVehicleCount != 0)

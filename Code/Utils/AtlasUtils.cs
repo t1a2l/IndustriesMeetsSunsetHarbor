@@ -26,8 +26,8 @@ namespace IndustriesMeetsSunsetHarbor.Utils
         {
             "InfoIconRestaurant",
 	    "InfoIconRestaurantDisabled",
-	    "InfoIconRestaurantFocused",
-	    "InfoIconRestaurantHovered",
+            "InfoIconRestaurantFocused",
+            "InfoIconRestaurantHovered",
 	    "InfoIconRestaurantPressed",
         };
 
@@ -54,7 +54,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 TextureUtils.InitialiseAtlas("InfoIconRestaurantButtonAtlas");
                 for (int i = 0; i < InfoIconRestaurantButton.Length; i++)
                 {
-                    TextureUtils.AddSpriteToAtlas(new Rect(34 * i + 6, 2, 32, 32), InfoIconRestaurantButton[i], "InfoIconRestaurantButtonAtlas");
+                    TextureUtils.AddSpriteToAtlas(new Rect(2 * (-17 + (18 * (i + 1))), 2, 34, 34), InfoIconRestaurantButton[i], "InfoIconRestaurantButtonAtlas");
                 }
             }
         }

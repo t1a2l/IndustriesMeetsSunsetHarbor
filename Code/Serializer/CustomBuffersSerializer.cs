@@ -27,16 +27,16 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 // Write actual settings
                 StorageData.WriteUInt16(kvp.Key, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer1, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer2, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer3, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer4, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer5, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer6, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer7, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer8, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer9, Data);
-                StorageData.WriteUInt16(kvp.Value.m_customBuffer10, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer1, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer2, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer3, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer4, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer5, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer6, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer7, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer8, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer9, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer10, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -62,16 +62,16 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         CheckStartTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                         ushort customBuffersId = StorageData.ReadUInt16(Data, ref iIndex);
                         CustomBuffersManager.CustomBuffer new_strcut = new();
-                        new_strcut.m_customBuffer1 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer2 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer3 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer4 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer5 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer6 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer7 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer8 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer9 = StorageData.ReadUInt16(Data, ref iIndex);
-                        new_strcut.m_customBuffer10 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer1 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer2 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer3 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer4 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer5 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer6 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer7 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer8 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer9 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer10 = StorageData.ReadFloat(Data, ref iIndex);
                         CustomBuffersManager.CustomBuffers.Add(customBuffersId, new_strcut);
                         CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                     }

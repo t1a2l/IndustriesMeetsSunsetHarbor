@@ -9,16 +9,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public struct CustomBuffer
         {
-            public ushort m_customBuffer1;
-            public ushort m_customBuffer2;
-            public ushort m_customBuffer3;
-            public ushort m_customBuffer4;
-            public ushort m_customBuffer5;
-            public ushort m_customBuffer6;
-            public ushort m_customBuffer7;
-            public ushort m_customBuffer8;
-            public ushort m_customBuffer9;
-            public ushort m_customBuffer10;
+            public float m_customBuffer1;
+            public float m_customBuffer2;
+            public float m_customBuffer3;
+            public float m_customBuffer4;
+            public float m_customBuffer5;
+            public float m_customBuffer6;
+            public float m_customBuffer7;
+            public float m_customBuffer8;
+            public float m_customBuffer9;
+            public float m_customBuffer10;
         }
 
         public static void Init()

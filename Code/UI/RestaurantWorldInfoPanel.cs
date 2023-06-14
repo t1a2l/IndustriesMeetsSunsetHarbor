@@ -365,7 +365,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return "";
         }
 
-        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
+        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out float amount, out int capacity)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
