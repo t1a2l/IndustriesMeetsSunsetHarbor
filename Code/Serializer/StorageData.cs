@@ -248,5 +248,17 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             }
             return empty;
         }
+
+        public static void WriteDateTime(DateTime Value, FastList<byte> Data)
+        {
+            
+            StorageData.AddToData(BitConverter.GetBytes(Value.Ticks), Data);
+        }
+
+        public static DateTime ReadDateTime(byte[] Data, ref int Index)
+        {
+            DateTime myDateTime = DateTime.FromBinary(BitConverter.ToInt64(Data, Index));
+            return myDateTime;
+        }
     }
 }

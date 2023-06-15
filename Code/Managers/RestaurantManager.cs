@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
@@ -12,11 +13,19 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public uint citizenId;
             public ushort restaurantId;
             public bool mealCooked;
+            public int mealType;
+        }
+
+        public struct RestaurantSitDownData
+        {
+            public uint citizenId;
+            public int mealType;
+            public DateTime enterTime;
         }
 
         public static Dictionary<ushort, List<RestaurantDeliveryData>> RestaurantsDeliveries;
 
-        public static Dictionary<ushort, List<uint>> RestaurantsLines;
+        public static Dictionary<ushort, List<RestaurantSitDownData>> RestaurantsSitDowns;
 
         public static void Init()
         {
@@ -24,16 +33,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 RestaurantsDeliveries = new();
             }
-            if(RestaurantsLines == null)
+            if(RestaurantsSitDowns == null)
             {
-                RestaurantsLines = new();
+                RestaurantsSitDowns = new();
             }
         }
 
         public static void Deinit()
         {
             RestaurantsDeliveries = new();
-            RestaurantsLines = new();
+            RestaurantsSitDowns = new();
         }
 
         public static List<RestaurantDeliveryData> GetRestaurantDeliveriesList(ushort buildingID)
@@ -46,14 +55,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             return DeliveriesList;
         }
 
-        public static List<uint> GetRestaurantLineList(ushort buildingID)
+        public static List<RestaurantSitDownData> GetRestaurantSitDownsList(ushort buildingID)
         {
-            if(!RestaurantsLines.TryGetValue(buildingID, out List<uint> LineList))
+            if(!RestaurantsSitDowns.TryGetValue(buildingID, out List<RestaurantSitDownData> SitDownsList))
             {
-                LineList = new List<uint>();
-                RestaurantsLines[buildingID] = LineList;
+                SitDownsList = new List<RestaurantSitDownData>();
+                RestaurantsSitDowns[buildingID] = SitDownsList;
             }
-            return LineList;
+            return SitDownsList;
         }
 
         public static void SetRestaurantDeliveriesList(ushort buildingID, List<RestaurantDeliveryData> DeliveriesList)
@@ -61,9 +70,9 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             RestaurantsDeliveries[buildingID] = DeliveriesList;
         }
 
-        public static void SetRestaurantLineList(ushort buildingID, List<uint> LineList)
+        public static void SetRestaurantSitDownsList(ushort buildingID, List<RestaurantSitDownData> SitDownsList)
         {
-            RestaurantsLines[buildingID] = LineList;
+            RestaurantsSitDowns[buildingID] = SitDownsList;
         }
 
         public static bool IsCitizenWaitingForDelivery(uint citizenId)

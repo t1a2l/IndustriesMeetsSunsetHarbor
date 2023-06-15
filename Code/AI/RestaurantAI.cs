@@ -36,14 +36,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Delivery Vehicle Count")]
         public int m_DeliveryVehicleCount = 4;
 
-        [CustomizableProperty("Food Delivery Accumulation")]
-        public int m_foodDeliveryAccumulation = 100;
+        [CustomizableProperty("Restaurant Accumulation")]
+        public int m_restaurantAccumulation = 100;
 
         [CustomizableProperty("Noise Accumulation")]
         public int m_noiseAccumulation;
 
-        [CustomizableProperty("Food Delivery Radius")]
-        public float m_foodDeliveryRadius = 400f;
+        [CustomizableProperty("Restaurant Radius")]
+        public float m_restaurantRadius = 400f;
 
         [CustomizableProperty("Noise Radius")]
         public float m_noiseRadius = 200f;
@@ -78,38 +78,44 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Output Meals Count")]
         public int m_outputMealsCount = 100;
 
-        [CustomizableProperty("Input Resource Amount 1")]
-        public float m_inputAmount1 = 0.1f;
+        [CustomizableProperty("Meal 1 Name")]
+        public string m_mealName1 = "";
 
-        [CustomizableProperty("Input Resource Amount 2")]
-        public float m_inputAmount2 = 0.1f;
+        [CustomizableProperty("Meal 1 Ingredient")]
+        public float[] m_mealRecipe1 = new float[8];
 
-        [CustomizableProperty("Input Resource Amount 3")]
-        public float m_inputAmount3 = 0.1f;
+        [CustomizableProperty("Meal 2 Name")]
+        public string m_mealName2 = "";
 
-        [CustomizableProperty("Input Resource Amount 4")]
-        public float m_inputAmount4 = 0.1f;
+        [CustomizableProperty("Meal 2 Ingredient")]
+        public float[] m_mealRecipe2 = new float[8];
 
-        [CustomizableProperty("Input Resource Amount 5")]
-        public float m_inputAmount5 = 0.1f;
+        [CustomizableProperty("Meal 3 Name")]
+        public string m_mealName3 = "";
 
-        [CustomizableProperty("Input Resource Amount 6")]
-        public float m_inputAmount6 = 0.1f;
+        [CustomizableProperty("Meal 3 Ingredient")]
+        public float[] m_mealRecipe3 = new float[8];
 
-        [CustomizableProperty("Input Resource Amount 7")]
-        public float m_inputAmount7 = 0.1f;
+        [CustomizableProperty("Meal 4 Name")]
+        public string m_mealName4 = "";
 
-        [CustomizableProperty("Input Resource Amount 8")]
-        public float m_inputAmount8 = 0.1f;
+        [CustomizableProperty("Meal 4 Ingredient")]
+        public float[] m_mealRecipe4 = new float[8];
 
         [NonSerialized]
-        public int m_finalProductionRate;
+        public bool m_canCookMeal1;
+
+        [NonSerialized]
+        public bool m_canCookMeal2;
+
+        [NonSerialized]
+        public bool m_canCookMeal3;
+
+        [NonSerialized]
+        public bool m_canCookMeal4;
 
         [CustomizableProperty("Input Resource Threshold")]
         public float m_resourceThreshold = 20;
-
-        [CustomizableProperty("Food Sale Price")]
-        public int m_goodsSellPrice = 1500;
 
         [CustomizableProperty("Quality (values: 1-3 including 1 and 3)")]
         public int quality = 2;
@@ -121,7 +127,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public DateTime CurrentGameTime;
 
-        public DateTime WaitInLineTimer;
+        public DateTime WaitForMealTimer;
 
         public DateTime WaitingForDeliveryVehicleTimer;
 
@@ -268,11 +274,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
                 }
                 case (InfoManager.InfoMode)41: // Restaurant Info
-			if ((data.m_flags & Building.Flags.Active) != 0)
-			{
-				return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
-			}
-			return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
+                    if ((data.m_flags & Building.Flags.Active) != 0)
+                    {
+                        return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+                    }
+                    return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                 default:
                     return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
             }
@@ -332,7 +338,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             Vector3 position = buildingData.m_position;
             position.y += m_info.m_size.y;
             Singleton<NotificationManager>.instance.AddEvent(NotificationEvent.Type.GainTaxes, position, 1.5f);
-            Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.GainHappiness, ImmaterialResourceManager.Resource.DeathCare, m_foodDeliveryAccumulation, m_foodDeliveryRadius);
+            Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.GainHappiness, ImmaterialResourceManager.Resource.DeathCare, m_restaurantAccumulation, m_restaurantRadius);
         }
 
         protected override void ManualDeactivation(ushort buildingID, ref Building buildingData)
@@ -341,12 +347,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Happy, ImmaterialResourceManager.Resource.Abandonment, -buildingData.Width * buildingData.Length, 64f);
             }
-            else if (m_foodDeliveryAccumulation != 0)
+            else if (m_restaurantAccumulation != 0)
             {
                 Vector3 position = buildingData.m_position;
                 position.y += m_info.m_size.y;
                 Singleton<NotificationManager>.instance.AddEvent(NotificationEvent.Type.LoseHappiness, position, 1.5f);
-                Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Sad, ImmaterialResourceManager.Resource.DeathCare, -m_foodDeliveryAccumulation, m_foodDeliveryRadius);
+                Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Sad, ImmaterialResourceManager.Resource.DeathCare, -m_restaurantAccumulation, m_restaurantRadius);
             }
 
         }
@@ -354,47 +360,36 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
             base.SimulationStep(buildingID, ref buildingData, ref frameData);
+            CalculateRestaurantIncome(buildingID, ref buildingData);
             CurrentGameTime = SimulationManager.instance.m_currentGameTime;
-            if (m_finalProductionRate != 0)
-            {
-                WaitInLineTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
-            }
-            else
+            var RestaurantSitDown = RestaurantManager.GetRestaurantSitDownsList(buildingID);
+            foreach (var customer in RestaurantSitDown)
             {
                 // not enough storage check if 30 minutes have passed
-                var RestaurantLine = RestaurantManager.GetRestaurantLineList(buildingID);
-                if (CurrentGameTime >= WaitInLineTimer && !IsNextDay())
+                if (CurrentGameTime >= customer.enterTime.AddMinutes(30) && !IsNextDay())
                 {
-                    // 30 minutes have passed o search for other places to eat at
-                    foreach (var citizenId in RestaurantLine)
-                    {
-                        var reason = GetShoppingReason();
-                        TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
-                        offer.Priority = Singleton<SimulationManager>.instance.m_randomizer.Int32(8u);
-                        offer.Citizen = citizenId;
-                        offer.Position = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position;
-                        offer.Amount = 1;
-                        offer.Active = true;
-                        Singleton<TransferManager>.instance.AddIncomingOffer(reason, offer);
-                    }
-                    RestaurantLine.Clear();
+                    var reason = GetShoppingReason();
+                    TransferManager.TransferOffer offer = default;
+                    offer.Priority = Singleton<SimulationManager>.instance.m_randomizer.Int32(8u);
+                    offer.Citizen = customer.citizenId;
+                    offer.Position = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position;
+                    offer.Amount = 1;
+                    offer.Active = true;
+                    Singleton<TransferManager>.instance.AddIncomingOffer(reason, offer);
+                    RestaurantSitDown.Remove(customer);
                 }
                 else
                 {
-                    // while 30 minutes has not passed try to cook meals for each customer and remove him from the line
-                    foreach (var citizenId in RestaurantLine)
+                    // while 30 minutes has not passed try to cook meals for customer
+                    var meal_cooked = CookMeal(buildingID, ref buildingData, false, customer.mealType);
+                    if (meal_cooked)
                     {
-                        var meal_cooked = CookCustomerMeal(buildingID);
-                        if (meal_cooked)
-                        {
-                            EatMeal(buildingID, ref buildingData, citizenId);
-                            RestaurantLine.Remove(citizenId);
-                        }
+                        EatMeal(buildingID, ref buildingData, customer.citizenId);
+                        RestaurantSitDown.Remove(customer);
                     }
                 }
-                RestaurantManager.SetRestaurantLineList(buildingID, RestaurantLine);
             }
-            if(m_usedVehicles < m_DeliveryVehicleCount)
+            if (m_usedVehicles < m_DeliveryVehicleCount)
             {
                 WaitingForDeliveryVehicleTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
             }
@@ -402,7 +397,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 // no delviery vehicles avaliable 
                 var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
-                if(CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
+                if (CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
                 {
                     // 30 minutes have passed clear all deliveries with no vehicle assigned to them
                     DeliveriesList.RemoveAll(item => item.deliveryVehicleId == 0);
@@ -410,13 +405,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 else
                 {
                     //  while 30 minutes has not passed try to cook meals for all the deliveries
-                    for(var i = 0; i < DeliveriesList.Count; i++)
+                    for (var i = 0; i < DeliveriesList.Count; i++)
                     {
                         var delivery = DeliveriesList[i];
-                        if(delivery.mealCooked == false)
+                        if (delivery.mealCooked == false)
                         {
-                            var delivery_meal_cooked = CookDeliveryMeal(buildingID);
-                            if(delivery_meal_cooked)
+                            var delivery_meal_cooked = CookMeal(buildingID, ref buildingData, true, delivery.mealType);
+                            if (delivery_meal_cooked)
                             {
                                 delivery.mealCooked = true;
                                 DeliveriesList[i] = delivery;
@@ -437,16 +432,20 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 // new citizen order
                 var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
 
+                int mealType = ChooseMealType();
+
                 var NewDelivery = new RestaurantManager.RestaurantDeliveryData
                 {
                     deliveryVehicleId = 0,
                     buildingId = buildingByLocation,
                     citizenId = citizen,
                     restaurantId = buildingID,
-                    mealCooked = false
+                    mealCooked = false,
+                    mealType = mealType
                 };
-                var delivery_meal_cooked = CookDeliveryMeal(buildingID);
-                if(delivery_meal_cooked)
+
+                bool delivery_meal_cooked = CookMeal(buildingID, ref data, true, mealType);
+                if (delivery_meal_cooked)
                 {
                     NewDelivery.mealCooked = true;
                 }
@@ -510,7 +509,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     if (material == m_inputResource5)
                     {
                         float m_customBuffer5 = custom_buffers.m_customBuffer5;
-                        var x = (float)amountDelta;
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer5, m_inputCapacity5 - m_customBuffer5);
                         m_customBuffer5 += amountDelta;
                         custom_buffers.m_customBuffer5 = m_customBuffer5;
@@ -651,27 +649,49 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
             DeliveriesList.Clear();
             RestaurantManager.SetRestaurantDeliveriesList(buildingID, DeliveriesList);
-            var RestaurantLine = RestaurantManager.GetRestaurantLineList(buildingID);
-            RestaurantLine.Clear();
-            RestaurantManager.SetRestaurantLineList(buildingID, RestaurantLine);
+            var SitDownsLine = RestaurantManager.GetRestaurantSitDownsList(buildingID);
+            SitDownsLine.Clear();
+            RestaurantManager.SetRestaurantSitDownsList(buildingID, SitDownsLine);
             base.BuildingDeactivated(buildingID, ref data);
+        }
+
+        public override float GetCurrentRange(ushort buildingID, ref Building data)
+        {
+            int num = data.m_productionRate;
+            if ((data.m_flags & (Building.Flags.Evacuating | Building.Flags.Active)) != Building.Flags.Active)
+            {
+                num = 0;
+            }
+            else if ((data.m_flags & Building.Flags.RateReduced) != 0)
+            {
+                num = Mathf.Min(num, 50);
+            }
+            int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
+            num = PlayerBuildingAI.GetProductionRate(num, budget);
+            return (float)num * m_restaurantRadius * 0.01f;
         }
 
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
-            // every visitor that enter try to cook a meal for him
-            var meal_cooked = CookCustomerMeal(buildingID);
+            int mealType = ChooseMealType();
+            bool meal_cooked = CookMeal(buildingID, ref data, false, mealType);
             if (meal_cooked)
             {
-                // meals was cooked - citizen eats the meal
+                // meal was cooked - citizen eats the meal
                 EatMeal(buildingID, ref data, citizen);
             }
             else
             {
-                // meal was not cooked add him to the line
-                var RestaurantLine = RestaurantManager.GetRestaurantLineList(buildingID);
-                RestaurantLine.Add(citizen);
-                RestaurantManager.SetRestaurantLineList(buildingID, RestaurantLine);
+                // meal was not cooked add him to the waiting sit down customers list
+                var RestaurantCustomer = RestaurantManager.GetRestaurantSitDownsList(buildingID);
+                var NewCustomer = new RestaurantManager.RestaurantSitDownData
+                {
+                    citizenId = citizen,
+                    mealType = mealType,
+                    enterTime = SimulationManager.instance.m_currentGameTime
+                };
+                RestaurantCustomer.Add(NewCustomer);
+                RestaurantManager.SetRestaurantSitDownsList(buildingID, RestaurantCustomer);
             }
             base.VisitorEnter(buildingID, ref data, citizen);
         }
@@ -685,65 +705,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             byte b = district;
             buffer[(int)b].m_servicePoliciesEffect = buffer[(int)b].m_servicePoliciesEffect | (servicePolicies & (DistrictPolicies.Services.PowerSaving | DistrictPolicies.Services.WaterSaving | DistrictPolicies.Services.SmokeDetectors | DistrictPolicies.Services.Recycling | DistrictPolicies.Services.RecreationalUse | DistrictPolicies.Services.ExtraInsulation | DistrictPolicies.Services.NoElectricity | DistrictPolicies.Services.OnlyElectricity | DistrictPolicies.Services.FreeWifi));
             Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.NoResources | Notification.Problem1.NoPlaceforGoods | Notification.Problem1.NoInputProducts | Notification.Problem1.NoFishingGoods);
-
+            int num = productionRate * m_restaurantAccumulation / 100;
+            if (num != 0)
+            {
+                Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Shopping, num, buildingData.m_position, m_restaurantRadius);
+            }
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer1 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer2 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer3 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource4 != ExtendedTransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer4 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource5 != TransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer5 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource6 != TransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer6 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource7 != TransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer7 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            if (m_inputResource8 != TransferManager.TransferReason.None)
-            {
-                if (custom_buffers.m_customBuffer8 == 0)
-                {
-                    finalProductionRate = 0;
-                }
-            }
-            m_finalProductionRate = finalProductionRate;
             base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
             int TempOutput = 0;
             if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
@@ -987,9 +954,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     else if (quality == 3)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;  
+                        material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                     }
-                    if(material != ExtendedTransferManager.TransferReason.None)
+                    if (material != ExtendedTransferManager.TransferReason.None)
                     {
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer9);
                     }
@@ -1041,7 +1008,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             material = ExtendedTransferManager.TransferReason.MealsHigh;
                         }
-                        if(material != ExtendedTransferManager.TransferReason.None)
+                        if (material != ExtendedTransferManager.TransferReason.None)
                         {
                             Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(material, offer10);
                         }
@@ -1194,34 +1161,25 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private void GetAccumulation(Randomizer r, int productionRate, int taxRate, DistrictPolicies.CityPlanning cityPlanningPolicies, DistrictPolicies.Taxation taxationPolicies, out int entertainment, out int attractiveness)
         {
-            entertainment = 0;
-            attractiveness = 0;
-            if (m_info.m_class.isCommercialLeisure)
+            if ((cityPlanningPolicies & DistrictPolicies.CityPlanning.NoLoudNoises) != 0)
             {
-                if ((cityPlanningPolicies & DistrictPolicies.CityPlanning.NoLoudNoises) != 0)
-                {
-                    entertainment = 25;
-                    attractiveness = 2;
-                }
-                else
-                {
-                    entertainment = 50;
-                    attractiveness = 4;
-                }
-                if ((taxationPolicies & DistrictPolicies.Taxation.DontTaxLeisure) != 0)
-                {
-                    entertainment += 50;
-                    attractiveness += 4;
-                }
-                else
-                {
-                    entertainment += 50 / (taxRate + 1);
-                    attractiveness += 4 / ((taxRate >> 1) + 1);
-                }
+                entertainment = 25;
+                attractiveness = 2;
             }
-            else if (m_info.m_class.isCommercialTourist)
+            else
             {
-                attractiveness = 8;
+                entertainment = 50;
+                attractiveness = 4;
+            }
+            if ((taxationPolicies & DistrictPolicies.Taxation.DontTaxLeisure) != 0)
+            {
+                entertainment += 50;
+                attractiveness += 4;
+            }
+            else
+            {
+                entertainment += 50 / (taxRate + 1);
+                attractiveness += 4 / ((taxRate >> 1) + 1);
             }
             if (entertainment != 0)
             {
@@ -1282,151 +1240,411 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        private bool CookCustomerMeal(ushort buildingID)
+        private int ChooseMealType()
         {
-            if (m_finalProductionRate == 0)
+            int mealType = new System.Random().Next(1, 5);
+            return mealType;
+        }
+
+        private bool CookMeal(ushort buildingID, ref Building data, bool isDelivery, int mealType)
+        {
+            bool meal_cooked = false;
+            // every visitor that enter - try to cook a meal for him
+            switch(mealType)
+            {
+                case 1:
+                    meal_cooked = CookMeal1(buildingID, ref data , isDelivery);
+                    break;
+                case 2:
+                    meal_cooked = CookMeal2(buildingID, ref data , isDelivery);
+                    break;
+                case 3:
+                    meal_cooked = CookMeal3(buildingID, ref data , isDelivery);
+                    break;
+                case 4:
+                    meal_cooked = CookMeal4(buildingID, ref data , isDelivery);
+                    break;
+            }
+            return meal_cooked;
+        }
+
+        private bool CookMeal1(ushort buildingID, ref Building data, bool isDelivery)
+        {
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            float CustomBuffer1 = custom_buffers.m_customBuffer1;
+            float CustomBuffer2 = custom_buffers.m_customBuffer2;
+            float CustomBuffer3 = custom_buffers.m_customBuffer3;
+            float CustomBuffer4 = custom_buffers.m_customBuffer4;
+            float CustomBuffer5 = custom_buffers.m_customBuffer5;
+            float CustomBuffer6 = custom_buffers.m_customBuffer6;
+            float CustomBuffer7 = custom_buffers.m_customBuffer7;
+            float CustomBuffer8 = custom_buffers.m_customBuffer8;
+            if(m_mealRecipe1[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
             {
                 return false;
             }
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe1[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
             {
-                float CustomBuffer1 = custom_buffers.m_customBuffer1;
-                float Input1ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
+                return false;
+            }
+            if(m_mealRecipe1[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            {
+                return false;
+            }
+            if(m_mealRecipe1[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            {
+                return false;
+            }
+            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            {
+                return false;
+            }
+            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            {
+                return false;
+            }
+            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            {
+                return false;
+            }
+            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            {
+                return false;
+            }
+            if(m_mealRecipe1[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            {
+                CustomBuffer1 -= m_mealRecipe1[0];
                 custom_buffers.m_customBuffer1 = CustomBuffer1;
             }
-            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe1[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
             {
-                float CustomBuffer2 = custom_buffers.m_customBuffer2;
-                float Input2ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
-                custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
+                CustomBuffer2 -= m_mealRecipe1[1];
+                custom_buffers.m_customBuffer2 = CustomBuffer2;
             }
-            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe1[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
             {
-                float CustomBuffer3 = custom_buffers.m_customBuffer3;
-                float Input3ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
+                CustomBuffer3 -= m_mealRecipe1[2];
                 custom_buffers.m_customBuffer3 = CustomBuffer3;
             }
-            if (m_inputResource4 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe1[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
             {
-                float CustomBuffer4 = custom_buffers.m_customBuffer4;
-                float Input4ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
+                CustomBuffer4 -= m_mealRecipe1[3];
                 custom_buffers.m_customBuffer4 = CustomBuffer4;
             }
-            if (m_inputResource5 != TransferManager.TransferReason.None)
+            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
             {
-                float CustomBuffer5 = custom_buffers.m_customBuffer5;
-                float Input5ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
+                CustomBuffer5 -= m_mealRecipe1[4];
                 custom_buffers.m_customBuffer5 = CustomBuffer5;
             }
-            if (m_inputResource6 != TransferManager.TransferReason.None)
+            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
             {
-                float CustomBuffer6 = custom_buffers.m_customBuffer6;
-                float Input6ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
+                CustomBuffer6 -= m_mealRecipe1[5];
                 custom_buffers.m_customBuffer6 = CustomBuffer6;
             }
-            if (m_inputResource7 != TransferManager.TransferReason.None)
+            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
             {
-                float CustomBuffer7 = custom_buffers.m_customBuffer7;
-                float Input7ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
+                CustomBuffer7 -= m_mealRecipe1[6];
                 custom_buffers.m_customBuffer7 = CustomBuffer7;
             }
-            if (m_inputResource8 != TransferManager.TransferReason.None)
+            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
             {
-                float CustomBuffer8 = custom_buffers.m_customBuffer8;
-                float Input8ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer8 = Mathf.Max(0, CustomBuffer8 - Input8ProductionRate);
+                CustomBuffer8 -= m_mealRecipe1[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
             }
-            if (m_outputResource2 != ExtendedTransferManager.TransferReason.None)
+            int amountDelta = 1;
+            if(isDelivery)
             {
-                float CustomBuffer10 = custom_buffers.m_customBuffer10;
-                float OutputProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer10 = Mathf.Min(m_outputMealsCount, CustomBuffer10 + OutputProductionRate);
-                custom_buffers.m_customBuffer10 = CustomBuffer10;
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
             }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            else
+            {
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+            }
             return true;
         }
 
-        private bool CookDeliveryMeal(ushort buildingID)
+        private bool CookMeal2(ushort buildingID, ref Building data, bool isDelivery)
         {
-            if (m_finalProductionRate == 0)
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            float CustomBuffer1 = custom_buffers.m_customBuffer1;
+            float CustomBuffer2 = custom_buffers.m_customBuffer2;
+            float CustomBuffer3 = custom_buffers.m_customBuffer3;
+            float CustomBuffer4 = custom_buffers.m_customBuffer4;
+            float CustomBuffer5 = custom_buffers.m_customBuffer5;
+            float CustomBuffer6 = custom_buffers.m_customBuffer6;
+            float CustomBuffer7 = custom_buffers.m_customBuffer7;
+            float CustomBuffer8 = custom_buffers.m_customBuffer8;
+            if(m_mealRecipe2[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
             {
                 return false;
             }
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            if (m_inputResource1 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe2[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
             {
-                float CustomBuffer1 = custom_buffers.m_customBuffer1;
-                float Input1ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer1 = Mathf.Max(0, CustomBuffer1 - Input1ProductionRate);
+                return false;
+            }
+            if(m_mealRecipe2[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            {
+                return false;
+            }
+            if(m_mealRecipe2[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            {
+                return false;
+            }
+            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            {
+                return false;
+            }
+            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            {
+                return false;
+            }
+            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            {
+                return false;
+            }
+            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            {
+                return false;
+            }
+            if(m_mealRecipe2[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            {
+                CustomBuffer1 -= m_mealRecipe2[0];
                 custom_buffers.m_customBuffer1 = CustomBuffer1;
             }
-            if (m_inputResource2 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe2[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
             {
-                float CustomBuffer2 = custom_buffers.m_customBuffer2;
-                float Input2ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer2 = Mathf.Max(0, CustomBuffer2 - Input2ProductionRate);
+                CustomBuffer2 -= m_mealRecipe2[1];
                 custom_buffers.m_customBuffer2 = CustomBuffer2;
             }
-            if (m_inputResource3 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe2[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
             {
-                float CustomBuffer3 = custom_buffers.m_customBuffer3;
-                float Input3ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer3 = Mathf.Max(0, CustomBuffer3 - Input3ProductionRate);
+                CustomBuffer3 -= m_mealRecipe2[2];
                 custom_buffers.m_customBuffer3 = CustomBuffer3;
             }
-            if (m_inputResource4 != ExtendedTransferManager.TransferReason.None)
+            if(m_mealRecipe2[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
             {
-                float CustomBuffer4 = custom_buffers.m_customBuffer4;
-                float Input4ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer4 = Mathf.Max(0, CustomBuffer4 - Input4ProductionRate);
+                CustomBuffer4 -= m_mealRecipe2[3];
                 custom_buffers.m_customBuffer4 = CustomBuffer4;
             }
-            if (m_inputResource5 != TransferManager.TransferReason.None)
+            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
             {
-                float CustomBuffer5 = custom_buffers.m_customBuffer5;
-                float Input5ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer5 = Mathf.Max(0, CustomBuffer5 - Input5ProductionRate);
+                CustomBuffer5 -= m_mealRecipe2[4];
                 custom_buffers.m_customBuffer5 = CustomBuffer5;
             }
-            if (m_inputResource6 != TransferManager.TransferReason.None)
+            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
             {
-                float CustomBuffer6 = custom_buffers.m_customBuffer6;
-                float Input6ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer6 = Mathf.Max(0, CustomBuffer6 - Input6ProductionRate);
+                CustomBuffer6 -= m_mealRecipe2[5];
                 custom_buffers.m_customBuffer6 = CustomBuffer6;
             }
-            if (m_inputResource7 != TransferManager.TransferReason.None)
+            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
             {
-                float CustomBuffer7 = custom_buffers.m_customBuffer7;
-                float Input7ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer7 = Mathf.Max(0, CustomBuffer7 - Input7ProductionRate);
+                CustomBuffer7 -= m_mealRecipe2[6];
                 custom_buffers.m_customBuffer7 = CustomBuffer7;
             }
-            if (m_inputResource8 != TransferManager.TransferReason.None)
+            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
             {
-                float CustomBuffer8 = custom_buffers.m_customBuffer8;
-                float Input8ProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer8 = Mathf.Max(0, CustomBuffer8 - Input8ProductionRate);
+                CustomBuffer8 -= m_mealRecipe2[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
             }
-            if (m_outputResource1 != ExtendedTransferManager.TransferReason.None)
+            int amountDelta = 1;
+            if(isDelivery)
             {
-                float CustomBuffer9 = custom_buffers.m_customBuffer9;
-                float OutputProductionRate = (m_finalProductionRate + 99) / 100;
-                CustomBuffer9 = Mathf.Min(m_outputDeliveryMealsCount, CustomBuffer9 + OutputProductionRate);
-                custom_buffers.m_customBuffer9 = CustomBuffer9;
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
             }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            else
+            {
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+            }
+            return true;
+        }
+
+        private bool CookMeal3(ushort buildingID, ref Building data, bool isDelivery)
+        {
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            float CustomBuffer1 = custom_buffers.m_customBuffer1;
+            float CustomBuffer2 = custom_buffers.m_customBuffer2;
+            float CustomBuffer3 = custom_buffers.m_customBuffer3;
+            float CustomBuffer4 = custom_buffers.m_customBuffer4;
+            float CustomBuffer5 = custom_buffers.m_customBuffer5;
+            float CustomBuffer6 = custom_buffers.m_customBuffer6;
+            float CustomBuffer7 = custom_buffers.m_customBuffer7;
+            float CustomBuffer8 = custom_buffers.m_customBuffer8;
+            if(m_mealRecipe3[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            {
+                return false;
+            }
+            if(m_mealRecipe3[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            {
+                CustomBuffer1 -= m_mealRecipe3[0];
+                custom_buffers.m_customBuffer1 = CustomBuffer1;
+            }
+            if(m_mealRecipe3[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
+            {
+                CustomBuffer2 -= m_mealRecipe3[1];
+                custom_buffers.m_customBuffer2 = CustomBuffer2;
+            }
+            if(m_mealRecipe3[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
+            {
+                CustomBuffer3 -= m_mealRecipe3[2];
+                custom_buffers.m_customBuffer3 = CustomBuffer3;
+            }
+            if(m_mealRecipe3[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
+            {
+                CustomBuffer4 -= m_mealRecipe3[3];
+                custom_buffers.m_customBuffer4 = CustomBuffer4;
+            }
+            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
+            {
+                CustomBuffer5 -= m_mealRecipe3[4];
+                custom_buffers.m_customBuffer5 = CustomBuffer5;
+            }
+            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
+            {
+                CustomBuffer6 -= m_mealRecipe3[5];
+                custom_buffers.m_customBuffer6 = CustomBuffer6;
+            }
+            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
+            {
+                CustomBuffer7 -= m_mealRecipe3[6];
+                custom_buffers.m_customBuffer7 = CustomBuffer7;
+            }
+            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
+            {
+                CustomBuffer8 -= m_mealRecipe3[7];
+                custom_buffers.m_customBuffer8 = CustomBuffer8;
+            }
+            int amountDelta = 1;
+            if(isDelivery)
+            {
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
+            }
+            else
+            {
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+            }
+            return true;
+        }
+
+        private bool CookMeal4(ushort buildingID, ref Building data, bool isDelivery)
+        {
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            float CustomBuffer1 = custom_buffers.m_customBuffer1;
+            float CustomBuffer2 = custom_buffers.m_customBuffer2;
+            float CustomBuffer3 = custom_buffers.m_customBuffer3;
+            float CustomBuffer4 = custom_buffers.m_customBuffer4;
+            float CustomBuffer5 = custom_buffers.m_customBuffer5;
+            float CustomBuffer6 = custom_buffers.m_customBuffer6;
+            float CustomBuffer7 = custom_buffers.m_customBuffer7;
+            float CustomBuffer8 = custom_buffers.m_customBuffer8;
+            if(m_mealRecipe4[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            {
+                return false;
+            }
+            if(m_mealRecipe4[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            {
+                CustomBuffer1 -= m_mealRecipe4[0];
+                custom_buffers.m_customBuffer1 = CustomBuffer1;
+            }
+            if(m_mealRecipe4[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
+            {
+                CustomBuffer2 -= m_mealRecipe4[1];
+                custom_buffers.m_customBuffer2 = CustomBuffer2;
+            }
+            if(m_mealRecipe4[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
+            {
+                CustomBuffer3 -= m_mealRecipe4[2];
+                custom_buffers.m_customBuffer3 = CustomBuffer3;
+            }
+            if(m_mealRecipe4[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
+            {
+                CustomBuffer4 -= m_mealRecipe4[3];
+                custom_buffers.m_customBuffer4 = CustomBuffer4;
+            }
+            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
+            {
+                CustomBuffer5 -= m_mealRecipe4[4];
+                custom_buffers.m_customBuffer5 = CustomBuffer5;
+            }
+            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
+            {
+                CustomBuffer6 -= m_mealRecipe4[5];
+                custom_buffers.m_customBuffer6 = CustomBuffer6;
+            }
+            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
+            {
+                CustomBuffer7 -= m_mealRecipe4[6];
+                custom_buffers.m_customBuffer7 = CustomBuffer7;
+            }
+            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
+            {
+                CustomBuffer8 -= m_mealRecipe4[7];
+                custom_buffers.m_customBuffer8 = CustomBuffer8;
+            }
+            int amountDelta = 1;
+            if(isDelivery)
+            {
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
+            }
+            else
+            {
+                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+            }
             return true;
         }
 
@@ -1466,13 +1684,157 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var currentTime = SimulationManager.instance.m_currentGameTime;
             var laterTime = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
 
-            if(laterTime.Date > currentTime.Date)
+            if (laterTime.Date > currentTime.Date)
             {
                 return true;
             }
             else
             {
-               return false;
+                return false;
+            }
+        }
+
+        private void CalculateRestaurantIncome(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte district = instance.GetDistrict(data.m_position);
+            DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[district].m_servicePolicies;
+            DistrictPolicies.CityPlanning cityPlanningPolicies = instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
+            DistrictPolicies.Taxation taxationPolicies = instance.m_districts.m_buffer[district].m_taxationPolicies;
+            GetConsumptionRates((ItemClass.Level)data.m_level, new Randomizer(buildingID), 100, out var electricityConsumption, out var waterConsumption, out var sewageAccumulation, out var garbageAccumulation, out var incomeAccumulation, out var mailAccumulation);
+            int taxRate = GetTaxRate(buildingID, ref data, taxationPolicies);
+            if (electricityConsumption != 0 && instance.IsPolicyLoaded(DistrictPolicies.Policies.ExtraInsulation))
+            {
+                if ((servicePolicies & DistrictPolicies.Services.ExtraInsulation) != 0)
+                {
+                    incomeAccumulation = incomeAccumulation * 95 / 100;
+                }
+            }
+            if (m_info.m_class.isCommercialLeisure && (cityPlanningPolicies & DistrictPolicies.CityPlanning.NoLoudNoises) != 0 && Singleton<SimulationManager>.instance.m_isNightTime)
+            {
+                electricityConsumption = electricityConsumption + 1 >> 1;
+                waterConsumption = waterConsumption + 1 >> 1;
+                sewageAccumulation = sewageAccumulation + 1 >> 1;
+                garbageAccumulation = garbageAccumulation + 1 >> 1;
+                mailAccumulation = mailAccumulation + 1 >> 1;
+                incomeAccumulation = 0;
+            }
+            Citizen.BehaviourData behaviour = default(Citizen.BehaviourData);
+            int aliveWorkerCount = 0;
+            int totalWorkerCount = 0;
+            int workPlaceCount = 0;
+            int aliveVisitorCount = 0;
+            int totalVisitorCount = 0;
+            int visitPlaceCount = 0;
+            HandleWorkAndVisitPlaces(buildingID, ref data, ref behaviour, ref aliveWorkerCount, ref totalWorkerCount, ref workPlaceCount, ref aliveVisitorCount, ref totalVisitorCount, ref visitPlaceCount);
+            var aliveCount = aliveWorkerCount + aliveVisitorCount;
+            int num13 = incomeAccumulation;
+            if (num13 != 0)
+            {
+                if (m_info.m_class.isCommercialLowGeneric)
+                {
+                    if ((cityPlanningPolicies & DistrictPolicies.CityPlanning.SmallBusiness) != 0)
+                    {
+                        Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, 12, m_info.m_class);
+                        num13 *= 2;
+                    }
+                }
+                else if ((m_info.m_class.isCommercialHighGenegic || m_info.m_class.isCommercialWallToWall) && (cityPlanningPolicies & DistrictPolicies.CityPlanning.BigBusiness) != 0)
+                {
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, 25, m_info.m_class);
+                    num13 *= 3;
+                }
+                if ((servicePolicies & DistrictPolicies.Services.RecreationalUse) != 0)
+                {
+                    num13 = (num13 * 105 + 99) / 100;
+                }
+                int factor = Singleton<BuildingManager>.instance.m_finalMonumentEffect[7].m_factor;
+                if (factor != 0)
+                {
+                    Vector3 position = Singleton<BuildingManager>.instance.m_finalMonumentEffect[7].m_position;
+                    if (VectorUtils.LengthSqrXZ(position - data.m_position) < 250000f)
+                    {
+                        num13 += (num13 * factor + 50) / 100;
+                    }
+                }
+                num13 = Singleton<EconomyManager>.instance.AddPrivateIncome(num13, (ItemClass.Service)28, m_info.m_class.m_subService, (ItemClass.Level)data.m_level, taxRate);
+                int num14 = (behaviour.m_touristCount * num13 + (aliveCount >> 1)) / Mathf.Max(1, aliveCount);
+                int num15 = Mathf.Max(0, num13 - num14);
+                if (num15 != 0)
+                {
+                    Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.CitizenIncome, num15, m_info.m_class);
+                }
+                if (num14 != 0)
+                {
+                    Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.TourismIncome, num14, m_info.m_class);
+                }
+            }
+        }
+
+        public void GetConsumptionRates(ItemClass.Level level, Randomizer r, int productionRate, out int electricityConsumption, out int waterConsumption, out int sewageAccumulation, out int garbageAccumulation, out int incomeAccumulation, out int mailAccumulation)
+        {
+            electricityConsumption = 0;
+            waterConsumption = 0;
+            sewageAccumulation = 0;
+            garbageAccumulation = 0;
+            incomeAccumulation = 0;
+            mailAccumulation = 0;
+            switch (quality)
+            {
+                case 1:
+                    electricityConsumption = 50;
+                    waterConsumption = 60;
+                    sewageAccumulation = 60;
+                    garbageAccumulation = 100;
+                    incomeAccumulation = 520;
+                    mailAccumulation = 100;
+                    break;
+                case 2:
+                    electricityConsumption = 60;
+                    waterConsumption = 80;
+                    sewageAccumulation = 80;
+                    garbageAccumulation = 50;
+                    incomeAccumulation = 800;
+                    mailAccumulation = 50;
+                    break;
+                case 3:
+                    electricityConsumption = 70;
+                    waterConsumption = 100;
+                    sewageAccumulation = 100;
+                    garbageAccumulation = 25;
+                    incomeAccumulation = 1120;
+                    mailAccumulation = 25;
+                    break;
+            }
+            if (electricityConsumption != 0)
+            {
+                electricityConsumption = Mathf.Max(100, productionRate * electricityConsumption + r.Int32(100u)) / 100;
+            }
+            if (waterConsumption != 0)
+            {
+                int num = r.Int32(100u);
+                waterConsumption = Mathf.Max(100, productionRate * waterConsumption + num) / 100;
+                if (sewageAccumulation != 0)
+                {
+                    sewageAccumulation = Mathf.Max(100, productionRate * sewageAccumulation + num) / 100;
+                }
+            }
+            else if (sewageAccumulation != 0)
+            {
+                sewageAccumulation = Mathf.Max(100, productionRate * sewageAccumulation + r.Int32(100u)) / 100;
+            }
+            if (garbageAccumulation != 0)
+            {
+                garbageAccumulation = Mathf.Max(100, productionRate * garbageAccumulation + r.Int32(100u)) / 100;
+            }
+            if (incomeAccumulation != 0)
+            {
+                incomeAccumulation = UniqueFacultyAI.IncreaseByBonus(UniqueFacultyAI.FacultyBonus.Tourism, incomeAccumulation);
+                incomeAccumulation = productionRate * incomeAccumulation;
+            }
+            if (mailAccumulation != 0)
+            {
+                mailAccumulation = Mathf.Max(100, productionRate * mailAccumulation + r.Int32(100u)) / 100;
             }
         }
 
