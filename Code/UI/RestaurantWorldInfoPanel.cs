@@ -139,6 +139,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType1BigArrow = Find<UISprite>("Big Arrow");
             m_deliveryMealsType1Label = Find<UILabel>("ProductLabel");
             m_deliveryMealsType1Buffer = Find<UIProgressBar>("ProductBuffer");
+            m_deliveryMealsType1Sprite = Find<UISprite>("LuxuryProductIcon");
             m_deliveryMealsType1BigArrow.anchor = UIAnchorStyle.None;
             m_deliveryMealsType1Capacity.anchor = UIAnchorStyle.None;
             m_deliveryMealsType1BigArrow.relativePosition = new Vector3(408f, 200f);
