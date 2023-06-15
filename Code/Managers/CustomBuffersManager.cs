@@ -19,6 +19,16 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public float m_customBuffer8;
             public float m_customBuffer9;
             public float m_customBuffer10;
+            public float m_customBuffer11;
+            public float m_customBuffer12;
+            public float m_customBuffer13;
+            public float m_customBuffer14;
+            public float m_customBuffer15;
+            public float m_customBuffer16;
+            public float m_customBuffer17;
+            public float m_customBuffer18;
+            public float m_customBuffer19;
+            public float m_customBuffer20;
         }
 
         public static void Init()

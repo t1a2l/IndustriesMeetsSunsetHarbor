@@ -17,9 +17,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
     {
         private UIPanel m_mainPanel;
 
-        private UISprite m_deliveryMealsBigArrow;
+        private UISprite m_deliveryMealsType1BigArrow;
 
-        private UISprite m_mealsBigArrow;
+        private UISprite m_deliveryMealsType2BigArrow;
+
+        private UISprite m_deliveryMealsType3BigArrow;
+
+        private UISprite m_deliveryMealsType4BigArrow;
 
         private UILabel m_status;
 
@@ -35,13 +39,21 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private int m_inputResourceCount;
 
-        private UILabel m_deliveryMealsLabel;
+        private UILabel m_deliveryMealsType1Label;
 
-        private UILabel m_mealsLabel;
+        private UILabel m_deliveryMealsType2Label;
 
-        private UIProgressBar m_deliveryMealsBuffer;
+        private UILabel m_deliveryMealsType3Label;
 
-        private UIProgressBar m_mealsBuffer;
+        private UILabel m_deliveryMealsType4Label;
+
+        private UIProgressBar m_deliveryMealsType1Buffer;
+
+        private UIProgressBar m_deliveryMealsType2Buffer;
+
+        private UIProgressBar m_deliveryMealsType3Buffer;
+
+        private UIProgressBar m_deliveryMealsType4Buffer;
 
         private UILabel m_workplaces;
 
@@ -51,9 +63,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIButton m_MoveButton;
 
-        private UIPanel m_deliveryMealsStorage;
+        private UIPanel m_deliveryMealsType1Capacity;
 
-        private UIPanel m_mealsStorage;
+        private UIPanel m_deliveryMealsType2Capacity;
+
+        private UIPanel m_deliveryMealsType3Capacity;
+
+        private UIPanel m_deliveryMealsType4Capacity;
 
         private UILabel m_Upkeep;
 
@@ -67,9 +83,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIComponent m_MovingPanel;
 
-        private UISprite m_deliveryMealsSprite;
+        private UISprite m_deliveryMealsType1Sprite;
 
-        private UISprite m_mealsSprite;
+        private UISprite m_deliveryMealsType2Sprite;
+
+        private UISprite m_deliveryMealsType3Sprite;
+
+        private UISprite m_deliveryMealsType4Sprite;
 
         private List<string> items;
 
@@ -115,39 +135,72 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputContainer = Find<UIPanel>("LayoutPanel");
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
 
-            m_deliveryMealsStorage = Find<UIPanel>("ProductStorage");
-
-            m_deliveryMealsBigArrow = Find<UISprite>("Big Arrow");
-            m_deliveryMealsLabel = Find<UILabel>("ProductLabel");
-            m_deliveryMealsBuffer = Find<UIProgressBar>("ProductBuffer");
-            m_deliveryMealsSprite = Find<UISprite>("LuxuryProductIcon");
-
-            m_deliveryMealsBigArrow.anchor = UIAnchorStyle.None;
-            m_deliveryMealsStorage.anchor = UIAnchorStyle.None;
-            m_deliveryMealsBigArrow.relativePosition = new Vector3(408f, 200f);
-            m_deliveryMealsStorage.relativePosition = new Vector3(355f, 255f);
+            m_deliveryMealsType1Capacity = Find<UIPanel>("ProductStorage");
+            m_deliveryMealsType1BigArrow = Find<UISprite>("Big Arrow");
+            m_deliveryMealsType1Label = Find<UILabel>("ProductLabel");
+            m_deliveryMealsType1Buffer = Find<UIProgressBar>("ProductBuffer");
+            m_deliveryMealsType1BigArrow.anchor = UIAnchorStyle.None;
+            m_deliveryMealsType1Capacity.anchor = UIAnchorStyle.None;
+            m_deliveryMealsType1BigArrow.relativePosition = new Vector3(408f, 200f);
+            m_deliveryMealsType1Capacity.relativePosition = new Vector3(355f, 255f);
 
             var Diagram = Find<UIPanel>("Diagram");
 
-            GameObject BigArrow = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
+            GameObject BigArrow2 = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
+            GameObject BigArrow3 = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
+            GameObject BigArrow4 = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
 
-            GameObject ProductStorage = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
+            GameObject ProductStorage2 = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
+            GameObject ProductStorage3 = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
+            GameObject ProductStorage4 = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
 
-            m_mealsStorage = ProductStorage.GetComponent<UIPanel>();
+            var ProductLabel2 = ProductStorage2.transform.Find("ProductLabel");
+            var ProductLabel3 = ProductStorage3.transform.Find("ProductLabel");
+            var ProductLabel4 = ProductStorage4.transform.Find("ProductLabel");
 
-            var ProductLabel = ProductStorage.transform.Find("ProductLabel");
-            var ProductBuffer = ProductStorage.transform.Find("ProductBuffer");
-            var LuxuryProductIcon = ProductStorage.transform.Find("LuxuryProductIcon");
+            var ProductBuffer2 = ProductStorage2.transform.Find("ProductBuffer");
+            var ProductBuffer3 = ProductStorage3.transform.Find("ProductBuffer");
+            var ProductBuffer4 = ProductStorage4.transform.Find("ProductBuffer");
 
-            m_mealsBigArrow = BigArrow.GetComponent<UISprite>();
-            m_mealsLabel = ProductLabel.GetComponent<UILabel>();
-            m_mealsBuffer = ProductBuffer.GetComponent<UIProgressBar>();
-            m_mealsSprite = LuxuryProductIcon.GetComponent<UISprite>();
+            var LuxuryProductIcon2 = ProductStorage2.transform.Find("LuxuryProductIcon");
+            var LuxuryProductIcon3 = ProductStorage3.transform.Find("LuxuryProductIcon");
+            var LuxuryProductIcon4 = ProductStorage4.transform.Find("LuxuryProductIcon");
 
-            m_mealsBigArrow.anchor = UIAnchorStyle.None;
-            m_mealsStorage.anchor = UIAnchorStyle.None;
-            m_mealsBigArrow.relativePosition = new Vector3(248f, 200f);
-            m_mealsStorage.relativePosition = new Vector3(195f, 255f);
+            m_deliveryMealsType2Capacity = ProductStorage2.GetComponent<UIPanel>();
+            m_deliveryMealsType3Capacity = ProductStorage3.GetComponent<UIPanel>();
+            m_deliveryMealsType4Capacity = ProductStorage4.GetComponent<UIPanel>();
+
+            m_deliveryMealsType2BigArrow = BigArrow2.GetComponent<UISprite>();
+            m_deliveryMealsType3BigArrow = BigArrow3.GetComponent<UISprite>();
+            m_deliveryMealsType4BigArrow = BigArrow4.GetComponent<UISprite>();
+  
+            m_deliveryMealsType2Label = ProductStorage2.GetComponent<UILabel>();
+            m_deliveryMealsType3Label = ProductStorage3.GetComponent<UILabel>();
+            m_deliveryMealsType4Label = ProductStorage4.GetComponent<UILabel>();
+
+            m_deliveryMealsType2Buffer = ProductStorage2.GetComponent<UIProgressBar>();
+            m_deliveryMealsType3Buffer = ProductStorage3.GetComponent<UIProgressBar>();
+            m_deliveryMealsType4Buffer = ProductStorage4.GetComponent<UIProgressBar>();
+
+            m_deliveryMealsType2Sprite = ProductStorage2.GetComponent<UISprite>();
+            m_deliveryMealsType3Sprite = ProductStorage3.GetComponent<UISprite>();
+            m_deliveryMealsType4Sprite = ProductStorage4.GetComponent<UISprite>();
+
+            m_deliveryMealsType2BigArrow.anchor = UIAnchorStyle.None;
+            m_deliveryMealsType3BigArrow.anchor = UIAnchorStyle.None;
+            m_deliveryMealsType4BigArrow.anchor = UIAnchorStyle.None;
+
+            m_deliveryMealsType2Capacity.anchor = UIAnchorStyle.None;
+            m_deliveryMealsType3Capacity.anchor = UIAnchorStyle.None;
+            m_deliveryMealsType4Capacity.anchor = UIAnchorStyle.None;
+
+            m_deliveryMealsType2BigArrow.relativePosition = new Vector3(248f, 200f);
+            m_deliveryMealsType3BigArrow.relativePosition = new Vector3(96f, 200f);
+            m_deliveryMealsType4BigArrow.relativePosition = new Vector3(-56f, 200f);
+            
+            m_deliveryMealsType2Capacity.relativePosition = new Vector3(160f, 255f);
+            m_deliveryMealsType3Capacity.relativePosition = new Vector3(-35f, 255f);
+            m_deliveryMealsType4Capacity.relativePosition = new Vector3(-230f, 255f);
 
             m_materialCost = Find<UILabel>("MATERIAL COST");
             m_productionValue = Find<UILabel>("PRODUCTION VALUE");
@@ -170,8 +223,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             m_inputResourceCount = GetInputResourceCount(ref items, restaurantAI);
             m_inputs.SetItemCount(m_inputResourceCount);
-            m_deliveryMealsBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
-            m_mealsBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource2);
+            m_deliveryMealsType1Buffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
+            m_deliveryMealsType2Buffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
+            m_deliveryMealsType3Buffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
+            m_deliveryMealsType4Buffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(restaurantAI.m_outputResource1);
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
@@ -266,17 +321,29 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(restaurantAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-            m_deliveryMealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputDeliveryMealsCount);
-            m_deliveryMealsStorage.tooltip = "Delivery Meals Count is " + custom_buffers.m_customBuffer9 + "/" + restaurantAI.m_outputDeliveryMealsCount;
-            m_deliveryMealsLabel.text = "Ordered Meals";
-            m_deliveryMealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-            m_deliveryMealsSprite.spriteName = "OrderedMeals";
+            m_deliveryMealsType1Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputDeliveryMealsCount);
+            m_deliveryMealsType1Capacity.tooltip = custom_buffers.m_customBuffer9 + " " + restaurantAI.m_mealName1 + " Meals are ready for delivery ";
+            m_deliveryMealsType1Label.text = restaurantAI.m_mealName1;
+            m_deliveryMealsType1Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType1Sprite.spriteName = "OrderedMeals";
 
-            m_mealsBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer10, restaurantAI.m_outputMealsCount);
-            m_mealsStorage.tooltip = "Meals Count is " + custom_buffers.m_customBuffer10 + "/" + restaurantAI.m_outputMealsCount;
-            m_mealsLabel.text = "Meals";
-            m_mealsSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
-            m_mealsSprite.spriteName = "Meals";
+            m_deliveryMealsType2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer10, restaurantAI.m_outputDeliveryMealsCount);
+            m_deliveryMealsType2Capacity.tooltip = custom_buffers.m_customBuffer10 + " " + restaurantAI.m_mealName2 + " Meals are ready for delivery ";
+            m_deliveryMealsType2Label.text = restaurantAI.m_mealName2;
+            m_deliveryMealsType2Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType2Sprite.spriteName = "OrderedMeals";
+
+            m_deliveryMealsType3Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer11, restaurantAI.m_outputDeliveryMealsCount);
+            m_deliveryMealsType3Capacity.tooltip = custom_buffers.m_customBuffer11 + " " + restaurantAI.m_mealName3 + " Meals are ready for delivery ";
+            m_deliveryMealsType3Label.text = restaurantAI.m_mealName3;
+            m_deliveryMealsType3Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType3Sprite.spriteName = "OrderedMeals";
+
+            m_deliveryMealsType4Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer12, restaurantAI.m_outputDeliveryMealsCount);
+            m_deliveryMealsType4Capacity.tooltip = custom_buffers.m_customBuffer12 + " " + restaurantAI.m_mealName4 + " Meals are ready for delivery ";
+            m_deliveryMealsType4Label.text = restaurantAI.m_mealName4;
+            m_deliveryMealsType4Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType4Sprite.spriteName = "OrderedMeals";
 
             m_horizontalLine.width = m_inputContainer.width;
             if(m_mainPanel != null)
@@ -365,7 +432,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return "";
         }
 
-        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out float amount, out int capacity)
+        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out float amount, out float capacity)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;

@@ -37,6 +37,16 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 StorageData.WriteFloat(kvp.Value.m_customBuffer8, Data);
                 StorageData.WriteFloat(kvp.Value.m_customBuffer9, Data);
                 StorageData.WriteFloat(kvp.Value.m_customBuffer10, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer11, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer12, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer13, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer14, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer15, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer16, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer17, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer18, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer19, Data);
+                StorageData.WriteFloat(kvp.Value.m_customBuffer20, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -72,6 +82,16 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         new_strcut.m_customBuffer8 = StorageData.ReadFloat(Data, ref iIndex);
                         new_strcut.m_customBuffer9 = StorageData.ReadFloat(Data, ref iIndex);
                         new_strcut.m_customBuffer10 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer11 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer12 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer13 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer14 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer15 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer16 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer17 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer18 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer19 = StorageData.ReadFloat(Data, ref iIndex);
+                        new_strcut.m_customBuffer20 = StorageData.ReadFloat(Data, ref iIndex);
                         CustomBuffersManager.CustomBuffers.Add(customBuffersId, new_strcut);
                         CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                     }

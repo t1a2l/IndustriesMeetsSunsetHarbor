@@ -384,7 +384,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     var meal_cooked = CookMeal(buildingID, ref buildingData, false, customer.mealType);
                     if (meal_cooked)
                     {
-                        EatMeal(buildingID, ref buildingData, customer.citizenId);
+                        EatMeal(buildingID, ref buildingData, customer.citizenId, customer.mealType);
                         RestaurantSitDown.Remove(customer);
                     }
                 }
@@ -580,24 +580,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 m_customBuffer4 += amountDelta;
                 custom_buffers.m_customBuffer4 = m_customBuffer4;
             }
-            else if (material == ExtendedTransferManager.TransferReason.MealsDeliveryLow ||
-                material == ExtendedTransferManager.TransferReason.MealsDeliveryMedium ||
-                material == ExtendedTransferManager.TransferReason.MealsDeliveryHigh)
-            {
-                float m_customBuffer9 = custom_buffers.m_customBuffer9;
-                amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer9, m_outputDeliveryMealsCount - m_customBuffer9);
-                m_customBuffer9 += amountDelta;
-                custom_buffers.m_customBuffer9 = m_customBuffer9;
-            }
-            else if (material == ExtendedTransferManager.TransferReason.MealsLow ||
-                material == ExtendedTransferManager.TransferReason.MealsMedium ||
-                material == ExtendedTransferManager.TransferReason.MealsHigh)
-            {
-                float m_customBuffer10 = custom_buffers.m_customBuffer10;
-                amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer10, m_outputMealsCount - m_customBuffer10);
-                m_customBuffer10 += amountDelta;
-                custom_buffers.m_customBuffer10 = m_customBuffer10;
-            }
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
         }
 
@@ -678,7 +660,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (meal_cooked)
             {
                 // meal was cooked - citizen eats the meal
-                EatMeal(buildingID, ref data, citizen);
+                EatMeal(buildingID, ref data, citizen, mealType);
             }
             else
             {
@@ -1351,14 +1333,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer8 -= m_mealRecipe1[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
             }
-            int amountDelta = 1;
             if(isDelivery)
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
+                float CustomBuffer9 = custom_buffers.m_customBuffer9;
+                CustomBuffer9 += 1;
+                custom_buffers.m_customBuffer9 = CustomBuffer9;
             }
             else
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+                float CustomBuffer13 = custom_buffers.m_customBuffer13;
+                CustomBuffer13 += 1;
+                custom_buffers.m_customBuffer13 = CustomBuffer13;
             }
             return true;
         }
@@ -1446,14 +1431,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer8 -= m_mealRecipe2[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
             }
-            int amountDelta = 1;
             if(isDelivery)
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
+                float CustomBuffer10 = custom_buffers.m_customBuffer10;
+                CustomBuffer10 += 1;
+                custom_buffers.m_customBuffer10 = CustomBuffer10;
             }
             else
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+                float CustomBuffer14 = custom_buffers.m_customBuffer14;
+                CustomBuffer14 += 1;
+                custom_buffers.m_customBuffer14 = CustomBuffer14;
             }
             return true;
         }
@@ -1541,14 +1529,17 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer8 -= m_mealRecipe3[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
             }
-            int amountDelta = 1;
             if(isDelivery)
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
+                float CustomBuffer11 = custom_buffers.m_customBuffer11;
+                CustomBuffer11 += 1;
+                custom_buffers.m_customBuffer11 = CustomBuffer11;
             }
             else
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+                float CustomBuffer15 = custom_buffers.m_customBuffer15;
+                CustomBuffer15 += 1;
+                custom_buffers.m_customBuffer15 = CustomBuffer15;
             }
             return true;
         }
@@ -1636,28 +1627,54 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer8 -= m_mealRecipe4[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
             }
-            int amountDelta = 1;
             if(isDelivery)
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource1, ref amountDelta);
+                float CustomBuffer12 = custom_buffers.m_customBuffer12;
+                CustomBuffer12 += 1;
+                custom_buffers.m_customBuffer12 = CustomBuffer12;
             }
             else
             {
-                ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
+                float CustomBuffer16 = custom_buffers.m_customBuffer16;
+                CustomBuffer16 += 1;
+                custom_buffers.m_customBuffer16 = CustomBuffer16;
             }
             return true;
         }
 
-        private void EatMeal(ushort buildingID, ref Building data, uint citizen)
+        private void EatMeal(ushort buildingID, ref Building data, uint citizen, int mealType)
         {
-            int amountDelta = -1;
             CitizenManager instance = Singleton<CitizenManager>.instance;
-            var citizen_data = instance.m_citizens.m_buffer[citizen];
-            ((IExtendedBuildingAI)data.Info.m_buildingAI).ExtendedModifyMaterialBuffer(buildingID, ref data, m_outputResource2, ref amountDelta);
             BuildingManager instance2 = Singleton<BuildingManager>.instance;
+            var citizen_data = instance.m_citizens.m_buffer[citizen];
             uint containingUnit = citizen_data.GetContainingUnit(citizen, instance2.m_buildings.m_buffer[citizen_data.m_homeBuilding].m_citizenUnits, CitizenUnit.Flags.Home);
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (containingUnit != 0)
             {
+                if(mealType == 1)
+                {
+                    float m_customBuffer9 = custom_buffers.m_customBuffer9;
+                    m_customBuffer9 -= 1;
+                    custom_buffers.m_customBuffer9 = m_customBuffer9;
+                }
+                else if(mealType == 2)
+                {
+                    float m_customBuffer10 = custom_buffers.m_customBuffer10;
+                    m_customBuffer10 -= 1;
+                    custom_buffers.m_customBuffer9 = m_customBuffer10;
+                }
+                else if(mealType == 3)
+                {
+                    float m_customBuffer11 = custom_buffers.m_customBuffer11;
+                    m_customBuffer11 -= 1;
+                    custom_buffers.m_customBuffer11 = m_customBuffer11;
+                }
+                else if(mealType == 4)
+                {
+                    float m_customBuffer12 = custom_buffers.m_customBuffer12;
+                    m_customBuffer12 -= 1;
+                    custom_buffers.m_customBuffer12 = m_customBuffer12;
+                }
                 instance.m_units.m_buffer[containingUnit].m_goods += 100;
                 citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
             }

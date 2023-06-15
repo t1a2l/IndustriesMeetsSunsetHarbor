@@ -1,7 +1,6 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons;
 using System;
 using UnityEngine;
 
@@ -130,18 +129,44 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 data.m_targetPos1.w = 2f;
                 data.m_targetPos2 = data.m_targetPos1;
                 data.m_targetPos3 = data.m_targetPos1;
-                // the default transfer size of a created vehicle is 0, the delivery capacity is 8 for example
-                // so here it takes -8 which is the min value
-                // it then passes the -8 to ModifyMaterialBuffer and remove 8 meals from resturant meals capacity
-                // and then here again takes that 8 and add it to the transfer size of the vehicle
-                // the delivery vehicle now have 8 meals (which is 100 goods per citizen = 1 meal)
                 if ((data.m_flags & Vehicle.Flags.TransferToTarget) != 0)
 		{
-		    int num = Mathf.Min(0, (int)data.m_transferSize - m_deliveryCapacity);
                     RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
-                    ((IExtendedBuildingAI)restaurantAI).ExtendedModifyMaterialBuffer(data.m_sourceBuilding, ref instance.m_buildings.m_buffer[(int)data.m_sourceBuilding], (ExtendedTransferManager.TransferReason)data.m_transferType, ref num);
-		    num = Mathf.Max(0, -num);
-		    data.m_transferSize += (ushort)num;
+                    var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(sourceBuilding);
+                    var VehicleDeliveryList = DeliveriesList.FindAll(item => item.deliveryVehicleId == vehicleID);
+                    var custom_buffers = CustomBuffersManager.GetCustomBuffer(sourceBuilding);
+                    // remove meals from restaurant and add to delivery vehicle
+                    foreach(var delivery in VehicleDeliveryList)
+                    {
+                        if(delivery.mealType == 1)
+                        {
+                            float m_customBuffer9 = custom_buffers.m_customBuffer9;
+                            m_customBuffer9 -= 1;
+                            data.m_transferSize += 1;
+                            custom_buffers.m_customBuffer9 = m_customBuffer9;
+                        }
+                        else if(delivery.mealType == 2)
+                        {
+                            float m_customBuffer10 = custom_buffers.m_customBuffer10;
+                            m_customBuffer10 -= 1;
+                            data.m_transferSize += 1;
+                            custom_buffers.m_customBuffer9 = m_customBuffer10;
+                        }
+                        else if(delivery.mealType == 3)
+                        {
+                            float m_customBuffer11 = custom_buffers.m_customBuffer11;
+                            m_customBuffer11 -= 1;
+                            data.m_transferSize += 1;
+                            custom_buffers.m_customBuffer11 = m_customBuffer11;
+                        }
+                        else if(delivery.mealType == 4)
+                        {
+                            float m_customBuffer12 = custom_buffers.m_customBuffer12;
+                            m_customBuffer12 -= 1;
+                            data.m_transferSize += 1;
+                            custom_buffers.m_customBuffer12 = m_customBuffer12;
+                        }
+                    }
 		}
                 FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[sourceBuilding].AddOwnVehicle(vehicleID, ref data);
