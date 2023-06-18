@@ -23,9 +23,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool RefreshPanel(GameInfoViewsPanel __instance, ref PositionData<InfoManager.InfoMode>[] ___kResources, ref int[] ___m_buttonToResource, ref int[] ___m_resourceToButton)
         {
-            ___m_buttonToResource = new int[38];
-            ___m_resourceToButton = new int[38];
-            Array.Resize(ref ___kResources, 38);
+            ___m_buttonToResource = new int[39];
+            ___m_resourceToButton = new int[39];
+            Array.Resize(ref ___kResources, 39);
             __instance.CleanPanel();
             UIButton uIButton = null;
             int num = 0;
