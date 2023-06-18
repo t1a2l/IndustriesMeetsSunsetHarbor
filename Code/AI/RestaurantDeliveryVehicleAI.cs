@@ -167,6 +167,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             custom_buffers.m_customBuffer12 = m_customBuffer12;
                         }
                     }
+                    CustomBuffersManager.SetCustomBuffer(sourceBuilding, custom_buffers);
 		}
                 FrameDataUpdated(vehicleID, ref data, ref data.m_frame0);
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[sourceBuilding].AddOwnVehicle(vehicleID, ref data);

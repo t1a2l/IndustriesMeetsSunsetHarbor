@@ -1348,6 +1348,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer13 += 1;
                 custom_buffers.m_customBuffer13 = CustomBuffer13;
             }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             return true;
         }
 
@@ -1446,6 +1447,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer14 += 1;
                 custom_buffers.m_customBuffer14 = CustomBuffer14;
             }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             return true;
         }
 
@@ -1544,6 +1546,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer15 += 1;
                 custom_buffers.m_customBuffer15 = CustomBuffer15;
             }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             return true;
         }
 
@@ -1642,6 +1645,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 CustomBuffer16 += 1;
                 custom_buffers.m_customBuffer16 = CustomBuffer16;
             }
+            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             return true;
         }
 
@@ -1680,6 +1684,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 instance.m_units.m_buffer[containingUnit].m_goods += 100;
                 citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
+                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             }
         }
 
