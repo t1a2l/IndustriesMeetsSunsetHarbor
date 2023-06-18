@@ -1262,74 +1262,74 @@ namespace IndustriesMeetsSunsetHarbor.AI
             float CustomBuffer6 = custom_buffers.m_customBuffer6;
             float CustomBuffer7 = custom_buffers.m_customBuffer7;
             float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe1[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
+            if(m_mealRecipe1[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && CustomBuffer1 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
+            if(m_mealRecipe1[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && CustomBuffer2 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            if(m_mealRecipe1[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && CustomBuffer3 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            if(m_mealRecipe1[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && CustomBuffer4 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe1[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            if(m_mealRecipe1[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer1 -= m_mealRecipe1[0];
                 custom_buffers.m_customBuffer1 = CustomBuffer1;
             }
-            if(m_mealRecipe1[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
+            if(m_mealRecipe1[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer2 -= m_mealRecipe1[1];
                 custom_buffers.m_customBuffer2 = CustomBuffer2;
             }
-            if(m_mealRecipe1[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
+            if(m_mealRecipe1[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer3 -= m_mealRecipe1[2];
                 custom_buffers.m_customBuffer3 = CustomBuffer3;
             }
-            if(m_mealRecipe1[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
+            if(m_mealRecipe1[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer4 -= m_mealRecipe1[3];
                 custom_buffers.m_customBuffer4 = CustomBuffer4;
             }
-            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
+            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
             {
                 CustomBuffer5 -= m_mealRecipe1[4];
                 custom_buffers.m_customBuffer5 = CustomBuffer5;
             }
-            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
+            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
             {
                 CustomBuffer6 -= m_mealRecipe1[5];
                 custom_buffers.m_customBuffer6 = CustomBuffer6;
             }
-            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
+            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
             {
                 CustomBuffer7 -= m_mealRecipe1[6];
                 custom_buffers.m_customBuffer7 = CustomBuffer7;
             }
-            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
+            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
             {
                 CustomBuffer8 -= m_mealRecipe1[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
@@ -1360,74 +1360,74 @@ namespace IndustriesMeetsSunsetHarbor.AI
             float CustomBuffer6 = custom_buffers.m_customBuffer6;
             float CustomBuffer7 = custom_buffers.m_customBuffer7;
             float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe2[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
+            if(m_mealRecipe2[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && CustomBuffer1 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
+            if(m_mealRecipe2[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && CustomBuffer2 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            if(m_mealRecipe2[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && CustomBuffer3 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            if(m_mealRecipe2[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && CustomBuffer4 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe2[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            if(m_mealRecipe2[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer1 -= m_mealRecipe2[0];
                 custom_buffers.m_customBuffer1 = CustomBuffer1;
             }
-            if(m_mealRecipe2[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
+            if(m_mealRecipe2[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer2 -= m_mealRecipe2[1];
                 custom_buffers.m_customBuffer2 = CustomBuffer2;
             }
-            if(m_mealRecipe2[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
+            if(m_mealRecipe2[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer3 -= m_mealRecipe2[2];
                 custom_buffers.m_customBuffer3 = CustomBuffer3;
             }
-            if(m_mealRecipe2[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
+            if(m_mealRecipe2[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer4 -= m_mealRecipe2[3];
                 custom_buffers.m_customBuffer4 = CustomBuffer4;
             }
-            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
+            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
             {
                 CustomBuffer5 -= m_mealRecipe2[4];
                 custom_buffers.m_customBuffer5 = CustomBuffer5;
             }
-            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
+            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
             {
                 CustomBuffer6 -= m_mealRecipe2[5];
                 custom_buffers.m_customBuffer6 = CustomBuffer6;
             }
-            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
+            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
             {
                 CustomBuffer7 -= m_mealRecipe2[6];
                 custom_buffers.m_customBuffer7 = CustomBuffer7;
             }
-            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
+            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
             {
                 CustomBuffer8 -= m_mealRecipe2[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
@@ -1458,74 +1458,74 @@ namespace IndustriesMeetsSunsetHarbor.AI
             float CustomBuffer6 = custom_buffers.m_customBuffer6;
             float CustomBuffer7 = custom_buffers.m_customBuffer7;
             float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe3[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
+            if(m_mealRecipe3[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && CustomBuffer1 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
+            if(m_mealRecipe3[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && CustomBuffer2 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            if(m_mealRecipe3[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && CustomBuffer3 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            if(m_mealRecipe3[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && CustomBuffer4 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe3[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            if(m_mealRecipe3[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer1 -= m_mealRecipe3[0];
                 custom_buffers.m_customBuffer1 = CustomBuffer1;
             }
-            if(m_mealRecipe3[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
+            if(m_mealRecipe3[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer2 -= m_mealRecipe3[1];
                 custom_buffers.m_customBuffer2 = CustomBuffer2;
             }
-            if(m_mealRecipe3[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
+            if(m_mealRecipe3[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer3 -= m_mealRecipe3[2];
                 custom_buffers.m_customBuffer3 = CustomBuffer3;
             }
-            if(m_mealRecipe3[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
+            if(m_mealRecipe3[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer4 -= m_mealRecipe3[3];
                 custom_buffers.m_customBuffer4 = CustomBuffer4;
             }
-            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
+            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
             {
                 CustomBuffer5 -= m_mealRecipe3[4];
                 custom_buffers.m_customBuffer5 = CustomBuffer5;
             }
-            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
+            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
             {
                 CustomBuffer6 -= m_mealRecipe3[5];
                 custom_buffers.m_customBuffer6 = CustomBuffer6;
             }
-            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
+            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
             {
                 CustomBuffer7 -= m_mealRecipe3[6];
                 custom_buffers.m_customBuffer7 = CustomBuffer7;
             }
-            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
+            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
             {
                 CustomBuffer8 -= m_mealRecipe3[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
@@ -1556,74 +1556,74 @@ namespace IndustriesMeetsSunsetHarbor.AI
             float CustomBuffer6 = custom_buffers.m_customBuffer6;
             float CustomBuffer7 = custom_buffers.m_customBuffer7;
             float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe4[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 <= CustomBuffer1)
+            if(m_mealRecipe4[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && CustomBuffer1 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 <= CustomBuffer2)
+            if(m_mealRecipe4[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && CustomBuffer2 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 <= CustomBuffer3)
+            if(m_mealRecipe4[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && CustomBuffer3 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 <= CustomBuffer4)
+            if(m_mealRecipe4[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && CustomBuffer4 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 <= CustomBuffer5)
+            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 <= CustomBuffer6)
+            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 <= CustomBuffer7)
+            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 <= CustomBuffer8)
+            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
             {
                 return false;
             }
-            if(m_mealRecipe4[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None && m_inputCapacity1 > CustomBuffer1)
+            if(m_mealRecipe4[0] > 0 && m_inputResource1 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer1 -= m_mealRecipe4[0];
                 custom_buffers.m_customBuffer1 = CustomBuffer1;
             }
-            if(m_mealRecipe4[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None && m_inputCapacity2 > CustomBuffer2)
+            if(m_mealRecipe4[1] > 0 && m_inputResource2 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer2 -= m_mealRecipe4[1];
                 custom_buffers.m_customBuffer2 = CustomBuffer2;
             }
-            if(m_mealRecipe4[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None && m_inputCapacity3 > CustomBuffer3)
+            if(m_mealRecipe4[2] > 0 && m_inputResource3 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer3 -= m_mealRecipe4[2];
                 custom_buffers.m_customBuffer3 = CustomBuffer3;
             }
-            if(m_mealRecipe4[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None && m_inputCapacity4 > CustomBuffer4)
+            if(m_mealRecipe4[3] > 0 && m_inputResource4 != ExtendedTransferManager.TransferReason.None)
             {
                 CustomBuffer4 -= m_mealRecipe4[3];
                 custom_buffers.m_customBuffer4 = CustomBuffer4;
             }
-            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && m_inputCapacity5 > CustomBuffer5)
+            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
             {
                 CustomBuffer5 -= m_mealRecipe4[4];
                 custom_buffers.m_customBuffer5 = CustomBuffer5;
             }
-            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && m_inputCapacity6 > CustomBuffer6)
+            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
             {
                 CustomBuffer6 -= m_mealRecipe4[5];
                 custom_buffers.m_customBuffer6 = CustomBuffer6;
             }
-            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && m_inputCapacity7 > CustomBuffer7)
+            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
             {
                 CustomBuffer7 -= m_mealRecipe4[6];
                 custom_buffers.m_customBuffer7 = CustomBuffer7;
             }
-            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && m_inputCapacity8 > CustomBuffer8)
+            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
             {
                 CustomBuffer8 -= m_mealRecipe4[7];
                 custom_buffers.m_customBuffer8 = CustomBuffer8;
