@@ -388,6 +388,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         RestaurantSitDown.Remove(customer);
                     }
                 }
+                RestaurantManager.SetRestaurantSitDownsList(buildingID, RestaurantSitDown);
             }
             if (m_usedVehicles < m_DeliveryVehicleCount)
             {
