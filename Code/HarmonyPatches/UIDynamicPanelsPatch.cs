@@ -99,8 +99,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
                 var restaurantComp = ClonedGameObject.AddComponent<RestaurantWorldInfoPanel>();
-                var ProductionBar = restaurantComp.Find<UISlicedSprite>("ProductionBar");
-                Object.DestroyImmediate(ProductionBar);
+                var ProductionSlider = restaurantComp.Find<UISlicedSprite>("ProductionSlider");
+                Object.DestroyImmediate(ProductionSlider);
+                var LabelProductionRate = restaurantComp.Find<UISlicedSprite>("LabelProductionRate");
+                Object.DestroyImmediate(LabelProductionRate);               
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
                 for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {
