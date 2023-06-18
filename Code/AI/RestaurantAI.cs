@@ -363,29 +363,29 @@ namespace IndustriesMeetsSunsetHarbor.AI
             CalculateRestaurantIncome(buildingID, ref buildingData);
             CurrentGameTime = SimulationManager.instance.m_currentGameTime;
             var RestaurantSitDown = RestaurantManager.GetRestaurantSitDownsList(buildingID);
-            foreach (var customer in RestaurantSitDown)
+            foreach (var item in RestaurantSitDown.ToList())
             {
                 // not enough storage check if 30 minutes have passed
-                if (CurrentGameTime >= customer.enterTime.AddMinutes(30) && !IsNextDay())
+                if (CurrentGameTime >= item.enterTime.AddMinutes(30) && !IsNextDay())
                 {
                     var reason = GetShoppingReason();
                     TransferManager.TransferOffer offer = default;
                     offer.Priority = Singleton<SimulationManager>.instance.m_randomizer.Int32(8u);
-                    offer.Citizen = customer.citizenId;
+                    offer.Citizen = item.citizenId;
                     offer.Position = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].m_position;
                     offer.Amount = 1;
                     offer.Active = true;
                     Singleton<TransferManager>.instance.AddIncomingOffer(reason, offer);
-                    RestaurantSitDown.Remove(customer);
+                    RestaurantSitDown.Remove(item);
                 }
                 else
                 {
                     // while 30 minutes has not passed try to cook meals for customer
-                    var meal_cooked = CookMeal(buildingID, ref buildingData, false, customer.mealType);
+                    var meal_cooked = CookMeal(buildingID, ref buildingData, false, item.mealType);
                     if (meal_cooked)
                     {
-                        EatMeal(buildingID, ref buildingData, customer.citizenId, customer.mealType);
-                        RestaurantSitDown.Remove(customer);
+                        EatMeal(buildingID, ref buildingData, item.citizenId, item.mealType);
+                        RestaurantSitDown.Remove(item);
                     }
                 }
                 RestaurantManager.SetRestaurantSitDownsList(buildingID, RestaurantSitDown);
@@ -396,7 +396,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else
             {
-                // no delviery vehicles avaliable 
+                // no delivery vehicles avaliable 
                 var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
                 if (CurrentGameTime >= WaitingForDeliveryVehicleTimer && !IsNextDay())
                 {
