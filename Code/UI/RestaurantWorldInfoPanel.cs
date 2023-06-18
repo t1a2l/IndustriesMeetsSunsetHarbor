@@ -91,6 +91,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UISprite m_deliveryMealsType4Sprite;
 
+        private UILabel m_productionBarLabel;
+
         private List<string> items;
 
         public UIComponent movingPanel
@@ -142,18 +144,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType1Sprite = Find<UISprite>("LuxuryProductIcon");
             m_deliveryMealsType1BigArrow.anchor = UIAnchorStyle.None;
             m_deliveryMealsType1Capacity.anchor = UIAnchorStyle.None;
-            m_deliveryMealsType1BigArrow.relativePosition = new Vector3(408f, 200f);
-            m_deliveryMealsType1Capacity.relativePosition = new Vector3(355f, 255f);
+            m_deliveryMealsType1BigArrow.relativePosition = new Vector3(155f, 200f);
+            m_deliveryMealsType1Capacity.relativePosition = new Vector3(100f, 255f);
 
             var Diagram = Find<UIPanel>("Diagram");
 
-            GameObject BigArrow2 = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
-            GameObject BigArrow3 = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
-            GameObject BigArrow4 = Instantiate(Find<UISprite>("Big Arrow").gameObject, Diagram.transform);
+            GameObject BigArrow2 = Instantiate(m_deliveryMealsType1BigArrow.gameObject, Diagram.transform);
+            GameObject BigArrow3 = Instantiate(m_deliveryMealsType1BigArrow.gameObject, Diagram.transform);
+            GameObject BigArrow4 = Instantiate(m_deliveryMealsType1BigArrow.gameObject, Diagram.transform);
 
-            GameObject ProductStorage2 = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
-            GameObject ProductStorage3 = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
-            GameObject ProductStorage4 = Instantiate(Find<UIPanel>("ProductStorage").gameObject, Diagram.transform);
+            GameObject ProductStorage2 = Instantiate(m_deliveryMealsType1Capacity.gameObject, Diagram.transform);
+            GameObject ProductStorage3 = Instantiate(m_deliveryMealsType1Capacity.gameObject, Diagram.transform);
+            GameObject ProductStorage4 = Instantiate(m_deliveryMealsType1Capacity.gameObject, Diagram.transform);
 
             var ProductLabel2 = ProductStorage2.transform.Find("ProductLabel");
             var ProductLabel3 = ProductStorage3.transform.Find("ProductLabel");
@@ -175,17 +177,17 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType3BigArrow = BigArrow3.GetComponent<UISprite>();
             m_deliveryMealsType4BigArrow = BigArrow4.GetComponent<UISprite>();
   
-            m_deliveryMealsType2Label = ProductStorage2.GetComponent<UILabel>();
-            m_deliveryMealsType3Label = ProductStorage3.GetComponent<UILabel>();
-            m_deliveryMealsType4Label = ProductStorage4.GetComponent<UILabel>();
+            m_deliveryMealsType2Label = ProductLabel2.GetComponent<UILabel>();
+            m_deliveryMealsType3Label = ProductLabel3.GetComponent<UILabel>();
+            m_deliveryMealsType4Label = ProductLabel4.GetComponent<UILabel>();
 
-            m_deliveryMealsType2Buffer = ProductStorage2.GetComponent<UIProgressBar>();
-            m_deliveryMealsType3Buffer = ProductStorage3.GetComponent<UIProgressBar>();
-            m_deliveryMealsType4Buffer = ProductStorage4.GetComponent<UIProgressBar>();
+            m_deliveryMealsType2Buffer = ProductBuffer2.GetComponent<UIProgressBar>();
+            m_deliveryMealsType3Buffer = ProductBuffer3.GetComponent<UIProgressBar>();
+            m_deliveryMealsType4Buffer = ProductBuffer4.GetComponent<UIProgressBar>();
 
-            m_deliveryMealsType2Sprite = ProductStorage2.GetComponent<UISprite>();
-            m_deliveryMealsType3Sprite = ProductStorage3.GetComponent<UISprite>();
-            m_deliveryMealsType4Sprite = ProductStorage4.GetComponent<UISprite>();
+            m_deliveryMealsType2Sprite = LuxuryProductIcon2.GetComponent<UISprite>();
+            m_deliveryMealsType3Sprite = LuxuryProductIcon3.GetComponent<UISprite>();
+            m_deliveryMealsType4Sprite = LuxuryProductIcon4.GetComponent<UISprite>();
 
             m_deliveryMealsType2BigArrow.anchor = UIAnchorStyle.None;
             m_deliveryMealsType3BigArrow.anchor = UIAnchorStyle.None;
@@ -195,16 +197,17 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType3Capacity.anchor = UIAnchorStyle.None;
             m_deliveryMealsType4Capacity.anchor = UIAnchorStyle.None;
 
-            m_deliveryMealsType2BigArrow.relativePosition = new Vector3(248f, 200f);
-            m_deliveryMealsType3BigArrow.relativePosition = new Vector3(96f, 200f);
-            m_deliveryMealsType4BigArrow.relativePosition = new Vector3(-56f, 200f);
+            m_deliveryMealsType2BigArrow.relativePosition = new Vector3(305f, 200f);
+            m_deliveryMealsType3BigArrow.relativePosition = new Vector3(455f, 200f);
+            m_deliveryMealsType4BigArrow.relativePosition = new Vector3(605f, 200f);
             
-            m_deliveryMealsType2Capacity.relativePosition = new Vector3(160f, 255f);
-            m_deliveryMealsType3Capacity.relativePosition = new Vector3(-35f, 255f);
-            m_deliveryMealsType4Capacity.relativePosition = new Vector3(-230f, 255f);
+            m_deliveryMealsType2Capacity.relativePosition = new Vector3(250f, 255f);
+            m_deliveryMealsType3Capacity.relativePosition = new Vector3(400f, 255f);
+            m_deliveryMealsType4Capacity.relativePosition = new Vector3(550f, 255f);
 
             m_materialCost = Find<UILabel>("MATERIAL COST");
             m_productionValue = Find<UILabel>("PRODUCTION VALUE");
+            m_productionBarLabel = Find<UILabel>("Production Rate:");
     
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
@@ -323,27 +326,27 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_status.text = restaurantAI.GetLocalizedStatus(buildingId, ref building);
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
             m_deliveryMealsType1Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputDeliveryMealsCount);
-            m_deliveryMealsType1Capacity.tooltip = custom_buffers.m_customBuffer9 + " " + restaurantAI.m_mealName1 + " Meals are ready for delivery ";
-            m_deliveryMealsType1Label.text = restaurantAI.m_mealName1;
-            m_deliveryMealsType1Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType1Capacity.tooltip = custom_buffers.m_customBuffer9 + " " + restaurantAI.m_mealName1[0] + " Meals are ready for delivery";
+            m_deliveryMealsType1Label.text = restaurantAI.m_mealName1[0];
+            m_deliveryMealsType1Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_deliveryMealsType1Sprite.spriteName = "OrderedMeals";
 
             m_deliveryMealsType2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer10, restaurantAI.m_outputDeliveryMealsCount);
-            m_deliveryMealsType2Capacity.tooltip = custom_buffers.m_customBuffer10 + " " + restaurantAI.m_mealName2 + " Meals are ready for delivery ";
-            m_deliveryMealsType2Label.text = restaurantAI.m_mealName2;
-            m_deliveryMealsType2Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType2Capacity.tooltip = custom_buffers.m_customBuffer10 + " " + restaurantAI.m_mealName2[0] + " Meals are ready for delivery";
+            m_deliveryMealsType2Label.text = restaurantAI.m_mealName2[0];
+            m_deliveryMealsType2Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_deliveryMealsType2Sprite.spriteName = "OrderedMeals";
 
             m_deliveryMealsType3Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer11, restaurantAI.m_outputDeliveryMealsCount);
-            m_deliveryMealsType3Capacity.tooltip = custom_buffers.m_customBuffer11 + " " + restaurantAI.m_mealName3 + " Meals are ready for delivery ";
-            m_deliveryMealsType3Label.text = restaurantAI.m_mealName3;
-            m_deliveryMealsType3Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType3Capacity.tooltip = custom_buffers.m_customBuffer11 + " " + restaurantAI.m_mealName3[0] + " Meals are ready for delivery";
+            m_deliveryMealsType3Label.text = restaurantAI.m_mealName3[0];
+            m_deliveryMealsType3Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_deliveryMealsType3Sprite.spriteName = "OrderedMeals";
 
             m_deliveryMealsType4Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer12, restaurantAI.m_outputDeliveryMealsCount);
-            m_deliveryMealsType4Capacity.tooltip = custom_buffers.m_customBuffer12 + " " + restaurantAI.m_mealName4 + " Meals are ready for delivery ";
-            m_deliveryMealsType4Label.text = restaurantAI.m_mealName4;
-            m_deliveryMealsType4Sprite.atlas = TextureUtils.GetAtlas("MealsAtlas");
+            m_deliveryMealsType4Capacity.tooltip = custom_buffers.m_customBuffer12 + " " + restaurantAI.m_mealName4[0] + " Meals are ready for delivery";
+            m_deliveryMealsType4Label.text = restaurantAI.m_mealName4[0];
+            m_deliveryMealsType4Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
             m_deliveryMealsType4Sprite.spriteName = "OrderedMeals";
 
             m_horizontalLine.width = m_inputContainer.width;
@@ -403,16 +406,15 @@ namespace IndustriesMeetsSunsetHarbor.UI
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
             inputs_expenses += IndustryBuildingManager.GetResourcePrice(restaurantAI.m_inputResource8) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            m_expenses.tooltip = "Restaurant expenses per week";
-            m_materialCost.width += 10;
-            m_materialCost.text = "RESTAURANT EXPENSES";
-            m_materialCost.tooltip = "Restaurant expenses per week";
+            m_expenses.tooltip = "Restaurant Expenses per week";
+            m_materialCost.text = "EXPENSES";
+            m_materialCost.tooltip = "Restaurant Expenses per week";
             var TotalIncome = restaurantAI.m_outputDeliveryMealsCount + restaurantAI.m_outputMealsCount;
             m_income.text = TotalIncome.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            m_income.tooltip = "Restaurant earnings per week";
-            m_productionValue.width += 10;
-            m_productionValue.text = "RESTAURANT EARNINGS";
-            m_productionValue.tooltip = "Restaurant earnings per week";
+            m_income.tooltip = "Restaurant Earnings per week";
+            m_productionValue.text = "EARNINGS";
+            m_productionValue.tooltip = "Restaurant Earnings per week";
+            m_productionBarLabel.text = "Dishes:";
         }
 
         private string GetInputResourceType(ref List<string> items, int resourceIndex)
