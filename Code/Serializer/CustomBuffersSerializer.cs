@@ -11,7 +11,7 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
-        private const ushort iCUSTOM_BUFFERS_DATA_VERSION = 1;
+        private const ushort iCUSTOM_BUFFERS_DATA_VERSION = 2;
 
         public static void SaveData(FastList<byte> Data)
         {
@@ -59,14 +59,13 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             {
                 int iCustomBuffersVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 LogHelper.Information("Global: " + iGlobalVersion + " BufferVersion: " + iCustomBuffersVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
-
-                if (iCustomBuffersVersion <= iCUSTOM_BUFFERS_DATA_VERSION)
+                if(CustomBuffersManager.CustomBuffers == null)
                 {
-                    if(CustomBuffersManager.CustomBuffers == null)
-                    {
-                        CustomBuffersManager.CustomBuffers = new Dictionary<ushort, CustomBuffersManager.CustomBuffer>();
-                    }
-                    var CustomBuffers_Count = StorageData.ReadInt32(Data, ref iIndex);
+                    CustomBuffersManager.CustomBuffers = new Dictionary<ushort, CustomBuffersManager.CustomBuffer>();
+                }
+                var CustomBuffers_Count = StorageData.ReadInt32(Data, ref iIndex);
+                if (iCustomBuffersVersion >= iCUSTOM_BUFFERS_DATA_VERSION)
+                {
                     for (int i = 0; i < CustomBuffers_Count; i++)
                     {
                         CheckStartTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
@@ -92,6 +91,27 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         new_strcut.m_customBuffer18 = StorageData.ReadFloat(Data, ref iIndex);
                         new_strcut.m_customBuffer19 = StorageData.ReadFloat(Data, ref iIndex);
                         new_strcut.m_customBuffer20 = StorageData.ReadFloat(Data, ref iIndex);
+                        CustomBuffersManager.CustomBuffers.Add(customBuffersId, new_strcut);
+                        CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < CustomBuffers_Count; i++)
+                    {
+                        CheckStartTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
+                        ushort customBuffersId = StorageData.ReadUInt16(Data, ref iIndex);
+                        CustomBuffersManager.CustomBuffer new_strcut = new();
+                        new_strcut.m_customBuffer1 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer2 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer3 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer4 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer5 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer6 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer7 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer8 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer9 = StorageData.ReadUInt16(Data, ref iIndex);
+                        new_strcut.m_customBuffer10 = StorageData.ReadUInt16(Data, ref iIndex);
                         CustomBuffersManager.CustomBuffers.Add(customBuffersId, new_strcut);
                         CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                     }
