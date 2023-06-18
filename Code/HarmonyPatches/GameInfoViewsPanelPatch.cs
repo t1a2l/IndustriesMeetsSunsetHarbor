@@ -23,16 +23,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool RefreshPanel(GameInfoViewsPanel __instance, ref PositionData<InfoManager.InfoMode>[] ___kResources, ref int[] ___m_buttonToResource, ref int[] ___m_resourceToButton)
         {
-            var old_length = ___kResources.Length;
-            ___m_buttonToResource = new int[old_length + 1];
-            ___m_resourceToButton = new int[old_length + 1];
-            Array.Resize(ref ___kResources, old_length + 1);
+            ___m_buttonToResource = new int[38];
+            ___m_resourceToButton = new int[38];
+            Array.Resize(ref ___kResources, 38);
             __instance.CleanPanel();
             UIButton uIButton = null;
             int num = 0;
             for (int i = 0; i < ___kResources.Length; i++)
             {
-                if (i == old_length)
+                if (i == 38)
                 {
                     ___kResources[i].enumName = "Restaurant";
                     ___kResources[i].enumCategory = "Game";
