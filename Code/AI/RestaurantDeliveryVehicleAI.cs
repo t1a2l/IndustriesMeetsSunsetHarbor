@@ -189,7 +189,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (!StartPathFind(vehicleID, ref data))
             {
-                data.Unspawn(vehicleID);
+                FindNextDelivery(vehicleID, ref data, targetBuilding);
             }
         }
 
@@ -277,39 +277,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Singleton<VehicleManager>.instance.ReleaseVehicle(vehicleID);
                 return true;
             }
-            var buildingId = data.m_targetBuilding;
-            var list = RestaurantManager.GetRestaurantDeliveriesList(data.m_sourceBuilding);
-            var deliveryData = list.Find(item => item.deliveryVehicleId == vehicleID && item.buildingId == buildingId);
-            BuildingManager b_instance = Singleton<BuildingManager>.instance;
-            CitizenManager c_instance = Singleton<CitizenManager>.instance;
-            var target_building = b_instance.m_buildings.m_buffer[buildingId];
-            var citizen_data = c_instance.m_citizens.m_buffer[deliveryData.citizenId];
-            var citizen_unit_id = citizen_data.GetContainingUnit(buildingId, target_building.m_citizenUnits, CitizenUnit.Flags.Home);
-            var citizen_unit = c_instance.m_units.m_buffer[citizen_unit_id];
-            if(citizen_data.CurrentLocation != Citizen.Location.Moving)
-            {
-                citizen_unit.m_goods += (ushort)m_goodsMeal;
-                citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
-                data.m_transferSize -= 1;
-            }
-            for (int j = 0; j < m_deliveryPersonCount; j++)
-            {
-                CreateDeliveryPerson(vehicleID, ref data, Citizen.AgePhase.Young0);
-            }
-            data.m_flags |= Vehicle.Flags.Stopped;
-            // check if there are other deliveries for this vehicle
-            // and go to the next delivery or go back and remove data of current delivery
-            list.Remove(deliveryData);
-            var newData = list.Find(item => item.deliveryVehicleId == vehicleID);
-            RestaurantManager.SetRestaurantDeliveriesList(data.m_sourceBuilding, list);
-            if(newData.citizenId != 0)
-            {
-                SetTarget(vehicleID, ref data, newData.buildingId);
-            }
-            else
-            {
-                SetTarget(vehicleID, ref data, 0);
-            }
+            DeliverSameBuilding(vehicleID, ref data);
+            FindNextDelivery(vehicleID, ref data, data.m_targetBuilding);
             return false;
         }
 
@@ -508,5 +477,54 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return result;
         }
 
+        private void DeliverSameBuilding(ushort vehicleID, ref Vehicle vehicleData)
+        {
+            var target_building = vehicleData.m_targetBuilding;
+            var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(vehicleData.m_sourceBuilding);
+            var buildingDeliveries = DeliveriesList.FindAll(item => item.deliveryVehicleId == vehicleID && item.buildingId == target_building);
+            vehicleData.m_flags |= Vehicle.Flags.Stopped;
+            for (int j = 0; j < m_deliveryPersonCount; j++)
+            {
+                CreateDeliveryPerson(vehicleID, ref vehicleData, Citizen.AgePhase.Young0);
+            }
+            foreach(var delivery in buildingDeliveries)
+            {
+                DeliverFoodToCitizen(vehicleID, ref vehicleData, target_building, delivery);
+            }
+        }
+
+        private void FindNextDelivery(ushort vehicleID, ref Vehicle vehicleData, ushort oldTargetBuilding)
+        {
+            var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(vehicleData.m_sourceBuilding);
+            DeliveriesList.RemoveAll(delivery => delivery.deliveryVehicleId == vehicleID && delivery.buildingId == oldTargetBuilding);
+            RestaurantManager.SetRestaurantDeliveriesList(vehicleData.m_sourceBuilding, DeliveriesList);
+            var nextDelivery = DeliveriesList.FindIndex(item => item.deliveryVehicleId == vehicleID && item.citizenId != 0 && item.buildingId != 0);
+            if(nextDelivery == -1)
+            {
+                // didn't find go back to restaurant
+                SetTarget(vehicleID, ref vehicleData, 0);
+            }
+            else
+            {
+                SetTarget(vehicleID, ref vehicleData, DeliveriesList[nextDelivery].buildingId);
+            }
+            
+        }
+
+        private void DeliverFoodToCitizen(ushort vehicleID, ref Vehicle vehicleData, ushort target_building, RestaurantManager.RestaurantDeliveryData deliveryData)
+        {
+            BuildingManager b_instance = Singleton<BuildingManager>.instance;
+            CitizenManager c_instance = Singleton<CitizenManager>.instance;
+            var targetBuilding = b_instance.m_buildings.m_buffer[target_building];
+            var citizen_data = c_instance.m_citizens.m_buffer[deliveryData.citizenId];
+            var citizen_unit_id = citizen_data.GetContainingUnit(target_building, targetBuilding.m_citizenUnits, CitizenUnit.Flags.Home);
+            var citizen_unit = c_instance.m_units.m_buffer[citizen_unit_id];
+            if(citizen_data.CurrentLocation != Citizen.Location.Moving)
+            {
+                citizen_unit.m_goods += (ushort)m_goodsMeal;
+                citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
+                vehicleData.m_transferSize -= 1;
+            }
+        }
     }
 }
