@@ -79,25 +79,25 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public int m_outputMealsCount = 100;
 
         [CustomizableProperty("Meal 1 Name")]
-        public string m_mealName1 = "";
+        public string[] m_mealName1 = new string[1];
 
         [CustomizableProperty("Meal 1 Ingredient")]
         public float[] m_mealRecipe1 = new float[8];
 
         [CustomizableProperty("Meal 2 Name")]
-        public string m_mealName2 = "";
+        public string[] m_mealName2 = new string[1];
 
         [CustomizableProperty("Meal 2 Ingredient")]
         public float[] m_mealRecipe2 = new float[8];
 
         [CustomizableProperty("Meal 3 Name")]
-        public string m_mealName3 = "";
+        public string[] m_mealName3 = new string[1];
 
         [CustomizableProperty("Meal 3 Ingredient")]
         public float[] m_mealRecipe3 = new float[8];
 
         [CustomizableProperty("Meal 4 Name")]
-        public string m_mealName4 = "";
+        public string[] m_mealName4 = new string[1];
 
         [CustomizableProperty("Meal 4 Ingredient")]
         public float[] m_mealRecipe4 = new float[8];
