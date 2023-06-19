@@ -37,84 +37,60 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var level = GetRestaurantQuality(citizen.WealthLevel);
                 if (get_delivery)
                 {
+                    var material = ExtendedTransferManager.TransferReason.None;
                     // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
-                        int count1 = 0;
-                        int cargo1 = 0;
-                        int capacity1 = 0;
-                        int outside1 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryLow, ref count1, ref cargo1, ref capacity1, ref outside1);
-                        ExtendedTransferManager.Offer transferOffer1 = default;
-                        transferOffer1.Citizen = citizenID;
-                        transferOffer1.Position = homeBuildingData.m_position;
-                        transferOffer1.Amount = 1;
-                        transferOffer1.Active = false;
-                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryLow, transferOffer1);
+                        material = ExtendedTransferManager.TransferReason.MealsDeliveryLow;
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
-                        int count2 = 0;
-                        int cargo2 = 0;
-                        int capacity2 = 0;
-                        int outside2 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryMedium, ref count2, ref cargo2, ref capacity2, ref outside2);
-                        ExtendedTransferManager.Offer transferOffer2 = default;
-                        transferOffer2.Citizen = citizenID;
-                        transferOffer2.Position = homeBuildingData.m_position;
-                        transferOffer2.Amount = 1;
-                        transferOffer2.Active = false;
-                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryMedium, transferOffer2);
+                        material = ExtendedTransferManager.TransferReason.MealsDeliveryMedium;
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
-                        int count3 = 0;
-                        int cargo3 = 0;
-                        int capacity3 = 0;
-                        int outside3 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(sourceBuilding, ref homeBuildingData, ExtendedTransferManager.TransferReason.MealsDeliveryHigh, ref count3, ref cargo3, ref capacity3, ref outside3);
-                        ExtendedTransferManager.Offer transferOffer3 = default;
-                        transferOffer3.Citizen = citizenID;
-                        transferOffer3.Position = homeBuildingData.m_position;
-                        transferOffer3.Amount = 1;
-                        transferOffer3.Active = false;
-                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(ExtendedTransferManager.TransferReason.MealsDeliveryHigh, transferOffer3);
+                        material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
                     }
+                    if(material != ExtendedTransferManager.TransferReason.None)
+                    {
+                        ExtendedTransferManager.Offer transferOffer = default;
+                        transferOffer.Citizen = citizenID;
+                        transferOffer.Position = homeBuildingData.m_position;
+                        transferOffer.Amount = 1;
+                        transferOffer.Active = false;
+                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(material, transferOffer);
+                    }
+                    
                     return false;
                 }
                 if(Singleton<SimulationManager>.instance.m_randomizer.Int32(100U) < Mod.VisitChance)
                 {
+                    var material = ExtendedTransferManager.TransferReason.None;
                     // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
-                        ExtendedTransferManager.Offer transferOffer4 = default;
-                        transferOffer4.Citizen = citizenID;
-                        transferOffer4.Position = homeBuildingData.m_position;
-                        transferOffer4.Amount = 1;
-                        transferOffer4.Active = true;
-                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsLow, transferOffer4);
+                        material = ExtendedTransferManager.TransferReason.MealsLow;
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
-                        ExtendedTransferManager.Offer transferOffer5 = default;
-                        transferOffer5.Citizen = citizenID;
-                        transferOffer5.Position = homeBuildingData.m_position;
-                        transferOffer5.Amount = 1;
-                        transferOffer5.Active = true;
-                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsMedium, transferOffer5);
+                        material = ExtendedTransferManager.TransferReason.MealsMedium;
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
-                        ExtendedTransferManager.Offer transferOffer6 = default;
-                        transferOffer6.Citizen = citizenID;
-                        transferOffer6.Position = homeBuildingData.m_position;
-                        transferOffer6.Amount = 1;
-                        transferOffer6.Active = true;
-                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(ExtendedTransferManager.TransferReason.MealsHigh, transferOffer6);
+                        material = ExtendedTransferManager.TransferReason.MealsHigh;
+                    }
+                    if(material != ExtendedTransferManager.TransferReason.None)
+                    {
+                        ExtendedTransferManager.Offer transferOffer = default;
+                        transferOffer.Citizen = citizenID;
+                        transferOffer.Position = homeBuildingData.m_position;
+                        transferOffer.Amount = 1;
+                        transferOffer.Active = true;
+                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, transferOffer);
                     }
                     return false;
                 }  

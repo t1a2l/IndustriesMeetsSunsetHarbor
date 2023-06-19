@@ -1,6 +1,5 @@
 using ColossalFramework;
 using System;
-using MoreTransferReasons;
 using UnityEngine;
 using ColossalFramework.Math;
 
@@ -8,7 +7,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 {
     public static class ExtedndedVehicleManager
     {
-        public static void CalculateOwnVehicles(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside)
+        public static void CalculateOwnVehicles(ushort buildingID, ref Building data, byte material, ref int count, ref int cargo, ref int capacity, ref int outside)
         {
             VehicleManager instance = Singleton<VehicleManager>.instance;
             ushort num = data.m_ownVehicles;
@@ -16,8 +15,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             while (num != 0)
             {
                 var transfer_type = instance.m_vehicles.m_buffer[num].m_transferType;
-                byte material_byte = (byte)(transfer_type - 200);
-                if ((ExtendedTransferManager.TransferReason)material_byte == material)
+                if (transfer_type == material)
                 {
                     VehicleInfo info = instance.m_vehicles.m_buffer[num].Info;
                     info.m_vehicleAI.GetSize(num, ref instance.m_vehicles.m_buffer[num], out var size, out var max);
@@ -34,7 +32,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        public static void CalculateGuestVehicles(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int count, ref int cargo, ref int capacity, ref int outside)
+        public static void CalculateGuestVehicles(ushort buildingID, ref Building data, byte material, ref int count, ref int cargo, ref int capacity, ref int outside)
         {
             VehicleManager instance = Singleton<VehicleManager>.instance;
             ushort num = data.m_guestVehicles;
@@ -42,8 +40,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             while (num != 0)
             {
                 var transfer_type = instance.m_vehicles.m_buffer[num].m_transferType;
-                byte material_byte = (byte)(transfer_type - 200);
-                if ((ExtendedTransferManager.TransferReason)material_byte == material)
+                if (transfer_type == material)
                 {
                     VehicleInfo info = instance.m_vehicles.m_buffer[num].Info;
                     info.m_vehicleAI.GetSize(num, ref instance.m_vehicles.m_buffer[num], out var size, out var max);
