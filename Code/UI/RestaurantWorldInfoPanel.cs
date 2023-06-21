@@ -205,10 +205,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType3Capacity.relativePosition = new Vector3(400f, 255f);
             m_deliveryMealsType4Capacity.relativePosition = new Vector3(550f, 255f);
 
-            m_materialCost = Find<UILabel>("MATERIAL COST");
-            m_productionValue = Find<UILabel>("PRODUCTION VALUE");
-            m_productionBarLabel = Find<UILabel>("Production Rate:");
-    
             m_workplaces = Find<UILabel>("LabelWorkplaces");
             m_MoveButton = Find<UIButton>("RelocateAction");
             m_RebuildButton = Find<UIButton>("RebuildButton");
@@ -218,6 +214,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_mainPanel = Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
+            m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_MATERIALCOST", typeof(UILabel));
+            m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_PRODUCTIONVALUE", typeof(UILabel));
+            m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "Production Rate:", typeof(UILabel));
             items = new List<string>();
         }
 
