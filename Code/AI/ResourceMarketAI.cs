@@ -1,14 +1,62 @@
 using ColossalFramework;
 using System;
 using IndustriesMeetsSunsetHarbor.Managers;
-using System.Reflection;
 using UnityEngine;
 using MoreTransferReasons;
+using ColossalFramework.DataBinding;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    public class ResourceMarketAI : MarketAI, IExtendedBuildingAI
+    public class ResourceMarketAI : PlayerBuildingAI, IExtendedBuildingAI
     {
+        [CustomizableProperty("Uneducated Workers", "Workers", 0)]
+        public int m_workPlaceCount0 = 5;
+
+        [CustomizableProperty("Educated Workers", "Workers", 1)]
+        public int m_workPlaceCount1 = 12;
+
+        [CustomizableProperty("Well Educated Workers", "Workers", 2)]
+        public int m_workPlaceCount2 = 9;
+
+        [CustomizableProperty("Highly Educated Workers", "Workers", 3)]
+        public int m_workPlaceCount3 = 4;
+
+        [CustomizableProperty("Visit place count", "Visitors", 3)]
+        public int m_visitPlaceCount = 2;
+
+        [CustomizableProperty("Entertainment Accumulation")]
+        public int m_entertainmentAccumulation = 100;
+
+        [CustomizableProperty("Entertainment Radius")]
+        public float m_entertainmentRadius = 400f;
+
+        [CustomizableProperty("Noise Accumulation", "Pollution")]
+        public int m_noiseAccumulation = 50;
+
+        [CustomizableProperty("Noise Radius", "Pollution")]
+        public float m_noiseRadius = 100f;
+
+        [CustomizableProperty("Healthcare Accumulation")]
+        public int m_healthCareAccumulation = 200;
+
+        [CustomizableProperty("Healthcare Radius")]
+        public float m_healthCareRadius = 500f;
+
+        [CustomizableProperty("Attractiveness Accumulation")]
+        public int m_attractivenessAccumulation = 10;
+
+        [CustomizableProperty("Input Resource Threshold")]
+        public int m_resourceThreshold = 4000;
+
+        public int m_goodsCapacity = 20000;
+
+        public int m_productionCapacity = 200;
+
+        public int m_goodsSellPrice = 1500;
+
+        public Boolean isAmount = false;
+
+        int index = 0;
 
         public TransferManager.TransferReason[] m_incomingResources = new TransferManager.TransferReason[]
         {
@@ -27,100 +75,116 @@ namespace IndustriesMeetsSunsetHarbor.AI
             ExtendedTransferManager.TransferReason.CannedFish
         };
 
-        public Boolean isAmount = false;
+        public int GetEntertainmentAccumulation(ushort buildingID, ref Building data)
+        {
+            return UniqueFacultyAI.IncreaseByBonus(UniqueFacultyAI.FacultyBonus.Tourism, m_entertainmentAccumulation);
+        }
 
-        int index = 0;
+        public int GetAttractivenessAccumulation(ushort buildingID, ref Building data)
+        {
+            return UniqueFacultyAI.IncreaseByBonus(UniqueFacultyAI.FacultyBonus.Tourism, m_attractivenessAccumulation);
+        }
 
-        [CustomizableProperty("Input Resource Threshold")]
-        public int m_resourceThreshold = 4000;
+        public override ImmaterialResourceManager.ResourceData[] GetImmaterialResourceRadius(ushort buildingID, ref Building data)
+        {
+            return new ImmaterialResourceManager.ResourceData[2]
+            {
+                new ImmaterialResourceManager.ResourceData
+                {
+                    m_resource = ImmaterialResourceManager.Resource.Entertainment,
+                    m_radius = ((GetEntertainmentAccumulation(buildingID, ref data) == 0) ? 0f : m_entertainmentRadius)
+                },
+                new ImmaterialResourceManager.ResourceData
+                {
+                    m_resource = ImmaterialResourceManager.Resource.NoisePollution,
+                    m_radius = ((m_noiseAccumulation == 0) ? 0f : m_noiseRadius)
+                }
+            };
+        }
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
             int attractivenessAccumulation = GetAttractivenessAccumulation(buildingID, ref data);
             switch (infoMode)
             {
+                case InfoManager.InfoMode.NoisePollution:
+                {
+                    int noiseAccumulation = m_noiseAccumulation;
+                    return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
+                }
+                case InfoManager.InfoMode.Fishing:
+                    if ((data.m_flags & Building.Flags.Active) != 0)
+                    {
+                        return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+                    }
+                    return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                 case InfoManager.InfoMode.Tours:
                     return CommonBuildingAI.GetAttractivenessColor(attractivenessAccumulation * 15);
-                default:
-                    if (infoMode == InfoManager.InfoMode.NoisePollution)
+                case InfoManager.InfoMode.Entertainment:
+                    if (subInfoMode == InfoManager.SubInfoMode.WaterPower)
                     {
-                        int noiseAccumulation = m_noiseAccumulation;
-                        return CommonBuildingAI.GetNoisePollutionColor((float)noiseAccumulation);
-                    }
-                    if (infoMode != InfoManager.InfoMode.Connections)
-                    {
-                        if (infoMode != InfoManager.InfoMode.Entertainment)
-                        {
-                            return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
-                        }
-                        if (Singleton<InfoManager>.instance.CurrentSubMode != InfoManager.SubInfoMode.WaterPower)
-                        {
-                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-                        }
-                        if ((data.m_flags & Building.Flags.Active) != Building.Flags.None)
+                        if ((data.m_flags & Building.Flags.Active) != 0)
                         {
                             return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
                         }
                         return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                     }
-                    else
-                    {
-                        if (!ShowConsumption(buildingID, ref data))
-                        {
-                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-                        }
-                        if (Singleton<InfoManager>.instance.CurrentSubMode != InfoManager.SubInfoMode.Default)
-                        {
-                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-                        }
-                        for (int i = 0; i < m_incomingResources.Length; i++)
-                        {
-                            if (m_incomingResources[i] != TransferManager.TransferReason.None && (data.m_tempImport != 0 || data.m_finalImport != 0))
-                            {
-                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingResources[i]];
-                            }
-                        }
-                        for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-                        {
-                            if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
-                            {
-                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingExtendedResources[i]];
-                            }
-                        }
-                        return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
-                    }
+                    return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                 case InfoManager.InfoMode.Tourism:
-                {
-                    InfoManager.SubInfoMode currentSubMode = Singleton<InfoManager>.instance.CurrentSubMode;
-                    if (currentSubMode == InfoManager.SubInfoMode.Default)
+                    switch (subInfoMode)
                     {
-                        if (data.m_tempExport != 0 || data.m_finalExport != 0)
-                        {
-                            return CommonBuildingAI.GetTourismColor(Mathf.Max((int)data.m_tempExport, (int)data.m_finalExport));
-                        }
-                        return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        case InfoManager.SubInfoMode.Default:
+                            if (data.m_tempExport != 0 || data.m_finalExport != 0)
+                            {
+                                return CommonBuildingAI.GetTourismColor(Mathf.Max(data.m_tempExport, data.m_finalExport));
+                            }
+                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        case InfoManager.SubInfoMode.WaterPower:
+                            if (attractivenessAccumulation != 0)
+                            {
+                                return CommonBuildingAI.GetAttractivenessColor(attractivenessAccumulation * 100);
+                            }
+                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                        default:
+                            return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                     }
-                    else
+                case InfoManager.InfoMode.Connections:
+                    if (ShowConsumption(buildingID, ref data))
                     {
-                        if (currentSubMode != InfoManager.SubInfoMode.WaterPower)
+                        if (subInfoMode == InfoManager.SubInfoMode.Default)
                         {
+                            for (int i = 0; i < m_incomingResources.Length; i++)
+                            {
+                                if (m_incomingResources[i] != TransferManager.TransferReason.None && (data.m_tempImport != 0 || data.m_finalImport != 0))
+                                {
+                                    return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingResources[i]];
+                                }
+                            }
+                            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
+                            {
+                                if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None && (data.m_tempImport != 0 || data.m_finalImport != 0))
+                                {
+                                    return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingExtendedResources[i]];
+                                }
+                            }
                             return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                         }
-                        if (attractivenessAccumulation != 0)
-                        {
-                            return CommonBuildingAI.GetAttractivenessColor(attractivenessAccumulation * 100);
-                        }
                         return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                     }
-                }
-                case InfoManager.InfoMode.Fishing:
-                    if ((data.m_flags & Building.Flags.Active) != Building.Flags.None)
-                    {
-                        return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
-                    }
-                    return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
+                    return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                default:
+                    return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
             }
         }
+
+        public override int GetResourceRate(ushort buildingID, ref Building data, ImmaterialResourceManager.Resource resource)
+	{
+	    if (resource == ImmaterialResourceManager.Resource.NoisePollution)
+	    {
+		return m_noiseAccumulation;
+	    }
+	    return base.GetResourceRate(buildingID, ref data, resource);
+	}
 
         public override void GetPlacementInfoMode(out InfoManager.InfoMode mode, out InfoManager.SubInfoMode subMode, float elevation)
         {
@@ -188,25 +252,73 @@ namespace IndustriesMeetsSunsetHarbor.AI
             return text;
         }
 
-        private void AddMarketBufferToBuildingData(ushort buildingID)
-        {
-            var merged_length = m_incomingResources.Length + m_incomingExtendedResources.Length;
-            ResourceMarketManager.MarketData newMarketData = new()
-            {
-                inputAmountBuffer = new ushort[merged_length],
-                outputAmountBuffer = new ushort[merged_length],
-                amountSold1 = new ushort[merged_length],
-                amountSold2 = new ushort[merged_length]
-            };
-            for (int j = 0; j < merged_length; j++)
-            {
-                newMarketData.inputAmountBuffer[j] = 0;
-                newMarketData.outputAmountBuffer[j] = 0;
-                newMarketData.amountSold1[j] = 0;
-                newMarketData.amountSold2[j] = 0;
-            }
-            ResourceMarketManager.MarketBuffers.Add(buildingID, newMarketData);
-        }
+        public override void CreateBuilding(ushort buildingID, ref Building data)
+	{
+	    base.CreateBuilding(buildingID, ref data);
+	    int workCount = m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
+	    int visitPlaceCount = m_visitPlaceCount;
+	    Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, visitPlaceCount);
+	    if (m_info != null && m_info.m_class != null && m_info.m_class.m_service == ItemClass.Service.Fishing)
+	    {
+		GuideController properties = Singleton<GuideManager>.instance.m_properties;
+		if (properties != null && Singleton<BuildingManager>.instance.m_intercityBusStationBuilt != null)
+		{
+		    Singleton<BuildingManager>.instance.m_intercityBusStationBuilt.Activate(properties.m_fishFactoryMarketBuilt, buildingID);
+		}
+	    }
+	}
+
+        public override void BuildingLoaded(ushort buildingID, ref Building data, uint version)
+	{
+	    base.BuildingLoaded(buildingID, ref data, version);
+	    EnsureCitizenUnits(buildingID, ref data);
+	}
+
+        public override void EndRelocating(ushort buildingID, ref Building data)
+	{
+	    base.EndRelocating(buildingID, ref data);
+	    EnsureCitizenUnits(buildingID, ref data);
+	}
+
+        private void EnsureCitizenUnits(ushort buildingID, ref Building data)
+	{
+	    int workCount = m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
+	    int visitPlaceCount = m_visitPlaceCount;
+	    EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitPlaceCount);
+	}
+
+	protected override void ManualActivation(ushort buildingID, ref Building buildingData)
+	{
+	    if (m_healthCareAccumulation != 0)
+	    {
+		Vector3 position = buildingData.m_position;
+		position.y += m_info.m_size.y;
+		Singleton<NotificationManager>.instance.AddEvent(NotificationEvent.Type.GainHealth, position, 1.5f);
+	    }
+	    if (m_noiseAccumulation != 0)
+	    {
+		Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Happy, ImmaterialResourceManager.Resource.Entertainment, m_entertainmentAccumulation, m_entertainmentRadius, buildingData.m_position, NotificationEvent.Type.Sad, ImmaterialResourceManager.Resource.NoisePollution, m_noiseAccumulation, m_noiseRadius);
+	    }
+    }
+
+	protected override void ManualDeactivation(ushort buildingID, ref Building buildingData)
+	{
+	    if ((buildingData.m_flags & Building.Flags.Collapsed) != 0)
+	    {
+		Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Happy, ImmaterialResourceManager.Resource.Abandonment, -buildingData.Width * buildingData.Length, 64f);
+		return;
+	    }
+	    if (m_healthCareAccumulation != 0)
+	    {
+		Vector3 position = buildingData.m_position;
+		position.y += m_info.m_size.y;
+		Singleton<NotificationManager>.instance.AddEvent(NotificationEvent.Type.LoseHealth, position, 1.5f);
+	    }
+	    if (m_noiseAccumulation != 0)
+	    {
+		Singleton<NotificationManager>.instance.AddWaveEvent(buildingData.m_position, NotificationEvent.Type.Sad, ImmaterialResourceManager.Resource.Entertainment, -m_entertainmentAccumulation, m_entertainmentRadius, buildingData.m_position, NotificationEvent.Type.Happy, ImmaterialResourceManager.Resource.NoisePollution, -m_noiseAccumulation, m_noiseRadius);
+	    }
+	}
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
@@ -288,7 +400,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         }
 
         public override void GetMaterialAmount(ushort buildingID, ref Building data, TransferManager.TransferReason material, out int amount, out int max)
-	{
+        {
             amount = 0;
             max = m_goodsCapacity;
             var found = false;
@@ -301,11 +413,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     break;
                 }
             }
-	    if (!found)
-	    {
-		base.GetMaterialAmount(buildingID, ref data, material, out amount, out max);
-	    }
-	}
+            if (!found)
+            {
+                base.GetMaterialAmount(buildingID, ref data, material, out amount, out max);
+            }
+        }
 
         void IExtendedBuildingAI.ExtendedGetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
         {
@@ -320,6 +432,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
         }
+
+        public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
+	{
+	    int amountDelta = -Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
+	    ModifyMaterialBuffer(buildingID, ref data, TransferManager.TransferReason.Shopping, ref amountDelta);
+	    base.VisitorEnter(buildingID, ref data, citizen);
+	}
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
         {
@@ -360,9 +479,51 @@ namespace IndustriesMeetsSunsetHarbor.AI
             base.BuildingDeactivated(buildingID, ref data);
         }
 
+        public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+        {
+            base.SimulationStep(buildingID, ref buildingData, ref frameData);
+            if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
+            {
+                AddMarketBufferToBuildingData(buildingID);
+            }
+            var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
+            SimulationManager instance = Singleton<SimulationManager>.instance;
+            uint num = (instance.m_currentFrameIndex & 3840U) >> 8;
+            if (num == 15U)
+            {
+                buildingData.m_finalImport = buildingData.m_tempImport;
+                buildingData.m_finalExport = buildingData.m_tempExport;
+                marketBuffer.amountSold2[index] = marketBuffer.amountSold1[index];
+                buildingData.m_tempImport = 0;
+                buildingData.m_tempExport = 0;
+                marketBuffer.amountSold1[index] = 0;
+            }
+            if (m_info != null && m_info.m_class != null && m_info.m_class.m_service == ItemClass.Service.Fishing)
+            {
+                GuideController properties = Singleton<GuideManager>.instance.m_properties;
+                if (properties != null && Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt != null)
+                {
+                    Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt.Activate(properties.m_fishFactoryMarketBuilt, buildingID);
+                }
+            }
+        }
+
+        protected override bool CanEvacuate()
+	{
+	    return m_workPlaceCount0 != 0 || m_workPlaceCount1 != 0 || m_workPlaceCount2 != 0 || m_workPlaceCount3 != 0;
+	}
+
+        protected override void HandleWorkAndVisitPlaces(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveWorkerCount, ref int totalWorkerCount, ref int workPlaceCount, ref int aliveVisitorCount, ref int totalVisitorCount, ref int visitPlaceCount)
+	{
+	    workPlaceCount += m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3;
+	    GetWorkBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveWorkerCount, ref totalWorkerCount);
+	    HandleWorkPlaces(buildingID, ref buildingData, m_workPlaceCount0, m_workPlaceCount1, m_workPlaceCount2, m_workPlaceCount3, ref behaviour, aliveWorkerCount, totalWorkerCount);
+	    visitPlaceCount += m_visitPlaceCount;
+	    GetVisitBehaviour(buildingID, ref buildingData, ref behaviour, ref aliveVisitorCount, ref totalVisitorCount);
+	}
+
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
-            var GetOutgoingTransferReason = typeof(MarketAI).GetMethod("GetOutgoingTransferReason", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(ushort) }, null);
             base.ProduceGoods(buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
             float num = (float)buildingData.Width * -4f;
             float num2 = (float)buildingData.Width * 4f;
@@ -426,7 +587,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
                 int goodsCapacity = m_goodsCapacity;
-                TransferManager.TransferReason outgoingTransferReason = (TransferManager.TransferReason)GetOutgoingTransferReason.Invoke(this, new object[] { buildingID });
+                TransferManager.TransferReason outgoingTransferReason = GetOutgoingTransferReason(buildingID);
                 var merged_count = m_incomingResources.Length + m_incomingExtendedResources.Length;
                 int[] productionRateArr = new int[merged_count];
                 if (productionRate != 0)
@@ -531,11 +692,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 for (int i = 0; i < merged_count; i++)
                 {
                     Notification.Problem1 problem2 = Notification.Problem1.NoGoods;
-                    if(i < m_incomingResources.Length && m_incomingResources[i] == TransferManager.TransferReason.Fish)
+                    if (i < m_incomingResources.Length && m_incomingResources[i] == TransferManager.TransferReason.Fish)
                     {
                         problem2 = Notification.Problem1.NoFishingGoods;
                     }
-                    else if(i >= m_incomingResources.Length && m_incomingExtendedResources[i - m_incomingResources.Length] == ExtendedTransferManager.TransferReason.CannedFish)
+                    else if (i >= m_incomingResources.Length && m_incomingExtendedResources[i - m_incomingResources.Length] == ExtendedTransferManager.TransferReason.CannedFish)
                     {
                         problem2 = Notification.Problem1.NoFishingGoods;
                     }
@@ -565,7 +726,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         if (InputSize < m_resourceThreshold)
                         {
                             TransferManager.TransferOffer offer = default;
-                            offer.Priority =  Mathf.Max(1, InputSize * 8 / m_goodsCapacity);
+                            offer.Priority = Mathf.Max(1, InputSize * 8 / m_goodsCapacity);
                             offer.Building = buildingID;
                             offer.Position = buildingData.m_position;
                             offer.Amount = 1;
@@ -614,6 +775,45 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             buildingData.m_problems = problem;
         }
+
+        private TransferManager.TransferReason GetOutgoingTransferReason(ushort buildingID)
+	{
+	    int num = 10;
+	    if (Singleton<SimulationManager>.instance.m_randomizer.Int32(100u) < num)
+	    {
+		return Singleton<SimulationManager>.instance.m_randomizer.Int32(8u) switch
+		{
+		    0 => TransferManager.TransferReason.Entertainment, 
+		    1 => TransferManager.TransferReason.EntertainmentB, 
+		    2 => TransferManager.TransferReason.EntertainmentC, 
+		    3 => TransferManager.TransferReason.EntertainmentD, 
+		    4 => TransferManager.TransferReason.TouristA, 
+		    5 => TransferManager.TransferReason.TouristB, 
+		    6 => TransferManager.TransferReason.TouristC, 
+		    7 => TransferManager.TransferReason.TouristD, 
+		    _ => TransferManager.TransferReason.Entertainment, 
+		};
+	    }
+	    return Singleton<SimulationManager>.instance.m_randomizer.Int32(8u) switch
+	    {
+		0 => TransferManager.TransferReason.Shopping, 
+		1 => TransferManager.TransferReason.ShoppingB, 
+		2 => TransferManager.TransferReason.ShoppingC, 
+		3 => TransferManager.TransferReason.ShoppingD, 
+		4 => TransferManager.TransferReason.ShoppingE, 
+		5 => TransferManager.TransferReason.ShoppingF, 
+		6 => TransferManager.TransferReason.ShoppingG, 
+		7 => TransferManager.TransferReason.ShoppingH, 
+		_ => TransferManager.TransferReason.Shopping, 
+	    };
+	}
+
+        public override string GetLocalizedTooltip()
+	{
+	    string text = LocaleFormatter.FormatGeneric("AIINFO_WATER_CONSUMPTION", GetWaterConsumption() * 16) + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_CONSUMPTION", GetElectricityConsumption() * 16);
+	    string text2 = LocaleFormatter.FormatGeneric("AIINFO_WORKPLACES_ACCUMULATION", (m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3).ToString());
+	    return TooltipHelper.Append(base.GetLocalizedTooltip(), TooltipHelper.Format(LocaleFormatter.Info1, text, LocaleFormatter.Info2, string.Empty, LocaleFormatter.WorkplaceCount, text2));
+	}
 
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
@@ -668,38 +868,47 @@ namespace IndustriesMeetsSunsetHarbor.AI
             });
         }
 
-        public override void SimulationStep(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
-        {
-            base.SimulationStep(buildingID, ref buildingData, ref frameData);
-            if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
-            {
-                AddMarketBufferToBuildingData(buildingID);
-            }
-            var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
-            SimulationManager instance = Singleton<SimulationManager>.instance;
-            uint num = (instance.m_currentFrameIndex & 3840U) >> 8;
-            if (num == 15U)
-            {
-                buildingData.m_finalImport = buildingData.m_tempImport;
-                buildingData.m_finalExport = buildingData.m_tempExport;
-                marketBuffer.amountSold2[index] = marketBuffer.amountSold1[index];
-                buildingData.m_tempImport = 0;
-                buildingData.m_tempExport = 0;
-                marketBuffer.amountSold1[index] = 0;
-            }
-            if (m_info != null && m_info.m_class != null && m_info.m_class.m_service == ItemClass.Service.Fishing)
-            {
-                GuideController properties = Singleton<GuideManager>.instance.m_properties;
-                if (properties != null && Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt != null)
-                {
-                    Singleton<BuildingManager>.instance.m_fishFactoryMarketBuilt.Activate(properties.m_fishFactoryMarketBuilt, buildingID);
-                }
-            }
-        }
+        public override void GetPollutionAccumulation(out int ground, out int noise)
+	{
+	    ground = 0;
+	    noise = m_noiseAccumulation;
+	}
 
+        public override bool RequireRoadAccess()
+	{
+	    return true;
+	}
+
+        public override void CountWorkPlaces(out int workPlaceCount0, out int workPlaceCount1, out int workPlaceCount2, out int workPlaceCount3)
+	{
+	    workPlaceCount0 = m_workPlaceCount0;
+	    workPlaceCount1 = m_workPlaceCount1;
+	    workPlaceCount2 = m_workPlaceCount2;
+	    workPlaceCount3 = m_workPlaceCount3;
+	}
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
 
+        }
+
+        private void AddMarketBufferToBuildingData(ushort buildingID)
+        {
+            var merged_length = m_incomingResources.Length + m_incomingExtendedResources.Length;
+            ResourceMarketManager.MarketData newMarketData = new()
+            {
+                inputAmountBuffer = new ushort[merged_length],
+                outputAmountBuffer = new ushort[merged_length],
+                amountSold1 = new ushort[merged_length],
+                amountSold2 = new ushort[merged_length]
+            };
+            for (int j = 0; j < merged_length; j++)
+            {
+                newMarketData.inputAmountBuffer[j] = 0;
+                newMarketData.outputAmountBuffer[j] = 0;
+                newMarketData.amountSold1[j] = 0;
+                newMarketData.amountSold2[j] = 0;
+            }
+            ResourceMarketManager.MarketBuffers.Add(buildingID, newMarketData);
         }
 
     }
