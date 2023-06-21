@@ -82,10 +82,6 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 if (iRestaurantVersion <= iRESTAURANT_DELIVERIES_DATA_VERSION)
                 {
                     CheckStartTuple($"RestaurantDeliveries Start", iRestaurantVersion, Data, ref iIndex);
-                    if(RestaurantManager.RestaurantsDeliveries == null)
-                    {
-                        RestaurantManager.RestaurantsDeliveries = new();
-                    }
                     var RestaurantDeliveriesCount = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < RestaurantDeliveriesCount; i++)
                     {
@@ -131,10 +127,6 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     // ---------------------------------------------------------------------------------------------------------
 
                     CheckStartTuple($"RestaurantsSitDowns Start", iRestaurantVersion, Data, ref iIndex);
-                    if(RestaurantManager.RestaurantsSitDowns == null)
-                    {
-                        RestaurantManager.RestaurantsSitDowns = new();
-                    }
                     var RestaurantsSitDownsCount = StorageData.ReadInt32(Data, ref iIndex);
                     for (int i = 0; i < RestaurantsSitDownsCount; i++)
                     {

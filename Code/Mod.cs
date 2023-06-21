@@ -32,16 +32,11 @@ namespace IndustriesMeetsSunsetHarbor
             if (HarmonyHelper.IsHarmonyInstalled) Patcher.UnpatchAll();
         }
 
-
-        public override void OnLevelLoaded(LoadMode mode)
+        public override void OnCreated(ILoading loading)
         {
-            if (mode != LoadMode.NewGame && mode != LoadMode.LoadGame)
-            {
-                return;
-            }
+            base.OnCreated(loading);
             try
             {
-                inGame = true;
                 AquacultureFarmManager.Init();
                 AquacultureExtractorManager.Init();
                 ResourceMarketManager.Init();
@@ -57,6 +52,15 @@ namespace IndustriesMeetsSunsetHarbor
                 CustomBuffersManager.Deinit();
                 RestaurantManager.Deinit();
             }
+        }
+
+        public override void OnLevelLoaded(LoadMode mode)
+        {
+            if (mode != LoadMode.NewGame && mode != LoadMode.LoadGame)
+            {
+                return;
+            }
+            inGame = true;
         }
 
         public override void OnLevelUnloading()

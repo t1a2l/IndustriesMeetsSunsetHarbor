@@ -23,9 +23,9 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public DateTime enterTime;
         }
 
-        public static Dictionary<ushort, List<RestaurantDeliveryData>> RestaurantsDeliveries;
+        public static Dictionary<ushort, List<RestaurantDeliveryData>> RestaurantsDeliveries {get; private set;}
 
-        public static Dictionary<ushort, List<RestaurantSitDownData>> RestaurantsSitDowns;
+        public static Dictionary<ushort, List<RestaurantSitDownData>> RestaurantsSitDowns {get; private set;}
 
         public static void Init()
         {
