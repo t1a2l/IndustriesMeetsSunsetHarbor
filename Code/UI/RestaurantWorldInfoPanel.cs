@@ -215,8 +215,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_mainPanel = Find<UIPanel>("(Library) RestaurantWorldInfoPanel");
             m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_MATERIALCOST", typeof(UILabel));
-            m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_PRODUCTIONVALUE", typeof(UILabel));
-            m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "Production Rate:", typeof(UILabel));
+            m_productionValue = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_PRODUCTIONVALUE", typeof(UILabel));
+            m_productionBarLabel = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "Production Rate:", typeof(UILabel));
             items = new List<string>();
         }
 
