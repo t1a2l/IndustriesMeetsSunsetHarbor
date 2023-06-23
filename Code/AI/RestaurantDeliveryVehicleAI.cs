@@ -394,7 +394,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             // throw all meals to the trash.. (not using delivery food to other deliveries)
             data.m_transferSize = 0;
             RemoveSource(vehicleID, ref data);
-
             return true;
         }
 
