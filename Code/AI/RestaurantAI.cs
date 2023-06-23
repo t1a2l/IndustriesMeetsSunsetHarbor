@@ -1673,27 +1673,27 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 if(mealType == 1)
                 {
-                    float m_customBuffer9 = custom_buffers.m_customBuffer9;
-                    m_customBuffer9 -= 1;
-                    custom_buffers.m_customBuffer9 = m_customBuffer9;
+                    float m_customBuffer13 = custom_buffers.m_customBuffer13;
+                    m_customBuffer13 -= 1;
+                    custom_buffers.m_customBuffer13 = m_customBuffer13;
                 }
                 else if(mealType == 2)
                 {
-                    float m_customBuffer10 = custom_buffers.m_customBuffer10;
-                    m_customBuffer10 -= 1;
-                    custom_buffers.m_customBuffer9 = m_customBuffer10;
+                    float m_customBuffer14 = custom_buffers.m_customBuffer14;
+                    m_customBuffer14 -= 1;
+                    custom_buffers.m_customBuffer14 = m_customBuffer14;
                 }
                 else if(mealType == 3)
                 {
-                    float m_customBuffer11 = custom_buffers.m_customBuffer11;
-                    m_customBuffer11 -= 1;
-                    custom_buffers.m_customBuffer11 = m_customBuffer11;
+                    float m_customBuffer15 = custom_buffers.m_customBuffer15;
+                    m_customBuffer15 -= 1;
+                    custom_buffers.m_customBuffer15 = m_customBuffer15;
                 }
                 else if(mealType == 4)
                 {
-                    float m_customBuffer12 = custom_buffers.m_customBuffer12;
-                    m_customBuffer12 -= 1;
-                    custom_buffers.m_customBuffer12 = m_customBuffer12;
+                    float m_customBuffer16 = custom_buffers.m_customBuffer16;
+                    m_customBuffer16 -= 1;
+                    custom_buffers.m_customBuffer16 = m_customBuffer16;
                 }
                 instance.m_units.m_buffer[containingUnit].m_goods += 100;
                 citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
