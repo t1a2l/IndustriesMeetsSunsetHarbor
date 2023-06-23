@@ -257,7 +257,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (data.m_sourceBuilding != 0)
             {
+                var restaurant = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding];
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding].RemoveOwnVehicle(vehicleID, ref data);
+                RestaurantAI restaurantAI = restaurant.Info.GetAI() as RestaurantAI;
+                restaurantAI.m_usedVehicles--;
                 data.m_sourceBuilding = 0;
             }
         }
@@ -393,6 +396,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             // throw all meals to the trash.. (not using delivery food to other deliveries)
             data.m_transferSize = 0;
             RemoveSource(vehicleID, ref data);
+
             return true;
         }
 
