@@ -609,7 +609,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             BuildingManager instance = Singleton<BuildingManager>.instance;
             BuildingInfo info = instance.m_buildings.m_buffer[data.m_targetBuilding].Info;
-            if (data.m_transferType >= 200)
+            if (data.m_transferType >= 200 && info.m_buildingAI is not OutsideConnectionAI)
             {
                 byte transferType = (byte)(data.m_transferType - 200);
                 ((IExtendedBuildingAI)info.m_buildingAI).ExtendedModifyMaterialBuffer(data.m_targetBuilding, ref instance.m_buildings.m_buffer[data.m_targetBuilding], (ExtendedTransferManager.TransferReason)transferType, ref amountDelta);
