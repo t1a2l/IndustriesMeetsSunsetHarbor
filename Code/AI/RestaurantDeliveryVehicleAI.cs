@@ -3,6 +3,7 @@ using ColossalFramework.Math;
 using IndustriesMeetsSunsetHarbor.Managers;
 using System;
 using UnityEngine;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -150,7 +151,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             float m_customBuffer10 = custom_buffers.m_customBuffer10;
                             m_customBuffer10 -= 1;
                             data.m_transferSize += 1;
-                            custom_buffers.m_customBuffer9 = m_customBuffer10;
+                            custom_buffers.m_customBuffer10 = m_customBuffer10;
                         }
                         else if(delivery.mealType == 3)
                         {
@@ -247,9 +248,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
             {
-                TransferManager.TransferOffer offer = default;
+                ExtendedTransferManager.Offer offer = default;
                 offer.Vehicle = vehicleID;
-                Singleton<TransferManager>.instance.RemoveIncomingOffer((TransferManager.TransferReason)data.m_transferType, offer);
+                Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer((ExtendedTransferManager.TransferReason)data.m_transferType, offer);
             }
         }
 
@@ -257,10 +258,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (data.m_sourceBuilding != 0)
             {
-                var restaurant = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding];
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding].RemoveOwnVehicle(vehicleID, ref data);
-                RestaurantAI restaurantAI = restaurant.Info.GetAI() as RestaurantAI;
-                restaurantAI.m_usedVehicles--;
                 data.m_sourceBuilding = 0;
             }
         }

@@ -131,8 +131,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public DateTime WaitingForDeliveryVehicleTimer;
 
-        public int m_usedVehicles;
-
         [CustomizableProperty("Input Resource 1")]
         public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
 
@@ -390,7 +388,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 RestaurantManager.SetRestaurantSitDownsList(buildingID, RestaurantSitDown);
             }
-            if (m_usedVehicles < m_DeliveryVehicleCount)
+            
+            var material_byte = (byte)((byte)m_outputResource1 + 200);
+            int count = 0;
+            int cargo = 0;
+            int capacity = 0;
+            int outside = 0;
+            ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, material_byte, ref count, ref cargo, ref capacity, ref outside);
+            if (count < m_DeliveryVehicleCount)
             {
                 WaitingForDeliveryVehicleTimer = SimulationManager.instance.m_currentGameTime.AddMinutes(30);
             }
@@ -462,9 +467,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 // check if we got to the number of orders the vehicle can carry and that not all vehicles are out
                 if (!CheckIfDeliveryOrderInProgress(buildingID) && count < m_DeliveryVehicleCount)
                 {
-                    m_usedVehicles++;
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                    if (ExtedndedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, delivery_vehicle, data.m_position, (byte)material, transferToSource: false, transferToTarget: true))
+                    if (ExtedndedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, delivery_vehicle, data.m_position, material_byte, transferToSource: false, transferToTarget: true))
                     {
                         // get a list of indexes where vehicle id is 0 and a meal was cooked and building and citizen exist
                         var DeliveriesWithNoVehicleIndexList = Enumerable.Range(0, DeliveriesList.Count).Where(i => DeliveriesList[i].deliveryVehicleId == 0 && DeliveriesList[i].mealCooked == true && DeliveriesList[i].buildingId != 0 && DeliveriesList[i].citizenId != 0).ToList();
@@ -930,7 +934,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int outside9 = 0;
                 ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, material_byte, ref count9, ref cargo9, ref capacity9, ref outside9);
                 buildingData.m_tempExport = (byte)Mathf.Clamp(outside9, buildingData.m_tempExport, 255);
-                if (m_usedVehicles < m_DeliveryVehicleCount)
+                if (count9 < m_DeliveryVehicleCount)
                 {
                     var material = ExtendedTransferManager.TransferReason.None;
                     ExtendedTransferManager.Offer offer9 = default;
@@ -1146,7 +1150,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 var material_byte = (byte)((byte)material + 200);
                 float delivery_meals_cooked = custom_buffers.m_customBuffer9 + custom_buffers.m_customBuffer10 + custom_buffers.m_customBuffer11 + custom_buffers.m_customBuffer12;
                 ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material_byte, ref used_count, ref cargo, ref capacity, ref outside);
-                text = text + Environment.NewLine + "Delivery Vehicles In Use " + m_usedVehicles + "/" + delivery_vehicle_count;
+                text = text + Environment.NewLine + "Delivery Vehicles In Use " + used_count + "/" + delivery_vehicle_count;
                 text = text + Environment.NewLine + "Ordered Meals Cooked " + (int)delivery_meals_cooked;
             }
             if (m_outputResource2 != ExtendedTransferManager.TransferReason.None)
