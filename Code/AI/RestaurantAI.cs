@@ -465,7 +465,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 var outside = 0;
                 ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material_byte, ref count, ref cargo, ref capacity, ref outside);
                 // check if we got to the number of orders the vehicle can carry and that not all vehicles are out
-                if (!CheckIfDeliveryOrderInProgress(buildingID) && count < m_DeliveryVehicleCount)
+                if (delivery_vehicle != null && !CheckIfDeliveryOrderInProgress(buildingID) && count < m_DeliveryVehicleCount)
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     if (ExtedndedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, delivery_vehicle, data.m_position, material_byte, transferToSource: false, transferToTarget: true))
@@ -959,7 +959,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, offer9);
                     }
-                    if (!CheckIfDeliveryOrderInProgress(buildingID) && material != ExtendedTransferManager.TransferReason.None)
+                    if(delivery_vehicle == null)
+                    {
+                        CreateDeliveryOrder();
+                    }
+                    else if (!CheckIfDeliveryOrderInProgress(buildingID) && material != ExtendedTransferManager.TransferReason.None)
                     {
                         CreateDeliveryOrder();
                     }
@@ -1222,13 +1226,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             var DeliveriesList = RestaurantManager.GetRestaurantDeliveriesList(buildingID);
             var orders_with_no_vehicle = DeliveriesList.FindAll(item => item.deliveryVehicleId == 0 && item.mealCooked == true);
-            if (delivery_vehicle != null)
+            RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
+            if (orders_with_no_vehicle.Count < restaurantDeliveryVehicleAI.m_deliveryCapacity)
             {
-                RestaurantDeliveryVehicleAI restaurantDeliveryVehicleAI = delivery_vehicle.m_vehicleAI as RestaurantDeliveryVehicleAI;
-                if (orders_with_no_vehicle.Count < restaurantDeliveryVehicleAI.m_deliveryCapacity)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
