@@ -260,6 +260,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_sourceBuilding].RemoveOwnVehicle(vehicleID, ref data);
                 data.m_sourceBuilding = 0;
+                data.m_transferSize = 0;
+                // remove all deliveries if any remaining
+                var list = RestaurantManager.GetRestaurantDeliveriesList(data.m_sourceBuilding);
+                list.RemoveAll(item => item.deliveryVehicleId == vehicleID);
+                RestaurantManager.SetRestaurantDeliveriesList(data.m_sourceBuilding, list);
+                // throw all meals to the trash.. (not using delivery food to other deliveries)
             }
         }
 
@@ -387,12 +393,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 Singleton<VehicleManager>.instance.ReleaseVehicle(vehicleID);
                 return true;
             }
-            // remove all deliveries if any remaining
-            var list = RestaurantManager.GetRestaurantDeliveriesList(data.m_sourceBuilding);
-            list.RemoveAll(item => item.deliveryVehicleId == vehicleID);
-            RestaurantManager.SetRestaurantDeliveriesList(data.m_sourceBuilding, list);
-            // throw all meals to the trash.. (not using delivery food to other deliveries)
-            data.m_transferSize = 0;
             RemoveSource(vehicleID, ref data);
             return true;
         }
