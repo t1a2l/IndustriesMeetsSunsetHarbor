@@ -30,14 +30,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Code\Utils\Atlas\DeliveryNotificationAtlas.png" />
+    <None Remove="Code\Utils\Atlas\IndustriesAtlas.png" />
     <None Remove="Code\Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
-    <None Remove="Code\Utils\Atlas\RestaurantAtlas.png" />
     <None Remove="Code\Utils\Atlas\sprites.png" />
     <None Remove="Code\Utils\Atlas\spritesheet.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Code\Utils\Atlas\DeliveryNotificationAtlas.png" />
-    <EmbeddedResource Include="Code\Utils\Atlas\RestaurantAtlas.png" />
+    <EmbeddedResource Include="Code\Utils\Atlas\IndustriesAtlas.png" />
     <EmbeddedResource Include="Code\Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
   </ItemGroup>
   <ItemGroup>
@@ -45,24 +45,19 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>C:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="ColossalManaged">
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ColossalManaged.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>C:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\ColossalManaged.dll</HintPath>
     </Reference>
     <Reference Include="ICities">
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>C:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
     </Reference>
     <Reference Include="MoreTransferReasons">
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\255710\2980644460\MoreTransferReasons.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>C:\Users\talrofeh\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\MoreTransferReasons\MoreTransferReasons.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>C:\SteamLibrary\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

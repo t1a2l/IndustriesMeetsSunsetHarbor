@@ -11,7 +11,32 @@ namespace IndustriesMeetsSunsetHarbor.Utils
             "FoodSupplies",
             "Meals",
             "CannedFish",
-            "OrderedMeals"
+            "OrderedMeals",
+            "Anchovy",
+	    "Salmon",
+	    "Shellfish",
+	    "Tuna",
+	    "Algae",
+	    "Seaweed",	
+	    "Trout",
+	    "Fruits",
+	    "Vegetables",
+	    "Cows",
+	    "HighlandCows", 
+	    "Sheep",
+	    "Pigs",
+	    "Furnitures",
+	    "ElectronicProducts",
+	    "IndustrialSteel",
+	    "Tupperware",
+	    "Toys",
+	    "PrintedProducts",
+	    "TissuePaper",
+	    "Cloths",
+	    "PetroleumProducts",
+	    "Cars",
+	    "Footwear",
+	    "Houses",
         };
 
         public static string[] NotificationSpriteNames = new string[]
@@ -32,12 +57,12 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 
         public static void CreateAtlas()
         {
-            if (TextureUtils.GetAtlas("RestaurantAtlas") == null)
+            if (TextureUtils.GetAtlas("IndustriesAtlas") == null)
             {
-                TextureUtils.InitialiseAtlas("RestaurantAtlas");
+                TextureUtils.InitialiseAtlas("IndustriesAtlas");
                 for (int i = 0; i < SpriteNames.Length; i++)
                 {
-                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i + 2, 2, 30, 30), SpriteNames[i], "RestaurantAtlas");
+                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i + 2, 2, 30, 30), SpriteNames[i], "IndustriesAtlas");
                 }
             }
             if (TextureUtils.GetAtlas("DeliveryNotificationAtlas") == null)

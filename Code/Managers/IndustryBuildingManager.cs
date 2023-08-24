@@ -235,5 +235,6 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 	    };
             return Color.Lerp(Color.grey, Color.black, 0.2f);;
         }
+
     }
 }

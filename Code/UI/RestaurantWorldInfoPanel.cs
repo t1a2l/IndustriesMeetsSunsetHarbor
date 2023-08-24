@@ -329,25 +329,25 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType1Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer9, restaurantAI.m_outputDeliveryMealsCount);
             m_deliveryMealsType1Capacity.tooltip = custom_buffers.m_customBuffer9 + " " + restaurantAI.m_mealName1[0] + " Meals are ready for delivery";
             m_deliveryMealsType1Label.text = restaurantAI.m_mealName1[0];
-            m_deliveryMealsType1Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_deliveryMealsType1Sprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
             m_deliveryMealsType1Sprite.spriteName = "OrderedMeals";
 
             m_deliveryMealsType2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer10, restaurantAI.m_outputDeliveryMealsCount);
             m_deliveryMealsType2Capacity.tooltip = custom_buffers.m_customBuffer10 + " " + restaurantAI.m_mealName2[0] + " Meals are ready for delivery";
             m_deliveryMealsType2Label.text = restaurantAI.m_mealName2[0];
-            m_deliveryMealsType2Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_deliveryMealsType2Sprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
             m_deliveryMealsType2Sprite.spriteName = "OrderedMeals";
 
             m_deliveryMealsType3Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer11, restaurantAI.m_outputDeliveryMealsCount);
             m_deliveryMealsType3Capacity.tooltip = custom_buffers.m_customBuffer11 + " " + restaurantAI.m_mealName3[0] + " Meals are ready for delivery";
             m_deliveryMealsType3Label.text = restaurantAI.m_mealName3[0];
-            m_deliveryMealsType3Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_deliveryMealsType3Sprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
             m_deliveryMealsType3Sprite.spriteName = "OrderedMeals";
 
             m_deliveryMealsType4Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(custom_buffers.m_customBuffer12, restaurantAI.m_outputDeliveryMealsCount);
             m_deliveryMealsType4Capacity.tooltip = custom_buffers.m_customBuffer12 + " " + restaurantAI.m_mealName4[0] + " Meals are ready for delivery";
             m_deliveryMealsType4Label.text = restaurantAI.m_mealName4[0];
-            m_deliveryMealsType4Sprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+            m_deliveryMealsType4Sprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
             m_deliveryMealsType4Sprite.spriteName = "OrderedMeals";
 
             m_horizontalLine.width = m_inputContainer.width;
@@ -518,7 +518,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource2":
                 case "m_inputResource3":
                 case "m_inputResource4":
-                    return TextureUtils.GetAtlas("RestaurantAtlas");
+                    return TextureUtils.GetAtlas("IndustriesAtlas");
                 case "m_inputResource5":
                 case "m_inputResource6":
                 case "m_inputResource7":

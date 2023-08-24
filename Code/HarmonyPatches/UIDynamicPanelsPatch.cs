@@ -9,6 +9,7 @@ using IndustriesMeetsSunsetHarbor.UI;
 using Object = UnityEngine.Object;
 using IndustriesMeetsSunsetHarbor.Utils;
 using ColossalFramework.DataBinding;
+using ColossalFramework;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -100,9 +101,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 Object.DestroyImmediate(old_component);
                 var restaurantComp = ClonedGameObject.AddComponent<RestaurantWorldInfoPanel>();
                 var ProductionSlider = restaurantComp.Find<UISlider>("ProductionSlider");
-                Object.DestroyImmediate(ProductionSlider);
+                Object.DestroyImmediate(ProductionSlider.gameObject);
                 var LabelProductionRate = restaurantComp.Find<UILabel>("LabelProductionRate");
-                Object.DestroyImmediate(LabelProductionRate);               
+                Object.DestroyImmediate(LabelProductionRate.gameObject);
                 PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, restaurantComp, false);
                 for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {

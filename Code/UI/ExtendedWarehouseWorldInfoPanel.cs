@@ -421,7 +421,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_emptyingOldResource.isVisible = material_byte != actual_material_byte;
                 m_resourceDescription.isVisible = material_byte != 255;
                 m_resourceDescription.text = GenerateExtendedResourceDescription((ExtendedTransferManager.TransferReason)actual_material_byte, isForWarehousePanel: true);
-                m_resourceSprite.atlas = TextureUtils.GetAtlas("RestaurantAtlas");
+                m_resourceSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
                 m_resourceSprite.spriteName = extendedTransferReason.ToString();
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)num);
                 var formatResourceWithUnit = FormatResourceWithUnit((uint)extendedWarehouseAI.m_storageCapacity);

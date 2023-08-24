@@ -4,15 +4,83 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using ColossalFramework;
+using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Code.AI;
+using IndustriesMeetsSunsetHarbor.Utils;
+using System.Reflection;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
 
-    [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
+    [HarmonyPatch(typeof(CityServiceWorldInfoPanel))]
     public static class CityServiceWorldInfoPanelPatch
     {
+        private delegate void BuildingWorldInfoPanelOnSetTargetDelegate(BuildingWorldInfoPanel instance);
+        private static BuildingWorldInfoPanelOnSetTargetDelegate BaseOnSetTarget = AccessTools.MethodDelegate<BuildingWorldInfoPanelOnSetTargetDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("OnSetTarget", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+        private delegate void BuildingWorldInfoPanelUpdateBindingsDelegate(BuildingWorldInfoPanel instance);
+        private static BuildingWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<BuildingWorldInfoPanelUpdateBindingsDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
+        [HarmonyPrefix]
+        public static bool PreSetTarget(CityServiceWorldInfoPanel __instance, ref bool ___m_needResetTarget, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton)
+	{
+	    ___m_needResetTarget = false;
+	    BaseOnSetTarget(__instance);
+	    if (___m_InstanceID.Type != InstanceType.Building || ___m_InstanceID.Building == 0)
+	    {
+		return false;
+	    }
+	    ushort building = ___m_InstanceID.Building;
+	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
+            NewExtractingFacilityAI newExtractingFacilityAI = data.Info.GetAI() as NewExtractingFacilityAI;
+            if (newExtractingFacilityAI != null)
+	    {
+		___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(newExtractingFacilityAI.m_outputResource);
+                string text = newExtractingFacilityAI.m_outputResource.ToString();
+                ___m_outputLabel.text = text;
+		___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                ___m_outputSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
+		___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(newExtractingFacilityAI.m_outputResource);
+		___m_ShowIndustryInfoButton.isVisible = true;
+                return false;
+	    }
+            return true;
+        }
+
+        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
+        [HarmonyPrefix]
+        public static bool PreUpdateBindings(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UISprite ___m_BuildingService, ref UIProgressBar ___m_outputBuffer, ref UIPanel ___m_outputSection)
+	{
+            BaseUpdateBindings(__instance);
+	    if (Singleton<BuildingManager>.exists && ___m_InstanceID.Type == InstanceType.Building && ___m_InstanceID.Building != 0)
+	    {
+		ushort buildingId = ___m_InstanceID.Building;
+		BuildingManager instance = Singleton<BuildingManager>.instance;
+		Building building = instance.m_buildings.m_buffer[buildingId];
+		BuildingInfo info = building.Info;
+		BuildingAI buildingAI = info.m_buildingAI;
+                if (buildingAI is NewExtractingFacilityAI newExtractingFacilityAI)
+	        {
+                    ItemClass.Service service = info.GetService();
+                    string text = ColossalFramework.Utils.GetNameByValue(service, "Game");
+                    ___m_BuildingService.spriteName = "UIFilterExtractorBuildings";
+		    ___m_BuildingService.tooltip = Locale.Get("MAIN_TOOL", text);
+                    var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
+		    var customBuffer = custom_buffers.m_customBuffer2;
+		    int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
+		    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
+		    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource));
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPostfix]
-        public static void OnSetTarget(CityServiceWorldInfoPanel __instance, InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection)
+        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection)
         {
             ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];

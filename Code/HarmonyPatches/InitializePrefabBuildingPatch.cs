@@ -61,7 +61,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.FoodSupplies;
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.FoodSupplies;
                     }
                     else if (__instance.name.Contains("Lemonade Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
@@ -69,7 +70,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.DrinkSupplies;
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.DrinkSupplies;
                         __instance.name = "Drinks Factory 01";
                     }
                     else if (__instance.name.Contains("Bakery 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -78,7 +80,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Bread;
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Bread;
                     }
                     else if (__instance.name.Contains("Food Factory 02") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
@@ -86,7 +89,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.CannedFish;
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.CannedFish;
                     }
                     else if ((__instance.name.Contains("Warehouse Yard 01") || __instance.name.Contains("Small Warehouse 01") || __instance.name.Contains("Medium Warehouse 01") || __instance.name.Contains("Large Warehouse 01")) && __instance.GetAI() is not ExtendedWarehouseAI && !__instance.name.Contains("Sub"))
                     {
