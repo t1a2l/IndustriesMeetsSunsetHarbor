@@ -41,20 +41,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
                 {
                     var component = __instance.GetComponent<PrefabAI>();
-                    if(component != null && component is WarehouseAI)
-                    {
-                        var oldAI = __instance.GetComponent<PrefabAI>();
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = __instance.gameObject.AddComponent<ExtendedWarehouseAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                    }
-                    if(component != null && component is WarehouseStationAI)
-                    {
-                        var oldAI = __instance.GetComponent<PrefabAI>();
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = __instance.gameObject.AddComponent<ExtendedWarehouseStationAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                    }
                     if (__instance.name.Contains("Food Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
@@ -91,13 +77,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.CannedFish;
-                    }
-                    else if ((__instance.name.Contains("Warehouse Yard 01") || __instance.name.Contains("Small Warehouse 01") || __instance.name.Contains("Medium Warehouse 01") || __instance.name.Contains("Large Warehouse 01")) && __instance.GetAI() is not ExtendedWarehouseAI && !__instance.name.Contains("Sub"))
-                    {
-                        var oldAI = __instance.GetComponent<PrefabAI>();
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedWarehouseAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                     }
                 }
                 else if (__instance.m_class.m_service == ItemClass.Service.Commercial)
