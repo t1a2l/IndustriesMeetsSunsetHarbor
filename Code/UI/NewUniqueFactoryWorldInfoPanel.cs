@@ -6,10 +6,10 @@ using ColossalFramework.UI;
 using ICities;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
-using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Utils;
 using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
+using MoreTransferReasons.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {

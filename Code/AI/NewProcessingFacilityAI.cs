@@ -2,10 +2,11 @@ using System;
 using ColossalFramework;
 using ColossalFramework.DataBinding;
 using UnityEngine;
-using MoreTransferReasons;
+using MoreTransferReasons.Managers;
+using MoreTransferReasons.Utils;
 using IndustriesMeetsSunsetHarbor.Managers;
-using static MoreTransferReasons.ExtendedTransferManager;
-using static IndustriesMeetsSunsetHarbor.Managers.CustomBuffersManager;
+using MoreTransferReasons.AI;
+
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -253,15 +254,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo5 = 0;
                 int capacity5 = 0;
                 int outside5 = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material_byte, ref count5, ref cargo5, ref capacity5, ref outside5);
-                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}", new object[]
-                {
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count5, ref cargo5, ref capacity5, ref outside5);
+                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}",
+                [
                     text,
                     m_inputResource5.ToString(),
                     customBuffer5,
                     cargo5,
                     inputBufferSize5
-                });
+                ]);
             }
             if (m_inputResource6 != ExtendedTransferManager.TransferReason.None)
             {
@@ -272,15 +273,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo6 = 0;
                 int capacity6 = 0;
                 int outside6 = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material_byte, ref count6, ref cargo6, ref capacity6, ref outside6);
-                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}", new object[]
-                {
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count6, ref cargo6, ref capacity6, ref outside6);
+                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}",
+                [
                     text,
                     m_inputResource6.ToString(),
                     customBuffer6,
                     cargo6,
                     inputBufferSize6
-                });
+                ]);
             }
             if (m_inputResource7 != ExtendedTransferManager.TransferReason.None)
             {
@@ -291,15 +292,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo7 = 0;
                 int capacity7 = 0;
                 int outside7 = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material_byte, ref count7, ref cargo7, ref capacity7, ref outside7);
-                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}", new object[]
-                {
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count7, ref cargo7, ref capacity7, ref outside7);
+                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}",
+                [
                     text,
                     m_inputResource7.ToString(),
                     customBuffer7,
                     cargo7,
                     inputBufferSize7
-                });
+                ]);
             }
             if (m_inputResource8 != ExtendedTransferManager.TransferReason.None)
             {
@@ -310,15 +311,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo8 = 0;
                 int capacity8 = 0;
                 int outside8 = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material_byte, ref count8, ref cargo8, ref capacity8, ref outside8);
-                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}", new object[]
-                {
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count8, ref cargo8, ref capacity8, ref outside8);
+                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}",
+                [
                     text,
                     m_inputResource8.ToString(),
                     customBuffer8,
                     cargo8,
                     inputBufferSize8
-                });
+                ]);
             }
             if (m_outputResource1 != TransferManager.TransferReason.None)
             {
@@ -329,14 +330,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int capacity9 = 0;
                 int outside9 = 0;
                 base.CalculateGuestVehicles(buildingID, ref data, m_outputResource1, ref count9, ref cargo9, ref capacity9, ref outside9);
-                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}", new object[]
-                {
+                text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}",
+                [
                     text,
                     m_outputResource1.ToString(),
                     outputBuffer1,
                     cargo9,
                     outputBufferSize1
-                });
+                ]);
             }
             if (m_outputResource2 != ExtendedTransferManager.TransferReason.None)
             {
@@ -347,7 +348,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo10 = 0;
                 int capacity10 = 0;
                 int outside10 = 0;
-                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material_byte, ref count10, ref cargo10, ref capacity10, ref outside10);
+                ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count10, ref cargo10, ref capacity10, ref outside10);
                 text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3}) / {4}", new object[]
                 {
                     text,
@@ -1071,7 +1072,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo5 = 0;
                         int capacity5 = 0;
                         int outside5 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, material_byte, ref count5, ref cargo5, ref capacity5, ref outside5);
+                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count5, ref cargo5, ref capacity5, ref outside5);
                         if (outside5 != 0)
                         {
                             TempOutput |= 16;
@@ -1094,7 +1095,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo6 = 0;
                         int capacity6 = 0;
                         int outside6 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, material_byte, ref count6, ref cargo6, ref capacity6, ref outside6);
+                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count6, ref cargo6, ref capacity6, ref outside6);
                         if (outside6 != 0)
                         {
                             TempOutput |= 32;
@@ -1117,7 +1118,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo7 = 0;
                         int capacity7 = 0;
                         int outside7 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, material_byte, ref count7, ref cargo7, ref capacity7, ref outside7);
+                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count7, ref cargo7, ref capacity7, ref outside7);
                         if (outside7 != 0)
                         {
                             TempOutput |= 64;
@@ -1140,7 +1141,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo8 = 0;
                         int capacity8 = 0;
                         int outside8 = 0;
-                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, material_byte, ref count8, ref cargo8, ref capacity8, ref outside8);
+                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count8, ref cargo8, ref capacity8, ref outside8);
                         if (outside8 != 0)
                         {
                             TempOutput |= 128;
@@ -1228,7 +1229,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         int cargo10 = 0;
                         int capacity10 = 0;
                         int outside10 = 0;
-                        ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, material_byte, ref count10, ref cargo10, ref capacity10, ref outside10);
+                        ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count10, ref cargo10, ref capacity10, ref outside10);
                         buildingData.m_tempExport = (byte)Mathf.Clamp(outside10, buildingData.m_tempExport, 255);
                         int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
                         int productionRate2 = PlayerBuildingAI.GetProductionRate(100, budget);
@@ -1427,7 +1428,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int outside = 0;
                 var material_byte = (byte)((byte)m_outputResource1 + 200);
-                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material_byte, ref count, ref capacity, ref cargo, ref outside);
+                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref capacity, ref cargo, ref outside);
                 text = text + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", new object[] { count, vehicle_count });
             }
             if (m_outputResource2 != ExtendedTransferManager.TransferReason.None && m_outputVehicleCount2 != 0)
@@ -1440,7 +1441,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int outside = 0;
                 var material_byte = (byte)((byte)m_outputResource2 + 200);
-                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material_byte, ref count, ref capacity, ref cargo, ref outside);
+                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref capacity, ref cargo, ref outside);
                 text = text + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", new object[] { count, vehicle_count });
             }
             return text;

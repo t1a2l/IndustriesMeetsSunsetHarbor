@@ -1,11 +1,12 @@
 using System;
 using ColossalFramework;
 using ColossalFramework.DataBinding;
-using MoreTransferReasons;
+using MoreTransferReasons.Managers;
 using ColossalFramework.Math;
 using UnityEngine;
-using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
+using MoreTransferReasons.Utils;
+using MoreTransferReasons.AI;
 
 namespace IndustriesMeetsSunsetHarbor.Code.AI
 {
@@ -448,7 +449,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                         int capacity = 0;
                         int outside = 0;
                         var material_byte = (byte)((byte)m_outputResource + 200);
-                        ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, material_byte, ref count, ref cargo, ref capacity, ref outside);
+                        ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                         buildingData.m_tempExport = (byte)Mathf.Clamp(outside, buildingData.m_tempExport, 255);
                         if (buildingData.m_finalExport != 0)
                         {
@@ -551,7 +552,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                 int capacity = 0;
                 int outside = 0;
                 var material_byte = (byte)((byte)m_outputResource + 200);
-                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, material_byte, ref count, ref cargo, ref capacity, ref outside);
+                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                 text = text + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", count, num2);
             }
             return text;

@@ -2,8 +2,9 @@ using ColossalFramework;
 using System;
 using IndustriesMeetsSunsetHarbor.Managers;
 using UnityEngine;
-using MoreTransferReasons;
 using ColossalFramework.DataBinding;
+using MoreTransferReasons.Utils;
+using MoreTransferReasons.Managers;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -58,22 +59,22 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         int index = 0;
 
-        public TransferManager.TransferReason[] m_incomingResources = new TransferManager.TransferReason[]
-        {
+        public TransferManager.TransferReason[] m_incomingResources =
+        [
             TransferManager.TransferReason.Fish,
             TransferManager.TransferReason.Grain,
             TransferManager.TransferReason.Food,
             TransferManager.TransferReason.AnimalProducts,
             TransferManager.TransferReason.Flours
-        };
+        ];
 
-        public ExtendedTransferManager.TransferReason[] m_incomingExtendedResources = new ExtendedTransferManager.TransferReason[]
-        {
+        public ExtendedTransferManager.TransferReason[] m_incomingExtendedResources =
+        [
             ExtendedTransferManager.TransferReason.Bread,
             ExtendedTransferManager.TransferReason.FoodSupplies,
             ExtendedTransferManager.TransferReason.DrinkSupplies,
             ExtendedTransferManager.TransferReason.CannedFish
-        };
+        ];
 
         public int GetEntertainmentAccumulation(ushort buildingID, ref Building data)
         {
@@ -224,7 +225,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (extendedIncomingResources[j] != ExtendedTransferManager.TransferReason.None)
                 {
                     var material_byte = (byte)((byte)extendedIncomingResources[j] + 200);
-                    ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, material_byte, ref num, ref num2, ref num3, ref num4);
+                    ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref num, ref num2, ref num3, ref num4);
                     text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", new object[]
                     {
                         text,
@@ -663,7 +664,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
                     {
                         var material_byte = (byte)((byte)m_incomingExtendedResources[i] + 200);
-                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, material_byte, ref extendedCountArr[i], ref extendedCargoArr[i], ref extendedCapacityArr[i], ref extendedOutsideArr[i]);
+                        ExtedndedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref extendedCountArr[i], ref extendedCargoArr[i], ref extendedCapacityArr[i], ref extendedOutsideArr[i]);
                         buildingData.m_tempImport = (byte)Mathf.Clamp(extendedOutsideArr[i], (int)buildingData.m_tempImport, 255);
                     }
                 }
