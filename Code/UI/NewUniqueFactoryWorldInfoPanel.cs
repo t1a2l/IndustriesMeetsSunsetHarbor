@@ -112,8 +112,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
-            m_inputItems = new List<string>();
-            m_outputItems = new List<string>();
+            m_inputItems = [];
+            m_outputItems = [];
         }
 
         private void OnProductionRateChanged(UIComponent component, float value)
