@@ -1,11 +1,10 @@
 using System;
 using ColossalFramework;
 using ColossalFramework.DataBinding;
-using MoreTransferReasons.Managers;
+using MoreTransferReasons;
 using ColossalFramework.Math;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons.Utils;
 using MoreTransferReasons.AI;
 
 namespace IndustriesMeetsSunsetHarbor.Code.AI

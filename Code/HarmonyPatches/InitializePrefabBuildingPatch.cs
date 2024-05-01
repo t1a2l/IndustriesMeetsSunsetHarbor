@@ -3,7 +3,7 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Utils;
 using Object = UnityEngine.Object;
-using MoreTransferReasons.Managers;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {

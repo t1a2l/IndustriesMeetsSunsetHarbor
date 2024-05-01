@@ -2,8 +2,7 @@ using System;
 using ColossalFramework;
 using ColossalFramework.DataBinding;
 using UnityEngine;
-using MoreTransferReasons.Managers;
-using MoreTransferReasons.Utils;
+using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons.AI;
 

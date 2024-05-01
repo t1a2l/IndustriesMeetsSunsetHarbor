@@ -8,7 +8,7 @@ using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Code.AI;
 using IndustriesMeetsSunsetHarbor.Utils;
 using System.Reflection;
-using MoreTransferReasons.Managers;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {

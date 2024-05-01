@@ -9,7 +9,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
 using System.Collections.Generic;
-using MoreTransferReasons.Managers;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {

@@ -5,7 +5,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using MoreTransferReasons.Managers;
+using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
