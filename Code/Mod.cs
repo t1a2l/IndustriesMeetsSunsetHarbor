@@ -42,6 +42,7 @@ namespace IndustriesMeetsSunsetHarbor
                 ResourceMarketManager.Init();
                 CustomBuffersManager.Init();
                 RestaurantManager.Init();
+                GasStationFuelManager.Init();
             }
             catch (Exception e)
             {
@@ -51,6 +52,7 @@ namespace IndustriesMeetsSunsetHarbor
                 ResourceMarketManager.Deinit();
                 CustomBuffersManager.Deinit();
                 RestaurantManager.Deinit();
+                GasStationFuelManager.Deinit();
             }
         }
 
@@ -74,6 +76,7 @@ namespace IndustriesMeetsSunsetHarbor
             ResourceMarketManager.Deinit();
             CustomBuffersManager.Deinit();
             RestaurantManager.Deinit();
+            GasStationFuelManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 
