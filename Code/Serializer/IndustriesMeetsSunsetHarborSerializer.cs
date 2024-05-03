@@ -81,6 +81,24 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                                 CheckStartTuple("RestaurantSerializer", SaveGameFileVersion, Data, ref Index);
                                 RestaurantSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
                                 CheckEndTuple("RestaurantSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if (Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("GasStationFuelManagerSerializer", SaveGameFileVersion, Data, ref Index);
+                                GasStationFuelManagerSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("GasStationFuelManagerSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if (Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("VehicleFuelManagerSerializer", SaveGameFileVersion, Data, ref Index);
+                                VehicleFuelManagerSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("VehicleFuelManagerSerializer", SaveGameFileVersion, Data, ref Index);
                                 break;
                             }
                         }
@@ -148,6 +166,16 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     // RestaurantDeliveries settings
                     StorageData.WriteUInt32(uiTUPLE_START, Data);
                     RestaurantSerializer.SaveData(Data);
+                    StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    // Gas Stations Fuel settings
+                    StorageData.WriteUInt32(uiTUPLE_START, Data);
+                    GasStationFuelManagerSerializer.SaveData(Data);
+                    StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    // Vehicles Fuel settings
+                    StorageData.WriteUInt32(uiTUPLE_START, Data);
+                    VehicleFuelManagerSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
                     m_serializableData.SaveData(DataID, Data.ToArray());
