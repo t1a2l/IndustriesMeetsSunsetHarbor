@@ -26,7 +26,8 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                 // Write actual settings
                 StorageData.WriteUInt16(kvp.Key, Data);
-                StorageData.WriteUInt16(kvp.Value, Data);
+                StorageData.WriteInt32(kvp.Value.CurrentFuelCapacity, Data);
+                StorageData.WriteInt32(kvp.Value.MaxFuelCapacity, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -50,9 +51,17 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
 
                     ushort vehicleId = StorageData.ReadUInt16(Data, ref iIndex);
 
-                    ushort fuelCapacity = StorageData.ReadUInt16(Data, ref iIndex);
+                    int currentFuelCapacity = StorageData.ReadInt32(Data, ref iIndex);
 
-                    VehicleFuelManager.VehiclesFuel.Add(vehicleId, fuelCapacity);
+                    int maxFuelCapacity = StorageData.ReadInt32(Data, ref iIndex);
+
+                    var vehicleFuelCapacity = new VehicleFuelManager.VehicleFuelCapacity
+                    {
+                        CurrentFuelCapacity = currentFuelCapacity,
+                        MaxFuelCapacity = maxFuelCapacity
+                    };
+
+                    VehicleFuelManager.VehiclesFuel.Add(vehicleId, vehicleFuelCapacity);
 
                     CheckEndTuple($"Buffer({i})", iVehicleFuelManagerVersion, Data, ref iIndex);
                 }
