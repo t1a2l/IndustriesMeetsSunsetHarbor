@@ -35,10 +35,10 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             }
         }
 
-        public static void SetVehicleFuel(ushort vehicleId, ushort newFuelCapacity)
+        public static void SetVehicleFuel(ushort vehicleId, int added_fuel)
         {
             var vehicleFuelCapacity = VehiclesFuel[vehicleId];
-            vehicleFuelCapacity.CurrentFuelCapacity = newFuelCapacity;
+            vehicleFuelCapacity.CurrentFuelCapacity += added_fuel;
             VehiclesFuel[vehicleId] = vehicleFuelCapacity;
         }
 
