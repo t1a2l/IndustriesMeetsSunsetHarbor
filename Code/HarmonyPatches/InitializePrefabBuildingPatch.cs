@@ -48,7 +48,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource1 = TransferManager.TransferReason.None;
-                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.FoodSupplies;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.FoodProducts;
                     }
                     else if (__instance.name.Contains("Lemonade Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
@@ -57,7 +57,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource1 = TransferManager.TransferReason.None;
-                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.DrinkSupplies;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.BeverageProducts;
                         __instance.name = "Drinks Factory 01";
                     }
                     else if (__instance.name.Contains("Bakery 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -67,7 +67,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource1 = TransferManager.TransferReason.None;
-                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Bread;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.BakedGoods;
                     }
                     else if (__instance.name.Contains("Food Factory 02") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {

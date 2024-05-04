@@ -132,10 +132,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public DateTime WaitingForDeliveryVehicleTimer;
 
         [CustomizableProperty("Input Resource 1")]
-        public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.DrinkSupplies;
+        public ExtendedTransferManager.TransferReason m_inputResource1 = ExtendedTransferManager.TransferReason.BeverageProducts;
 
         [CustomizableProperty("Input Resource 2")]
-        public ExtendedTransferManager.TransferReason m_inputResource2 = ExtendedTransferManager.TransferReason.FoodSupplies;
+        public ExtendedTransferManager.TransferReason m_inputResource2 = ExtendedTransferManager.TransferReason.FoodProducts;
 
         [CustomizableProperty("Input Resource 3")]
         public ExtendedTransferManager.TransferReason m_inputResource3 = ExtendedTransferManager.TransferReason.None;

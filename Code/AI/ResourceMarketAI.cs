@@ -69,9 +69,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public ExtendedTransferManager.TransferReason[] m_incomingExtendedResources =
         [
-            ExtendedTransferManager.TransferReason.Bread,
-            ExtendedTransferManager.TransferReason.FoodSupplies,
-            ExtendedTransferManager.TransferReason.DrinkSupplies,
+            ExtendedTransferManager.TransferReason.BakedGoods,
+            ExtendedTransferManager.TransferReason.FoodProducts,
+            ExtendedTransferManager.TransferReason.BeverageProducts,
             ExtendedTransferManager.TransferReason.CannedFish
         ];
 
@@ -87,8 +87,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override ImmaterialResourceManager.ResourceData[] GetImmaterialResourceRadius(ushort buildingID, ref Building data)
         {
-            return new ImmaterialResourceManager.ResourceData[2]
-            {
+            return
+            [
                 new ImmaterialResourceManager.ResourceData
                 {
                     m_resource = ImmaterialResourceManager.Resource.Entertainment,
@@ -99,7 +99,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     m_resource = ImmaterialResourceManager.Resource.NoisePollution,
                     m_radius = ((m_noiseAccumulation == 0) ? 0f : m_noiseRadius)
                 }
-            };
+            ];
         }
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
@@ -110,7 +110,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case InfoManager.InfoMode.NoisePollution:
                 {
                     int noiseAccumulation = m_noiseAccumulation;
-                    return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
+                    return GetNoisePollutionColor(noiseAccumulation);
                 }
                 case InfoManager.InfoMode.Fishing:
                     if ((data.m_flags & Building.Flags.Active) != 0)
@@ -119,7 +119,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                 case InfoManager.InfoMode.Tours:
-                    return CommonBuildingAI.GetAttractivenessColor(attractivenessAccumulation * 15);
+                    return GetAttractivenessColor(attractivenessAccumulation * 15);
                 case InfoManager.InfoMode.Entertainment:
                     if (subInfoMode == InfoManager.SubInfoMode.WaterPower)
                     {
@@ -136,13 +136,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         case InfoManager.SubInfoMode.Default:
                             if (data.m_tempExport != 0 || data.m_finalExport != 0)
                             {
-                                return CommonBuildingAI.GetTourismColor(Mathf.Max(data.m_tempExport, data.m_finalExport));
+                                return GetTourismColor(Mathf.Max(data.m_tempExport, data.m_finalExport));
                             }
                             return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                         case InfoManager.SubInfoMode.WaterPower:
                             if (attractivenessAccumulation != 0)
                             {
-                                return CommonBuildingAI.GetAttractivenessColor(attractivenessAccumulation * 100);
+                                return GetAttractivenessColor(attractivenessAccumulation * 100);
                             }
                             return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                         default:

@@ -6,11 +6,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
     {
         public static string[] SpriteNames = new string[]
         {
-            "Bread",
-            "DrinkSupplies",
-            "FoodSupplies",
             "Meals",
-            "CannedFish",
             "OrderedMeals",
             "Anchovy",
 	    "Salmon",
@@ -19,24 +15,13 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 	    "Algae",
 	    "Seaweed",	
 	    "Trout",
+            "Milk",
 	    "Fruits",
 	    "Vegetables",
 	    "Cows",
 	    "HighlandCows", 
 	    "Sheep",
-	    "Pigs",
-	    "Furnitures",
-	    "ElectronicProducts",
-	    "IndustrialSteel",
-	    "Tupperware",
-	    "Toys",
-	    "PrintedProducts",
-	    "TissuePaper",
-	    "Cloths",
-	    "PetroleumProducts",
-	    "Cars",
-	    "Footwear",
-	    "Houses",
+	    "Pigs"
         };
 
         public static string[] NotificationSpriteNames = new string[]
@@ -52,7 +37,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 	    "InfoIconRestaurantDisabled",
             "InfoIconRestaurantFocused",
             "InfoIconRestaurantHovered",
-	    "InfoIconRestaurantPressed",
+	    "InfoIconRestaurantPressed"
         };
 
         public static void CreateAtlas()
