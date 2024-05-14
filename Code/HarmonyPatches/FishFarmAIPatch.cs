@@ -149,7 +149,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int num15 = num8;
                     if (num15 >= 8000 && num12 < num11)
                     {
-                        TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                        TransferManager.TransferOffer offer = default;
                         offer.Priority = Mathf.Max(1, num15 * 8 / num7);
                         offer.Building = buildingID;
                         offer.Position = buildingData.m_position;

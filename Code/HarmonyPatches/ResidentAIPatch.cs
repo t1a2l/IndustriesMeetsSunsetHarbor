@@ -9,8 +9,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(ResidentAI))]
     public static class ResidentAIPatch
     {
-        [HarmonyPatch(typeof(ResidentAI), "SimulationStep", new Type[] { typeof(ushort), typeof(CitizenInstance), typeof(CitizenInstance.Frame), typeof(bool) },
-            new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Ref, ArgumentType.Normal })]
+        [HarmonyPatch(typeof(ResidentAI), "SimulationStep", [typeof(ushort), typeof(CitizenInstance), typeof(CitizenInstance.Frame), typeof(bool)],
+            [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Ref, ArgumentType.Normal])]
         [HarmonyPrefix]
         public static bool SimulationStep(ResidentAI __instance, ushort instanceID, ref CitizenInstance citizenData, ref CitizenInstance.Frame frameData, bool lodPhysics)
         {
