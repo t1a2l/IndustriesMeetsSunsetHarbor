@@ -92,16 +92,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 ___m_outputSection.isVisible = true;
                 ___m_inputOutputSection.isVisible = true;
-                ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_aquacultureFarmAI.m_outputResource);
+                ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_aquacultureFarmAI.m_outputResource);
                 string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_aquacultureFarmAI.m_outputResource.ToString());
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_aquacultureFarmAI.m_outputResource, false);
+                ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_aquacultureFarmAI.m_outputResource);
                 ___m_ShowIndustryInfoButton.isVisible = false;
                 int num = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
 		int storageBufferSize = m_aquacultureFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
 		___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
-		___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize, m_aquacultureFarmAI.m_outputResource));
+		___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)num), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)storageBufferSize, m_aquacultureFarmAI.m_outputResource));
 
             }
 

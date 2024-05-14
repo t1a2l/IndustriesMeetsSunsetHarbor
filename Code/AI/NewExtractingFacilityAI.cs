@@ -210,7 +210,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
                     byte transferType = (byte)(material + 200);
-                    if (ExtedndedVehicleManager.CreateVehicle(out ushort vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, transferType, false, true) && transferVehicleService.m_vehicleAI is ExtendedCargoTruckAI cargoTruckAI)
+                    if (ExtendedVehicleManager.CreateVehicle(out ushort vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, transferVehicleService, data.m_position, transferType, false, true) && transferVehicleService.m_vehicleAI is ExtendedCargoTruckAI cargoTruckAI)
                     {
                         transferVehicleService.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[(int)vehicle], buildingID);
                         ((IExtendedVehicleAI)cargoTruckAI).ExtendedStartTransfer(vehicle, ref vehicles.m_buffer[(int)vehicle], material, offer);
@@ -448,7 +448,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                         int capacity = 0;
                         int outside = 0;
                         var material_byte = (byte)((byte)m_outputResource + 200);
-                        ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
+                        ExtendedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                         buildingData.m_tempExport = (byte)Mathf.Clamp(outside, buildingData.m_tempExport, 255);
                         if (buildingData.m_finalExport != 0)
                         {
@@ -551,7 +551,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                 int capacity = 0;
                 int outside = 0;
                 var material_byte = (byte)((byte)m_outputResource + 200);
-                ExtedndedVehicleManager.CalculateOwnVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
+                ExtendedVehicleManager.CalculateOwnVehicles(buildingID, ref data, (ExtendedTransferManager.TransferReason)material_byte, ref count, ref cargo, ref capacity, ref outside);
                 text = text + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", count, num2);
             }
             return text;
