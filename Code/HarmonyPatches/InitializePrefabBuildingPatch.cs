@@ -37,13 +37,63 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                     }
-                    else if (__instance.name.Contains("Anchovy Fishing Harbor") && __instance.name.Contains("Dock") && __instance.GetAI() is not AquacultureFarmAI)
+                    else if (__instance.name.Contains("Fishing Boat Harbor 05") && __instance.GetAI() is not ExtendedFishingHarborAI)
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
                         Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishingHarborAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Anchovy;
                     }
+                    else if (__instance.name.Contains("Fishing Boat Harbor 02") && __instance.GetAI() is not ExtendedFishingHarborAI)
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishingHarborAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Salmon;
+                    }
+                    else if (__instance.name.Contains("Fishing Boat Harbor 03") && __instance.GetAI() is not ExtendedFishingHarborAI)
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishingHarborAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Shellfish;
+                    }
+                    else if (__instance.name.Contains("Fishing Boat Harbor 04") && __instance.GetAI() is not ExtendedFishingHarborAI)
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishingHarborAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Tuna;
+                    }
+                    else if (__instance.name.Contains("Fish Farm 01") && __instance.GetAI() is not ExtendedFishFarmAI)
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishFarmAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Trout;
+                    }
+                    else if (__instance.name.Contains("Fish Farm 02") && __instance.GetAI() is not ExtendedFishFarmAI)
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishFarmAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Algae;
+                    }
+                    else if (__instance.name.Contains("Fish Farm 03") && __instance.GetAI() is not ExtendedFishFarmAI)
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedFishFarmAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Seaweed;
+                    }
+
                 }
                 else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
                 {

@@ -451,9 +451,39 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (material == m_outputResource2)
             {
-                int variationGroupID = m_variationGroupID;
-                ItemClass.Level level = ((variationGroupID == 1 || variationGroupID == 9) ? ItemClass.Level.Level2 : ItemClass.Level.Level1);
-                VehicleInfo transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.PlayerIndustry, ItemClass.SubService.None, level);
+                VehicleInfo transferVehicleService;
+                switch (material)
+                {
+                    case ExtendedTransferManager.TransferReason.FoodProducts:
+                    case ExtendedTransferManager.TransferReason.BeverageProducts:
+                    case ExtendedTransferManager.TransferReason.BakedGoods:
+                    case ExtendedTransferManager.TransferReason.CannedFish:
+                    case ExtendedTransferManager.TransferReason.Furnitures:
+                    case ExtendedTransferManager.TransferReason.ElectronicProducts:
+                    case ExtendedTransferManager.TransferReason.Tupperware:
+                    case ExtendedTransferManager.TransferReason.Toys:
+                    case ExtendedTransferManager.TransferReason.PrintedProducts:
+                    case ExtendedTransferManager.TransferReason.TissuePaper:
+                    case ExtendedTransferManager.TransferReason.Cloths:
+                    case ExtendedTransferManager.TransferReason.Footwear:
+                        transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.PlayerIndustry, ItemClass.SubService.None, ItemClass.Level.Level1);
+                        break;
+                    case ExtendedTransferManager.TransferReason.IndustrialSteel: // shipyard, car factory, construction
+                        transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.PlayerIndustry, ItemClass.SubService.None, ItemClass.Level.Level3);
+                        break;
+                    case ExtendedTransferManager.TransferReason.PetroleumProducts: // gas stations, boiler stations, airport fuel, plastic factory
+                        transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Industrial, ItemClass.SubService.IndustrialOil, ItemClass.Level.Level1);
+                        break;
+                    case ExtendedTransferManager.TransferReason.Cars: // 1 -> 2 -> rental, buy, export
+                        transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.PlayerIndustry, ItemClass.SubService.None, ItemClass.Level.Level4);
+                        break;
+                    case ExtendedTransferManager.TransferReason.HouseParts: // 9 -> to build houses
+                        transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.PlayerIndustry, ItemClass.SubService.None, ItemClass.Level.Level5);
+                        break;
+                    default:
+                        return false;
+                }
+
                 if (transferVehicleService != null)
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
