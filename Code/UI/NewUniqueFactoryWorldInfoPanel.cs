@@ -112,6 +112,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
+
             m_inputItems = [];
             m_outputItems = [];
         }
@@ -138,10 +139,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
         protected override void OnSetTarget()
         {
             base.OnSetTarget();
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
-            m_inputResourceCount = GetInputResourceCount(ref m_inputItems, newUniqueFactoryAI);
-            m_outputResourceCount = GetOutputResourceCount(ref m_outputItems, newUniqueFactoryAI); 
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
+            m_inputResourceCount = GetInputResourceCount(ref m_inputItems, newProcessingFacilityAI);
             m_inputs.SetItemCount(m_inputResourceCount);
+            m_outputResourceCount = GetOutputResourceCount(ref m_outputItems, newProcessingFacilityAI);
             m_outputs.SetItemCount(m_outputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             for (int i = 0; i < m_inputResourceCount; i++)
@@ -162,7 +163,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 UISprite uISprite = m_outputs.items[i].Find<UISprite>("LuxuryProductIcon");
                 uILabel.text = GetOutputResourceName(ref m_outputItems, i);
                 var atlas = GetOutputResourceAtlas(ref m_outputItems, i);
-                if(atlas != null)
+                if (atlas != null)
                 {
                     uISprite.atlas = atlas;
                 }
@@ -175,7 +176,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        private int GetInputResourceCount(ref List<string> items, NewUniqueFactoryAI ai)
+        private int GetInputResourceCount(ref List<string> items, NewProcessingFacilityAI ai)
         {
             int count = 0;
             if (ai.m_inputResource1 != TransferManager.TransferReason.None)
@@ -245,7 +246,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return count;
         }
 
-        private int GetOutputResourceCount(ref List<string> items, NewUniqueFactoryAI ai)
+        private int GetOutputResourceCount(ref List<string> items, NewProcessingFacilityAI ai)
         {
             int count = 0;
             if (ai.m_outputResource1 != TransferManager.TransferReason.None)
@@ -289,10 +290,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
             ushort buildingId = m_InstanceID.Building;
             BuildingManager instance = Singleton<BuildingManager>.instance;
             Building building = instance.m_buildings.m_buffer[buildingId];
-            NewUniqueFactoryAI newUniqueFactoryAI = building.Info.m_buildingAI as NewUniqueFactoryAI;
-            m_Upkeep.text = LocaleFormatter.FormatUpkeep(newUniqueFactoryAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
-            m_status.text = newUniqueFactoryAI.GetLocalizedStatus(buildingId, ref building);
-            if(m_mainPanel != null)
+            NewProcessingFacilityAI newProcessingFacilityAI = building.Info.m_buildingAI as NewProcessingFacilityAI;
+            m_Upkeep.text = LocaleFormatter.FormatUpkeep(newProcessingFacilityAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
+            m_status.text = newProcessingFacilityAI.GetLocalizedStatus(buildingId, ref building);
+
+            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
+            if (m_mainPanel != null)
             {
                 if(m_inputResourceCount > 4)
                 {
@@ -353,10 +356,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     productStorage.tooltip = text;
                 }
             }
-            m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (newUniqueFactoryAI.m_workPlaceCount0 + newUniqueFactoryAI.m_workPlaceCount1 + newUniqueFactoryAI.m_workPlaceCount2 + newUniqueFactoryAI.m_workPlaceCount3).ToString());
+            m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (newProcessingFacilityAI.m_workPlaceCount0 + newProcessingFacilityAI.m_workPlaceCount1 + newProcessingFacilityAI.m_workPlaceCount2 + newProcessingFacilityAI.m_workPlaceCount3).ToString());
             if ((building.m_flags & Building.Flags.Collapsed) != 0)
             {
-                m_RebuildButton.tooltip = ((!IsDisasterServiceRequired()) ? LocaleFormatter.FormatCost(newUniqueFactoryAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
+                m_RebuildButton.tooltip = ((!IsDisasterServiceRequired()) ? LocaleFormatter.FormatCost(newProcessingFacilityAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
                 m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
                 m_RebuildButton.isEnabled = CanRebuild();
                 m_MoveButton.isVisible = false;
@@ -366,22 +369,25 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_RebuildButton.isVisible = false;
                 m_MoveButton.isVisible = true;
             }
-            m_generatedInfo.text = newUniqueFactoryAI.GetLocalizedStats(buildingId, ref building);
+            m_generatedInfo.text = newProcessingFacilityAI.GetLocalizedStats(buildingId, ref building);
             long inputs_expenses = 0;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate1 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource1) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate2 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource2) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate3 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource3) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate4 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newUniqueFactoryAI.m_inputResource4) / 10000;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate5 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource5) / 10000;;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate6 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource6) / 10000;;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate7 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource7) / 10000;;
-            inputs_expenses += building.m_health * newUniqueFactoryAI.m_inputRate8 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newUniqueFactoryAI.m_inputResource8) / 10000;;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate1 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newProcessingFacilityAI.m_inputResource1) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate2 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newProcessingFacilityAI.m_inputResource2) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate3 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newProcessingFacilityAI.m_inputResource3) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate4 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newProcessingFacilityAI.m_inputResource4) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate5 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_inputResource5) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate6 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_inputResource6) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate7 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_inputResource7) / 10000;
+            inputs_expenses += building.m_health * newProcessingFacilityAI.m_inputRate8 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_inputResource8) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
-            float num9 = custom_buffers.m_customBuffer11 * newUniqueFactoryAI.m_outputRate1 * 16 / 100;
-            float num10 = custom_buffers.m_customBuffer12 * newUniqueFactoryAI.m_outputRate2 * 16 / 100;
-            float num11 = num9 + num10;
-            m_income.text = num11.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+
+            long outputs_income = 0;
+            outputs_income += building.m_education3 * newProcessingFacilityAI.m_outputRate1 * 16 / 100 * IndustryBuildingManager.GetResourcePrice(newProcessingFacilityAI.m_outputResource1) / 10000;
+            outputs_income += building.m_education3 * newProcessingFacilityAI.m_outputRate2 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_outputResource2) / 10000;
+            outputs_income += building.m_education3 * newProcessingFacilityAI.m_outputRate3 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_outputResource3) / 10000;
+            outputs_income += building.m_education3 * newProcessingFacilityAI.m_outputRate4 * 16 / 100 * IndustryBuildingManager.GetExtendedResourcePrice(newProcessingFacilityAI.m_outputResource4) / 10000;
+            m_income.text = outputs_income.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
+
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
             {
                 m_productionSlider.isEnabled = true;
@@ -430,42 +436,42 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             amount = 0;
             capacity = 0;
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
                     amount = (int)custom_buffers.m_customBuffer1;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate1);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate1);
                     break;
                 case "m_inputResource2":
                     amount = (int)custom_buffers.m_customBuffer2;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate2);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate2);
                     break;
                 case "m_inputResource3":
                     amount = (int)custom_buffers.m_customBuffer3;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate3);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate3);
                     break;
                 case "m_inputResource4":
                     amount = (int)custom_buffers.m_customBuffer4;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate4);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate4);
                     break;
                 case "m_inputResource5":
                     amount = (int)custom_buffers.m_customBuffer5;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate5);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate5);
                     break;
                 case "m_inputResource6":
                     amount = (int)custom_buffers.m_customBuffer6;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate6);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate6);
                     break;
                 case "m_inputResource7":
                     amount = (int)custom_buffers.m_customBuffer7;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate7);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate7);
                     break;
                 case "m_inputResource8":
                     amount = (int)custom_buffers.m_customBuffer8;
-                    capacity = newUniqueFactoryAI.GetInputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate8);
+                    capacity = newProcessingFacilityAI.GetInputBufferSize(ref buildingData, newProcessingFacilityAI.m_inputRate8);
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
@@ -475,26 +481,26 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             amount = 0;
             capacity = 0;
             switch (items[resourceIndex])
             {
                 case "m_outputResource1":
                     amount = (int)custom_buffers.m_customBuffer9;
-                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate1, newUniqueFactoryAI.m_outputVehicleCount1);
+                    capacity = newProcessingFacilityAI.GetOutputBufferSize(ref buildingData, newProcessingFacilityAI.m_outputRate1, newProcessingFacilityAI.m_outputVehicleCount1);
                     break;
                 case "m_outputResource2":
                     amount = (int)custom_buffers.m_customBuffer10;
-                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate2, newUniqueFactoryAI.m_outputVehicleCount2);
+                    capacity = newProcessingFacilityAI.GetOutputBufferSize(ref buildingData, newProcessingFacilityAI.m_outputRate2, newProcessingFacilityAI.m_outputVehicleCount2);
                     break;
                 case "m_outputResource3":
                     amount = (int)custom_buffers.m_customBuffer11;
-                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate3, newUniqueFactoryAI.m_outputVehicleCount3);
+                    capacity = newProcessingFacilityAI.GetOutputBufferSize(ref buildingData, newProcessingFacilityAI.m_outputRate3, newProcessingFacilityAI.m_outputVehicleCount3);
                     break;
                 case "m_outputResource4":
                     amount = (int)custom_buffers.m_customBuffer12;
-                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate4, newUniqueFactoryAI.m_outputVehicleCount4);
+                    capacity = newProcessingFacilityAI.GetOutputBufferSize(ref buildingData, newProcessingFacilityAI.m_outputRate4, newProcessingFacilityAI.m_outputVehicleCount4);
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
@@ -502,49 +508,49 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private string GetInputResourceName(ref List<string> items, int resourceIndex)
         {
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             string key = "N/A";
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    key = newUniqueFactoryAI.m_inputResource1.ToString();
+                    key = newProcessingFacilityAI.m_inputResource1.ToString();
                     break;
                 case "m_inputResource2":
-                    key = newUniqueFactoryAI.m_inputResource2.ToString();
+                    key = newProcessingFacilityAI.m_inputResource2.ToString();
                     break;
                 case "m_inputResource3":
-                    key = newUniqueFactoryAI.m_inputResource3.ToString();
+                    key = newProcessingFacilityAI.m_inputResource3.ToString();
                     break;
                 case "m_inputResource4":
-                    key = newUniqueFactoryAI.m_inputResource4.ToString();
+                    key = newProcessingFacilityAI.m_inputResource4.ToString();
                     break;
                 case "m_inputResource5":
-                    return newUniqueFactoryAI.m_inputResource5.ToString();
+                    return newProcessingFacilityAI.m_inputResource5.ToString();
                 case "m_inputResource6":
-                    return newUniqueFactoryAI.m_inputResource6.ToString();
+                    return newProcessingFacilityAI.m_inputResource6.ToString();
                 case "m_inputResource7":
-                    return newUniqueFactoryAI.m_inputResource7.ToString();
+                    return newProcessingFacilityAI.m_inputResource7.ToString();
                 case "m_inputResource8":
-                    return newUniqueFactoryAI.m_inputResource8.ToString();
+                    return newProcessingFacilityAI.m_inputResource8.ToString();
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }
 
         private string GetOutputResourceName(ref List<string> items, int resourceIndex)
         {
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             string key = "N/A";
             switch (items[resourceIndex])
             {
                 case "m_outputResource1":
-                    key = newUniqueFactoryAI.m_outputResource1.ToString();
+                    key = newProcessingFacilityAI.m_outputResource1.ToString();
                     break;
                 case "m_outputResource2":
-                    return newUniqueFactoryAI.m_outputResource2.ToString();
+                    return newProcessingFacilityAI.m_outputResource2.ToString();
                 case "m_outputResource3":
-                    return newUniqueFactoryAI.m_outputResource3.ToString();
+                    return newProcessingFacilityAI.m_outputResource3.ToString();
                 case "m_outputResource4":
-                    return newUniqueFactoryAI.m_outputResource4.ToString();
+                    return newProcessingFacilityAI.m_outputResource4.ToString();
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }
@@ -615,48 +621,48 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private TransferManager.TransferReason GetInputResource(ref List<string> items, int resourceIndex)
         {
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             return items[resourceIndex] switch
             {
-                "m_inputResource1" => newUniqueFactoryAI.m_inputResource1,
-                "m_inputResource2" => newUniqueFactoryAI.m_inputResource2,
-                "m_inputResource3" => newUniqueFactoryAI.m_inputResource3,
-                "m_inputResource4" => newUniqueFactoryAI.m_inputResource4,
+                "m_inputResource1" => newProcessingFacilityAI.m_inputResource1,
+                "m_inputResource2" => newProcessingFacilityAI.m_inputResource2,
+                "m_inputResource3" => newProcessingFacilityAI.m_inputResource3,
+                "m_inputResource4" => newProcessingFacilityAI.m_inputResource4,
                 _ => TransferManager.TransferReason.None,
             };
         }
 
         private TransferManager.TransferReason GetOutputResource(ref List<string> items, int resourceIndex)
         {
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             return items[resourceIndex] switch
             {
-                "m_outputResource1" => newUniqueFactoryAI.m_outputResource1,
+                "m_outputResource1" => newProcessingFacilityAI.m_outputResource1,
                 _ => TransferManager.TransferReason.None,
             };
         }
 
         private ExtendedTransferManager.TransferReason GetInputResourceExtended(ref List<string> items, int resourceIndex)
         {
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             return items[resourceIndex] switch
             {
-                "m_inputResource1" => newUniqueFactoryAI.m_inputResource5,
-                "m_inputResource2" => newUniqueFactoryAI.m_inputResource6,
-                "m_inputResource3" => newUniqueFactoryAI.m_inputResource7,
-                "m_inputResource4" => newUniqueFactoryAI.m_inputResource8,
+                "m_inputResource1" => newProcessingFacilityAI.m_inputResource5,
+                "m_inputResource2" => newProcessingFacilityAI.m_inputResource6,
+                "m_inputResource3" => newProcessingFacilityAI.m_inputResource7,
+                "m_inputResource4" => newProcessingFacilityAI.m_inputResource8,
                 _ => ExtendedTransferManager.TransferReason.None,
             };
         }
 
         private ExtendedTransferManager.TransferReason GetOutputResourceExtended(ref List<string> items, int resourceIndex)
         {
-            NewUniqueFactoryAI newUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewUniqueFactoryAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             return items[resourceIndex] switch
             {
-                "m_outputResource2" => newUniqueFactoryAI.m_outputResource2,
-                "m_outputResource3" => newUniqueFactoryAI.m_outputResource3,
-                "m_outputResource4" => newUniqueFactoryAI.m_outputResource4,
+                "m_outputResource2" => newProcessingFacilityAI.m_outputResource2,
+                "m_outputResource3" => newProcessingFacilityAI.m_outputResource3,
+                "m_outputResource4" => newProcessingFacilityAI.m_outputResource4,
                 _ => ExtendedTransferManager.TransferReason.None,
             };
         }
