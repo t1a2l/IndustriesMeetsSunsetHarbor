@@ -27,6 +27,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIPanel m_inputContainer;
 
+        private UIPanel m_outputContainer;
+
         private UITemplateList<UIPanel> m_inputs;
 
         private UITemplateList<UIPanel> m_outputs;
@@ -99,7 +101,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_generatedInfo = Find<UILabel>("LabelInfo");
             m_horizontalLine = Find<UIPanel>("HorizontalLinePanel");
             m_inputContainer = Find<UIPanel>("LayoutPanel");
+            m_outputContainer = Find<UIPanel>("LayoutPanel");
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
+            m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryInputResource");
             m_productionSlider = Find<UISlider>("ProductionSlider");
             m_productionSlider.eventValueChanged += OnProductionRateChanged;
             m_productionRateLabel = Find<UILabel>("LabelProductionRate");
