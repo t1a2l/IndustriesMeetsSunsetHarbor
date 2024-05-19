@@ -264,6 +264,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
+            if (ai.m_outputResource3 != ExtendedTransferManager.TransferReason.None)
+            {
+                if (!items.Contains("m_outputResource3"))
+                {
+                    items.Add("m_outputResource3");
+                }
+                count++;
+            }
+            if (ai.m_outputResource4 != ExtendedTransferManager.TransferReason.None)
+            {
+                if (!items.Contains("m_outputResource4"))
+                {
+                    items.Add("m_outputResource4");
+                }
+                count++;
+            }
             return count;
         }
 
@@ -403,6 +419,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_outputResource1":
                     return "TransferManager";
                 case "m_outputResource2":
+                case "m_outputResource3":
+                case "m_outputResource4":
                     return "ExtendedTransferManager";
             }
             return "";
@@ -464,11 +482,19 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 case "m_outputResource1":
                     amount = (int)custom_buffers.m_customBuffer9;
-                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate1, newUniqueFactoryAI.m_outputVehicleCount1);
+                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate1, newUniqueFactoryAI.m_outputVehicleCount1);
                     break;
                 case "m_outputResource2":
                     amount = (int)custom_buffers.m_customBuffer10;
-                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_inputRate2, newUniqueFactoryAI.m_outputVehicleCount2);
+                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate2, newUniqueFactoryAI.m_outputVehicleCount2);
+                    break;
+                case "m_outputResource3":
+                    amount = (int)custom_buffers.m_customBuffer11;
+                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate3, newUniqueFactoryAI.m_outputVehicleCount3);
+                    break;
+                case "m_outputResource4":
+                    amount = (int)custom_buffers.m_customBuffer12;
+                    capacity = newUniqueFactoryAI.GetOutputBufferSize(ref buildingData, newUniqueFactoryAI.m_outputRate4, newUniqueFactoryAI.m_outputVehicleCount4);
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
@@ -515,6 +541,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     break;
                 case "m_outputResource2":
                     return newUniqueFactoryAI.m_outputResource2.ToString();
+                case "m_outputResource3":
+                    return newUniqueFactoryAI.m_outputResource3.ToString();
+                case "m_outputResource4":
+                    return newUniqueFactoryAI.m_outputResource4.ToString();
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }
@@ -544,6 +574,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_outputResource1":
                     return null;
                 case "m_outputResource2":
+                case "m_outputResource3":
+                case "m_outputResource4":
                     return TextureUtils.GetAtlas("IndustriesAtlas");
             }
             return null;
@@ -574,6 +606,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_outputResource1":
                     return IndustryWorldInfoPanel.ResourceSpriteName(GetOutputResource(ref items, resourceIndex));
                 case "m_outputResource2":
+                case "m_outputResource3":
+                case "m_outputResource4":
                     return IndustryBuildingManager.ResourceSpriteName(GetOutputResourceExtended(ref items, resourceIndex));
             }
             return null;
@@ -621,6 +655,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return items[resourceIndex] switch
             {
                 "m_outputResource2" => newUniqueFactoryAI.m_outputResource2,
+                "m_outputResource3" => newUniqueFactoryAI.m_outputResource3,
+                "m_outputResource4" => newUniqueFactoryAI.m_outputResource4,
                 _ => ExtendedTransferManager.TransferReason.None,
             };
         }
