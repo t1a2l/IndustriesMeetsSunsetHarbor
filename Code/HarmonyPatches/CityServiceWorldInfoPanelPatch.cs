@@ -35,15 +35,29 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 	    ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             NewExtractingFacilityAI newExtractingFacilityAI = data.Info.GetAI() as NewExtractingFacilityAI;
+            NewProcessingFacilityAI newProcessingFacilityAI = data.Info.GetAI() as NewProcessingFacilityAI;
             if (newExtractingFacilityAI != null)
 	    {
-		___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(newExtractingFacilityAI.m_outputResource);
-                string text = newExtractingFacilityAI.m_outputResource.ToString();
-                ___m_outputLabel.text = text;
-		___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                ___m_outputSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
-		___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(newExtractingFacilityAI.m_outputResource);
-		___m_ShowIndustryInfoButton.isVisible = true;
+                if (newExtractingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
+                {
+                    ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(newExtractingFacilityAI.m_outputResource1);
+                    string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", newExtractingFacilityAI.m_outputResource1.ToString());
+                    ___m_outputLabel.text = text;
+                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                    ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(newExtractingFacilityAI.m_outputResource1);
+                    ___m_ShowIndustryInfoButton.isVisible = true;
+                }
+                if (newExtractingFacilityAI.m_outputResource2 != ExtendedTransferManager.TransferReason.None)
+                {
+                    ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(newExtractingFacilityAI.m_outputResource2);
+                    string text = newExtractingFacilityAI.m_outputResource2.ToString();
+                    ___m_outputLabel.text = text;
+                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                    ___m_outputSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
+                    ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(newExtractingFacilityAI.m_outputResource2);
+                    ___m_ShowIndustryInfoButton.isVisible = true;
+                }
+		
                 return false;
 	    }
             return true;
@@ -68,13 +82,24 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     ___m_BuildingService.spriteName = "UIFilterExtractorBuildings";
 		    ___m_BuildingService.tooltip = Locale.Get("MAIN_TOOL", text);
                     var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-		    var customBuffer = custom_buffers.m_customBuffer2;
-		    int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
-		    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
-		    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource));
+
+                    if(newExtractingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
+                    {
+                        var customBuffer = custom_buffers.m_customBuffer2;
+                        int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
+                        ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
+                        ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource1));
+                    }
+                    if (newExtractingFacilityAI.m_outputResource2 != ExtendedTransferManager.TransferReason.None)
+                    {
+                        var customBuffer = custom_buffers.m_customBuffer2;
+                        int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
+                        ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
+                        ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource2));
+                    }
+
                     return false;
                 }
-                return true;
             }
             return true;
         }
@@ -87,6 +112,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             AquacultureFarmAI m_aquacultureFarmAI = data.Info.GetAI() as AquacultureFarmAI;
             ExtendedFishingHarborAI m_extendedFishingHarborAI = data.Info.GetAI() as ExtendedFishingHarborAI;
+            ExtendedFishFarmAI m_extendedfishFarmAI = data.Info.GetAI() as ExtendedFishFarmAI;
             FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
 
             if (m_aquacultureFarmAI != null)
@@ -120,17 +146,28 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)num), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)storageBufferSize, m_extendedFishingHarborAI.m_outputResource));
             }
 
-            if (m_fishFarmAI != null && m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain)
+            if (m_extendedfishFarmAI != null)
             {
-                ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_fishFarmAI.m_outputResource);
-		string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
-		___m_outputLabel.text = text4;
-		___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
-		___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_fishFarmAI.m_outputResource);
+                ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_extendedfishFarmAI.m_outputResource);
+                string text = m_extendedfishFarmAI.m_outputResource.ToString();
+                ___m_outputLabel.text = text;
+		___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                ___m_outputSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
+                ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_extendedfishFarmAI.m_outputResource);
 		___m_ShowIndustryInfoButton.isVisible = false;
             }
 
-            if(AquacultureExtractorPanel._aquacultureExtractorPanel == null)
+            if (m_fishFarmAI != null && m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain)
+            {
+                ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_fishFarmAI.m_outputResource);
+                string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
+                ___m_outputLabel.text = text4;
+                ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
+                ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_fishFarmAI.m_outputResource);
+                ___m_ShowIndustryInfoButton.isVisible = false;
+            }
+
+            if (AquacultureExtractorPanel._aquacultureExtractorPanel == null)
             {
                 AquacultureExtractorPanel.Init();
             }
