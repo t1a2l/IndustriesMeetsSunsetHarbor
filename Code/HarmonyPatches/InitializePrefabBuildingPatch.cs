@@ -4,6 +4,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Utils;
 using Object = UnityEngine.Object;
 using MoreTransferReasons;
+using IndustriesMeetsSunsetHarbor.Code.AI;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -93,7 +94,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource = ExtendedTransferManager.TransferReason.Seaweed;
                     }
-
                 }
                 else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
                 {
@@ -104,7 +104,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.FoodProducts;
                     }
                     else if (__instance.name.Contains("Lemonade Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -113,7 +112,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.BeverageProducts;
                         __instance.name = "Drinks Factory 01";
                     }
@@ -123,7 +121,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.BakedGoods;
                     }
                     else if (__instance.name.Contains("Food Factory 02") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -132,7 +129,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.CannedFish;
                     }
                     else if (__instance.name.Contains("Furniture Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -141,7 +137,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Furnitures;
                     }
                     else if (__instance.name.Contains("Industrial Steel Plant 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -150,7 +145,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.IndustrialSteel;
                     }
                     else if (__instance.name.Contains("Household Plastic Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -159,7 +153,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Tupperware;
                     }
                     else if (__instance.name.Contains("Toy Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -168,7 +161,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Toys;
                     }
                     else if (__instance.name.Contains("Printing Press 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -177,7 +169,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.PrintedProducts;
                     }
                     else if (__instance.name.Contains("Electronics Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -186,7 +177,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.ElectronicProducts;
                     }
                     else if (__instance.name.Contains("Clothing Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -195,7 +185,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cloths;
                     }
                     else if (__instance.name.Contains("Petroleum Refinery 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -204,7 +193,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.PetroleumProducts;
                     }
                     else if (__instance.name.Contains("Soft Paper Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -213,7 +201,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.TissuePaper;
                     }
                     else if (__instance.name.Contains("Sneaker Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -222,7 +209,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Footwear;
                     }
                     else if (__instance.name.Contains("Modular House Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
@@ -231,8 +217,132 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.HouseParts;
+                    }
+                    else if (__instance.name.Contains("Cars Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cars;
+                    }
+                    else if (__instance.name.Contains("Dry Dock 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Ship;
+                    }
+                    else if (__instance.name.Contains("Animal Pasture 01") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewProcessingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cows;
+                        newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                    }
+                    else if (__instance.name.Contains("Animal Pasture") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewProcessingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        if (__instance.name.Contains("Sheep"))
+                        {
+                            newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Sheep;
+                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Sheep;
+                        }
+                        else if (__instance.name.Contains("Highland Cow"))
+                        {
+                            newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.HighlandCows;
+                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.HighlandCows;
+                        }
+                        else if (__instance.name.Contains("Pig"))
+                        {
+                            newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Pigs;
+                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Pigs;
+                        }
+                        else 
+                        {
+                            newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cows;
+                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Cows;
+                        }
+                    }
+                    else if (__instance.name.Contains("Cattle Shed") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewProcessingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cows;
+                        newAI.m_outputResource3 = ExtendedTransferManager.TransferReason.HighlandCows;
+                        newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                        newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Cows;
+                        newAI.m_inputResource6 = ExtendedTransferManager.TransferReason.HighlandCows;
+                    }
+                    else if (__instance.name.Contains("Slaughter House") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewProcessingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource1 = TransferManager.TransferReason.AnimalProducts;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.None;
+                        newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Cows;
+                        newAI.m_inputResource6 = ExtendedTransferManager.TransferReason.HighlandCows;
+                    }
+                    else if (__instance.name.Contains("Milking Parlor") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewProcessingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource1 = TransferManager.TransferReason.None;
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cows;
+                        newAI.m_outputResource3 = ExtendedTransferManager.TransferReason.HighlandCows;
+                        newAI.m_outputResource4 = ExtendedTransferManager.TransferReason.Milk;
+                        newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Cows;
+                        newAI.m_inputResource6 = ExtendedTransferManager.TransferReason.HighlandCows;
+                    }
+                    else if (__instance.name.Contains("Crop Field") && __instance.GetAI() is not NewExtractingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewExtractingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        if (__instance.name.Contains("Corn") || __instance.name.Contains("Potato") || __instance.name.Contains("Green House"))
+                        {
+                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Vegetables;
+                        }
+                        else if (__instance.name.Contains("Cotton"))
+                        {
+                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cotton;
+                        }
+                        else if (__instance.name.Contains("Wheat"))
+                        {
+                            newAI.m_outputResource1 = TransferManager.TransferReason.Grain;
+                        }
+                    }
+                    else if (__instance.name.Contains("Fruit Field") && __instance.GetAI() is not NewExtractingFacilityAI && !__instance.name.Contains("Sub"))
+                    {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<NewExtractingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Fruits;
                     }
                 }
                 else if (__instance.m_class.m_service == ItemClass.Service.Commercial)
