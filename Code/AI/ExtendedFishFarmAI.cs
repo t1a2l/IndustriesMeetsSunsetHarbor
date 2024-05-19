@@ -111,6 +111,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)outputResource];
                         }
+                        if (ExtendedDistrictPark.IsPedestrianReason(outputResource, out var index))
+                        {
+                            byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                            if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index] != 0))
+                            {
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)outputResource];
+                            }
+                        }
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                 default:

@@ -212,7 +212,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             {
                                 return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource2];
                             }
-                            break;
+                                if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource1, out var index1))
+                                {
+                                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index1] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index1] != 0))
+                                    {
+                                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource1];
+                                    }
+                                }
+                                if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource2, out var index2))
+                                {
+                                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index2] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index2] != 0))
+                                    {
+                                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource2];
+                                    }
+                                }
+                                break;
                         }
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_neutralColor;

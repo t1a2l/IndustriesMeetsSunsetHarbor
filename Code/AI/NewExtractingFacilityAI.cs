@@ -95,7 +95,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                             byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
                             if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index2] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index2] != 0))
                             {
-                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)outputResource2];
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)outputResource2];
                             }
                         }
                     }
@@ -336,6 +336,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
         protected override void ProduceGoods(ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
         {
             DistrictManager instance = Singleton<DistrictManager>.instance;
+            ExtendedDistrictManager instance2 = Singleton<ExtendedDistrictManager>.instance;
             byte district = instance.GetDistrict(buildingData.m_position);
             byte b = instance.GetPark(buildingData.m_position);
             if (b != 0)
@@ -523,7 +524,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     CustomBuffer2 = Mathf.Min(OutputBufferSize2, CustomBuffer2 + OutputProductionRate);
                     custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
-                    ExtendedDistrictManager.IndustryParks[b].AddProductionAmount(m_outputResource2, OutputProductionRate);
+                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(m_outputResource2, OutputProductionRate);
                 }
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 num18 = (finalProductionRate * num18 + 50) / 100;
@@ -592,7 +593,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                             offer.Active = true;
                             Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(m_outputResource2, offer);
                         }
-                        ExtendedDistrictManager.IndustryParks[b].AddBufferStatus(m_outputResource2, CustomBuffer2, 0, OutputCustomBuffer2);
+                        instance2.m_industryParks.m_buffer[b].AddBufferStatus(m_outputResource2, CustomBuffer2, 0, OutputCustomBuffer2);
                     }
                     GuideController properties = Singleton<GuideManager>.instance.m_properties;
                     if (properties is not null)
@@ -790,16 +791,5 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
             return Mathf.Clamp(num2, 8000, 64000);
         }
 
-        public TransferManager.TransferReason GetDistrictBufferReason(ExtendedTransferManager.TransferReason transferReason)
-        {
-            switch (transferReason)
-            {
-                case ExtendedTransferManager.TransferReason.Fruits:
-                case ExtendedTransferManager.TransferReason.Vegetables:
-                    return TransferManager.TransferReason.Grain;
-                default:
-                    return TransferManager.TransferReason.None;
-            }
-        }
     }
 }
