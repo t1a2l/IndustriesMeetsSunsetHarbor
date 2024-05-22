@@ -572,7 +572,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource6":
                 case "m_inputResource7":
                 case "m_inputResource8":
-                    return TextureUtils.GetAtlas("IndustriesAtlas");
+                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
             }
             return null;
         }
@@ -586,7 +586,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_outputResource2":
                 case "m_outputResource3":
                 case "m_outputResource4":
-                    return TextureUtils.GetAtlas("IndustriesAtlas");
+                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
             }
             return null;
         }
