@@ -4,66 +4,38 @@ namespace IndustriesMeetsSunsetHarbor.Utils
 {
     class AtlasUtils
     {
-        public static string[] SpriteNames = new string[]
-        {
-            "Meals",
-            "OrderedMeals",
-            "Anchovy",
-	    "Salmon",
-	    "Shellfish",
-	    "Tuna",
-	    "Algae",
-	    "Seaweed",	
-	    "Trout",
-            "Milk",
-	    "Fruits",
-	    "Vegetables",
-	    "Cows",
-	    "HighlandCows", 
-	    "Sheep",
-	    "Pigs"
-        };
-
-        public static string[] NotificationSpriteNames = new string[]
-        {
+        public static string[] NotificationSpriteNames =
+        [
             "BuildingNotificationWaitingDeliveryCritical",
             "BuildingNotificationWaitingDelivery",
             "BuildingNotificationWaitingDeliveryFirst"
-        };
+        ];
 
-        public static string[] InfoIconRestaurantButton = new string[]
-        {
+        public static string[] InfoIconRestaurantButton =
+        [
             "InfoIconRestaurant",
 	    "InfoIconRestaurantDisabled",
             "InfoIconRestaurantFocused",
             "InfoIconRestaurantHovered",
 	    "InfoIconRestaurantPressed"
-        };
+        ];
 
         public static void CreateAtlas()
         {
-            if (TextureUtils.GetAtlas("IndustriesAtlas") == null)
-            {
-                TextureUtils.InitialiseAtlas("IndustriesAtlas");
-                for (int i = 0; i < SpriteNames.Length; i++)
-                {
-                    TextureUtils.AddSpriteToAtlas(new Rect(32 * i + 2, 2, 30, 30), SpriteNames[i], "IndustriesAtlas");
-                }
-            }
             if (TextureUtils.GetAtlas("DeliveryNotificationAtlas") == null)
             {
                 TextureUtils.InitialiseAtlas("DeliveryNotificationAtlas");
-                for (int i = 0; i < NotificationSpriteNames.Length; i++)
-                {
-                    TextureUtils.AddSpriteToAtlas(new Rect(82 * i, 0, 82, 82), NotificationSpriteNames[i], "DeliveryNotificationAtlas");
-                }
+                TextureUtils.AddSpriteToAtlas(new Rect(2, 2, 77, 78), NotificationSpriteNames[0], "DeliveryNotificationAtlas");
+                TextureUtils.AddSpriteToAtlas(new Rect(83, 1, 80, 79), NotificationSpriteNames[1], "DeliveryNotificationAtlas");
+                TextureUtils.AddSpriteToAtlas(new Rect(169, 3, 71, 77), NotificationSpriteNames[2], "DeliveryNotificationAtlas");
+
             }
             if (TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas") == null)
             {
                 TextureUtils.InitialiseAtlas("InfoIconRestaurantButtonAtlas");
                 for (int i = 0; i < InfoIconRestaurantButton.Length; i++)
                 {
-                    TextureUtils.AddSpriteToAtlas(new Rect(2 * (-17 + (18 * (i + 1))), 2, 34, 34), InfoIconRestaurantButton[i], "InfoIconRestaurantButtonAtlas");
+                    TextureUtils.AddSpriteToAtlas(new Rect(36 * i, 2, 34, 34), InfoIconRestaurantButton[i], "InfoIconRestaurantButtonAtlas");
                 }
             }
         }
