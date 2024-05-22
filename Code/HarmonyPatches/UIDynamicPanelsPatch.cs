@@ -15,7 +15,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(UIDynamicPanels))]
     public static class UIDynamicPanelsPatch
     {
-
         [HarmonyPatch(typeof(UIDynamicPanels), "Init")]
         [HarmonyPostfix]
         public static void Init(UIDynamicPanels __instance, UIView view)
