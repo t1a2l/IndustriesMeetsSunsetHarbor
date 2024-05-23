@@ -151,6 +151,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
             typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instance, m_Templates);
 
+            var UniqueFactoryInputResource = m_inputContainer.Find<UIPanel>("UniqueFactoryInputResource");
+
+            UniqueFactoryInputResource.transform.parent = null;
+
+            outputResource.transform.parent = null;
+
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
             m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryOutputResource");
 
