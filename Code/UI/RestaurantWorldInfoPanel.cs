@@ -219,7 +219,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_materialCost = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_MATERIALCOST", typeof(UILabel));
             m_productionValue = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UFPANEL_PRODUCTIONVALUE", typeof(UILabel));
             m_productionBarLabel = (UILabel)UILabelUtils.FindByLocaleID(m_mainPanel, "UNIQUEFACTORYPANEL_RATE", typeof(UILabel));
-            items = new List<string>();
+            items = [];
         }
 
         protected override void OnSetTarget()

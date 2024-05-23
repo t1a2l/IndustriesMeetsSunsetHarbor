@@ -10,6 +10,9 @@ using IndustriesMeetsSunsetHarbor.Utils;
 using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
+using static ColossalFramework.UI.UIDynamicPanels;
+using static RenderManager;
+using System.Reflection;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -101,9 +104,58 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_generatedInfo = Find<UILabel>("LabelInfo");
             m_horizontalLine = Find<UIPanel>("HorizontalLinePanel");
             m_inputContainer = Find<UIPanel>("LayoutPanel");
-            m_outputContainer = Find<UIPanel>("LayoutPanel");
+
+            var Diagram = Find<UIPanel>("Diagram");
+
+            GameObject outputContainer = Instantiate(m_inputContainer.gameObject, Diagram.transform);
+            m_outputContainer = outputContainer.GetComponent<UIPanel>();
+
+            m_outputContainer.relativePosition = new Vector3(m_inputContainer.relativePosition.x, 200);
+
+            var InputResource = m_outputContainer.Find<UIPanel>("UniqueFactoryInputResource");
+
+            GameObject outputResource = Instantiate(InputResource.gameObject, InputResource.transform);
+            outputResource.name = "UniqueFactoryOutputResource";
+
+            outputResource.transform.SetParent(outputContainer.transform);
+
+            m_outputContainer.AttachUIComponent(outputResource);
+
+            var outputResource_Panel = outputResource.GetComponent<UIPanel>();
+
+            outputResource_Panel.relativePosition = new Vector3(InputResource.relativePosition.x, 200);
+
+            var m_productStorage = Find<UIPanel>("ProductStorage");
+            var m_BigArrow = Find<UISprite>("Big Arrow");
+
+            m_productStorage.transform.SetParent(outputResource_Panel.transform);
+            m_BigArrow.transform.SetParent(outputResource_Panel.transform);
+
+            outputResource_Panel.AttachUIComponent(m_productStorage.gameObject);
+            outputResource_Panel.AttachUIComponent(m_BigArrow.gameObject);
+
+            m_productStorage.relativePosition = new Vector3(m_productStorage.relativePosition.x, 50);
+            m_BigArrow.relativePosition = new Vector3(m_BigArrow.relativePosition.x, 0);
+
+            DestroyImmediate(InputResource.gameObject);
+
+            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
+            DestroyImmediate(outputResourceArrow.gameObject);
+
+            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
+            DestroyImmediate(outputResourceStorage.gameObject);
+
+            UITemplateManager instance = Singleton<UITemplateManager>.instance;
+
+            var m_Templates = (Dictionary<string, UIComponent>)typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(instance);
+
+            m_Templates.Add("UniqueFactoryOutputResource", outputResource_Panel);
+
+            typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instance, m_Templates);
+
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
-            m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryInputResource");
+            m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryOutputResource");
+
             m_productionSlider = Find<UISlider>("ProductionSlider");
             m_productionSlider.eventValueChanged += OnProductionRateChanged;
             m_productionRateLabel = Find<UILabel>("LabelProductionRate");
