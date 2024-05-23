@@ -5,6 +5,7 @@ using IndustriesMeetsSunsetHarbor.Utils;
 using Object = UnityEngine.Object;
 using MoreTransferReasons;
 using IndustriesMeetsSunsetHarbor.Code.AI;
+using MoreTransferReasons.AI;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -219,7 +220,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.HouseParts;
                     }
-                    else if (__instance.name.Contains("Cars Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Contains("Car Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
                         Object.DestroyImmediate(oldAI);
@@ -344,6 +345,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Fruits;
                     }
+                    switch (__instance.name)
+                    {
+                        case "Grain Silo 01":
+                        case "Grain Silo 02":
+                        case "Barn 01":
+                        case "Barn 02":
+                            if (__instance.GetAI() is not ExtendedWarehouseAI)
+                            {
+                                var oldAI = __instance.GetComponent<PrefabAI>();
+                                Object.DestroyImmediate(oldAI);
+                                var newAI = __instance.gameObject.AddComponent<ExtendedWarehouseAI>();
+                                PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                            }
+                            break;
+                    }
                 }
                 else if (__instance.m_class.m_service == ItemClass.Service.Commercial)
                 {
@@ -359,6 +375,32 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             catch (Exception e)
             {
                 LogHelper.Error(e.ToString());
+            }
+        }
+
+        public static void Postfix(BuildingInfo __instance)
+        {
+            uint index = 0U;
+            for (; PrefabCollection<BuildingInfo>.LoadedCount() > index; ++index)
+            {
+                BuildingInfo buildingInfo = PrefabCollection<BuildingInfo>.GetLoaded(index);
+
+                if (buildingInfo != null && buildingInfo.GetAI() is ExtendedWarehouseAI extendedWarehouseAI && extendedWarehouseAI != null)
+                {
+                    switch (__instance.name)
+                    {
+                        case "Grain Silo 01":
+                        case "Grain Silo 02":
+                        case "Barn 01":
+                        case "Barn 02":
+                            extendedWarehouseAI.m_storageType = TransferManager.TransferReason.None;
+                            extendedWarehouseAI.m_extendedStorageType = ExtendedTransferManager.TransferReason.None;
+                            extendedWarehouseAI.m_isFarmIndustry = true;
+                            extendedWarehouseAI.m_isFishIndustry = false;
+                            break;
+                    }
+
+                }
             }
         }
 
