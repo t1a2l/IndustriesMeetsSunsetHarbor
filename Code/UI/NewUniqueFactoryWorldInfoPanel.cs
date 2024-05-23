@@ -10,8 +10,6 @@ using IndustriesMeetsSunsetHarbor.Utils;
 using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
-using static ColossalFramework.UI.UIDynamicPanels;
-using static RenderManager;
 using System.Reflection;
 
 namespace IndustriesMeetsSunsetHarbor.UI
@@ -464,12 +462,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource2":
                 case "m_inputResource3":
                 case "m_inputResource4":
-                    return "ExtendedTransferManager";
+                    return "TransferManager";
                 case "m_inputResource5":
                 case "m_inputResource6":
                 case "m_inputResource7":
                 case "m_inputResource8":
-                    return "TransferManager";
+                    return "ExtendedTransferManager";
             }
             return "";
         }
@@ -624,7 +622,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource6":
                 case "m_inputResource7":
                 case "m_inputResource8":
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
             }
             return null;
         }
@@ -638,7 +636,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_outputResource2":
                 case "m_outputResource3":
                 case "m_outputResource4":
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
             }
             return null;
         }
