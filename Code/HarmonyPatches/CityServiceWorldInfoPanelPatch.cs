@@ -9,6 +9,7 @@ using IndustriesMeetsSunsetHarbor.Code.AI;
 using IndustriesMeetsSunsetHarbor.Utils;
 using System.Reflection;
 using MoreTransferReasons;
+using System.Collections.Generic;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -24,7 +25,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPrefix]
-        public static bool PreSetTarget(CityServiceWorldInfoPanel __instance, ref bool ___m_needResetTarget, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton)
+        public static bool PreSetTarget(CityServiceWorldInfoPanel __instance, ref bool ___m_needResetTarget, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel, ref UIDropDown ___m_VariationDropdown)
 	{
 	    ___m_needResetTarget = false;
 	    BaseOnSetTarget(__instance);
@@ -35,9 +36,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 	    ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             NewExtractingFacilityAI newExtractingFacilityAI = data.Info.GetAI() as NewExtractingFacilityAI;
-            NewProcessingFacilityAI newProcessingFacilityAI = data.Info.GetAI() as NewProcessingFacilityAI;
             if (newExtractingFacilityAI != null)
 	    {
+                ___m_inputSection.isVisible = false;
                 if (newExtractingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
                 {
                     ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(newExtractingFacilityAI.m_outputResource1);
@@ -53,11 +54,30 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     string text = newExtractingFacilityAI.m_outputResource2.ToString();
                     ___m_outputLabel.text = text;
                     ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                    ___m_outputSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
+                    ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                     ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(newExtractingFacilityAI.m_outputResource2);
                     ___m_ShowIndustryInfoButton.isVisible = true;
                 }
-		
+
+                if (newExtractingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
+                {
+                    ___m_VariationPanel.isVisible = true;
+                    List<string> list = [];
+                    int selectedIndex = -1;
+                    for (int i = 0; i < variations.m_size; i++)
+                    {
+                        string id = "FIELDVARIATION" + "_" + Singleton<SimulationManager>.instance.m_metaData.m_environment.ToUpper();
+                        string empty = (Locale.Exists(id, variations.m_buffer[i].m_info.name) ? Locale.Get(id, variations.m_buffer[i].m_info.name) : ((!Locale.Exists("FIELDVARIATION", variations.m_buffer[i].m_info.name)) ? variations.m_buffer[i].m_info.GetUncheckedLocalizedTitle() : Locale.Get("FIELDVARIATION", variations.m_buffer[i].m_info.name)));
+                        list.Add(empty);
+                        if (newExtractingFacilityAI.m_info.name == variations.m_buffer[i].m_info.name)
+                        {
+                            selectedIndex = i;
+                        }
+                    }
+                    ___m_VariationDropdown.items = list.ToArray();
+                    ___m_VariationDropdown.selectedIndex = selectedIndex;
+                }
+
                 return false;
 	    }
             return true;
@@ -106,7 +126,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPostfix]
-        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection)
+        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection)
         {
             ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
@@ -114,7 +134,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             ExtendedFishingHarborAI m_extendedFishingHarborAI = data.Info.GetAI() as ExtendedFishingHarborAI;
             ExtendedFishFarmAI m_extendedfishFarmAI = data.Info.GetAI() as ExtendedFishFarmAI;
             FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
-
             if (m_aquacultureFarmAI != null)
             {
                 ___m_outputSection.isVisible = true;
@@ -175,5 +194,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             AquacultureExtractorPanel.ExtractorDropdownCheck();
         }
 
+        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnVariationDropdownChanged")]
+        [HarmonyPrefix]
+        public static bool OnVariationDropdownChanged(CityServiceWorldInfoPanel __instance, UIComponent component, int value, ref IndustryBuildingAI ___m_IndustryBuildingAI)
+        {
+            if(___m_IndustryBuildingAI == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

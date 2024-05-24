@@ -6,11 +6,12 @@ using ColossalFramework.UI;
 using ICities;
 using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
-using IndustriesMeetsSunsetHarbor.Utils;
 using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
 using System.Reflection;
+using ColossalFramework.Threading;
+using HarmonyLib;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -56,6 +57,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UILabel m_expenses;
 
+        private UIPanel m_VariationPanel;
+
+        private UIDropDown m_VariationDropdown;
+
+        private NewProcessingFacilityAI m_NewProcessingFacilityAI;
+
         private UIComponent m_MovingPanel;
 
         private List<string> m_inputItems;
@@ -94,6 +101,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
             }
         }
+
+        private delegate void CityServiceWorldInfoPanelOnVariationDropdownChangedDelegate(UIComponent component, int value);
+        private static CityServiceWorldInfoPanelOnVariationDropdownChangedDelegate CityOnVariationDropdownChanged = AccessTools.MethodDelegate<CityServiceWorldInfoPanelOnVariationDropdownChangedDelegate>(typeof(CityServiceWorldInfoPanel).GetMethod("OnVariationDropdownChanged", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
+
+
 
         protected override void Start()
         {
@@ -173,8 +185,46 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
 
+            var _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
+
+            var City_VariationPanel = _cityServiceWorldInfoPanel.Find<UIPanel>("VariationPanel");
+
+            GameObject VariationPanel = Instantiate(City_VariationPanel.gameObject, Diagram.transform);
+
+            m_VariationPanel = VariationPanel.GetComponent<UIPanel>();
+
+            m_VariationPanel.transform.SetParent(Diagram.transform);
+
+            m_VariationPanel.relativePosition = new Vector3(100, 316);
+
+            Diagram.AttachUIComponent(m_VariationPanel.gameObject);
+
+            m_VariationDropdown = m_VariationPanel.Find<UIDropDown>("DropdownVariation");
+            m_VariationDropdown.eventSelectedIndexChanged += OnVariationDropdownChanged;
+
             m_inputItems = [];
             m_outputItems = [];
+        }
+
+        private void OnVariationDropdownChanged(UIComponent component, int value)
+        {
+            if (!m_NewProcessingFacilityAI.GetVariations(out var variations))
+            {
+                return;
+            }
+            Singleton<SimulationManager>.instance.AddAction(delegate
+            {
+                if (Singleton<BuildingManager>.exists)
+                {
+                    Singleton<BuildingManager>.instance.UpdateBuildingInfo(m_InstanceID.Building, variations[m_VariationDropdown.selectedIndex].m_info);
+                    ThreadHelper.dispatcher.Dispatch(delegate
+                    {
+                        m_NameField.text = GetName();
+                    });
+                    IndustryBuildingAI industryBuildingAI = (IndustryBuildingAI)Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI;
+                    industryBuildingAI.SetLastVariationIndex(value);
+                }
+            });
         }
 
         private void OnProductionRateChanged(UIComponent component, float value)
@@ -199,10 +249,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
         protected override void OnSetTarget()
         {
             base.OnSetTarget();
-            NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
-            m_inputResourceCount = GetInputResourceCount(ref m_inputItems, newProcessingFacilityAI);
+            ushort building = m_InstanceID.Building;
+            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
+            m_NewProcessingFacilityAI = data.Info.m_buildingAI as NewProcessingFacilityAI;
+            m_inputResourceCount = GetInputResourceCount(ref m_inputItems, m_NewProcessingFacilityAI);
             m_inputs.SetItemCount(m_inputResourceCount);
-            m_outputResourceCount = GetOutputResourceCount(ref m_outputItems, newProcessingFacilityAI);
+            m_outputResourceCount = GetOutputResourceCount(ref m_outputItems, m_NewProcessingFacilityAI);
             m_outputs.SetItemCount(m_outputResourceCount);
             m_horizontalLine.width = m_inputContainer.width;
             for (int i = 0; i < m_inputResourceCount; i++)
@@ -228,6 +280,25 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     uISprite.atlas = atlas;
                 }
                 uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
+            }
+            m_VariationPanel.isVisible = false;
+            if (m_NewProcessingFacilityAI != null && m_NewProcessingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
+            {
+                m_VariationPanel.isVisible = true;
+                List<string> list = [];
+                int selectedIndex = -1;
+                for (int i = 0; i < variations.m_size; i++)
+                {
+                    string id = "FIELDVARIATION" + "_" + Singleton<SimulationManager>.instance.m_metaData.m_environment.ToUpper();
+                    string empty = (Locale.Exists(id, variations.m_buffer[i].m_info.name) ? Locale.Get(id, variations.m_buffer[i].m_info.name) : ((!Locale.Exists("FIELDVARIATION", variations.m_buffer[i].m_info.name)) ? variations.m_buffer[i].m_info.GetUncheckedLocalizedTitle() : Locale.Get("FIELDVARIATION", variations.m_buffer[i].m_info.name)));
+                    list.Add(empty);
+                    if (m_NewProcessingFacilityAI.m_info.name == variations.m_buffer[i].m_info.name)
+                    {
+                        selectedIndex = i;
+                    }
+                }
+                m_VariationDropdown.items = list.ToArray();
+                m_VariationDropdown.selectedIndex = selectedIndex;
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
             if (productionRate > 0)
@@ -354,7 +425,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(newProcessingFacilityAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = newProcessingFacilityAI.GetLocalizedStatus(buildingId, ref building);
 
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
             if (m_mainPanel != null)
             {
                 if(m_inputResourceCount > 4)
@@ -415,6 +485,21 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + outputResource.ToString();
                     productStorage.tooltip = text;
                 }
+            }
+            if ((building.m_flags & Building.Flags.Collapsed) != 0)
+            {
+                m_VariationDropdown.isEnabled = false;
+                m_VariationDropdown.tooltip = Locale.Get("VARIATIONBUILDING_COLLAPSED_TOOLTIP");
+            }
+            else if (building.m_fireIntensity > 0)
+            {
+                m_VariationDropdown.isEnabled = false;
+                m_VariationDropdown.tooltip = Locale.Get("VARIATIONBUILDING_ONFIRE_TOOLTIP");
+            }
+            else
+            {
+                m_VariationDropdown.isEnabled = true;
+                m_VariationDropdown.tooltip = string.Empty;
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (newProcessingFacilityAI.m_workPlaceCount0 + newProcessingFacilityAI.m_workPlaceCount1 + newProcessingFacilityAI.m_workPlaceCount2 + newProcessingFacilityAI.m_workPlaceCount3).ToString());
             if ((building.m_flags & Building.Flags.Collapsed) != 0)
