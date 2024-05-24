@@ -235,6 +235,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = __instance.gameObject.AddComponent<NewUniqueFactoryAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Ship;
+                        newAI.m_outputVehicleCount2 = 0;
                     }
                     else if (__instance.name.Contains("Animal Pasture 01") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
@@ -305,7 +306,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Cows;
                         newAI.m_inputResource6 = ExtendedTransferManager.TransferReason.HighlandCows;
                     }
-                    else if (__instance.name.Contains("Milking Parlor") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Contains("Milking Parlour") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
                         Object.DestroyImmediate(oldAI);
