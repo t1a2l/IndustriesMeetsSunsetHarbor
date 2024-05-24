@@ -105,8 +105,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private delegate void CityServiceWorldInfoPanelOnVariationDropdownChangedDelegate(UIComponent component, int value);
         private static CityServiceWorldInfoPanelOnVariationDropdownChangedDelegate CityOnVariationDropdownChanged = AccessTools.MethodDelegate<CityServiceWorldInfoPanelOnVariationDropdownChangedDelegate>(typeof(CityServiceWorldInfoPanel).GetMethod("OnVariationDropdownChanged", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-
-
         protected override void Start()
         {
             m_status = Find<UILabel>("Status");
@@ -678,6 +676,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_inputResource8":
                     return newProcessingFacilityAI.m_inputResource8.ToString();
             }
+            if(key == "Animal Products")
+            {
+                return "Meat";
+            }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }
 
@@ -773,7 +775,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 "m_inputResource2" => newProcessingFacilityAI.m_inputResource2,
                 "m_inputResource3" => newProcessingFacilityAI.m_inputResource3,
                 "m_inputResource4" => newProcessingFacilityAI.m_inputResource4,
-                _ => TransferManager.TransferReason.None,
+                _ => TransferManager.TransferReason.None
             };
         }
 
@@ -792,11 +794,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
             NewProcessingFacilityAI newProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as NewProcessingFacilityAI;
             return items[resourceIndex] switch
             {
-                "m_inputResource1" => newProcessingFacilityAI.m_inputResource5,
-                "m_inputResource2" => newProcessingFacilityAI.m_inputResource6,
-                "m_inputResource3" => newProcessingFacilityAI.m_inputResource7,
-                "m_inputResource4" => newProcessingFacilityAI.m_inputResource8,
-                _ => ExtendedTransferManager.TransferReason.None,
+                "m_inputResource5" => newProcessingFacilityAI.m_inputResource5,
+                "m_inputResource6" => newProcessingFacilityAI.m_inputResource6,
+                "m_inputResource7" => newProcessingFacilityAI.m_inputResource7,
+                "m_inputResource8" => newProcessingFacilityAI.m_inputResource8,
+                _ => ExtendedTransferManager.TransferReason.None
             };
         }
 

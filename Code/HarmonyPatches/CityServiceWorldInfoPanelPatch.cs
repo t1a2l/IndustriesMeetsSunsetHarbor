@@ -157,6 +157,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedFishingHarborAI.m_outputResource.ToString());
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_extendedFishingHarborAI.m_outputResource);
                 ___m_ShowIndustryInfoButton.isVisible = false;
                 int num = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
@@ -171,7 +172,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 string text = m_extendedfishFarmAI.m_outputResource.ToString();
                 ___m_outputLabel.text = text;
 		___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                ___m_outputSprite.atlas = TextureUtils.GetAtlas("IndustriesAtlas");
+                ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_extendedfishFarmAI.m_outputResource);
 		___m_ShowIndustryInfoButton.isVisible = false;
             }
