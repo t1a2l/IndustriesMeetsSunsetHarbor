@@ -247,6 +247,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
         protected override void OnSetTarget()
         {
             base.OnSetTarget();
+            m_inputItems = [];
+            m_outputItems = [];
             ushort building = m_InstanceID.Building;
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             m_NewProcessingFacilityAI = data.Info.m_buildingAI as NewProcessingFacilityAI;

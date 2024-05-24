@@ -136,109 +136,112 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
-            if (infoMode == InfoManager.InfoMode.Connections)
+            switch (infoMode)
             {
-                if (subInfoMode == InfoManager.SubInfoMode.Default)
-                {
-                    if (m_inputResource1 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 1) != 0)
+                case InfoManager.InfoMode.Connections:
+                    switch (subInfoMode)
                     {
-                        return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource1];
+                        case InfoManager.SubInfoMode.Default:
+                            if (m_inputResource1 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 1) != 0)
+                            {
+                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource1];
+                            }
+                            if (m_inputResource2 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 2) != 0)
+                            {
+                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource2];
+                            }
+                            if (m_inputResource3 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 4) != 0)
+                            {
+                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource3];
+                            }
+                            if (m_inputResource4 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
+                            {
+                                return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource4];
+                            }
+                            if (m_inputResource5 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
+                            {
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource5];
+                            }
+                            if (m_inputResource6 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
+                            {
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource6];
+                            }
+                            if (m_inputResource7 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
+                            {
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource7];
+                            }
+                            if (m_inputResource8 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
+                            {
+                                return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource8];
+                            }
+                            break;
+                        case InfoManager.SubInfoMode.WaterPower:
+                            {
+                                if (m_outputResource1 != TransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                                {
+                                    return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource1];
+                                }
+                                if (m_outputResource2 != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                                {
+                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource2];
+                                }
+                                if (m_outputResource3 != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                                {
+                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource3];
+                                }
+                                if (m_outputResource4 != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                                {
+                                    return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource4];
+                                }
+                                if (DistrictPark.IsPedestrianReason(m_outputResource1, out var index1))
+                                {
+                                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index1] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index1] != 0))
+                                    {
+                                        return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource1];
+                                    }
+                                }
+                                if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource2, out var index2))
+                                {
+                                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index2] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index2] != 0))
+                                    {
+                                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource2];
+                                    }
+                                }
+                                if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource3, out var index3))
+                                {
+                                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index3] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index3] != 0))
+                                    {
+                                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource3];
+                                    }
+                                }
+                                if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource4, out var index4))
+                                {
+                                    byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
+                                    if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index4] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index4] != 0))
+                                    {
+                                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource3];
+                                    }
+                                }
+                                break;
+                            }
                     }
-                    if (m_inputResource2 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 2) != 0)
+                    return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                case InfoManager.InfoMode.Fishing:
+                    if (m_inputResource1 == TransferManager.TransferReason.Fish)
                     {
-                        return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource2];
-                    }
-                    if (m_inputResource3 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 4) != 0)
-                    {
-                        return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource3];
-                    }
-                    if (m_inputResource4 != TransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
-                    {
-                        return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource4];
-                    }
-                    if (m_inputResource5 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource5];
-                    }
-                    if (m_inputResource6 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource6];
-                    }
-                    if (m_inputResource7 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource7];
-                    }
-                    if (m_inputResource8 != ExtendedTransferManager.TransferReason.None && ((data.m_tempImport | data.m_finalImport) & 8) != 0)
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_inputResource8];
-                    }
-                }
-                if (subInfoMode == InfoManager.SubInfoMode.WaterPower)
-                {
-                    if (m_outputResource1 != TransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
-                    {
-                        return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource1];
-                    }
-                    if (m_outputResource2 != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource2];
-                    }
-                    if (m_outputResource3 != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource3];
-                    }
-                    if (m_outputResource4 != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
-                    {
-                        return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource4];
-                    }
-                    if (DistrictPark.IsPedestrianReason(m_outputResource1, out var index1))
-                    {
-                        byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
-                        if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index1] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index1] != 0))
+                        if ((data.m_flags & Building.Flags.Active) != 0)
                         {
-                            return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource1];
+                            return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
                         }
+                        return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
                     }
-                    if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource2, out var index2))
-                    {
-                        byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
-                        if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index2] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index2] != 0))
-                        {
-                            return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource2];
-                        }
-                    }
-                    if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource3, out var index3))
-                    {
-                        byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
-                        if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index3] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index3] != 0))
-                        {
-                            return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource3];
-                        }
-                    }
-                    if (ExtendedDistrictPark.IsPedestrianReason(m_outputResource4, out var index4))
-                    {
-                        byte park = Singleton<DistrictManager>.instance.GetPark(data.m_position);
-                        if (park != 0 && Singleton<DistrictManager>.instance.m_parks.m_buffer[park].IsPedestrianZone && (Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_tempExport[index4] != 0 || Singleton<DistrictManager>.instance.m_parks.m_buffer[park].m_finalExport[index4] != 0))
-                        {
-                            return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)m_outputResource3];
-                        }
-                    }
-                }
-                return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
+                    return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
+                default:
+                    return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
             }
-            if (infoMode != InfoManager.InfoMode.Fishing)
-            {
-                return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
-            }
-            if (m_inputResource1 != TransferManager.TransferReason.Fish)
-            {
-                return base.GetColor(buildingID, ref data, infoMode, subInfoMode);
-            }
-            if ((data.m_flags & Building.Flags.Active) != Building.Flags.None)
-            {
-                return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
-            }
-            return Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
         }
 
         public override void GetPlacementInfoMode(out InfoManager.InfoMode mode, out InfoManager.SubInfoMode subMode, float elevation)

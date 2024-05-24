@@ -7,7 +7,7 @@ using UnityEngine;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons.AI;
 
-namespace IndustriesMeetsSunsetHarbor.Code.AI
+namespace IndustriesMeetsSunsetHarbor.AI
 {
 
     public class NewExtractingFacilityAI : IndustryBuildingAI, IExtendedBuildingAI

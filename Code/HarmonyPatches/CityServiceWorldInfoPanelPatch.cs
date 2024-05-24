@@ -5,8 +5,6 @@ using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using ColossalFramework;
 using IndustriesMeetsSunsetHarbor.Managers;
-using IndustriesMeetsSunsetHarbor.Code.AI;
-using IndustriesMeetsSunsetHarbor.Utils;
 using System.Reflection;
 using MoreTransferReasons;
 using System.Collections.Generic;
@@ -132,7 +130,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             AquacultureFarmAI m_aquacultureFarmAI = data.Info.GetAI() as AquacultureFarmAI;
             ExtendedFishingHarborAI m_extendedFishingHarborAI = data.Info.GetAI() as ExtendedFishingHarborAI;
-            ExtendedFishFarmAI m_extendedfishFarmAI = data.Info.GetAI() as ExtendedFishFarmAI;
+            ExtendedFishFarmAI m_extendedFishFarmAI = data.Info.GetAI() as ExtendedFishFarmAI;
             FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
             if (m_aquacultureFarmAI != null)
             {
@@ -154,7 +152,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputSection.isVisible = true;
                 ___m_inputOutputSection.isVisible = true;
                 ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_extendedFishingHarborAI.m_outputResource);
-                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedFishingHarborAI.m_outputResource.ToString());
+                string text = m_extendedFishingHarborAI.m_outputResource.ToString();
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
                 ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
@@ -166,14 +164,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)num), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)storageBufferSize, m_extendedFishingHarborAI.m_outputResource));
             }
 
-            if (m_extendedfishFarmAI != null)
+            if (m_extendedFishFarmAI != null)
             {
-                ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_extendedfishFarmAI.m_outputResource);
-                string text = m_extendedfishFarmAI.m_outputResource.ToString();
+                ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_extendedFishFarmAI.m_outputResource);
+                string text = m_extendedFishFarmAI.m_outputResource.ToString();
                 ___m_outputLabel.text = text;
 		___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
                 ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
-                ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_extendedfishFarmAI.m_outputResource);
+                ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_extendedFishFarmAI.m_outputResource);
 		___m_ShowIndustryInfoButton.isVisible = false;
             }
 
