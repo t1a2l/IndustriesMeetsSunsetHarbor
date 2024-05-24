@@ -263,9 +263,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
                 uILabel.text = GetInputResourceName(ref m_inputItems, i);
                 var atlas = GetInputResourceAtlas(ref m_inputItems, i);
-                if(atlas != null)
+                if (atlas != null)
                 {
                     uISprite.atlas = atlas;
+                }
+                else
+                {
+                    uISprite.atlas = UITextures.InGameAtlas;
                 }
                 uISprite.spriteName = GetInputResourceSpriteName(ref m_inputItems, i);
             }
@@ -278,6 +282,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 if (atlas != null)
                 {
                     uISprite.atlas = atlas;
+                }
+                else
+                {
+                    uISprite.atlas = UITextures.InGameAtlas;
                 }
                 uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
             }
@@ -677,10 +685,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     return newProcessingFacilityAI.m_inputResource7.ToString();
                 case "m_inputResource8":
                     return newProcessingFacilityAI.m_inputResource8.ToString();
-            }
-            if(key == "Animal Products")
-            {
-                return "Meat";
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }

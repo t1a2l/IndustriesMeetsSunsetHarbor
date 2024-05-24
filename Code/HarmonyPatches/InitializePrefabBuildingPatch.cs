@@ -70,14 +70,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource = ExtendedTransferManager.TransferReason.Tuna;
                     }
-                    else if (__instance.name.Contains("Fish Farm 01") && __instance.GetAI() is not ExtendedFishFarmAI && !__instance.name.Contains("Sub"))
-                    {
-                        var oldAI = __instance.GetComponent<PrefabAI>();
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = __instance.gameObject.AddComponent<ExtendedFishFarmAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource = ExtendedTransferManager.TransferReason.Trout;
-                    }
+                    //else if (__instance.name.Contains("Fish Farm 01") && __instance.GetAI() is not ExtendedFishFarmAI && !__instance.name.Contains("Sub"))
+                    //{
+                    //    var oldAI = __instance.GetComponent<PrefabAI>();
+                    //    Object.DestroyImmediate(oldAI);
+                    //    var newAI = __instance.gameObject.AddComponent<ExtendedFishFarmAI>();
+                    //    PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                    //    newAI.m_outputResource = ExtendedTransferManager.TransferReason.Trout;
+                    //}
                     else if (__instance.name.Contains("Fish Farm 02") && __instance.GetAI() is not ExtendedFishFarmAI && !__instance.name.Contains("Sub"))
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();

@@ -23,7 +23,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPrefix]
-        public static bool PreSetTarget(CityServiceWorldInfoPanel __instance, ref bool ___m_needResetTarget, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel, ref UIDropDown ___m_VariationDropdown)
+        public static bool PreSetTarget(CityServiceWorldInfoPanel __instance, ref bool ___m_needResetTarget, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel, ref UIDropDown ___m_VariationDropdown, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_outputSection)
 	{
 	    ___m_needResetTarget = false;
 	    BaseOnSetTarget(__instance);
@@ -37,12 +37,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             if (newExtractingFacilityAI != null)
 	    {
                 ___m_inputSection.isVisible = false;
+                ___m_outputSection.isVisible = true;
+                ___m_inputOutputSection.isVisible = true;
                 if (newExtractingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
                 {
                     ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(newExtractingFacilityAI.m_outputResource1);
                     string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", newExtractingFacilityAI.m_outputResource1.ToString());
                     ___m_outputLabel.text = text;
                     ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                    ___m_outputSprite.atlas = UITextures.InGameAtlas;
                     ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(newExtractingFacilityAI.m_outputResource1);
                     ___m_ShowIndustryInfoButton.isVisible = true;
                 }
@@ -78,6 +81,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
                 return false;
 	    }
+            if(data.Info.GetAI() is FishingHarborAI)
+            {
+                ___m_outputSprite.atlas = UITextures.InGameAtlas;
+            }
             return true;
         }
 
@@ -134,6 +141,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
             if (m_aquacultureFarmAI != null)
             {
+                ___m_inputSection.isVisible = false;
                 ___m_outputSection.isVisible = true;
                 ___m_inputOutputSection.isVisible = true;
                 ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_aquacultureFarmAI.m_outputResource);
@@ -149,6 +157,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             if (m_extendedFishingHarborAI != null)
             {
+                ___m_inputSection.isVisible = false;
                 ___m_outputSection.isVisible = true;
                 ___m_inputOutputSection.isVisible = true;
                 ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_extendedFishingHarborAI.m_outputResource);
@@ -166,6 +175,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
             if (m_extendedFishFarmAI != null)
             {
+                ___m_inputSection.isVisible = false;
+                ___m_outputSection.isVisible = true;
+                ___m_inputOutputSection.isVisible = true;
                 ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(m_extendedFishFarmAI.m_outputResource);
                 string text = m_extendedFishFarmAI.m_outputResource.ToString();
                 ___m_outputLabel.text = text;
@@ -177,6 +189,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
             if (m_fishFarmAI != null && m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain)
             {
+                ___m_inputSection.isVisible = false;
                 ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_fishFarmAI.m_outputResource);
                 string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
                 ___m_outputLabel.text = text4;
@@ -184,7 +197,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_fishFarmAI.m_outputResource);
                 ___m_ShowIndustryInfoButton.isVisible = false;
             }
-
+            if (data.Info.GetAI() is FishingHarborAI)
+            {
+                ___m_outputSprite.atlas = UITextures.InGameAtlas;
+            }
             if (AquacultureExtractorPanel._aquacultureExtractorPanel == null)
             {
                 AquacultureExtractorPanel.Init();
