@@ -1121,6 +1121,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
+                var x = instance.m_parks.m_buffer[b];
+
                 if (m_inputResource1 != TransferManager.TransferReason.None)
                 {
                     int Input1ProductionRate = (m_inputRate1 * finalProductionRate + 99) / 100;
@@ -1189,21 +1191,21 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     CustomBuffer10 = Mathf.Min(OutputBufferSize2, CustomBuffer10 + OutputProductionRate);
                     custom_buffers.m_customBuffer10 = (ushort)CustomBuffer10;
-                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(m_outputResource2, OutputProductionRate);
+                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource2, OutputProductionRate);
                 }
                 if (m_outputResource3 != ExtendedTransferManager.TransferReason.None)
                 {
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     CustomBuffer11 = Mathf.Min(OutputBufferSize3, CustomBuffer11 + OutputProductionRate);
                     custom_buffers.m_customBuffer11 = (ushort)CustomBuffer11;
-                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(m_outputResource3, OutputProductionRate);
+                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource3, OutputProductionRate);
                 }
                 if (m_outputResource4 != ExtendedTransferManager.TransferReason.None)
                 {
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     CustomBuffer12 = Mathf.Min(OutputBufferSize4, CustomBuffer12 + OutputProductionRate);
                     custom_buffers.m_customBuffer12 = (ushort)CustomBuffer12;
-                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(m_outputResource4, OutputProductionRate);
+                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource4, OutputProductionRate);
                 }
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 num16 = (finalProductionRate * num16 + 50) / 100;

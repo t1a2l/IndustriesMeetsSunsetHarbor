@@ -524,7 +524,7 @@ namespace IndustriesMeetsSunsetHarbor.Code.AI
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     CustomBuffer2 = Mathf.Min(OutputBufferSize2, CustomBuffer2 + OutputProductionRate);
                     custom_buffers.m_customBuffer2 = (ushort)CustomBuffer2;
-                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(m_outputResource2, OutputProductionRate);
+                    instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource2, OutputProductionRate);
                 }
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 num18 = (finalProductionRate * num18 + 50) / 100;
