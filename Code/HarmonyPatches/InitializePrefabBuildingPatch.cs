@@ -219,7 +219,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.HouseParts;
                     }
-                    else if (__instance.name.Contains("Car Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Equals("Car Factory 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
                         Object.DestroyImmediate(oldAI);
@@ -227,7 +227,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cars;
                     }
-                    else if (__instance.name.Contains("Dry Dock 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Equals("Dry Dock 01") && __instance.GetAI() is not NewUniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
                         Object.DestroyImmediate(oldAI);

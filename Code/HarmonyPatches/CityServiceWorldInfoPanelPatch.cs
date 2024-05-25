@@ -15,78 +15,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(CityServiceWorldInfoPanel))]
     public static class CityServiceWorldInfoPanelPatch
     {
-        private delegate void BuildingWorldInfoPanelOnSetTargetDelegate(BuildingWorldInfoPanel instance);
-        private static BuildingWorldInfoPanelOnSetTargetDelegate BaseOnSetTarget = AccessTools.MethodDelegate<BuildingWorldInfoPanelOnSetTargetDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("OnSetTarget", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
         private delegate void BuildingWorldInfoPanelUpdateBindingsDelegate(BuildingWorldInfoPanel instance);
         private static BuildingWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<BuildingWorldInfoPanelUpdateBindingsDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
-        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
-        [HarmonyPrefix]
-        public static bool PreSetTarget(CityServiceWorldInfoPanel __instance, ref bool ___m_needResetTarget, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel, ref UIDropDown ___m_VariationDropdown, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_outputSection)
-	{
-	    ___m_needResetTarget = false;
-	    BaseOnSetTarget(__instance);
-	    if (___m_InstanceID.Type != InstanceType.Building || ___m_InstanceID.Building == 0)
-	    {
-		return false;
-	    }
-	    ushort building = ___m_InstanceID.Building;
-	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
-            NewExtractingFacilityAI newExtractingFacilityAI = data.Info.GetAI() as NewExtractingFacilityAI;
-            if (newExtractingFacilityAI != null)
-	    {
-                ___m_inputSection.isVisible = false;
-                ___m_outputSection.isVisible = true;
-                ___m_inputOutputSection.isVisible = true;
-                if (newExtractingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
-                {
-                    ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(newExtractingFacilityAI.m_outputResource1);
-                    string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", newExtractingFacilityAI.m_outputResource1.ToString());
-                    ___m_outputLabel.text = text;
-                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                    ___m_outputSprite.atlas = UITextures.InGameAtlas;
-                    ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(newExtractingFacilityAI.m_outputResource1);
-                    ___m_ShowIndustryInfoButton.isVisible = true;
-                }
-                if (newExtractingFacilityAI.m_outputResource2 != ExtendedTransferManager.TransferReason.None)
-                {
-                    ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(newExtractingFacilityAI.m_outputResource2);
-                    string text = newExtractingFacilityAI.m_outputResource2.ToString();
-                    ___m_outputLabel.text = text;
-                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                    ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
-                    ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(newExtractingFacilityAI.m_outputResource2);
-                    ___m_ShowIndustryInfoButton.isVisible = true;
-                }
-
-                if (newExtractingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
-                {
-                    ___m_VariationPanel.isVisible = true;
-                    List<string> list = [];
-                    int selectedIndex = -1;
-                    for (int i = 0; i < variations.m_size; i++)
-                    {
-                        string id = "FIELDVARIATION" + "_" + Singleton<SimulationManager>.instance.m_metaData.m_environment.ToUpper();
-                        string empty = (Locale.Exists(id, variations.m_buffer[i].m_info.name) ? Locale.Get(id, variations.m_buffer[i].m_info.name) : ((!Locale.Exists("FIELDVARIATION", variations.m_buffer[i].m_info.name)) ? variations.m_buffer[i].m_info.GetUncheckedLocalizedTitle() : Locale.Get("FIELDVARIATION", variations.m_buffer[i].m_info.name)));
-                        list.Add(empty);
-                        if (newExtractingFacilityAI.m_info.name == variations.m_buffer[i].m_info.name)
-                        {
-                            selectedIndex = i;
-                        }
-                    }
-                    ___m_VariationDropdown.items = list.ToArray();
-                    ___m_VariationDropdown.selectedIndex = selectedIndex;
-                }
-
-                return false;
-	    }
-            if(data.Info.GetAI() is FishingHarborAI)
-            {
-                ___m_outputSprite.atlas = UITextures.InGameAtlas;
-            }
-            return true;
-        }
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
         [HarmonyPrefix]
@@ -131,7 +61,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPostfix]
-        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection)
+        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel, ref UIDropDown ___m_VariationDropdown)
         {
             ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
@@ -139,6 +69,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             ExtendedFishingHarborAI m_extendedFishingHarborAI = data.Info.GetAI() as ExtendedFishingHarborAI;
             ExtendedFishFarmAI m_extendedFishFarmAI = data.Info.GetAI() as ExtendedFishFarmAI;
             FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
+            NewExtractingFacilityAI newExtractingFacilityAI = data.Info.GetAI() as NewExtractingFacilityAI;
             if (m_aquacultureFarmAI != null)
             {
                 ___m_inputSection.isVisible = false;
@@ -185,6 +116,52 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(m_extendedFishFarmAI.m_outputResource);
 		___m_ShowIndustryInfoButton.isVisible = false;
+            }
+
+            if (newExtractingFacilityAI != null)
+            {
+                ___m_inputSection.isVisible = false;
+                ___m_outputSection.isVisible = true;
+                ___m_inputOutputSection.isVisible = true;
+                if (newExtractingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
+                {
+                    ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(newExtractingFacilityAI.m_outputResource1);
+                    string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", newExtractingFacilityAI.m_outputResource1.ToString());
+                    ___m_outputLabel.text = text;
+                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                    ___m_outputSprite.atlas = UITextures.InGameAtlas;
+                    ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(newExtractingFacilityAI.m_outputResource1);
+                    ___m_ShowIndustryInfoButton.isVisible = true;
+                }
+                if (newExtractingFacilityAI.m_outputResource2 != ExtendedTransferManager.TransferReason.None)
+                {
+                    ___m_outputBuffer.progressColor = IndustryBuildingManager.GetExtendedResourceColor(newExtractingFacilityAI.m_outputResource2);
+                    string text = newExtractingFacilityAI.m_outputResource2.ToString();
+                    ___m_outputLabel.text = text;
+                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
+                    ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    ___m_outputSprite.spriteName = IndustryBuildingManager.ResourceSpriteName(newExtractingFacilityAI.m_outputResource2);
+                    ___m_ShowIndustryInfoButton.isVisible = true;
+                }
+
+                if (newExtractingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
+                {
+                    ___m_VariationPanel.isVisible = true;
+                    List<string> list = [];
+                    int selectedIndex = -1;
+                    for (int i = 0; i < variations.m_size; i++)
+                    {
+                        string id = "FIELDVARIATION" + "_" + Singleton<SimulationManager>.instance.m_metaData.m_environment.ToUpper();
+                        string empty = (Locale.Exists(id, variations.m_buffer[i].m_info.name) ? Locale.Get(id, variations.m_buffer[i].m_info.name) : ((!Locale.Exists("FIELDVARIATION", variations.m_buffer[i].m_info.name)) ? variations.m_buffer[i].m_info.GetUncheckedLocalizedTitle() : Locale.Get("FIELDVARIATION", variations.m_buffer[i].m_info.name)));
+                        list.Add(empty);
+                        if (newExtractingFacilityAI.m_info.name == variations.m_buffer[i].m_info.name)
+                        {
+                            selectedIndex = i;
+                        }
+                    }
+                    ___m_VariationDropdown.items = list.ToArray();
+                    ___m_VariationDropdown.selectedIndex = selectedIndex;
+                }
             }
 
             if (m_fishFarmAI != null && m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain)
