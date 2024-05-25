@@ -5,7 +5,6 @@ using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using ColossalFramework;
 using IndustriesMeetsSunsetHarbor.Managers;
-using System.Reflection;
 using MoreTransferReasons;
 using System.Collections.Generic;
 
@@ -15,14 +14,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(CityServiceWorldInfoPanel))]
     public static class CityServiceWorldInfoPanelPatch
     {
-        private delegate void BuildingWorldInfoPanelUpdateBindingsDelegate(BuildingWorldInfoPanel instance);
-        private static BuildingWorldInfoPanelUpdateBindingsDelegate BaseUpdateBindings = AccessTools.MethodDelegate<BuildingWorldInfoPanelUpdateBindingsDelegate>(typeof(BuildingWorldInfoPanel).GetMethod("UpdateBindings", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
-        [HarmonyPrefix]
-        public static bool PreUpdateBindings(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UISprite ___m_BuildingService, ref UIProgressBar ___m_outputBuffer, ref UIPanel ___m_outputSection)
+        [HarmonyPostfix]
+        public static void PostUpdateBindings(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UISprite ___m_BuildingService, ref UIProgressBar ___m_outputBuffer, ref UIPanel ___m_outputSection)
 	{
-            BaseUpdateBindings(__instance);
 	    if (Singleton<BuildingManager>.exists && ___m_InstanceID.Type == InstanceType.Building && ___m_InstanceID.Building != 0)
 	    {
 		ushort buildingId = ___m_InstanceID.Building;
@@ -52,11 +47,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
                         ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource2));
                     }
-
-                    return false;
                 }
             }
-            return true;
         }
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
