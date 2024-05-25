@@ -290,7 +290,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
             }
             m_VariationPanel.isVisible = false;
-            if (m_NewProcessingFacilityAI != null && m_NewProcessingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
+            var IsCarFactory = false;
+            if(m_NewProcessingFacilityAI.m_outputResource2 == ExtendedTransferManager.TransferReason.Cars)
+            {
+                IsCarFactory = true;
+            }
+            if (m_NewProcessingFacilityAI != null && !IsCarFactory && m_NewProcessingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
             {
                 m_VariationPanel.isVisible = true;
                 List<string> list = [];
