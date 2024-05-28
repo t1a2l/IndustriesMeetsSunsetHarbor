@@ -144,14 +144,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
             DestroyImmediate(outputResourceStorage.gameObject);
 
-            UITemplateManager instance = Singleton<UITemplateManager>.instance;
-
-            var m_Templates = (Dictionary<string, UIComponent>)typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(instance);
-
-            m_Templates.Add("UniqueFactoryOutputResource", outputResource_Panel);
-
-            typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instance, m_Templates);
-
             var UniqueFactoryInputResource = m_inputContainer.Find<UIPanel>("UniqueFactoryInputResource");
 
             UniqueFactoryInputResource.transform.parent = null;
