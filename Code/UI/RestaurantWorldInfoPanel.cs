@@ -722,7 +722,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         public void TempShow(Vector3 worldPosition, InstanceID instanceID)
         {
             movingPanel.Hide();
-            Show<NewUniqueFactoryWorldInfoPanel>(worldPosition, instanceID);
+            Show<RestaurantWorldInfoPanel>(worldPosition, instanceID);
             ValueAnimator.Animate("Relocating", delegate (float val)
             {
                 base.component.opacity = val;

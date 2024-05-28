@@ -473,7 +473,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private string GetOutputResourceName(ref List<string> items, int resourceIndex)
         {
             MultiProcessingFacilityAI multiProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as MultiProcessingFacilityAI;
-            string key = "N/A";
             switch (items[resourceIndex])
             {
                 case "m_outputResource1":
