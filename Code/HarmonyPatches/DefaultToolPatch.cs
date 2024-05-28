@@ -16,12 +16,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             if (id.Building != 0)
             {
                 BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id.Building].Info;
+                MultiProcessingFacilityAI multiProcessingFacilityAI = info.m_buildingAI as MultiProcessingFacilityAI;
                 NewProcessingFacilityAI newProcessingFacilityAI = info.m_buildingAI as NewProcessingFacilityAI;
                 NewUniqueFactoryAI newUniqueFactoryAI = info.m_buildingAI as NewUniqueFactoryAI;
                 RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
                 if (Singleton<InstanceManager>.instance.SelectInstance(id))
                 {
-                    if(newUniqueFactoryAI != null || newProcessingFacilityAI != null)
+                    if(newUniqueFactoryAI != null || newProcessingFacilityAI != null || multiProcessingFacilityAI != null)
 		    {
 		        WorldInfoPanel.Show<NewUniqueFactoryWorldInfoPanel>(position, id);
                         return false;
