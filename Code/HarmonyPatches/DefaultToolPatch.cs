@@ -22,11 +22,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
                 if (Singleton<InstanceManager>.instance.SelectInstance(id))
                 {
-                    if(newUniqueFactoryAI != null || newProcessingFacilityAI != null || multiProcessingFacilityAI != null)
+                    if(newUniqueFactoryAI != null || newProcessingFacilityAI != null)
 		    {
-		        WorldInfoPanel.Show<NewUniqueFactoryWorldInfoPanel>(position, id);
+		        WorldInfoPanel.Show<NewProcessingFacilityWorldInfoPanel>(position, id);
                         return false;
 		    }
+                    else if (multiProcessingFacilityAI != null)
+                    {
+                        WorldInfoPanel.Show<NewMultiProcessingFacilityWorldInfoPanel>(position, id);
+                        return false;
+                    }
                     else if(restaurantAI != null)
 		    {
 		        WorldInfoPanel.Show<RestaurantWorldInfoPanel>(position, id);
@@ -34,14 +39,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		    }
                     else
                     {
-                        WorldInfoPanel.Hide<NewUniqueFactoryWorldInfoPanel>();
+                        WorldInfoPanel.Hide<NewProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<NewMultiProcessingFacilityWorldInfoPanel>();
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
                     }
                 }
             }
             else
             {
-                WorldInfoPanel.Hide<NewUniqueFactoryWorldInfoPanel>();
+                WorldInfoPanel.Hide<NewProcessingFacilityWorldInfoPanel>();
+                WorldInfoPanel.Hide<NewMultiProcessingFacilityWorldInfoPanel>();
                 WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
             }
             return true;
