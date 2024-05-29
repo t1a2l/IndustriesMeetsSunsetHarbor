@@ -881,11 +881,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num12, m_info.m_class);
                 }
             }
-            int num13 = m_outputRate1;
-            if(m_outputRate1 == 0)
-            {
-                num13 = m_outputRate2;
-            }
+            int num13 = m_outputRate1 + m_outputRate2 + m_outputRate3 + m_outputRate4;
             if ((parkPolicies & DistrictPolicies.Park.AdvancedAutomation) != DistrictPolicies.Park.None)
             {
                 num13 = (num13 * 110 + 50) / 100;
