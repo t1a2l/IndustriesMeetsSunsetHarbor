@@ -180,13 +180,34 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnVariationDropdownChanged")]
         [HarmonyPrefix]
-        public static bool OnVariationDropdownChanged(CityServiceWorldInfoPanel __instance, UIComponent component, int value, ref IndustryBuildingAI ___m_IndustryBuildingAI)
+        public static bool OnVariationDropdownChangedPre(CityServiceWorldInfoPanel __instance, UIComponent component, int value, ref IndustryBuildingAI ___m_IndustryBuildingAI)
         {
             if(___m_IndustryBuildingAI == null)
             {
                 return false;
             }
             return true;
+        }
+
+        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnVariationDropdownChanged")]
+        [HarmonyPostfix]
+        public static void OnVariationDropdownChangedPost(CityServiceWorldInfoPanel __instance, UIComponent component, int value, ref InstanceID ___m_InstanceID)
+        {
+            ushort buildingId = ___m_InstanceID.Building;
+            BuildingManager instance = Singleton<BuildingManager>.instance;
+            ref Building building = ref instance.m_buildings.m_buffer[buildingId];
+            BuildingInfo info = building.Info;
+            BuildingAI buildingAI = info.m_buildingAI;
+            if (buildingAI is NewExtractingFacilityAI)
+            {
+                building.m_customBuffer1 = 0;
+            }
+            if (buildingAI is NewProcessingFacilityAI)
+            {
+                var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
+                custom_buffers.m_customBuffer10 = 0;
+                CustomBuffersManager.SetCustomBuffer(buildingId, custom_buffers);
+            }
         }
     }
 }
