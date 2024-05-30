@@ -48,6 +48,20 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource2));
                     }
                 }
+                if (buildingAI is ExtendedFishFarmAI extendedFishFarmAI)
+                {
+                    int num = building.m_customBuffer2 * 100;
+                    int storageBufferSize = extendedFishFarmAI.GetStorageBufferSize(buildingId, ref building);
+                    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
+                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)num), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)storageBufferSize, extendedFishFarmAI.m_outputResource));
+                }
+                if (buildingAI is ExtendedFishingHarborAI extendedFishingHarborAI)
+                {
+                    int num = building.m_customBuffer2 * 100;
+                    int storageBufferSize = extendedFishingHarborAI.m_storageBufferSize;
+                    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
+                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)num), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)storageBufferSize, extendedFishingHarborAI.m_outputResource));
+                }
             }
         }
 

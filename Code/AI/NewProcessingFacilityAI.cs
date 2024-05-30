@@ -1016,7 +1016,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int Input8ProductionRate = (m_inputRate8 * finalProductionRate + 99) / 100;
                     if (CustomBuffer8 < Input8ProductionRate)
                     {
-                        finalProductionRate = (CustomBuffer5 * 100 + m_inputRate8 - 1) / m_inputRate8;
+                        finalProductionRate = (CustomBuffer8 * 100 + m_inputRate8 - 1) / m_inputRate8;
                         problemStruct = Notification.AddProblems(problemStruct, (!flag) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoFishingGoods);
                     }
                 }
