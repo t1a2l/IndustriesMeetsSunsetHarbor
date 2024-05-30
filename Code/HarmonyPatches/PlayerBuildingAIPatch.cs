@@ -34,9 +34,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         private delegate void HandleFireDelegate(CommonBuildingAI instance, ushort buildingID, ref Building data, ref Building.Frame frameData, DistrictPolicies.Services policies);
         private static HandleFireDelegate HandleFire = AccessTools.MethodDelegate<HandleFireDelegate>(typeof(CommonBuildingAI).GetMethod("HandleFire", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-        private delegate void SimulationStepActiveDelegate(CommonBuildingAI instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData);
-        private static SimulationStepActiveDelegate BaseSimulationStepActive = AccessTools.MethodDelegate<SimulationStepActiveDelegate>(typeof(CommonBuildingAI).GetMethod("SimulationStepActive", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
+        private delegate bool GetFireParametersDelegate(CommonBuildingAI instance, ushort buildingID, ref Building buildingData, out int fireHazard, out int fireSize, out int fireTolerance);
+        private static GetFireParametersDelegate GetFireParameters = AccessTools.MethodDelegate<GetFireParametersDelegate>(typeof(BuildingAI).GetMethod("GetFireParameters", BindingFlags.Instance | BindingFlags.Public), null, true);
 
+        private delegate void SetEvacuatingDelegate(CommonBuildingAI instance, ushort buildingID, ref Building data, bool evacuating);
+        private static SetEvacuatingDelegate SetEvacuating = AccessTools.MethodDelegate<SetEvacuatingDelegate>(typeof(CommonBuildingAI).GetMethod("SetEvacuating", BindingFlags.Instance | BindingFlags.NonPublic), null, true);
 
         [HarmonyPatch(typeof(PlayerBuildingAI), "ProduceGoods")]
         [HarmonyPrefix]
@@ -407,5 +409,83 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             }
         }
+
+
+        private static void BaseSimulationStepActive(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+        {
+            Notification.ProblemStruct problemStruct = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.Garbage);
+            if (buildingData.m_garbageBuffer >= 2000)
+            {
+                int num = buildingData.m_garbageBuffer / 1000;
+                if (Singleton<SimulationManager>.instance.m_randomizer.Int32(5u) == 0)
+                {
+                    num = UniqueFacultyAI.DecreaseByBonus(UniqueFacultyAI.FacultyBonus.Science, num);
+                    Singleton<NaturalResourceManager>.instance.TryDumpResource(NaturalResourceManager.Resource.Pollution, num, num, buildingData.m_position, 0f);
+                }
+                int num2 = ((!(__instance is MainCampusBuildingAI) && !(__instance is ParkGateAI) && !(__instance is MainIndustryBuildingAI)) ? 3 : 4);
+                if (num >= num2)
+                {
+                    if (Singleton<UnlockManager>.instance.Unlocked(ItemClass.Service.Garbage))
+                    {
+                        int num3 = ((!(__instance is MainCampusBuildingAI) && !(__instance is ParkGateAI) && !(__instance is MainIndustryBuildingAI)) ? 6 : 8);
+                        problemStruct = ((num < num3) ? Notification.AddProblems(problemStruct, Notification.Problem1.Garbage) : Notification.AddProblems(problemStruct, Notification.Problem1.Garbage | Notification.Problem1.MajorProblem));
+                        GuideController properties = Singleton<GuideManager>.instance.m_properties;
+                        if ((object)properties != null)
+                        {
+                            int publicServiceIndex = ItemClass.GetPublicServiceIndex(ItemClass.Service.Garbage);
+                            Singleton<GuideManager>.instance.m_serviceNeeded[publicServiceIndex].Activate(properties.m_serviceNeeded, ItemClass.Service.Garbage);
+                        }
+                    }
+                    else
+                    {
+                        buildingData.m_garbageBuffer = 2000;
+                    }
+                }
+            }
+            buildingData.m_problems = problemStruct;
+            float radius = (float)(buildingData.Width + buildingData.Length) * 2.5f;
+            if (buildingData.m_crimeBuffer != 0)
+            {
+                Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.CrimeRate, buildingData.m_crimeBuffer, buildingData.m_position, radius);
+            }
+            if (GetFireParameters(__instance, buildingID, ref buildingData, out var fireHazard, out var fireSize, out var fireTolerance))
+            {
+                DistrictManager instance = Singleton<DistrictManager>.instance;
+                byte district = instance.GetDistrict(buildingData.m_position);
+                DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[district].m_servicePolicies;
+                DistrictPolicies.CityPlanning cityPlanningPolicies = instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
+                if ((servicePolicies & DistrictPolicies.Services.SmokeDetectors) != 0)
+                {
+                    fireHazard = fireHazard * 75 / 100;
+                }
+                if ((cityPlanningPolicies & DistrictPolicies.CityPlanning.LightningRods) != 0)
+                {
+                    Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, 10, __instance.m_info.m_class);
+                }
+            }
+            fireHazard = 100 - (10 + fireTolerance) * 50000 / ((100 + fireHazard) * (100 + fireSize));
+            if (fireHazard > 0)
+            {
+                fireHazard = fireHazard * buildingData.Width * buildingData.Length;
+                Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.FireHazard, fireHazard, buildingData.m_position, radius);
+            }
+            Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.FirewatchCoverage, 50, buildingData.m_position, 100f);
+            if (Singleton<DisasterManager>.instance.IsEvacuating(buildingData.m_position))
+            {
+                if ((buildingData.m_flags & Building.Flags.Evacuating) == 0)
+                {
+                    Singleton<ImmaterialResourceManager>.instance.CheckLocalResource(ImmaterialResourceManager.Resource.RadioCoverage, buildingData.m_position, out var local);
+                    if (Singleton<SimulationManager>.instance.m_randomizer.Int32(100u) < local + 10)
+                    {
+                        SetEvacuating(__instance, buildingID, ref buildingData, evacuating: true);
+                    }
+                }
+            }
+            else if ((buildingData.m_flags & Building.Flags.Evacuating) != 0)
+            {
+                SetEvacuating(__instance, buildingID, ref buildingData, evacuating: false);
+            }
+        }
+
     }
 }

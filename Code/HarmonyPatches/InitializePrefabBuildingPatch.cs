@@ -242,28 +242,22 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewProcessingFacilityAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
+                        newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
                         if (__instance.name.Contains("Sheep"))
                         {
-                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
-                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
                             newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Sheep;
                         }
                         else if (__instance.name.Contains("Highland Cow"))
                         {
-                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
-                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
                             newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.HighlandCows;
                         }
                         else if (__instance.name.Contains("Pig"))
                         {
-                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
-                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
                             newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Pigs;
                         }
                         else 
                         {
-                            newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
-                            newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
                             newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cows;
                         }
                     }
