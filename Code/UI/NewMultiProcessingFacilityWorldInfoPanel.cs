@@ -9,7 +9,6 @@ using IndustriesMeetsSunsetHarbor.AI;
 using System.Collections.Generic;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
-using System.Reflection;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -124,6 +123,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
             outputResource_Panel.relativePosition = new Vector3(InputResource.relativePosition.x, 200);
 
+            DestroyImmediate(InputResource.gameObject);
+
+            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
+            DestroyImmediate(outputResourceArrow.gameObject);
+
+            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
+            DestroyImmediate(outputResourceStorage.gameObject);
+
             var m_productStorage = Find<UIPanel>("ProductStorage");
             var m_BigArrow = Find<UISprite>("Big Arrow");
 
@@ -132,17 +139,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
             outputResource_Panel.AttachUIComponent(m_productStorage.gameObject);
             outputResource_Panel.AttachUIComponent(m_BigArrow.gameObject);
-
-            m_productStorage.relativePosition = new Vector3(m_productStorage.relativePosition.x, 50);
-            m_BigArrow.relativePosition = new Vector3(m_BigArrow.relativePosition.x, 0);
-
-            DestroyImmediate(InputResource.gameObject);
-
-            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
-            DestroyImmediate(outputResourceArrow.gameObject);
-
-            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
-            DestroyImmediate(outputResourceStorage.gameObject);
 
             var UniqueFactoryInputResource = m_inputContainer.Find<UIPanel>("UniqueFactoryInputResource");
 
@@ -217,6 +213,17 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 uILabel.text = GetOutputResourceName(ref m_outputItems, i);
                 uISprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
+
+                uILabel.relativePosition = new Vector3(-27, 145);
+                uISprite.relativePosition = new Vector3(15, 113);
+
+                UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
+                UISprite ArrowEnd = m_outputs.items[i].Find<UISprite>("ArrowEnd");
+                UISprite BigArrow = m_outputs.items[i].Find<UISprite>("Big Arrow");
+
+                uIProgressBar.relativePosition = new Vector3(0, 80);
+                ArrowEnd.relativePosition = new Vector3(-9, 31);
+                BigArrow.relativePosition = new Vector3(55, 9);
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
             if (productionRate > 0)

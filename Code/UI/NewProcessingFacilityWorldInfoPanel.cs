@@ -11,7 +11,6 @@ using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
 using System.Reflection;
 using ColossalFramework.Threading;
-using HarmonyLib;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -130,6 +129,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
             outputResource_Panel.relativePosition = new Vector3(InputResource.relativePosition.x, 200);
 
+            DestroyImmediate(InputResource.gameObject);
+
+            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
+            DestroyImmediate(outputResourceArrow.gameObject);
+
+            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
+            DestroyImmediate(outputResourceStorage.gameObject);
+
             var m_productStorage = Find<UIPanel>("ProductStorage");
             var m_BigArrow = Find<UISprite>("Big Arrow");
 
@@ -138,17 +145,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
             outputResource_Panel.AttachUIComponent(m_productStorage.gameObject);
             outputResource_Panel.AttachUIComponent(m_BigArrow.gameObject);
-
-            m_productStorage.relativePosition = new Vector3(m_productStorage.relativePosition.x, 50);
-            m_BigArrow.relativePosition = new Vector3(m_BigArrow.relativePosition.x, 0);
-
-            DestroyImmediate(InputResource.gameObject);
-
-            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
-            DestroyImmediate(outputResourceArrow.gameObject);
-
-            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
-            DestroyImmediate(outputResourceStorage.gameObject);
 
             UITemplateManager instance = Singleton<UITemplateManager>.instance;
 
@@ -274,7 +270,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UILabel uILabel = m_outputs.items[i].Find<UILabel>("ProductLabel");
                 UISprite uISprite = m_outputs.items[i].Find<UISprite>("LuxuryProductIcon");
-                uILabel.text = GetOutputResourceName(ref m_outputItems, i);
+                var text = GetOutputResourceName(ref m_outputItems, i);
+                if(text.Contains("Products") && text.Length > 15)
+                {
+                    text = text.Replace("Products", "Prods");
+                }
+                uILabel.text = text;
                 var atlas = GetOutputResourceAtlas(ref m_outputItems, i);
                 if (atlas != null)
                 {
@@ -285,6 +286,17 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     uISprite.atlas = UITextures.InGameAtlas;
                 }
                 uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
+
+                uILabel.relativePosition = new Vector3(-27, 145);
+                uISprite.relativePosition = new Vector3(15, 113);
+
+                UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
+                UISprite ArrowEnd = m_outputs.items[i].Find<UISprite>("ArrowEnd");
+                UISprite BigArrow = m_outputs.items[i].Find<UISprite>("Big Arrow");
+
+                uIProgressBar.relativePosition = new Vector3(0, 80);
+                ArrowEnd.relativePosition = new Vector3(-9, 31);
+                BigArrow.relativePosition = new Vector3(55, 9);
             }
             m_VariationPanel.isVisible = false;
             var IsCarFactory = false;
