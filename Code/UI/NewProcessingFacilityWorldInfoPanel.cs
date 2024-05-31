@@ -265,6 +265,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     uISprite.atlas = UITextures.InGameAtlas;
                 }
                 uISprite.spriteName = GetInputResourceSpriteName(ref m_inputItems, i);
+
+                UIPanel Storage = m_inputs.items[i].Find<UIPanel>("Storage");
+                UISprite Arrow = m_inputs.items[i].Find<UISprite>("Arrow");
+
+                Storage.relativePosition = new Vector3(0, 80);
+                Arrow.relativePosition = new Vector3(58, 138);
+
             }
             for (int i = 0; i < m_outputResourceCount; i++)
             {
@@ -287,16 +294,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
 
-                uILabel.relativePosition = new Vector3(-27, 145);
+                uILabel.relativePosition = new Vector3(-30, 145);
                 uISprite.relativePosition = new Vector3(15, 113);
 
                 UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
                 UISprite ArrowEnd = m_outputs.items[i].Find<UISprite>("ArrowEnd");
                 UISprite BigArrow = m_outputs.items[i].Find<UISprite>("Big Arrow");
+                UIPanel ProductStorage = m_outputs.items[i].Find<UIPanel>("ProductStorage");
 
                 uIProgressBar.relativePosition = new Vector3(0, 80);
                 ArrowEnd.relativePosition = new Vector3(-9, 31);
                 BigArrow.relativePosition = new Vector3(55, 9);
+                ProductStorage.relativePosition = new Vector3(35, -46);
             }
             m_VariationPanel.isVisible = false;
             var IsCarFactory = false;

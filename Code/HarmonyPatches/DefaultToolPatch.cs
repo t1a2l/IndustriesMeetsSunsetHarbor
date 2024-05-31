@@ -25,16 +25,22 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     if(newUniqueFactoryAI != null || newProcessingFacilityAI != null)
 		    {
 		        WorldInfoPanel.Show<NewProcessingFacilityWorldInfoPanel>(position, id);
+                        WorldInfoPanel.Hide<NewMultiProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
                         return false;
 		    }
                     else if (multiProcessingFacilityAI != null)
                     {
                         WorldInfoPanel.Show<NewMultiProcessingFacilityWorldInfoPanel>(position, id);
+                        WorldInfoPanel.Hide<NewProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
                         return false;
                     }
                     else if(restaurantAI != null)
 		    {
 		        WorldInfoPanel.Show<RestaurantWorldInfoPanel>(position, id);
+                        WorldInfoPanel.Hide<NewProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<NewMultiProcessingFacilityWorldInfoPanel>();
                         return false;
 		    }
                     else

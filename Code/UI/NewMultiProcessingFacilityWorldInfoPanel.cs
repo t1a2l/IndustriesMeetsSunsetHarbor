@@ -205,6 +205,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 uILabel.text = GetInputResourceName(ref m_inputItems, i);
                 uISprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 uISprite.spriteName = GetInputResourceSpriteName(ref m_inputItems, i);
+
+                UIPanel Storage = m_inputs.items[i].Find<UIPanel>("Storage");
+                UISprite Arrow = m_inputs.items[i].Find<UISprite>("Arrow");
+
+                Storage.relativePosition = new Vector3(0, 80);
+                Arrow.relativePosition = new Vector3(58, 138);
             }
             for (int i = 0; i < m_outputResourceCount; i++)
             {
@@ -220,10 +226,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
                 UISprite ArrowEnd = m_outputs.items[i].Find<UISprite>("ArrowEnd");
                 UISprite BigArrow = m_outputs.items[i].Find<UISprite>("Big Arrow");
+                UIPanel ProductStorage = m_outputs.items[i].Find<UIPanel>("ProductStorage");
 
                 uIProgressBar.relativePosition = new Vector3(0, 80);
                 ArrowEnd.relativePosition = new Vector3(-9, 31);
                 BigArrow.relativePosition = new Vector3(55, 9);
+                ProductStorage.relativePosition = new Vector3(35, -46);
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
             if (productionRate > 0)

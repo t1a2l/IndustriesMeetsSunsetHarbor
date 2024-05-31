@@ -125,6 +125,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     }
                 }
                 var main_panel = newUniqueFactoryComp.Find<UIPanel>("(Library) NewMultiProcessingFacilityWorldInfoPanel");
+                main_panel.height = 475;
                 main_panel.cachedName = "(Library) NewMultiProcessingFacilityWorldInfoPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
