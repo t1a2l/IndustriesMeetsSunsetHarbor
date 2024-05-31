@@ -1780,11 +1780,15 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            int m_customBuffer9 = (int)custom_buffers.m_customBuffer9;
-            int m_customBuffer10 = (int)custom_buffers.m_customBuffer10;
-            int output1_production_rate = m_customBuffer9 * m_outputRate1 * 16 / 100;
-            int output2_production_rate = m_customBuffer10 * m_outputRate2 * 16 / 100;
-            string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", [output1_production_rate, output2_production_rate]);
+            int m_customBuffer5 = (int)custom_buffers.m_customBuffer5;
+            int m_customBuffer6 = (int)custom_buffers.m_customBuffer6;
+            int m_customBuffer7 = (int)custom_buffers.m_customBuffer7;
+            int m_customBuffer8 = (int)custom_buffers.m_customBuffer8;
+            int output1_production_rate = m_customBuffer5 * m_outputRate1 * 16 / 100;
+            int output2_production_rate = m_customBuffer6 * m_outputRate2 * 16 / 100;
+            int output3_production_rate = m_customBuffer7 * m_outputRate3 * 16 / 100;
+            int output4_production_rate = m_customBuffer8 * m_outputRate4 * 16 / 100;
+            string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", [output1_production_rate, output2_production_rate, output3_production_rate, output4_production_rate]);
             if (m_outputResource1 != ExtendedTransferManager.TransferReason.None && m_outputVehicleCount1 != 0)
             {
                 int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
