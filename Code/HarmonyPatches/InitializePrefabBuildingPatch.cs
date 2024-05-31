@@ -270,15 +270,18 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         if (__instance.name.Contains("Corn") || __instance.name.Contains("Potato") || __instance.name.Contains("Green House"))
                         {
-                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Vegetables;
+                            newAI.m_outputResource = TransferManager.TransferReason.None;
+                            newAI.m_extendedOutputResource = ExtendedTransferManager.TransferReason.Vegetables;   
                         }
                         else if (__instance.name.Contains("Cotton"))
                         {
-                            newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cotton;
+                            newAI.m_outputResource = TransferManager.TransferReason.None;
+                            newAI.m_extendedOutputResource = ExtendedTransferManager.TransferReason.Cotton;
                         }
                         else if (__instance.name.Contains("Wheat"))
                         {
-                            newAI.m_outputResource1 = TransferManager.TransferReason.Grain;
+                            newAI.m_outputResource = TransferManager.TransferReason.Grain;
+                            newAI.m_extendedOutputResource = ExtendedTransferManager.TransferReason.None;
                         }
                     }
                     else if (__instance.name.Contains("Fruit Field") && __instance.GetAI() is not NewExtractingFacilityAI && !__instance.name.Contains("Sub"))
@@ -287,7 +290,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<NewExtractingFacilityAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Fruits;
+                        newAI.m_outputResource = TransferManager.TransferReason.None;
+                        newAI.m_extendedOutputResource = ExtendedTransferManager.TransferReason.Fruits;
                     }
                     else if (__instance.name.Contains("Cattle Shed") && __instance.GetAI() is not NewProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
