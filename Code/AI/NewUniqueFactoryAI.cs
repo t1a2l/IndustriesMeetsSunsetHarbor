@@ -2,7 +2,7 @@ using ColossalFramework;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    class NewUniqueFactoryAI : NewProcessingFacilityAI
+    public class NewUniqueFactoryAI : NewProcessingFacilityAI
     {
         public override void PlacementSucceeded()
 	{
