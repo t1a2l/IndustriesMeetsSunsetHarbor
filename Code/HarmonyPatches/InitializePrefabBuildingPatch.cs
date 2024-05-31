@@ -244,6 +244,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
                         newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
+                        newAI.m_inputRate5 = 1000;
                         if (__instance.name.Contains("Sheep"))
                         {
                             newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Sheep;
@@ -296,6 +297,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
                         newAI.m_inputResource5 = ExtendedTransferManager.TransferReason.Vegetables;
+                        newAI.m_inputRate5 = 1000;
 
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.Cows;
                         newAI.m_outputResource3 = ExtendedTransferManager.TransferReason.HighlandCows;
@@ -310,6 +312,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         newAI.m_inputResource2 = ExtendedTransferManager.TransferReason.Cows;
                         newAI.m_inputResource3 = ExtendedTransferManager.TransferReason.HighlandCows;
                         newAI.m_inputResource4 = ExtendedTransferManager.TransferReason.Pigs;
+
+                        newAI.m_inputRate1 = 1000;
+                        newAI.m_inputRate2 = 1000;
+                        newAI.m_inputRate3 = 1000;
+                        newAI.m_inputRate4 = 1000;
 
                         newAI.m_outputResource1 = ExtendedTransferManager.TransferReason.LambMeat;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.BeefMeat;
@@ -326,6 +333,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         newAI.m_inputResource1 = ExtendedTransferManager.TransferReason.Sheep;
                         newAI.m_inputResource2 = ExtendedTransferManager.TransferReason.Cows;
                         newAI.m_inputResource3 = ExtendedTransferManager.TransferReason.HighlandCows;
+
+                        newAI.m_inputRate1 = 1000;
+                        newAI.m_inputRate2 = 1000;
+                        newAI.m_inputRate3 = 1000;
 
                         newAI.m_outputResource1 = ExtendedTransferManager.TransferReason.SheepMilk;
                         newAI.m_outputResource2 = ExtendedTransferManager.TransferReason.CowMilk;
