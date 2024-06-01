@@ -3,6 +3,7 @@ using UnityEngine;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.UI;
 using ColossalFramework;
+using MoreTransferReasons.UI;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -27,6 +28,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		        WorldInfoPanel.Show<NewProcessingFacilityWorldInfoPanel>(position, id);
                         WorldInfoPanel.Hide<NewMultiProcessingFacilityWorldInfoPanel>();
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         return false;
 		    }
                     else if (multiProcessingFacilityAI != null)
@@ -34,6 +36,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         WorldInfoPanel.Show<NewMultiProcessingFacilityWorldInfoPanel>(position, id);
                         WorldInfoPanel.Hide<NewProcessingFacilityWorldInfoPanel>();
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         return false;
                     }
                     else if(restaurantAI != null)
@@ -41,6 +44,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		        WorldInfoPanel.Show<RestaurantWorldInfoPanel>(position, id);
                         WorldInfoPanel.Hide<NewProcessingFacilityWorldInfoPanel>();
                         WorldInfoPanel.Hide<NewMultiProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         return false;
 		    }
                     else
