@@ -519,11 +519,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
             VehicleManager instance = Singleton<VehicleManager>.instance;
             Vector3 position = buildingData.CalculatePosition(m_boatSpawnPosition);
             VehicleInfo vehicleInfo = GetAdditionalSelectedVehicle(buildingID);
-            if ((object)vehicleInfo == null)
+            if (vehicleInfo is null)
             {
                 vehicleInfo = instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, m_boatClass.m_service, m_boatClass.m_subService, m_boatClass.m_level, VehicleInfo.VehicleType.Ship);
             }
-            if ((object)vehicleInfo != null && instance.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, position, TransferManager.TransferReason.None, transferToSource: false, transferToTarget: false))
+            if (vehicleInfo is not null && instance.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, position, TransferManager.TransferReason.None, transferToSource: false, transferToTarget: false))
             {
                 vehicleInfo.m_vehicleAI.SetSource(vehicle, ref instance.m_vehicles.m_buffer[vehicle], buildingID);
                 vehicleInfo.m_vehicleAI.SetTarget(vehicle, ref instance.m_vehicles.m_buffer[vehicle], buildingID);
