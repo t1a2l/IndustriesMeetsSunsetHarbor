@@ -54,7 +54,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public int m_goodsSellPrice = 1500;
 
-        public Boolean isAmount = false;
+        public bool isAmount = false;
 
         int index = 0;
 
@@ -70,9 +70,23 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public ExtendedTransferManager.TransferReason[] m_incomingExtendedResources =
         [
             ExtendedTransferManager.TransferReason.BakedGoods,
-            ExtendedTransferManager.TransferReason.FoodProducts,
-            ExtendedTransferManager.TransferReason.BeverageProducts,
-            ExtendedTransferManager.TransferReason.CannedFish
+            ExtendedTransferManager.TransferReason.CannedFish,
+            ExtendedTransferManager.TransferReason.Anchovy,
+            ExtendedTransferManager.TransferReason.Salmon,
+            ExtendedTransferManager.TransferReason.Shellfish,
+            ExtendedTransferManager.TransferReason.Tuna,
+            ExtendedTransferManager.TransferReason.Algae,
+            ExtendedTransferManager.TransferReason.Seaweed,
+            ExtendedTransferManager.TransferReason.Trout,
+            ExtendedTransferManager.TransferReason.SheepMilk,
+            ExtendedTransferManager.TransferReason.CowMilk,
+            ExtendedTransferManager.TransferReason.HighlandCowMilk,
+            ExtendedTransferManager.TransferReason.LambMeat,
+            ExtendedTransferManager.TransferReason.BeefMeat,
+            ExtendedTransferManager.TransferReason.HighlandBeefMeat,
+            ExtendedTransferManager.TransferReason.PorkMeat,
+            ExtendedTransferManager.TransferReason.Fruits,
+            ExtendedTransferManager.TransferReason.Vegetables,
         ];
 
         public int GetEntertainmentAccumulation(ushort buildingID, ref Building data)
@@ -884,6 +898,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 	    workPlaceCount2 = m_workPlaceCount2;
 	    workPlaceCount3 = m_workPlaceCount3;
 	}
+
         void IExtendedBuildingAI.ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
         {
 
