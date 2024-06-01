@@ -415,22 +415,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if (material == m_outputResource1 || material == m_outputResource2 || material == m_outputResource3 || material == m_outputResource4)
             {
-                VehicleInfo transferVehicleService;
-                switch (material)
+                VehicleInfo transferVehicleService = ExtendedWarehouseAI.GetExtendedTransferVehicleService(material, ItemClass.Level.Level1, ref Singleton<SimulationManager>.instance.m_randomizer);
+                if (transferVehicleService == null)
                 {
-                    case ExtendedTransferManager.TransferReason.SheepMilk:
-                    case ExtendedTransferManager.TransferReason.CowMilk:
-                    case ExtendedTransferManager.TransferReason.HighlandCowMilk:
-                    case ExtendedTransferManager.TransferReason.LambMeat:
-                    case ExtendedTransferManager.TransferReason.BeefMeat:
-                    case ExtendedTransferManager.TransferReason.HighlandBeefMeat:
-                    case ExtendedTransferManager.TransferReason.PorkMeat:
-                        transferVehicleService = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, ItemClass.Service.Industrial, ItemClass.SubService.IndustrialFarming, ItemClass.Level.Level2);
-                        break;
-                    default:
-                        return;
+                    return;
                 }
-
                 if (transferVehicleService != null)
                 {
                     Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
