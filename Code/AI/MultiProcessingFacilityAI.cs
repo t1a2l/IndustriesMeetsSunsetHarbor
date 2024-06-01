@@ -721,7 +721,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     custom_buffers.m_customBuffer5 = (ushort)CustomBuffer5;
                     instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource1, OutputProductionRate1);
                 }
-                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 int num19 = (finalProductionRate * num16 + 50) / 100;
                 if (num19 != 0)
                 {
@@ -988,7 +987,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     custom_buffers.m_customBuffer6 = (ushort)CustomBuffer6;
                     instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource2, OutputProductionRate2);
                 }
-                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 int num19 = (finalProductionRate * num16 + 50) / 100;
                 if (num19 != 0)
                 {
@@ -1087,7 +1085,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
 
                 buildingData.m_problems = problemStruct;
-                custom_buffers.m_customBuffer9 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate1), 0, 255);
+                custom_buffers.m_customBuffer10 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate2), 0, 255);
                 buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 if (b != 0)
@@ -1255,7 +1253,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     custom_buffers.m_customBuffer7 = (ushort)CustomBuffer7;
                     instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource3, OutputProductionRate3);
                 }
-                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 int num19 = (finalProductionRate * num16 + 50) / 100;
                 if (num19 != 0)
                 {
@@ -1354,7 +1351,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
 
                 buildingData.m_problems = problemStruct;
-                custom_buffers.m_customBuffer9 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate1), 0, 255);
+                custom_buffers.m_customBuffer11 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate3), 0, 255);
                 buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 if (b != 0)
@@ -1522,7 +1519,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     custom_buffers.m_customBuffer8 = (ushort)CustomBuffer8;
                     instance2.m_industryParks.m_buffer[b].AddProductionAmount(instance.m_parks.m_buffer[b], m_outputResource4, OutputProductionRate4);
                 }
-                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 int num19 = (finalProductionRate * num16 + 50) / 100;
                 if (num19 != 0)
                 {
@@ -1623,7 +1619,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
 
                 buildingData.m_problems = problemStruct;
-                custom_buffers.m_customBuffer9 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate1), 0, 255);
+                custom_buffers.m_customBuffer12 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate4), 0, 255);
                 buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
                 CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
                 if (b != 0)
@@ -1769,14 +1765,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            int m_customBuffer5 = (int)custom_buffers.m_customBuffer5;
-            int m_customBuffer6 = (int)custom_buffers.m_customBuffer6;
-            int m_customBuffer7 = (int)custom_buffers.m_customBuffer7;
-            int m_customBuffer8 = (int)custom_buffers.m_customBuffer8;
-            int output1_production_rate = m_customBuffer5 * m_outputRate1 * 16 / 100;
-            int output2_production_rate = m_customBuffer6 * m_outputRate2 * 16 / 100;
-            int output3_production_rate = m_customBuffer7 * m_outputRate3 * 16 / 100;
-            int output4_production_rate = m_customBuffer8 * m_outputRate4 * 16 / 100;
+            int m_customBuffer9 = (int)custom_buffers.m_customBuffer9;
+            int m_customBuffer10 = (int)custom_buffers.m_customBuffer10;
+            int m_customBuffer11 = (int)custom_buffers.m_customBuffer11;
+            int m_customBuffer12 = (int)custom_buffers.m_customBuffer12;
+            int output1_production_rate = m_customBuffer9 * m_outputRate1 * 16 / 100;
+            int output2_production_rate = m_customBuffer10 * m_outputRate2 * 16 / 100;
+            int output3_production_rate = m_customBuffer11 * m_outputRate3 * 16 / 100;
+            int output4_production_rate = m_customBuffer12 * m_outputRate4 * 16 / 100;
             string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", [output1_production_rate, output2_production_rate, output3_production_rate, output4_production_rate]);
             if (m_outputResource1 != ExtendedTransferManager.TransferReason.None && m_outputVehicleCount1 != 0)
             {
