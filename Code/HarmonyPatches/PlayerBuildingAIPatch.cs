@@ -238,12 +238,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         {
                             buildingData.m_flags &= ~Building.Flags.RateReduced;
                         }
-                        multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate2, finalProductionRate2, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                        multiProcessingFacilityAI.ProduceGoods2(buildingID, ref buildingData, ref frameData, productionRate2, finalProductionRate2, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                     }
                     else
                     {
                         buildingData.m_flags &= ~Building.Flags.RateReduced;
-                        multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate2, finalProductionRate2, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                        multiProcessingFacilityAI.ProduceGoods2(buildingID, ref buildingData, ref frameData, productionRate2, finalProductionRate2, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                     }
                     if (aliveWorkerCount != 0)
                     {
@@ -261,7 +261,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     buildingData.m_problems = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.Electricity | Notification.Problem1.Water | Notification.Problem1.DirtyWater | Notification.Problem1.Pollution | Notification.Problem1.Sewage | Notification.Problem1.Death | Notification.Problem1.Noise | Notification.Problem1.Flood | Notification.Problem1.Heating);
                     buildingData.m_flags &= ~Building.Flags.RateReduced;
                     CollapseIfFlooded(__instance, buildingID, ref buildingData, ref frameData);
-                    multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate2, finalProductionRate2, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                    multiProcessingFacilityAI.ProduceGoods2(buildingID, ref buildingData, ref frameData, productionRate2, finalProductionRate2, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                 }
                 if (finalProductionRate3 != 0)
                 {
@@ -278,12 +278,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         {
                             buildingData.m_flags &= ~Building.Flags.RateReduced;
                         }
-                        multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate3, finalProductionRate3, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                        multiProcessingFacilityAI.ProduceGoods3(buildingID, ref buildingData, ref frameData, productionRate3, finalProductionRate3, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                     }
                     else
                     {
                         buildingData.m_flags &= ~Building.Flags.RateReduced;
-                        multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate3, finalProductionRate3, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                        multiProcessingFacilityAI.ProduceGoods3(buildingID, ref buildingData, ref frameData, productionRate3, finalProductionRate3, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                     }
                     if (aliveWorkerCount != 0)
                     {
@@ -301,7 +301,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     buildingData.m_problems = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.Electricity | Notification.Problem1.Water | Notification.Problem1.DirtyWater | Notification.Problem1.Pollution | Notification.Problem1.Sewage | Notification.Problem1.Death | Notification.Problem1.Noise | Notification.Problem1.Flood | Notification.Problem1.Heating);
                     buildingData.m_flags &= ~Building.Flags.RateReduced;
                     CollapseIfFlooded(__instance, buildingID, ref buildingData, ref frameData);
-                    multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate3, finalProductionRate3, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                    multiProcessingFacilityAI.ProduceGoods3(buildingID, ref buildingData, ref frameData, productionRate3, finalProductionRate3, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                 }
                 if (finalProductionRate4 != 0)
                 {
@@ -318,12 +318,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         {
                             buildingData.m_flags &= ~Building.Flags.RateReduced;
                         }
-                        multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate4, finalProductionRate4, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                        multiProcessingFacilityAI.ProduceGoods4(buildingID, ref buildingData, ref frameData, productionRate4, finalProductionRate4, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                     }
                     else
                     {
                         buildingData.m_flags &= ~Building.Flags.RateReduced;
-                        multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate4, finalProductionRate4, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                        multiProcessingFacilityAI.ProduceGoods4(buildingID, ref buildingData, ref frameData, productionRate4, finalProductionRate4, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                     }
                     if (aliveWorkerCount != 0)
                     {
@@ -341,7 +341,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     buildingData.m_problems = Notification.RemoveProblems(buildingData.m_problems, Notification.Problem1.Electricity | Notification.Problem1.Water | Notification.Problem1.DirtyWater | Notification.Problem1.Pollution | Notification.Problem1.Sewage | Notification.Problem1.Death | Notification.Problem1.Noise | Notification.Problem1.Flood | Notification.Problem1.Heating);
                     buildingData.m_flags &= ~Building.Flags.RateReduced;
                     CollapseIfFlooded(__instance, buildingID, ref buildingData, ref frameData);
-                    multiProcessingFacilityAI.ProduceGoods1(buildingID, ref buildingData, ref frameData, productionRate4, finalProductionRate4, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+                    multiProcessingFacilityAI.ProduceGoods4(buildingID, ref buildingData, ref frameData, productionRate4, finalProductionRate4, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
                 }
                 if (buildingData.m_eventIndex != 0 && (__instance.m_supportEvents & EventManager.EventType.SecondaryLocation) == 0 && (buildingData.m_flags & Building.Flags.Active) == 0 && flag)
                 {
@@ -380,7 +380,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 if (buildingData.m_fireIntensity != 0)
                 {
                     GuideController properties = Singleton<GuideManager>.instance.m_properties;
-                    if ((object)properties != null)
+                    if (properties is not null)
                     {
                         Singleton<BuildingManager>.instance.m_buildingOnFire.Activate(properties.m_buildingOnFire, buildingID);
                     }
