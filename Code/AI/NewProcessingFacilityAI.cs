@@ -1594,8 +1594,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
             buildingData.m_problems = problemStruct;
-            custom_buffers.m_customBuffer11 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate1), 0, 255);
-            custom_buffers.m_customBuffer12 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate2), 0, 255);
+            custom_buffers.m_customBuffer9 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate1), 0, 255);
+            custom_buffers.m_customBuffer10 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate2), 0, 255);
+            custom_buffers.m_customBuffer11 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate3), 0, 255);
+            custom_buffers.m_customBuffer12 = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate4), 0, 255);
             buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             if (b != 0)
