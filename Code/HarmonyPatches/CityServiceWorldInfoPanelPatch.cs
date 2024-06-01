@@ -4,7 +4,6 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using ColossalFramework;
-using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
 using System.Collections.Generic;
 
@@ -31,18 +30,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     string text = ColossalFramework.Utils.GetNameByValue(service, "Game");
                     ___m_BuildingService.spriteName = "UIFilterExtractorBuildings";
 		    ___m_BuildingService.tooltip = Locale.Get("MAIN_TOOL", text);
-                    var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
 
                     if(newExtractingFacilityAI.m_outputResource != TransferManager.TransferReason.None)
                     {
-                        var customBuffer = custom_buffers.m_customBuffer1;
+                        var customBuffer = building.m_customBuffer1;
                         int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
                         ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
                         ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource));
                     }
                     else if (newExtractingFacilityAI.m_extendedOutputResource != ExtendedTransferManager.TransferReason.None)
                     {
-                        var customBuffer = custom_buffers.m_customBuffer1;
+                        var customBuffer = building.m_customBuffer1;
                         int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
                         ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
                         ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_extendedOutputResource));
@@ -203,25 +201,5 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-        [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnVariationDropdownChanged")]
-        [HarmonyPostfix]
-        public static void OnVariationDropdownChangedPost(CityServiceWorldInfoPanel __instance, UIComponent component, int value, ref InstanceID ___m_InstanceID)
-        {
-            ushort buildingId = ___m_InstanceID.Building;
-            BuildingManager instance = Singleton<BuildingManager>.instance;
-            ref Building building = ref instance.m_buildings.m_buffer[buildingId];
-            BuildingInfo info = building.Info;
-            BuildingAI buildingAI = info.m_buildingAI;
-            if (buildingAI is NewExtractingFacilityAI)
-            {
-                building.m_customBuffer1 = 0;
-            }
-            if (buildingAI is NewProcessingFacilityAI)
-            {
-                var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-                custom_buffers.m_customBuffer10 = 0;
-                CustomBuffersManager.SetCustomBuffer(buildingId, custom_buffers);
-            }
-        }
     }
 }
