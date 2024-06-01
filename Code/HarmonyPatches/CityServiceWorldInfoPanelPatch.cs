@@ -35,14 +35,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
                     if(newExtractingFacilityAI.m_outputResource != TransferManager.TransferReason.None)
                     {
-                        var customBuffer = custom_buffers.m_customBuffer2;
+                        var customBuffer = custom_buffers.m_customBuffer1;
                         int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
                         ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
                         ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_outputResource));
                     }
-                    if (newExtractingFacilityAI.m_extendedOutputResource != ExtendedTransferManager.TransferReason.None)
+                    else if (newExtractingFacilityAI.m_extendedOutputResource != ExtendedTransferManager.TransferReason.None)
                     {
-                        var customBuffer = custom_buffers.m_customBuffer2;
+                        var customBuffer = custom_buffers.m_customBuffer1;
                         int outputBufferSize = newExtractingFacilityAI.GetOutputBufferSize(ref building);
                         ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer, outputBufferSize);
                         ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryBuildingManager.FormatResource((uint)customBuffer), IndustryBuildingManager.FormatExtendedResourceWithUnit((uint)outputBufferSize, newExtractingFacilityAI.m_extendedOutputResource));

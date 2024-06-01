@@ -36,7 +36,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public NaturalResourceManager.Resource NaturalResourceType = NaturalResourceManager.Resource.Fertility;
 
-        protected override uint SearchKey => (uint)(((m_variationGroupID & 0xFF) << 24) | ((int)m_outputResource << 16) | (m_info.m_cellWidth << 8) | m_info.m_cellLength);
+        protected override uint SearchKey => (uint)(((m_variationGroupID & 0xFF) << 24) | ((int)TransferManager.TransferReason.Grain << 16) | (m_info.m_cellWidth << 8) | m_info.m_cellLength);
 
         public override void InitializePrefab()
         {
