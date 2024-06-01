@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using static Notification;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
@@ -33,15 +32,12 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            if(CustomBuffers == null)
-            {
-                CustomBuffers = new();
-            }
+            CustomBuffers = [];
         }
 
         public static void Deinit()
         {
-            CustomBuffers = new();
+            CustomBuffers = [];
         }
 
         public static CustomBuffer GetCustomBuffer(ushort bufferID)
