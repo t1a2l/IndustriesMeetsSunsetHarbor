@@ -30,7 +30,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                 TextureUtils.AddSpriteToAtlas(new Rect(169, 3, 71, 77), NotificationSpriteNames[2], "DeliveryNotificationAtlas");
 
             }
-            if (TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas") == null)
+            if (TextureUtils.GetAtlas("InfoIconRestaurantButtonAtlas") == null)
             {
                 TextureUtils.InitialiseAtlas("InfoIconRestaurantButtonAtlas");
                 for (int i = 0; i < InfoIconRestaurantButton.Length; i++)

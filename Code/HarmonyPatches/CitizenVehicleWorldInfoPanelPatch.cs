@@ -30,7 +30,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     VehicleInfo info = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[firstVehicle].Info;
                     if(info.GetAI() is RestaurantDeliveryVehicleAI)
                     {
-                        ___m_VehicleType.atlas = TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas");
+                        ___m_VehicleType.atlas = TextureUtils.GetAtlas("InfoIconRestaurantButtonAtlas");
                         ___m_VehicleType.spriteName = "InfoIconRestaurant";
                     }
                     else
@@ -45,7 +45,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 VehicleParked vehicleParked = Singleton<VehicleManager>.instance.m_parkedVehicles.m_buffer[___m_InstanceID.ParkedVehicle];
                 if(vehicleParked.Info.GetAI() is RestaurantDeliveryVehicleAI)
                 {
-                    ___m_VehicleType.atlas = TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas");
+                    ___m_VehicleType.atlas = TextureUtils.GetAtlas("InfoIconRestaurantButtonAtlas");
                     ___m_VehicleType.spriteName = "InfoIconRestaurant";
                 }
                 else

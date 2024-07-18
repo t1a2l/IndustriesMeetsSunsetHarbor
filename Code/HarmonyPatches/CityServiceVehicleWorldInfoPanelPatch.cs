@@ -37,7 +37,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             VehicleInfo info = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[firstVehicle].Info;
             if (info.GetService() == (ItemClass.Service)28)
             {
-                ___m_VehicleType.atlas = TextureUtils.GetAtlas("RestaurantInfoIconButtonAtlas");
+                ___m_VehicleType.atlas = TextureUtils.GetAtlas("InfoIconRestaurantButtonAtlas");
                 ___m_VehicleType.spriteName = "InfoIconRestaurant";
             }
             else
