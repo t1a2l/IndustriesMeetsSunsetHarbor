@@ -2,7 +2,6 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.AI;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using MoreTransferReasons;
@@ -98,8 +97,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-
-        [HarmonyPatch(typeof(HumanAI), "StartMoving", new Type[] { typeof(uint), typeof(Citizen), typeof(ushort), typeof(TransferManager.TransferOffer) },
+        [HarmonyPatch(typeof(HumanAI), "StartMoving", [typeof(uint), typeof(Citizen), typeof(ushort), typeof(TransferManager.TransferOffer)],
             [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Normal])]
         [HarmonyPrefix]
         public static bool StartMoving(HumanAI __instance, uint citizenID, ref Citizen data, ushort sourceBuilding, TransferManager.TransferOffer offer, ref bool __result)
@@ -112,7 +110,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             return true;
         }
-
 
         [HarmonyPatch(typeof(HumanAI), "GetColor")]
         [HarmonyPrefix]
