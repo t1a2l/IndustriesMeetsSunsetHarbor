@@ -24,19 +24,14 @@
     <Copy SourceFiles="@(ModFiles)" DestinationFolder="$(ModDirectory)" />
   </Target>
   <ItemGroup>
-    <Compile Remove="Code\Icons\**" />
-    <EmbeddedResource Remove="Code\Icons\**" />
-    <None Remove="Code\Icons\**" />
+    <None Remove="Utils\Atlas\DeliveryNotificationAtlas.png" />
+    <None Remove="Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
+    <None Remove="Utils\Atlas\sprites.png" />
+    <None Remove="Utils\Atlas\spritesheet.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Code\Utils\Atlas\DeliveryNotificationAtlas.png" />
-    <None Remove="Code\Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
-    <None Remove="Code\Utils\Atlas\sprites.png" />
-    <None Remove="Code\Utils\Atlas\spritesheet.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Code\Utils\Atlas\DeliveryNotificationAtlas.png" />
-    <EmbeddedResource Include="Code\Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
+    <EmbeddedResource Include="Utils\Atlas\DeliveryNotificationAtlas.png" />
+    <EmbeddedResource Include="Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CitiesHarmony.API" Version="2.1.0" />
