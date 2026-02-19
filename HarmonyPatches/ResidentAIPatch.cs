@@ -4,7 +4,6 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
-using MoreTransferReasons.AI;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -40,13 +39,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-        [HarmonyPatch(typeof(ExtenedResidentAI), "MoreTransferReasons.AI.ExtenedResidentAI.ExtendedStartTransfer")]
-        [HarmonyPrefix]
-        public static bool ExtendedStartTransfer(ExtenedResidentAI __instance, uint citizenID, ref Citizen data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        [HarmonyPatch(typeof(ResidentAI), "StartTransfer")]
+        [HarmonyPostfix]
+        public static void ExtendedStartTransfer(ResidentAI __instance, uint citizenID, ref Citizen data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
             if (data.m_flags == Citizen.Flags.None || data.Dead || data.Sick)
             {
-                return true;
+                return;
             }
             ushort source_building = 0;
             switch (data.CurrentLocation)
@@ -65,17 +64,16 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             switch (material)
             {
-                case ExtendedTransferManager.TransferReason.MealsLow:
-                case ExtendedTransferManager.TransferReason.MealsMedium:
-                case ExtendedTransferManager.TransferReason.MealsHigh:
+                case ExtendedTransferManager.MealsLow:
+                case ExtendedTransferManager.MealsMedium:
+                case ExtendedTransferManager.MealsHigh:
                     data.m_flags &= ~Citizen.Flags.Evacuating;
                     if (__instance.StartMoving(citizenID, ref data, source_building, offer.Building))
                     {
                         data.SetVisitplace(citizenID, offer.Building, 0u);
                     }
-                    return false;
+                    break;
             }
-            return true;
         }
 
     }

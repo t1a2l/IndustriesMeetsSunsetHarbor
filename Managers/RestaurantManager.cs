@@ -29,20 +29,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            if(RestaurantsDeliveries == null)
-            {
-                RestaurantsDeliveries = new();
-            }
-            if(RestaurantsSitDowns == null)
-            {
-                RestaurantsSitDowns = new();
-            }
+            RestaurantsDeliveries ??= [];
+            RestaurantsSitDowns ??= [];
         }
 
         public static void Deinit()
         {
-            RestaurantsDeliveries = new();
-            RestaurantsSitDowns = new();
+            RestaurantsDeliveries = [];
+            RestaurantsSitDowns = [];
         }
 
         public static List<RestaurantDeliveryData> GetRestaurantDeliveriesList(ushort buildingID)
@@ -59,7 +53,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
         {
             if(!RestaurantsSitDowns.TryGetValue(buildingID, out List<RestaurantSitDownData> SitDownsList))
             {
-                SitDownsList = new List<RestaurantSitDownData>();
+                SitDownsList = [];
                 RestaurantsSitDowns[buildingID] = SitDownsList;
             }
             return SitDownsList;

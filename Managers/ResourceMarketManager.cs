@@ -16,15 +16,12 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            if(MarketBuffers == null)
-            {
-                MarketBuffers = new();
-            }
+            MarketBuffers ??= [];
         }
 
         public static void Deinit()
         {
-            MarketBuffers = new();
+            MarketBuffers = [];
         }
     }
 }

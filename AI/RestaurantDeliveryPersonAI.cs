@@ -109,7 +109,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 forward.y = 0f;
                 if (forward.sqrMagnitude > 0.01f)
                 {
-                    CitizenInstance.Frame frame = default(CitizenInstance.Frame);
+                    CitizenInstance.Frame frame = default;
                     frame.m_position = position;
                     frame.m_rotation = Quaternion.LookRotation(forward);
                     data.m_frame0 = frame;
@@ -146,7 +146,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 BuildingManager instance = Singleton<BuildingManager>.instance;
                 BuildingInfo info = instance.m_buildings.m_buffer[citizenData.m_targetBuilding].Info;
-                Randomizer randomizer = new Randomizer(instanceID);
+                Randomizer randomizer = new(instanceID);
                 info.m_buildingAI.CalculateUnspawnPosition(citizenData.m_targetBuilding, ref instance.m_buildings.m_buffer[citizenData.m_targetBuilding], ref randomizer, m_info, instanceID, out var position, out var _, out var direction, out var _);
                 citizenData.m_targetPos = new Vector4(position.x, position.y, position.z, 1f);
                 citizenData.m_targetDir = direction;

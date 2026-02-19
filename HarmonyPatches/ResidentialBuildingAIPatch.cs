@@ -15,7 +15,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static void SimulationStepActive(ResidentialBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
-            Citizen.BehaviourData behaviourData = default(Citizen.BehaviourData);
+            Citizen.BehaviourData behaviourData = default;
 	    int aliveCount = 0;
 	    int totalCount = 0;
 	    int homeCount = 0;

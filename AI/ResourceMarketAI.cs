@@ -7,7 +7,7 @@ using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    public class ResourceMarketAI : PlayerBuildingAI, IExtendedBuildingAI
+    public class ResourceMarketAI : PlayerBuildingAI
     {
         [CustomizableProperty("Uneducated Workers", "Workers", 0)]
         public int m_workPlaceCount0 = 5;
@@ -64,29 +64,25 @@ namespace IndustriesMeetsSunsetHarbor.AI
             TransferManager.TransferReason.Grain,
             TransferManager.TransferReason.Food,
             TransferManager.TransferReason.AnimalProducts,
-            TransferManager.TransferReason.Flours
-        ];
-
-        public ExtendedTransferManager.TransferReason[] m_incomingExtendedResources =
-        [
-            ExtendedTransferManager.TransferReason.BakedGoods,
-            ExtendedTransferManager.TransferReason.CannedFish,
-            ExtendedTransferManager.TransferReason.Anchovy,
-            ExtendedTransferManager.TransferReason.Salmon,
-            ExtendedTransferManager.TransferReason.Shellfish,
-            ExtendedTransferManager.TransferReason.Tuna,
-            ExtendedTransferManager.TransferReason.Algae,
-            ExtendedTransferManager.TransferReason.Seaweed,
-            ExtendedTransferManager.TransferReason.Trout,
-            ExtendedTransferManager.TransferReason.SheepMilk,
-            ExtendedTransferManager.TransferReason.CowMilk,
-            ExtendedTransferManager.TransferReason.HighlandCowMilk,
-            ExtendedTransferManager.TransferReason.LambMeat,
-            ExtendedTransferManager.TransferReason.BeefMeat,
-            ExtendedTransferManager.TransferReason.HighlandBeefMeat,
-            ExtendedTransferManager.TransferReason.PorkMeat,
-            ExtendedTransferManager.TransferReason.Fruits,
-            ExtendedTransferManager.TransferReason.Vegetables,
+            TransferManager.TransferReason.Flours,
+            ExtendedTransferManager.BakedGoods,
+            ExtendedTransferManager.CannedFish,
+            ExtendedTransferManager.Anchovy,
+            ExtendedTransferManager.Salmon,
+            ExtendedTransferManager.Shellfish,
+            ExtendedTransferManager.Tuna,
+            ExtendedTransferManager.Algae,
+            ExtendedTransferManager.Seaweed,
+            ExtendedTransferManager.Trout,
+            ExtendedTransferManager.SheepMilk,
+            ExtendedTransferManager.CowMilk,
+            ExtendedTransferManager.HighlandCowMilk,
+            ExtendedTransferManager.LambMeat,
+            ExtendedTransferManager.BeefMeat,
+            ExtendedTransferManager.HighlandBeefMeat,
+            ExtendedTransferManager.PorkMeat,
+            ExtendedTransferManager.Fruits,
+            ExtendedTransferManager.Vegetables,
         ];
 
         public int GetEntertainmentAccumulation(ushort buildingID, ref Building data)
@@ -174,13 +170,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                     return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingResources[i]];
                                 }
                             }
-                            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-                            {
-                                if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None && (data.m_tempImport != 0 || data.m_finalImport != 0))
-                                {
-                                    return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingExtendedResources[i]];
-                                }
-                            }
                             return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                         }
                         return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
@@ -209,7 +198,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             string text = base.GetDebugString(buildingID, ref data);
             TransferManager.TransferReason[] incomingResources = m_incomingResources;
-            ExtendedTransferManager.TransferReason[] extendedIncomingResources = m_incomingExtendedResources;
             var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             for (int i = 0; i < incomingResources.Length; i++)
             {
@@ -229,27 +217,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     });
                 }
             }
-            for (int j = 0; j < extendedIncomingResources.Length; j++)
-            {
-                int num = 0;
-                int num2 = 0;
-                int num3 = 0;
-                int num4 = 0;
-                if (extendedIncomingResources[j] != ExtendedTransferManager.TransferReason.None)
-                {
-                    ExtendedVehicleManager.CalculateGuestVehicles(buildingID, ref data, extendedIncomingResources[j], ref num, ref num2, ref num3, ref num4);
-                    text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", new object[]
-                    {
-                        text,
-                        extendedIncomingResources[j].ToString(),
-                        marketBuffer.inputAmountBuffer[j + incomingResources.Length],
-                        num2
-                    });
-                }
-            }
-            var merged_length = m_incomingResources.Length + m_incomingExtendedResources.Length;
             TransferManager.TransferReason transferReason = TransferManager.TransferReason.Shopping;
-            for (int k = 0; k < merged_length; k++)
+            for (int k = 0; k < m_incomingResources.Length; k++)
             {
                 if (transferReason != TransferManager.TransferReason.None)
                 {
@@ -335,9 +304,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
-            var merged_length = m_incomingResources.Length + m_incomingExtendedResources.Length;
             System.Random rnd = new();
-            index = rnd.Next(0, merged_length);
+            index = rnd.Next(0, m_incomingResources.Length);
             switch (material)
             {
                 case TransferManager.TransferReason.Shopping:
@@ -392,26 +360,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
-        {
-            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-            {
-                if (material == m_incomingExtendedResources[i])
-                {
-                    index = i;
-                    if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
-                    {
-                        AddMarketBufferToBuildingData(buildingID);
-                    }
-                    var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
-                    int goodsCapacity = m_goodsCapacity;
-                    amountDelta = Mathf.Clamp(amountDelta, 0, goodsCapacity - (int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length]);
-                    marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] = (ushort)((int)marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] + amountDelta);
-                    ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
-                }
-            }
-        }
-
         public override void GetMaterialAmount(ushort buildingID, ref Building data, TransferManager.TransferReason material, out int amount, out int max)
         {
             amount = 0;
@@ -432,20 +380,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void ExtendedGetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
-        {
-            amount = 0;
-            max = m_goodsCapacity;
-            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-            {
-                if (material == m_incomingExtendedResources[i])
-                {
-                    amount = ResourceMarketManager.MarketBuffers[buildingID].inputAmountBuffer[i + m_incomingResources.Length];
-                    break;
-                }
-            }
-        }
-
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
 	{
 	    int amountDelta = -Singleton<SimulationManager>.instance.m_randomizer.Int32(50, 150);
@@ -462,15 +396,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (m_incomingResources[i] != TransferManager.TransferReason.None)
                 {
                     Singleton<TransferManager>.instance.RemoveIncomingOffer(m_incomingResources[i], offer);
-                }
-            }
-            ExtendedTransferManager.Offer extended_offer = default;
-            extended_offer.Building = buildingID;
-            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-            {
-                if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
-                {
-                    Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer(m_incomingExtendedResources[i], extended_offer);
                 }
             }
             Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Entertainment, offer);
@@ -601,19 +526,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 base.HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount + totalVisitorCount);
                 int goodsCapacity = m_goodsCapacity;
                 TransferManager.TransferReason outgoingTransferReason = GetOutgoingTransferReason(buildingID);
-                var merged_count = m_incomingResources.Length + m_incomingExtendedResources.Length;
-                int[] productionRateArr = new int[merged_count];
+                int[] productionRateArr = new int[m_incomingResources.Length];
                 if (productionRate != 0)
                 {
-                    for (int i = 0; i < merged_count; i++)
+                    for (int i = 0; i < m_incomingResources.Length; i++)
                     {
                         productionRateArr[i] = productionRate;
                         int num16 = goodsCapacity;
                         if (i < m_incomingResources.Length && m_incomingResources[i] != TransferManager.TransferReason.None)
-                        {
-                            num16 = Mathf.Min(num16, (int)marketBuffer.inputAmountBuffer[i]);
-                        }
-                        if (i >= m_incomingResources.Length && m_incomingExtendedResources[i - m_incomingResources.Length] != ExtendedTransferManager.TransferReason.None)
                         {
                             num16 = Mathf.Min(num16, (int)marketBuffer.inputAmountBuffer[i]);
                         }
@@ -632,10 +552,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             marketBuffer.inputAmountBuffer[i] -= (ushort)num17;
                         }
-                        if (i >= m_incomingResources.Length && m_incomingExtendedResources[i - m_incomingResources.Length] != ExtendedTransferManager.TransferReason.None)
-                        {
-                            marketBuffer.inputAmountBuffer[i] -= (ushort)num17;
-                        }
                         if (outgoingTransferReason != TransferManager.TransferReason.None)
                         {
                             marketBuffer.outputAmountBuffer[i] += (ushort)num17;
@@ -647,18 +563,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int[] cargoArr = new int[m_incomingResources.Length];
                 int[] capacityArr = new int[m_incomingResources.Length];
                 int[] outsideArr = new int[m_incomingResources.Length];
-                int[] extendedCountArr = new int[m_incomingExtendedResources.Length];
-                int[] extendedCargoArr = new int[m_incomingExtendedResources.Length];
-                int[] extendedCapacityArr = new int[m_incomingExtendedResources.Length];
-                int[] extendedOutsideArr = new int[m_incomingExtendedResources.Length];
-                for (int i = 0; i < merged_count; i++)
+                for (int i = 0; i < m_incomingResources.Length; i++)
                 {
                     if (marketBuffer.inputAmountBuffer[i] > 0)
                     {
                         isAmount = true;
                         break;
                     }
-                    if (i == merged_count - 1 && isAmount)
+                    if (i == m_incomingResources.Length - 1 && isAmount)
                     {
                         isAmount = false;
                     }
@@ -669,14 +581,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         base.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingResources[i], ref countArr[i], ref cargoArr[i], ref capacityArr[i], ref outsideArr[i]);
                         buildingData.m_tempImport = (byte)Mathf.Clamp(outsideArr[i], (int)buildingData.m_tempImport, 255);
-                    }
-                }
-                for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-                {
-                    if (m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
-                    {
-                        ExtendedVehicleManager.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingExtendedResources[i], ref extendedCountArr[i], ref extendedCargoArr[i], ref extendedCapacityArr[i], ref extendedOutsideArr[i]);
-                        buildingData.m_tempImport = (byte)Mathf.Clamp(extendedOutsideArr[i], (int)buildingData.m_tempImport, 255);
                     }
                 }
                 buildingData.m_tempExport = (byte)Mathf.Clamp(behaviour.m_touristCount, (int)buildingData.m_tempExport, 255);
@@ -701,35 +605,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         buildingData.m_outgoingProblemTimer = 0;
                     }
                 }
-                for (int i = 0; i < merged_count; i++)
-                {
-                    Notification.Problem1 problem2 = Notification.Problem1.NoGoods;
-                    if (i < m_incomingResources.Length && m_incomingResources[i] == TransferManager.TransferReason.Fish)
-                    {
-                        problem2 = Notification.Problem1.NoFishingGoods;
-                    }
-                    else if (i >= m_incomingResources.Length && m_incomingExtendedResources[i - m_incomingResources.Length] == ExtendedTransferManager.TransferReason.CannedFish)
-                    {
-                        problem2 = Notification.Problem1.NoFishingGoods;
-                    }
-                    if (marketBuffer.inputAmountBuffer[i] < m_resourceThreshold && !isAmount)
-                    {
-                        buildingData.m_incomingProblemTimer = (byte)Mathf.Min(255, (int)(buildingData.m_incomingProblemTimer + 1));
-                        if (buildingData.m_incomingProblemTimer < 64)
-                        {
-                            problem = Notification.AddProblems(problem, problem2);
-                        }
-                        else
-                        {
-                            problem = Notification.AddProblems(problem, Notification.Problem1.MajorProblem | problem2);
-                        }
-                    }
-                    else
-                    {
-                        buildingData.m_incomingProblemTimer = 0;
-                    }
-
-                }
                 for (int i = 0; i < m_incomingResources.Length; i++)
                 {
                     if (buildingData.m_fireIntensity == 0 && m_incomingResources[i] != TransferManager.TransferReason.None)
@@ -747,26 +622,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         }
                     }
                 }
-                for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-                {
-                    if (buildingData.m_fireIntensity == 0 && m_incomingExtendedResources[i] != ExtendedTransferManager.TransferReason.None)
-                    {
-                        int ExtendedInputSize = marketBuffer.inputAmountBuffer[i + m_incomingResources.Length] + extendedCargoArr[i];
-                        if (ExtendedInputSize < m_resourceThreshold)
-                        {
-                            ExtendedTransferManager.Offer offer = default;
-                            offer.Building = buildingID;
-                            offer.Position = buildingData.m_position;
-                            offer.Amount = 1;
-                            offer.Active = false;
-                            Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(m_incomingExtendedResources[i], offer);
-                        }
-                    }
-                }
                 if (buildingData.m_fireIntensity == 0 && outgoingTransferReason != TransferManager.TransferReason.None)
                 {
                     int all_resources_amount = 0;
-                    for (int k = 0; k < merged_count; k++)
+                    for (int k = 0; k < m_incomingResources.Length; k++)
                     {
                         all_resources_amount += (int)marketBuffer.outputAmountBuffer[k];
                     }
@@ -846,13 +705,6 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 str += name + " Sold Last Week: " + num;
                 str += Environment.NewLine;
             }
-            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-            {
-                string name = m_incomingExtendedResources[i].ToString();
-                num = (int)(marketBuffer.amountSold2[i + m_incomingResources.Length] * 10);
-                str += name + " Sold Last Week: " + num;
-                str += Environment.NewLine;
-            }
             str += Environment.NewLine;
             for (int i = 0; i < m_incomingResources.Length; i++)
             {
@@ -864,20 +716,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 str += name + " Stored In Market: " + num + "/" + m_goodsCapacity;
                 str += Environment.NewLine;
             }
-            for (int i = 0; i < m_incomingExtendedResources.Length; i++)
-            {
-                string name = m_incomingExtendedResources[i].ToString();
-                num = (int)(marketBuffer.inputAmountBuffer[i + m_incomingResources.Length]);
-                str += name + " Stored In Market: " + num + "/" + m_goodsCapacity;
-                str += Environment.NewLine;
-            }
             str += Environment.NewLine;
             ResourceMarketManager.MarketBuffers[buildingID] = marketBuffer;
             int finalExport = (int)data.m_finalExport;
-            return str + LocaleFormatter.FormatGeneric("AIINFO_TOURISTS", new object[]
-            {
+            return str + LocaleFormatter.FormatGeneric("AIINFO_TOURISTS",
+            [
                finalExport
-            });
+            ]);
         }
 
         public override void GetPollutionAccumulation(out int ground, out int noise)
@@ -899,22 +744,16 @@ namespace IndustriesMeetsSunsetHarbor.AI
 	    workPlaceCount3 = m_workPlaceCount3;
 	}
 
-        public void ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
-        {
-
-        }
-
         private void AddMarketBufferToBuildingData(ushort buildingID)
         {
-            var merged_length = m_incomingResources.Length + m_incomingExtendedResources.Length;
             ResourceMarketManager.MarketData newMarketData = new()
             {
-                inputAmountBuffer = new ushort[merged_length],
-                outputAmountBuffer = new ushort[merged_length],
-                amountSold1 = new ushort[merged_length],
-                amountSold2 = new ushort[merged_length]
+                inputAmountBuffer = new ushort[m_incomingResources.Length],
+                outputAmountBuffer = new ushort[m_incomingResources.Length],
+                amountSold1 = new ushort[m_incomingResources.Length],
+                amountSold2 = new ushort[m_incomingResources.Length]
             };
-            for (int j = 0; j < merged_length; j++)
+            for (int j = 0; j < m_incomingResources.Length; j++)
             {
                 newMarketData.inputAmountBuffer[j] = 0;
                 newMarketData.outputAmountBuffer[j] = 0;

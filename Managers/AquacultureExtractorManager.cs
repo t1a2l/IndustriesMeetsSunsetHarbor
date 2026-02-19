@@ -10,15 +10,12 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            if(AquacultureExtractorsWithNoFarm == null)
-            {
-                AquacultureExtractorsWithNoFarm = new();
-            }
+            AquacultureExtractorsWithNoFarm ??= [];
         }
 
         public static void Deinit()
         {
-            AquacultureExtractorsWithNoFarm = new();
+            AquacultureExtractorsWithNoFarm = [];
         }
 
         public static void ObserveBuilding(ushort buildingId)

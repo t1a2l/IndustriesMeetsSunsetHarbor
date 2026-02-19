@@ -4,7 +4,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
 using System.Reflection;
 
-namespace IndustriesMeetsSunsetHarbor.Code.HarmonyPatches
+namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
     public static class OnVariationDropdownChangedPatch
     {
@@ -22,14 +22,18 @@ namespace IndustriesMeetsSunsetHarbor.Code.HarmonyPatches
             ref Building building = ref instance.m_buildings.m_buffer[buildingId];
             BuildingInfo info = building.Info;
             BuildingAI buildingAI = info.m_buildingAI;
-            if (buildingAI is NewExtractingFacilityAI)
+            if (buildingAI is ExtractingFacilityAI)
             {
                 building.m_customBuffer1 = 0;
+                building.m_customBuffer2 = 0;
             }
-            if (buildingAI is NewProcessingFacilityAI)
+            else if (buildingAI is ExtendedProcessingFacilityAI)
             {
                 var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-                custom_buffers.m_customBuffer10 = 0;
+                custom_buffers.m_customBuffer1 = 0;
+                custom_buffers.m_customBuffer2 = 0;
+                custom_buffers.m_customBuffer3 = 0;
+                custom_buffers.m_customBuffer4 = 0;
                 CustomBuffersManager.SetCustomBuffer(buildingId, custom_buffers);
             }
         }

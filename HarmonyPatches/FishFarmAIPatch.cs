@@ -3,6 +3,7 @@ using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
 
+// Support land fish farms
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
     [HarmonyPatch(typeof(FishFarmAI))]
@@ -165,40 +166,5 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return false;
         }
 
-        [HarmonyPatch(typeof(FishFarmAI), "StartTransfer")]
-        [HarmonyPrefix]
-        public static bool StartTransfer(FishFarmAI __instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
-        {
-            if (material == TransferManager.TransferReason.Grain)
-            {
-                VehicleInfo vehicleInfo = __instance.GetSelectedVehicle(buildingID);
-                if (vehicleInfo == null)
-                {
-                    vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, __instance.m_vehicleClass.m_service, __instance.m_vehicleClass.m_subService, __instance.m_vehicleClass.m_level, VehicleInfo.VehicleType.Car);
-                }
-                if (vehicleInfo == null)
-                {
-                    return false;
-                }
-                Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                if (Singleton<VehicleManager>.instance.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, material, transferToSource: false, transferToTarget: true))
-                {
-                    vehicleInfo.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[vehicle], buildingID);
-                    vehicleInfo.m_vehicleAI.StartTransfer(vehicle, ref vehicles.m_buffer[vehicle], material, offer);
-                    ushort building = offer.Building;
-                    if (building != 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_flags & Building.Flags.IncomingOutgoing) != 0)
-                    {
-                        vehicleInfo.m_vehicleAI.GetSize(vehicle, ref vehicles.m_buffer[vehicle], out var size, out var _);
-                        CommonBuildingAI.ExportResource(buildingID, ref data, material, size);
-                    }
-                    data.m_outgoingProblemTimer = 0;
-                }
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
     }
 }

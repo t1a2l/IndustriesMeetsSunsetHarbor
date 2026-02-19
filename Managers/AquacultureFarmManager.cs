@@ -12,10 +12,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Init()
         {
-            if(AquacultureFarms == null)
-            {
-                AquacultureFarms = new Dictionary<ushort, List<ushort>>();
-            }
+            AquacultureFarms ??= [];
             for (ushort index = 0; index < BuildingManager.instance.m_buildings.m_buffer.Length; ++index)
             {
                 ObserveBuilding(index);
@@ -24,7 +21,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static void Deinit()
         {
-            AquacultureFarms = new Dictionary<ushort, List<ushort>>();
+            AquacultureFarms = [];
         }
 
         public static void ObserveBuilding(ushort buildingId)
@@ -62,7 +59,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
         public static ushort[] GetAquacultureFarmsIds(ushort extractorId) // get all farms of the same type of the extractor
         {
-            List<ushort> AquacultureFarmsIds = new();
+            List<ushort> AquacultureFarmsIds = [];
             var extractorInfo = BuildingManager.instance.m_buildings.m_buffer[extractorId].Info;
             for (ushort buildingId = 0; buildingId < BuildingManager.instance.m_buildings.m_buffer.Length; ++buildingId)
             {
@@ -76,7 +73,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 }
                 
             }
-            return AquacultureFarmsIds.ToArray();
+            return [.. AquacultureFarmsIds];
         }
 
         public static bool IsValidAquacultureFarm(ushort aquacultureFarmID)

@@ -36,60 +36,60 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var level = GetRestaurantQuality(citizen.WealthLevel);
                 if (get_delivery)
                 {
-                    var material = ExtendedTransferManager.TransferReason.None;
+                    var material = TransferManager.TransferReason.None;
                     // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsDeliveryLow;
+                        material = ExtendedTransferManager.MealsDeliveryLow;
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsDeliveryMedium;
+                        material = ExtendedTransferManager.MealsDeliveryMedium;
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsDeliveryHigh;
+                        material = ExtendedTransferManager.MealsDeliveryHigh;
                     }
-                    if(material != ExtendedTransferManager.TransferReason.None)
+                    if(material != TransferManager.TransferReason.None)
                     {
-                        ExtendedTransferManager.Offer transferOffer = default;
+                        TransferManager.TransferOffer transferOffer = default;
                         transferOffer.Citizen = citizenID;
                         transferOffer.Position = homeBuildingData.m_position;
                         transferOffer.Amount = 1;
                         transferOffer.Active = false;
-                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(material, transferOffer);
+                        Singleton<TransferManager>.instance.AddOutgoingOffer(material, transferOffer);
                     }
                     
                     return false;
                 }
                 if(Singleton<SimulationManager>.instance.m_randomizer.Int32(100U) < Mod.VisitChance)
                 {
-                    var material = ExtendedTransferManager.TransferReason.None;
+                    var material = TransferManager.TransferReason.None;
                     // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsLow;
+                        material = ExtendedTransferManager.MealsLow;
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsMedium;
+                        material = ExtendedTransferManager.MealsMedium;
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
-                        material = ExtendedTransferManager.TransferReason.MealsHigh;
+                        material = ExtendedTransferManager.MealsHigh;
                     }
-                    if(material != ExtendedTransferManager.TransferReason.None)
+                    if(material != TransferManager.TransferReason.None)
                     {
-                        ExtendedTransferManager.Offer transferOffer = default;
+                        TransferManager.TransferOffer transferOffer = default;
                         transferOffer.Citizen = citizenID;
                         transferOffer.Position = homeBuildingData.m_position;
                         transferOffer.Amount = 1;
                         transferOffer.Active = true;
-                        Singleton<ExtendedTransferManager>.instance.AddIncomingOffer(material, transferOffer);
+                        Singleton<TransferManager>.instance.AddIncomingOffer(material, transferOffer);
                     }
                     return false;
                 }  
@@ -185,8 +185,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         private static bool IsShoppingReason(TransferManager.TransferReason reason)
         {
-            List<TransferManager.TransferReason> ShoppingList = new()
-            {
+            List<TransferManager.TransferReason> ShoppingList =
+            [
                 TransferManager.TransferReason.Shopping, 
 		TransferManager.TransferReason.ShoppingB, 
 		TransferManager.TransferReason.ShoppingC, 
@@ -195,7 +195,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		TransferManager.TransferReason.ShoppingF, 
 		TransferManager.TransferReason.ShoppingG, 
 		TransferManager.TransferReason.ShoppingH
-            };
+            ];
 
             if(ShoppingList.Contains(reason)) return true;
             return false;

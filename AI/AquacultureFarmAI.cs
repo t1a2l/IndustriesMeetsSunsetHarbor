@@ -5,11 +5,10 @@ using System;
 using ColossalFramework.Math;
 using ColossalFramework.DataBinding;
 using MoreTransferReasons;
-using MoreTransferReasons.AI;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
-    public class AquacultureFarmAI : PlayerBuildingAI, IExtendedBuildingAI
+    public class AquacultureFarmAI : PlayerBuildingAI
     {
         [CustomizableProperty("Uneducated Workers", "Workers", 0)]
         public int m_workPlaceCount0 = 5;
@@ -44,7 +43,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public ItemClass m_vehicleClass;
 
         [CustomizableProperty("Output Resource")]
-        public ExtendedTransferManager.TransferReason m_outputResource = ExtendedTransferManager.TransferReason.None;
+        public TransferManager.TransferReason m_outputResource = TransferManager.TransferReason.None;
 
         [NonSerialized]
         protected float m_quayOffset;
@@ -93,7 +92,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case InfoManager.InfoMode.NoisePollution:
                     {
                         int noiseAccumulation = m_noiseAccumulation;
-                        return CommonBuildingAI.GetNoisePollutionColor(noiseAccumulation);
+                        return GetNoisePollutionColor(noiseAccumulation);
                     }
                 case InfoManager.InfoMode.Fishing:
                     if ((data.m_flags & Building.Flags.Active) != 0)
@@ -104,10 +103,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 case InfoManager.InfoMode.Connections:
                     if (subInfoMode == InfoManager.SubInfoMode.WaterPower)
                     {
-                        ExtendedTransferManager.TransferReason outputResource = m_outputResource;
-                        if (outputResource != ExtendedTransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
+                        TransferManager.TransferReason outputResource = m_outputResource;
+                        if (outputResource != TransferManager.TransferReason.None && (data.m_tempExport != 0 || data.m_finalExport != 0))
                         {
-                            return Singleton<ExtendedTransferManager>.instance.m_properties.m_resourceColors[(int)outputResource];
+                            return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)outputResource];
                         }
                     }
                     return Singleton<InfoManager>.instance.m_properties.m_neutralColor;
@@ -119,7 +118,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetDebugString(ushort buildingID, ref Building data)
         {
             string text = base.GetDebugString(buildingID, ref data);
-            if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+            if (m_outputResource != TransferManager.TransferReason.None)
             {
                 int customBuffer = data.m_customBuffer1;
                 int cycleBufferSize = GetCycleBufferSize(buildingID, ref data);
@@ -131,7 +130,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             int cargo = 0;
             int capacity = 0;
             int outside = 0;
-            ExtendedVehicleManager.CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
+            CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
             return StringUtils.SafeFormat("{0}\nOutgoing trucks: {1}", text, count);
         }
 
@@ -166,7 +165,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             float num = Mathf.Clamp(5 * customBuffer / cycleBufferSize + 1, 1, 5);
             string text = LocaleFormatter.FormatGeneric("INFO_FISH_FARM_STATS", num, 5) + Environment.NewLine;
 
-            if (m_outputResource != ExtendedTransferManager.TransferReason.None && m_outputVehicleCount != 0)
+            if (m_outputResource != TransferManager.TransferReason.None && m_outputVehicleCount != 0)
             {
                 int budget = GetBudget(buildingID, ref data);
                 int productionRate = PlayerBuildingAI.GetProductionRate(100, budget);
@@ -175,7 +174,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int cargo = 0;
                 int capacity = 0;
                 int outside = 0;
-                ExtendedVehicleManager.CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
+                CalculateOwnVehicles(buildingID, ref data, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
                 text += LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLES", count, num2);
                 if (AquacultureFarmManager.AquacultureFarms.ContainsKey(buildingID))
                 {
@@ -242,38 +241,36 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void ExtendedStartTransfer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ExtendedTransferManager.Offer offer)
+        public override void StartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
             if (material == m_outputResource)
             {
-                VehicleInfo vehicleInfo = GetSelectedVehicle(buildingID);
-                if (vehicleInfo == null)
-                {
-                    vehicleInfo = Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, m_vehicleClass.m_service, m_vehicleClass.m_subService, m_vehicleClass.m_level, VehicleInfo.VehicleType.Car);
-                }
-                if (vehicleInfo == null)
+                VehicleInfo vehicleInfo = GetSelectedVehicle(buildingID) ?? Singleton<VehicleManager>.instance.GetRandomVehicleInfo(ref Singleton<SimulationManager>.instance.m_randomizer, m_vehicleClass.m_service, m_vehicleClass.m_subService, m_vehicleClass.m_level, VehicleInfo.VehicleType.Car);
+                if (vehicleInfo is null)
                 {
                     return;
                 }
-
-                byte transferType = (byte)(material + 200);
                 Array16<Vehicle> vehicles = Singleton<VehicleManager>.instance.m_vehicles;
-                if (ExtendedVehicleManager.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, transferType, transferToSource: false, transferToTarget: true) && vehicleInfo.m_vehicleAI is ExtendedCargoTruckAI cargoTruckAI)
+                if (Singleton<VehicleManager>.instance.CreateVehicle(out var vehicle, ref Singleton<SimulationManager>.instance.m_randomizer, vehicleInfo, data.m_position, material, transferToSource: false, transferToTarget: true))
                 {
                     vehicleInfo.m_vehicleAI.SetSource(vehicle, ref vehicles.m_buffer[vehicle], buildingID);
-                    ((IExtendedVehicleAI)cargoTruckAI).ExtendedStartTransfer(vehicle, ref vehicles.m_buffer[(int)vehicle], material, offer);
+                    vehicleInfo.m_vehicleAI.StartTransfer(vehicle, ref vehicles.m_buffer[vehicle], material, offer);
                     ushort building = offer.Building;
-                    if (building != 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_flags & Building.Flags.IncomingOutgoing) != 0)
+                    if (building != 0 && (Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_flags & Building.Flags.IncomingOutgoing) != Building.Flags.None)
                     {
                         vehicleInfo.m_vehicleAI.GetSize(vehicle, ref vehicles.m_buffer[vehicle], out var size, out var _);
-                        IndustryBuildingManager.ExportResource(buildingID, ref data, material, size);
+                        CommonBuildingAI.ExportResource(buildingID, ref data, material, size);
                     }
                     data.m_outgoingProblemTimer = 0;
                 }
             }
+            else
+            {
+                base.StartTransfer(buildingID, ref data, material, offer);
+            }
         }
 
-        public void ExtendedModifyMaterialBuffer(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, ref int amountDelta)
+        public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
             if (material == m_outputResource)
             {
@@ -281,21 +278,32 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 amountDelta = Mathf.Clamp(amountDelta, -num, m_storageBufferSize - num);
                 data.m_customBuffer2 = (ushort)((num + amountDelta) / 100);
             }
+            else
+            {
+                base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
+            }
         }
 
-        public void ExtendedGetMaterialAmount(ushort buildingID, ref Building data, ExtendedTransferManager.TransferReason material, out int amount, out int max)
+        public override void GetMaterialAmount(ushort buildingID, ref Building data, TransferManager.TransferReason material, out int amount, out int max)
         {
-            amount = data.m_customBuffer2 * 100;
-            max = m_storageBufferSize;
+            if (material == TransferManager.TransferReason.Fish)
+            {
+                amount = data.m_customBuffer2 * 100;
+                max = m_storageBufferSize;
+            }
+            else
+            {
+                base.GetMaterialAmount(buildingID, ref data, material, out amount, out max);
+            }
         }
 
         public override void BuildingDeactivated(ushort buildingID, ref Building data)
         {
-            if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+            if (m_outputResource != TransferManager.TransferReason.None)
             {
-                ExtendedTransferManager.Offer offer = default;
+                TransferManager.TransferOffer offer = default;
                 offer.Building = buildingID;
-                Singleton<ExtendedTransferManager>.instance.RemoveOutgoingOffer(m_outputResource, offer);
+                Singleton<TransferManager>.instance.RemoveOutgoingOffer(m_outputResource, offer);
             }
             base.BuildingDeactivated(buildingID, ref data);
         }
@@ -350,7 +358,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             if (num2 > 32)
             {
                 GuideController properties = Singleton<GuideManager>.instance.m_properties;
-                if (properties is object)
+                if (properties is not null)
                 {
                     Singleton<BuildingManager>.instance.m_fishingPollutionDetected.Activate(properties.m_fishingPollutionDetected, buildingID);
                 }
@@ -383,7 +391,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 HandleDead(buildingID, ref buildingData, ref behaviour, totalWorkerCount);
                 int num8 = 0;
                 int num9 = 0;
-                if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+                if (m_outputResource != TransferManager.TransferReason.None)
                 {
                     int num10 = (m_productionRate * finalProductionRate + 99) / 100;
                     if (m_info.m_class.m_level == ItemClass.Level.Level3 && (servicePolicies & DistrictPolicies.Services.AlgaeBasedWaterFiltering) != 0)
@@ -417,14 +425,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     buildingData.m_customBuffer1 = (ushort)num7;
                     buildingData.m_customBuffer2 = (ushort)(num9 / 100);
                 }
-                if (m_outputResource != ExtendedTransferManager.TransferReason.None)
+                if (m_outputResource != TransferManager.TransferReason.None)
                 {
                     int num11 = (num4 * m_outputVehicleCount + 99) / 100;
                     int count = 0;
                     int cargo = 0;
                     int capacity = 0;
                     int outside = 0;
-                    ExtendedVehicleManager.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
+                    CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource, ref count, ref cargo, ref capacity, ref outside);
                     buildingData.m_tempExport = (byte)Mathf.Clamp(outside, buildingData.m_tempExport, 255);
                     if (buildingData.m_finalExport != 0)
                     {
@@ -433,12 +441,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     int num12 = num9;
                     if (num12 >= 8000 && count < num11)
                     {
-                        ExtendedTransferManager.Offer offer = default;
+                        TransferManager.TransferOffer offer = default;
                         offer.Building = buildingID;
                         offer.Position = buildingData.m_position;
                         offer.Amount = 1;
                         offer.Active = true;
-                        Singleton<ExtendedTransferManager>.instance.AddOutgoingOffer(m_outputResource, offer);
+                        Singleton<TransferManager>.instance.AddOutgoingOffer(m_outputResource, offer);
                     }
                 }
             }
@@ -479,14 +487,14 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             string text = LocaleFormatter.FormatGeneric("AIINFO_WATER_CONSUMPTION", GetWaterConsumption() * 16) + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_CONSUMPTION", GetElectricityConsumption() * 16);
             string text2 = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", m_productionRate * 16);
-            if (m_outputResource != ExtendedTransferManager.TransferReason.None && m_outputVehicleCount != 0)
+            if (m_outputResource != TransferManager.TransferReason.None && m_outputVehicleCount != 0)
             {
                 text2 = text2 + Environment.NewLine + LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_VEHICLE_COUNT", m_outputVehicleCount);
             }
             string text3 = LocaleFormatter.FormatGeneric("AIINFO_WORKPLACES_ACCUMULATION", (m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3).ToString());
             string baseTooltip = TooltipHelper.Append(base.GetLocalizedTooltip(), TooltipHelper.Format(LocaleFormatter.Info1, text, LocaleFormatter.Info2, text2, LocaleFormatter.WorkplaceCount, text3));
             string addTooltip = TooltipHelper.Format("arrowVisible", "false", "input1Visible", "true", "input2Visible", "false", "input3Visible", "false", "input4Visible", "false", "outputVisible", "false");
-            string addTooltip2 = TooltipHelper.Format("input1", IndustryBuildingManager.ResourceSpriteName(m_outputResource), "input2", string.Empty, "input3", string.Empty, "input4", string.Empty, "output", string.Empty);
+            string addTooltip2 = TooltipHelper.Format("input1", IndustryWorldInfoPanel.ResourceSpriteName(m_outputResource), "input2", string.Empty, "input3", string.Empty, "input4", string.Empty, "output", string.Empty);
             baseTooltip = TooltipHelper.Append(baseTooltip, addTooltip);
             return TooltipHelper.Append(baseTooltip, addTooltip2);
         }

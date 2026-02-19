@@ -18,10 +18,10 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         public static void Postfix(PowerPlantAI __instance, ushort buildingID, ref Building data, ref string __result)
         {
             int electricityRate = __instance.GetElectricityRate(buildingID, ref data);
-            string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION", new object[]
-            {
+            string text = LocaleFormatter.FormatGeneric("AIINFO_ELECTRICITY_PRODUCTION",
+            [
                 (electricityRate * 16 + 500) / 1000
-            });
+            ]);
             text += Environment.NewLine;
             if (__instance.m_resourceType != TransferManager.TransferReason.None)
             {

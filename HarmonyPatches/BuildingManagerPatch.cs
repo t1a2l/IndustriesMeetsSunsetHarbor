@@ -20,8 +20,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(UnlockManager))]
     public static class UnlockManagerPatch
     {
-        [HarmonyPatch(typeof(UnlockManager), "Unlocked", new Type[] { typeof(ItemClass.Service) },
-            new ArgumentType[] { ArgumentType.Normal })]
+        [HarmonyPatch(typeof(UnlockManager), "Unlocked", [typeof(ItemClass.Service)],
+            [ArgumentType.Normal])]
         [HarmonyPrefix]
         public static bool Unlocked(UnlockManager __instance, ItemClass.Service service, ref bool __result)
 	{

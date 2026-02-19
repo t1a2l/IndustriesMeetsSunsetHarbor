@@ -3,7 +3,6 @@ using ColossalFramework.Math;
 using IndustriesMeetsSunsetHarbor.Managers;
 using System;
 using UnityEngine;
-using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -248,9 +247,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
         {
             if ((data.m_flags & Vehicle.Flags.WaitingTarget) != 0)
             {
-                ExtendedTransferManager.Offer offer = default;
+                TransferManager.TransferOffer offer = default;
                 offer.Vehicle = vehicleID;
-                Singleton<ExtendedTransferManager>.instance.RemoveIncomingOffer((ExtendedTransferManager.TransferReason)data.m_transferType, offer);
+                Singleton<TransferManager>.instance.RemoveIncomingOffer((TransferManager.TransferReason)data.m_transferType, offer);
             }
         }
 
