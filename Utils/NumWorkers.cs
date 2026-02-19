@@ -1,6 +1,7 @@
-namespace IndustriesMeetsSunsetHarbor.Utils {
-    public struct NumWorkers {
-
+namespace IndustriesMeetsSunsetHarbor.Utils
+{
+    public struct NumWorkers
+    {
         public int maxNumUneducatedWorkers;
         public int numUneducatedWorkers;
 

@@ -12,7 +12,7 @@ namespace IndustriesMeetsSunsetHarbor.Utils
     internal static class TextureUtils
     {
         internal static Dictionary<string, UITextureAtlas> m_atlasStore = new();
-        static string PATH => "IndustriesMeetsSunsetHarbor.Code.Utils.Atlas.";
+        static string PATH => "IndustriesMeetsSunsetHarbor.Utils.Atlas.";
         static string ModPath => GetPlugin().modPath;
         public static string FILE_PATH = ModPath;
         public static bool EmbededResources = true;
