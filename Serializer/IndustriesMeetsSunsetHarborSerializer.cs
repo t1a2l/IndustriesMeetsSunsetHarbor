@@ -81,6 +81,15 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                                 CheckStartTuple("RestaurantSerializer", SaveGameFileVersion, Data, ref Index);
                                 RestaurantSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
                                 CheckEndTuple("RestaurantSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if (Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("FarmingParkDataSerializer", SaveGameFileVersion, Data, ref Index);
+                                FarmingParkDataSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("FarmingParkDataSerializer", SaveGameFileVersion, Data, ref Index);
                                 break;
                             }
                         }
@@ -148,6 +157,11 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     // RestaurantDeliveries settings
                     StorageData.WriteUInt32(uiTUPLE_START, Data);
                     RestaurantSerializer.SaveData(Data);
+                    StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    // FarmingParkData settings
+                    StorageData.WriteUInt32(uiTUPLE_START, Data);
+                    FarmingParkDataSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
                     m_serializableData.SaveData(DataID, Data.ToArray());

@@ -42,6 +42,7 @@ namespace IndustriesMeetsSunsetHarbor
                 ResourceMarketManager.Init();
                 CustomBuffersManager.Init();
                 RestaurantManager.Init();
+                FarmingParkDataManager.Init();
             }
             catch (Exception e)
             {
@@ -51,6 +52,7 @@ namespace IndustriesMeetsSunsetHarbor
                 ResourceMarketManager.Deinit();
                 CustomBuffersManager.Deinit();
                 RestaurantManager.Deinit();
+                FarmingParkDataManager.Deinit();
             }
         }
 
@@ -74,6 +76,7 @@ namespace IndustriesMeetsSunsetHarbor
             ResourceMarketManager.Deinit();
             CustomBuffersManager.Deinit();
             RestaurantManager.Deinit();
+            FarmingParkDataManager.Deinit();
             LogHelper.Information("Unloading done!" + Environment.NewLine);
         }
 
@@ -102,8 +105,7 @@ namespace IndustriesMeetsSunsetHarbor
 
         private bool IsInGame()
         {
-            return !SimulationManager.exists
-                   || SimulationManager.instance.m_metaData is {m_updateMode: SimulationManager.UpdateMode.LoadGame or SimulationManager.UpdateMode.NewGameFromMap or SimulationManager.UpdateMode.NewGameFromScenario};
+            return !SimulationManager.exists || SimulationManager.instance.m_metaData is {m_updateMode: SimulationManager.UpdateMode.LoadGame or SimulationManager.UpdateMode.NewGameFromMap or SimulationManager.UpdateMode.NewGameFromScenario};
         }
 
     }
