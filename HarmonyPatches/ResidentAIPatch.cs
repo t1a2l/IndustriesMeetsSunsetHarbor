@@ -41,7 +41,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         [HarmonyPatch(typeof(ResidentAI), "StartTransfer")]
         [HarmonyPostfix]
-        public static void ExtendedStartTransfer(ResidentAI __instance, uint citizenID, ref Citizen data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
+        public static void StartTransfer(ResidentAI __instance, uint citizenID, ref Citizen data, TransferManager.TransferReason reason, TransferManager.TransferOffer offer)
         {
             if (data.m_flags == Citizen.Flags.None || data.Dead || data.Sick)
             {
@@ -62,7 +62,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     source_building = data.m_visitBuilding;
                     break;
             }
-            switch (material)
+            switch (reason)
             {
                 case ExtendedTransferManager.MealsLow:
                 case ExtendedTransferManager.MealsMedium:
