@@ -1,8 +1,7 @@
-using System;
-using System.Runtime.CompilerServices;
 using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 using MoreTransferReasons;
 using UnityEngine;
 
@@ -105,59 +104,59 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 int num18 = 0;
                 if (__instance.m_inputResource1 != TransferManager.TransferReason.None)
                 {
-                    num17 = GetInputBufferSize1(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num17 = ReversePatches.GetInputBufferSize1(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num18 = buildingData.m_customBuffer2;
                     int num19 = (__instance.m_inputRate1 * finalProductionRate + 99) / 100;
                     if (num18 < num19)
                     {
                         finalProductionRate = (num18 * 100 + __instance.m_inputRate1 - 1) / __instance.m_inputRate1;
-                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(__instance, __instance.m_inputResource1)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
+                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!ReversePatches.IsRawMaterial(__instance, __instance.m_inputResource1)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
                 int num20 = 0;
                 int num21 = 0;
                 if (__instance.m_inputResource2 != TransferManager.TransferReason.None)
                 {
-                    num20 = GetInputBufferSize2(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num20 = ReversePatches.GetInputBufferSize2(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num21 = (buildingData.m_teens << 8) | buildingData.m_youngs;
                     int num22 = (__instance.m_inputRate2 * finalProductionRate + 99) / 100;
                     if (num21 < num22)
                     {
                         finalProductionRate = (num21 * 100 + __instance.m_inputRate2 - 1) / __instance.m_inputRate2;
-                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(__instance, __instance.m_inputResource2)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
+                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!ReversePatches.IsRawMaterial(__instance, __instance.m_inputResource2)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
                 int num23 = 0;
                 int num24 = 0;
                 if (__instance.m_inputResource3 != TransferManager.TransferReason.None)
                 {
-                    num23 = GetInputBufferSize3(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num23 = ReversePatches.GetInputBufferSize3(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num24 = (buildingData.m_adults << 8) | buildingData.m_seniors;
                     int num25 = (__instance.m_inputRate3 * finalProductionRate + 99) / 100;
                     if (num24 < num25)
                     {
                         finalProductionRate = (num24 * 100 + __instance.m_inputRate3 - 1) / __instance.m_inputRate3;
-                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(__instance, __instance.m_inputResource3)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
+                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!ReversePatches.IsRawMaterial(__instance, __instance.m_inputResource3)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
                 int num26 = 0;
                 int num27 = 0;
                 if (__instance.m_inputResource4 != TransferManager.TransferReason.None)
                 {
-                    num26 = GetInputBufferSize4(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num26 = ReversePatches.GetInputBufferSize4(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num27 = (buildingData.m_education1 << 8) | buildingData.m_education2;
                     int num28 = (__instance.m_inputRate4 * finalProductionRate + 99) / 100;
                     if (num27 < num28)
                     {
                         finalProductionRate = (num27 * 100 + __instance.m_inputRate4 - 1) / __instance.m_inputRate4;
-                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!IsRawMaterial(__instance, __instance.m_inputResource4)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
+                        problemStruct = Notification.AddProblems(problemStruct, flag ? Notification.Problem1.NoFishingGoods : ((!ReversePatches.IsRawMaterial(__instance, __instance.m_inputResource4)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources));
                     }
                 }
                 int num29 = 0;
                 int num30 = 0;
                 if (__instance.m_outputResource != TransferManager.TransferReason.None)
                 {
-                    num29 = GetOutputBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num29 = ReversePatches.GetOutputBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num30 = buildingData.m_customBuffer1;
                     int num31 = (num13 * finalProductionRate + 99) / 100;
                     if (num29 - num30 < num31)
@@ -258,7 +257,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     num16 = UniqueFacultyAI.DecreaseByBonus(UniqueFacultyAI.FacultyBonus.Science, num16);
                     Singleton<NaturalResourceManager>.instance.TryDumpResource(NaturalResourceManager.Resource.Pollution, num16, num16, position, __instance.m_pollutionRadius);
                 }
-                HandleDead2(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
+                ReversePatches.HandleDead2(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
                 if (b != 0 || __instance.m_industryType == DistrictPark.ParkType.Industry)
                 {
                     int num37 = 0;
@@ -489,88 +488,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     Singleton<BuildingManager>.instance.m_industryBuildingOutsideIndustryArea.Activate(properties2.m_industryBuildingOutsideIndustryArea, buildingID);
                 }
             }
-            BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+            ReversePatches.BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
             return false;
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(PlayerBuildingAI), "ProduceGoods")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void BaseProduceGoods(object instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
-        {
-            string message = "ProduceGoods reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ProcessingFacilityAI), "GetInputBufferSize1")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetInputBufferSize1(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetInputBufferSize1 reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ProcessingFacilityAI), "GetInputBufferSize2")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetInputBufferSize2(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetInputBufferSize2 reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ProcessingFacilityAI), "GetInputBufferSize3")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetInputBufferSize3(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetInputBufferSize3 reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ProcessingFacilityAI), "GetInputBufferSize4")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetInputBufferSize4(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetInputBufferSize4 reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ProcessingFacilityAI), "GetOutputBufferSize")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetOutputBufferSize(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetOutputBufferSize reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(CommonBuildingAI), "HandleDead2")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void HandleDead2(object instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount)
-        {
-            string message = "HandleDead2 reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(CommonBuildingAI), "IsRawMaterial")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool IsRawMaterial(object instance, TransferManager.TransferReason material)
-        {
-            string message = "IsRawMaterial reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
         }
     }
 }

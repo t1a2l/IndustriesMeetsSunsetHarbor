@@ -1,8 +1,8 @@
 using System;
-using System.Runtime.CompilerServices;
 using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 using MoreTransferReasons;
 using UnityEngine;
 
@@ -23,12 +23,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             if (finalProductionRate != 0)
             {
-                HandleDead(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
+                ReversePatches.HandleDead(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
                 TransferManager.TransferReason actualTransferReason = __instance.GetActualTransferReason(buildingID, ref buildingData);
                 TransferManager.TransferReason transferReason = __instance.GetTransferReason(buildingID, ref buildingData);
                 if (actualTransferReason != TransferManager.TransferReason.None)
                 {
-                    int maxLoadSize = GetMaxLoadSize(__instance);
+                    int maxLoadSize = ReversePatches.GetMaxLoadSize(__instance);
                     bool flag = __instance.IsFull(buildingID, ref buildingData);
                     int num = buildingData.m_customBuffer1 * 100;
                     int num2 = (finalProductionRate * __instance.m_truckCount + 99) / 100;
@@ -201,7 +201,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 if (actualTransferReason != transferReason && buildingData.m_customBuffer1 == 0)
                 {
                     buildingData.m_adults = buildingData.m_seniors;
-                    SetContentFlags(__instance, buildingID, ref buildingData, transferReason);
+                    ReversePatches.SetContentFlags(__instance, buildingID, ref buildingData, transferReason);
                 }
                 int num7 = finalProductionRate * __instance.m_noiseAccumulation / 100;
                 if (num7 != 0)
@@ -209,49 +209,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.NoisePollution, num7, buildingData.m_position, __instance.m_noiseRadius);
                 }
             }
-            BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+            ReversePatches.BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
             return false;
         }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(PlayerBuildingAI), "ProduceGoods")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void BaseProduceGoods(object instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
-        {
-            string message = "ProduceGoods reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(CommonBuildingAI), "HandleDead")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void HandleDead(object instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount)
-        {
-            string message = "HandleDead reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(WarehouseAI), "GetMaxLoadSize")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetMaxLoadSize(object instance)
-        {
-            string message = "GetMaxLoadSize reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(WarehouseAI), "SetContentFlags")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int SetContentFlags(object instance, ushort buildingID, ref Building data, TransferManager.TransferReason material)
-        {
-            string message = "SetContentFlags reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
     }
 }

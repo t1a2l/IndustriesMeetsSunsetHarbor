@@ -1,8 +1,8 @@
 using System;
-using System.Runtime.CompilerServices;
 using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 using MoreTransferReasons;
 using UnityEngine;
 
@@ -129,7 +129,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 if (naturalResourceType != NaturalResourceManager.Resource.None)
                 {
                     int num21 = (__instance.m_extractRate * finalProductionRate + 99) / 100;
-                    num19 = GetResourceBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num19 = ReversePatches.GetResourceBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num20 = buildingData.m_customBuffer2;
                     int num22 = Singleton<NaturalResourceManager>.instance.CountResource(naturalResourceType, position2, __instance.m_extractRadius);
                     if (num22 == 0)
@@ -160,7 +160,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 int num25 = 0;
                 if (__instance.m_outputResource != TransferManager.TransferReason.None)
                 {
-                    num24 = GetOutputBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num24 = ReversePatches.GetOutputBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num25 = buildingData.m_customBuffer1;
                     int num26 = (num13 * finalProductionRate + 99) / 100;
                     if (num24 - num25 < num26)
@@ -196,7 +196,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     num18 = UniqueFacultyAI.DecreaseByBonus(UniqueFacultyAI.FacultyBonus.Science, num18);
                     Singleton<NaturalResourceManager>.instance.TryDumpResource(NaturalResourceManager.Resource.Pollution, num18, num18, position, __instance.m_pollutionRadius);
                 }
-                HandleDead2(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
+                ReversePatches.HandleDead2(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
                 if (b != 0 || __instance.m_industryType == DistrictPark.ParkType.Industry)
                 {
                     if (__instance.m_outputResource != TransferManager.TransferReason.None)
@@ -265,48 +265,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 }
             }
             instance.m_districts.m_buffer[district].AddIndustryData(__instance.m_info.m_class.m_subService, (uint)(__instance.m_info.m_cellWidth * __instance.m_info.m_cellLength), (uint)finalProductionRate);
-            BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
+            ReversePatches.BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
             return false;
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(PlayerBuildingAI), "ProduceGoods")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void BaseProduceGoods(object instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
-        {
-            string message = "ProduceGoods reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ExtractingFacilityAI), "GetResourceBufferSize")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetResourceBufferSize(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetResourceBufferSize reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(ProcessingFacilityAI), "GetOutputBufferSize")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static int GetOutputBufferSize(object instance, DistrictPolicies.Park policies, int storageDelta)
-        {
-            string message = "GetOutputBufferSize reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(CommonBuildingAI), "HandleDead2")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void HandleDead2(object instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount)
-        {
-            string message = "HandleDead2 reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
         }
     }
 }
