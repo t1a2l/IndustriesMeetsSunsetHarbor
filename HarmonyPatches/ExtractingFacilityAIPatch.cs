@@ -160,7 +160,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 int num25 = 0;
                 if (__instance.m_outputResource != TransferManager.TransferReason.None)
                 {
-                    num24 = ReversePatches.GetOutputBufferSize(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+                    num24 = ReversePatches.GetOutputBufferSize2(__instance, parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     num25 = buildingData.m_customBuffer1;
                     int num26 = (num13 * finalProductionRate + 99) / 100;
                     if (num24 - num25 < num26)

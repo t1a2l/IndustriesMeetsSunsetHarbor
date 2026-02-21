@@ -1,8 +1,7 @@
-using System;
-using System.Runtime.CompilerServices;
 using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
+using IndustriesMeetsSunsetHarbor.Utils;
 using MoreTransferReasons;
 using UnityEngine;
 
@@ -24,8 +23,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             BuildingManager instance2 = Singleton<BuildingManager>.instance;
             BuildingInfo info = instance2.m_buildings.m_buffer[sourceBuilding].Info;
             BuildingInfo info2 = instance2.m_buildings.m_buffer[targetBuilding].Info;
-            byte industryArea = GetIndustryArea(__instance, sourceBuilding);
-            byte industryArea2 = GetIndustryArea(__instance, targetBuilding);
+            byte industryArea = ReversePatches.GetIndustryArea(__instance, sourceBuilding);
+            byte industryArea2 = ReversePatches.GetIndustryArea(__instance, targetBuilding);
             Vector3 position = instance2.m_buildings.m_buffer[sourceBuilding].m_position;
             Vector3 position2 = instance2.m_buildings.m_buffer[targetBuilding].m_position;
             byte district = instance.GetDistrict(position);
@@ -87,16 +86,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.ResourcePrice, num, info2.m_class);
             }
             return false;
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(IndustryBuildingAI), "GetIndustryArea")]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static byte GetIndustryArea(object instance, ushort buildingID)
-        {
-            string message = "GetIndustryArea reverse Harmony patch wasn't applied";
-            Debug.LogError(message);
-            throw new NotImplementedException(message);
         }
     }
 }
