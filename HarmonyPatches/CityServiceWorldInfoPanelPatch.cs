@@ -28,21 +28,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
                 ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
-                ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_aquacultureFarmAI.m_outputResource);
+                ___m_outputSprite.spriteName = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_aquacultureFarmAI.m_outputResource);
                 ___m_ShowIndustryInfoButton.isVisible = false;
                 int num = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
 		int storageBufferSize = m_aquacultureFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
 		___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
 		___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize, m_aquacultureFarmAI.m_outputResource));
             }
-            if (m_fishFarmAI != null && m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain)
+            if (m_fishFarmAI != null)
             {
                 ___m_inputSection.isVisible = false;
                 ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_fishFarmAI.m_outputResource);
                 string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
                 ___m_outputLabel.text = text4;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
-                ___m_outputSprite.atlas = UITextures.InGameAtlas;
+                ___m_outputSprite.atlas = m_fishFarmAI.m_outputResource == TransferManager.TransferReason.Grain ? UITextures.InGameAtlas : MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 ___m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_fishFarmAI.m_outputResource);
                 ___m_ShowIndustryInfoButton.isVisible = false;
             }

@@ -834,13 +834,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 text_prod,
             ]));
             bool flag1 = m_inputResource1 != TransferManager.TransferReason.None;
-            string text1 = ((m_inputResource1 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource1, false));
+            string text1 = ((m_inputResource1 == TransferManager.TransferReason.None) ? string.Empty : MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_inputResource1, false));
             bool flag2 = m_inputResource2 != TransferManager.TransferReason.None;
-            string text2 = ((m_inputResource2 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_inputResource2, false));
+            string text2 = ((m_inputResource2 == TransferManager.TransferReason.None) ? string.Empty : MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_inputResource2, false));
             bool flag3 = m_outputResource1 != TransferManager.TransferReason.None;
-            string text3 = ((m_outputResource1 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_outputResource1, false));
+            string text3 = ((m_outputResource1 == TransferManager.TransferReason.None) ? string.Empty : MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_outputResource1, false));
             bool flag4 = m_outputResource2 != TransferManager.TransferReason.None;
-            string text4 = ((m_outputResource2 == TransferManager.TransferReason.None) ? string.Empty : IndustryWorldInfoPanel.ResourceSpriteName(m_outputResource2, false));
+            string text4 = ((m_outputResource2 == TransferManager.TransferReason.None) ? string.Empty : MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_outputResource2, false));
 
             string addTooltip = TooltipHelper.Format(
             [

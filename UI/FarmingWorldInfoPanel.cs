@@ -4,6 +4,8 @@ using ColossalFramework.Globalization;
 using ColossalFramework.UI;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
+using System;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
@@ -561,7 +563,7 @@ public class FarmingWorldInfoPanel : WorldInfoPanel
                 unitID = next;
                 if (++guard > 524288)
                 {
-                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list!\n" + System.Environment.StackTrace);
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list!\n" + Environment.StackTrace);
                     break;
                 }
             }
@@ -691,7 +693,7 @@ public class FarmingWorldInfoPanel : WorldInfoPanel
     private System.Collections.IEnumerator SetName(string newName)
     {
         if (Singleton<SimulationManager>.exists && m_InstanceID.Type == InstanceType.Park && m_InstanceID.Park != 0)
-        {
+        { 
             var task = Singleton<SimulationManager>.instance.AddAction(
                 Singleton<DistrictManager>.instance.SetParkName(m_InstanceID.Park, newName));
             yield return task.WaitTaskCompleted(this);
@@ -1042,7 +1044,7 @@ public class FarmingWorldInfoPanel : WorldInfoPanel
         icon.size = new Vector2(20f, 20f);
         icon.relativePosition = new Vector3(3f, (size.y - 20f) / 2f);
 
-        string display = System.Text.RegularExpressions.Regex.Replace(name, "([A-Z])", " $1").Trim();
+        string display = Regex.Replace(name, "([A-Z])", " $1").Trim();
         var lbl = AddLabel(box, "Name", display, new Vector3(26f, (size.y - 26f) / 2f));
         lbl.textScale = 0.62f;
         lbl.textColor = Color.white;

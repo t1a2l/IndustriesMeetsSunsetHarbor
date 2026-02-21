@@ -494,7 +494,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             string text3 = LocaleFormatter.FormatGeneric("AIINFO_WORKPLACES_ACCUMULATION", (m_workPlaceCount0 + m_workPlaceCount1 + m_workPlaceCount2 + m_workPlaceCount3).ToString());
             string baseTooltip = TooltipHelper.Append(base.GetLocalizedTooltip(), TooltipHelper.Format(LocaleFormatter.Info1, text, LocaleFormatter.Info2, text2, LocaleFormatter.WorkplaceCount, text3));
             string addTooltip = TooltipHelper.Format("arrowVisible", "false", "input1Visible", "true", "input2Visible", "false", "input3Visible", "false", "input4Visible", "false", "outputVisible", "false");
-            string addTooltip2 = TooltipHelper.Format("input1", IndustryWorldInfoPanel.ResourceSpriteName(m_outputResource), "input2", string.Empty, "input3", string.Empty, "input4", string.Empty, "output", string.Empty);
+            string addTooltip2 = TooltipHelper.Format("input1", MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_outputResource), "input2", string.Empty, "input3", string.Empty, "input4", string.Empty, "output", string.Empty);
             baseTooltip = TooltipHelper.Append(baseTooltip, addTooltip);
             return TooltipHelper.Append(baseTooltip, addTooltip2);
         }

@@ -531,10 +531,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    key = extendedProcessingFacilityAI.m_inputResource1.ToString();
+                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_inputResource1);
+                    if (extendedProcessingFacilityAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
                 case "m_inputResource2":
-                    key = extendedProcessingFacilityAI.m_inputResource2.ToString();
+                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_inputResource2);
+                    if (extendedProcessingFacilityAI.m_inputResource2 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
@@ -547,10 +555,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_outputResource1":
-                    key = extendedProcessingFacilityAI.m_outputResource1.ToString();
+                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_outputResource1);
+                    if (extendedProcessingFacilityAI.m_outputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
                 case "m_outputResource2":
-                    key = extendedProcessingFacilityAI.m_outputResource2.ToString();
+                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_outputResource2);
+                    if (extendedProcessingFacilityAI.m_outputResource2 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
@@ -566,7 +582,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 }
             }
-            return null;
+            return UITextures.InGameAtlas;
         }
 
         private UITextureAtlas GetOutputResourceAtlas(ref List<string> items, int resourceIndex)
@@ -579,7 +595,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 }
             }
-            return null;
+            return UITextures.InGameAtlas;
         }
 
         private string GetInputResourceSpriteName(ref List<string> items, int resourceIndex)
@@ -588,7 +604,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 case "m_inputResource1":
                 case "m_inputResource2":
-                    return IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(ref items, resourceIndex));;
+                    return AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex));;
             }
             return null;
         }
@@ -597,7 +613,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             return items[resourceIndex] switch
             {
-                "m_outputResource1" or "m_outputResource2" => IndustryWorldInfoPanel.ResourceSpriteName(GetOutputResource(ref items, resourceIndex)),
+                "m_outputResource1" or "m_outputResource2" => AtlasUtils.GetSpriteName(GetOutputResource(ref items, resourceIndex)),
                 _ => null,
             };
         }

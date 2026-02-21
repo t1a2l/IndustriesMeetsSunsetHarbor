@@ -95,7 +95,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private List<string> items;
 
-        public UIComponent movingPanel
+        public UIComponent MovingPanel
         {
             get
             {
@@ -109,7 +109,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        public bool isCityServiceEnabled
+        public bool IsCityServiceEnabled
         {
             get
             {
@@ -243,6 +243,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     uISprite.atlas = atlas;
                 }
                 uISprite.spriteName = GetInputResourceSpriteName(ref items, i);
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
+                UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
+                uILabel.text = GetOutputResourceName(ref items, i);
+                var atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                if (atlas != null)
+                {
+                    uISprite.atlas = atlas;
+                }
+                uISprite.spriteName = GetOutputResourceSpriteName(ref items, i);
             }
         }
 
@@ -459,27 +471,74 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    return restaurantAI.m_inputResource1.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource1);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
+                    break;
                 case "m_inputResource2":
-                    return restaurantAI.m_inputResource2.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource2);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
+                    break;
                 case "m_inputResource3":
-                    return restaurantAI.m_inputResource3.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource3);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
+                    break;
                 case "m_inputResource4":
-                    return restaurantAI.m_inputResource4.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource4);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
+                    break;
                 case "m_inputResource5":
-                    key = restaurantAI.m_inputResource5.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource5);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
                 case "m_inputResource6":
-                    key = restaurantAI.m_inputResource6.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource6);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
                 case "m_inputResource7":
-                    key = restaurantAI.m_inputResource7.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource7);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
                 case "m_inputResource8":
-                    key = restaurantAI.m_inputResource8.ToString();
+                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource8);
+                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    {
+                        return key;
+                    }
                     break;
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);          
+        }
+
+        private string GetOutputResourceName(ref List<string> items, int resourceIndex)
+        {
+            RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
+            return items[resourceIndex] switch
+            {
+                "m_outputResource1" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_outputResource1),
+                "m_outputResource2" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_outputResource2),
+                _ => null,
+            };
         }
 
         private UITextureAtlas GetInputResourceAtlas(ref List<string> items, int resourceIndex)
@@ -489,27 +548,28 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 if(reason >= ExtendedTransferManager.MealsDeliveryLow)
                 {
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                 }
             }
-            return null;
+            return UITextures.InGameAtlas;
         }
 
         private string GetInputResourceSpriteName(ref List<string> items, int resourceIndex)
         {
-            switch (items[resourceIndex])
+            return items[resourceIndex] switch
             {
-                case "m_inputResource1":
-                case "m_inputResource2":
-                case "m_inputResource3":
-                case "m_inputResource4":
-                case "m_inputResource5":
-                case "m_inputResource6":
-                case "m_inputResource7":
-                case "m_inputResource8":
-                    return IndustryWorldInfoPanel.ResourceSpriteName(GetInputResource(ref items, resourceIndex));;
-            }
-            return null;
+                "m_inputResource1" or "m_inputResource2" or "m_inputResource3" or "m_inputResource4" or "m_inputResource5" or "m_inputResource6" or "m_inputResource7" or "m_inputResource8" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex)),
+                _ => null,
+            };
+        }
+
+        private string GetOutputResourceSpriteName(ref List<string> items, int resourceIndex)
+        {
+            return items[resourceIndex] switch
+            {
+                "m_outputResource1" or "m_outputResource2" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex)),
+                _ => null,
+            };
         }
 
         private TransferManager.TransferReason GetInputResource(ref List<string> items, int resourceIndex)
@@ -531,7 +591,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void OnOnOffChanged(UIComponent comp, bool value)
         {
-            isCityServiceEnabled = value;
+            IsCityServiceEnabled = value;
         }
 
         private bool IsDisasterServiceRequired()
@@ -555,7 +615,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 BuildingManager instance = Singleton<BuildingManager>.instance;
                 BuildingInfo info = instance.m_buildings.m_buffer[buildingID].Info;
-                if ((object)info != null && (instance.m_buildings.m_buffer[buildingID].m_flags & Building.Flags.Collapsed) != 0)
+                if (info is not null && (instance.m_buildings.m_buffer[buildingID].m_flags & Building.Flags.Collapsed) != 0)
                 {
                     int relocationCost = info.m_buildingAI.GetRelocationCost();
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Construction, relocationCost, info.m_class);
@@ -672,13 +732,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UIView.library.Hide(GetType().Name);
             });
-            movingPanel.Find<UILabel>("MovingLabel").text = LocaleFormatter.FormatGeneric("BUILDING_MOVING", base.buildingName);
-            movingPanel.Show();
+            MovingPanel.Find<UILabel>("MovingLabel").text = LocaleFormatter.FormatGeneric("BUILDING_MOVING", base.buildingName);
+            MovingPanel.Show();
         }
 
         public void TempShow(Vector3 worldPosition, InstanceID instanceID)
         {
-            movingPanel.Hide();
+            MovingPanel.Hide();
             Show<RestaurantWorldInfoPanel>(worldPosition, instanceID);
             ValueAnimator.Animate("Relocating", delegate (float val)
             {
@@ -691,21 +751,21 @@ namespace IndustriesMeetsSunsetHarbor.UI
             if (m_IsRelocating)
             {
                 BuildingTool currentTool = GetCurrentTool<BuildingTool>();
-                if (currentTool != null && IsValidTarget() && currentTool.m_relocate != 0 && !movingPanel.isVisible)
+                if (currentTool != null && IsValidTarget() && currentTool.m_relocate != 0 && !MovingPanel.isVisible)
                 {
-                    movingPanel.Show();
+                    MovingPanel.Show();
                     return;
                 }
                 if (!IsValidTarget() || (currentTool != null && currentTool.m_relocate == 0))
                 {
                     mainToolbar.ResetLastTool();
-                    movingPanel.Hide();
+                    MovingPanel.Hide();
                     m_IsRelocating = false;
                 }
             }
             if (base.component.isVisible)
             {
-                bool flag = isCityServiceEnabled;
+                bool flag = IsCityServiceEnabled;
                 if (m_OnOff.isChecked != flag)
                 {
                     m_OnOff.eventCheckChanged -= OnOnOffChanged;
@@ -747,7 +807,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             else
             {
-                movingPanel.Hide();
+                MovingPanel.Hide();
                 BuildingTool tool2 = GetTool<BuildingTool>();
                 if (tool2 == GetCurrentTool<BuildingTool>())
                 {
@@ -763,7 +823,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
             }
-            movingPanel.Hide();
+            MovingPanel.Hide();
         }
 
         private static string FormatResourceWithUnit(uint amount)
