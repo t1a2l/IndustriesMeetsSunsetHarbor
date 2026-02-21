@@ -38,11 +38,30 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
                     }
                 }
+                else
+                {
+                    WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();
+                    WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                }
             }
-            else
+            else if (id.Park > 0)
             {
-                WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();
-                WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                if (Singleton<InstanceManager>.instance.SelectInstance(id))
+                {
+                    if (Singleton<DistrictManager>.instance.m_parks.m_buffer[id.Park].m_parkType == DistrictPark.ParkType.Farming)
+                    {
+                        WorldInfoPanel.Show<FarmingWorldInfoPanel>(position, id);
+                        return false;
+                    }
+                    else
+                    {
+                        WorldInfoPanel.Hide<FarmingWorldInfoPanel>();
+                    }
+                }
+                else
+                {
+                    WorldInfoPanel.Hide<FarmingWorldInfoPanel>();
+                }
             }
             return true;
         }
