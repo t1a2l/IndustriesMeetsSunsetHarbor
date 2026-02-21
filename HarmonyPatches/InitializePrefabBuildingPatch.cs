@@ -34,8 +34,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     {
                         var oldAI = __instance.GetComponent<PrefabAI>();
                         Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
+                        var newAI = __instance.gameObject.AddComponent<AquacultureFarmAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_outputResource = TransferManager.TransferReason.Fish;
+                        if (__instance.name.Contains("Seaweed"))
+                        {
+                            newAI.m_outputResource = ExtendedTransferManager.Algae;
+                        }
+                        else if (__instance.name.Contains("Seaweed"))
+                        {
+                            newAI.m_outputResource = ExtendedTransferManager.Seaweed;
+                        }
+                        else if (__instance.name.Contains("Mussels"))
+                        {
+                            newAI.m_outputResource = ExtendedTransferManager.Trout;
+                        }
                     }
                     else if (__instance.GetAI() is FishingHarborAI fishingHarborAI)
                     {
