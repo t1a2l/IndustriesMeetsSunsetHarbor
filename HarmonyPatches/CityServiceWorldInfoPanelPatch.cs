@@ -24,7 +24,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_outputSection.isVisible = true;
                 ___m_inputOutputSection.isVisible = true;
                 ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_aquacultureFarmAI.m_outputResource);
-                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_aquacultureFarmAI.m_outputResource.ToString());
+                string text = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_aquacultureFarmAI.m_outputResource);
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
                 ___m_outputSprite.atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");

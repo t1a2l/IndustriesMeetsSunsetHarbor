@@ -81,7 +81,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     {
                         if (num >= maxLoadSize && (count < num2 || !flag2))
                         {
-                            TransferManager.TransferOffer offer = default(TransferManager.TransferOffer);
+                            TransferManager.TransferOffer offer = default;
                             if ((buildingData.m_flags & Building.Flags.Filling) != Building.Flags.None)
                             {
                                 offer.Priority = 0;

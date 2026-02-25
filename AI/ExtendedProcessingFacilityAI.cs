@@ -39,7 +39,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public bool isFishFactory
+        public bool IsFishFactory
         {
             get
             {
@@ -140,7 +140,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void GetPlacementInfoMode(out InfoManager.InfoMode mode, out InfoManager.SubInfoMode subMode, float elevation)
         {
-            if (!isFishFactory)
+            if (!IsFishFactory)
             {
                 base.GetPlacementInfoMode(out mode, out subMode, elevation);
             }
