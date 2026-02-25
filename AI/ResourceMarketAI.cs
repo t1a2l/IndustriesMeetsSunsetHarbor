@@ -74,13 +74,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
             ExtendedTransferManager.Algae,
             ExtendedTransferManager.Seaweed,
             ExtendedTransferManager.Trout,
-            ExtendedTransferManager.SheepMilk,
-            ExtendedTransferManager.CowMilk,
-            ExtendedTransferManager.HighlandCowMilk,
-            ExtendedTransferManager.LambMeat,
-            ExtendedTransferManager.BeefMeat,
-            ExtendedTransferManager.HighlandBeefMeat,
-            ExtendedTransferManager.PorkMeat,
+            ExtendedTransferManager.Milk,
+            ExtendedTransferManager.Pork,
             ExtendedTransferManager.Fruits,
             ExtendedTransferManager.Vegetables,
         ];
@@ -208,13 +203,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 if (incomingResources[i] != TransferManager.TransferReason.None)
                 {
                     base.CalculateGuestVehicles(buildingID, ref data, incomingResources[i], ref num, ref num2, ref num3, ref num4);
-                    text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})", new object[]
-                    {
+                    text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})",
+                    [
                         text,
                         incomingResources[i].ToString(),
                         marketBuffer.inputAmountBuffer[i],
                         num2
-                    });
+                    ]);
                 }
             }
             TransferManager.TransferReason transferReason = TransferManager.TransferReason.Shopping;
@@ -222,12 +217,12 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 if (transferReason != TransferManager.TransferReason.None)
                 {
-                    text = StringUtils.SafeFormat("{0}\n{1}: {2}", new object[]
-                    {
+                    text = StringUtils.SafeFormat("{0}\n{1}: {2}",
+                    [
                         text,
                         transferReason.ToString(),
                         marketBuffer.outputAmountBuffer[k]
-                    });
+                    ]);
                 }
             }
 
@@ -694,26 +689,16 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             string str = "";
-            int num;
+            int num, num2;
             for (int i = 0; i < m_incomingResources.Length; i++)
             {
-                string name = m_incomingResources[i].ToString();
+                string name = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_incomingResources[i]);
                 name = name.Replace("Grain", "Crops");
                 name = name.Replace("Flours", "Flour");
                 name = name.Replace("AnimalProducts", "Meat");
                 num = (int)(marketBuffer.amountSold2[i] * 10);
-                str += name + " Sold Last Week: " + num;
-                str += Environment.NewLine;
-            }
-            str += Environment.NewLine;
-            for (int i = 0; i < m_incomingResources.Length; i++)
-            {
-                string name = m_incomingResources[i].ToString();
-                name = name.Replace("Grain", "Crops");
-                name = name.Replace("Flours", "Flour");
-                name = name.Replace("AnimalProducts", "Meat");
-                num = (int)(marketBuffer.inputAmountBuffer[i]);
-                str += name + " Stored In Market: " + num + "/" + m_goodsCapacity;
+                num2 = (int)(marketBuffer.inputAmountBuffer[i]);
+                str += name + " Sold Last Week: " + num + ", Stored " + num2 + "/" + m_goodsCapacity;
                 str += Environment.NewLine;
             }
             str += Environment.NewLine;

@@ -35,14 +35,9 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 WriteResourceData(kvp.Value.m_highlandCowsData, Data);
                 WriteResourceData(kvp.Value.m_sheepData, Data);
                 WriteResourceData(kvp.Value.m_pigsData, Data);
-                WriteResourceData(kvp.Value.m_beefMeatData, Data);
-                WriteResourceData(kvp.Value.m_cowMilkData, Data);
-                WriteResourceData(kvp.Value.m_highlandBeefData, Data);
-                WriteResourceData(kvp.Value.m_highlandMilkData, Data);
-                WriteResourceData(kvp.Value.m_lambMeatData, Data);
-                WriteResourceData(kvp.Value.m_sheepMilkData, Data);
+                WriteResourceData(kvp.Value.m_milkData, Data);
                 WriteResourceData(kvp.Value.m_woolData, Data);
-                WriteResourceData(kvp.Value.m_porkMeatData, Data);
+                WriteResourceData(kvp.Value.m_porkData, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -70,14 +65,9 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         m_highlandCowsData = ReadResourceData(Data, ref iIndex),
                         m_sheepData = ReadResourceData(Data, ref iIndex),
                         m_pigsData = ReadResourceData(Data, ref iIndex),
-                        m_beefMeatData = ReadResourceData(Data, ref iIndex),
-                        m_cowMilkData = ReadResourceData(Data, ref iIndex),
-                        m_highlandBeefData = ReadResourceData(Data, ref iIndex),
-                        m_highlandMilkData = ReadResourceData(Data, ref iIndex),
-                        m_lambMeatData = ReadResourceData(Data, ref iIndex),
-                        m_sheepMilkData = ReadResourceData(Data, ref iIndex),
+                        m_milkData = ReadResourceData(Data, ref iIndex),
                         m_woolData = ReadResourceData(Data, ref iIndex),
-                        m_porkMeatData = ReadResourceData(Data, ref iIndex)
+                        m_porkData = ReadResourceData(Data, ref iIndex)
                     };
                     FarmingParkDataManager.FarmingParks.Add(parkId, new_strcut);
                     CheckEndTuple($"Buffer({i})", iFarmingParkDataVersion, Data, ref iIndex);

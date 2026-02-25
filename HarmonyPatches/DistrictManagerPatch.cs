@@ -20,14 +20,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData = default;
                 data.m_sheepData = default;
                 data.m_pigsData = default;
-                data.m_beefMeatData = default;
-                data.m_cowMilkData = default;
-                data.m_highlandBeefData = default;
-                data.m_highlandMilkData = default;
-                data.m_lambMeatData = default;
-                data.m_sheepMilkData = default;
+                data.m_milkData = default;
                 data.m_woolData = default;
-                data.m_porkMeatData = default;
+                data.m_porkData = default;
                 FarmingParkDataManager.SetCustomBuffer(park, data);
             }
         }

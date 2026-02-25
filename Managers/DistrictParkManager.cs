@@ -31,29 +31,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 case ExtendedTransferManager.Pigs:
                     data.m_pigsData.m_tempConsumption += (uint)amount;
                     break;
-                case ExtendedTransferManager.BeefMeat:
-                    data.m_beefMeatData.m_tempConsumption += (uint)amount;
-                    break;
-                case ExtendedTransferManager.CowMilk:
-                    data.m_cowMilkData.m_tempConsumption += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandBeefMeat:
-                    data.m_highlandBeefData.m_tempConsumption += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandCowMilk:
-                    data.m_highlandMilkData.m_tempConsumption += (uint)amount;
-                    break;
-                case ExtendedTransferManager.LambMeat:
-                    data.m_lambMeatData.m_tempConsumption += (uint)amount;
-                    break;
-                case ExtendedTransferManager.SheepMilk:
-                    data.m_sheepMilkData.m_tempConsumption += (uint)amount;
+                case ExtendedTransferManager.Milk:
+                    data.m_milkData.m_tempConsumption += (uint)amount;
                     break;
                 case ExtendedTransferManager.Wool:
                     data.m_woolData.m_tempConsumption += (uint)amount;
                     break;
-                case ExtendedTransferManager.PorkMeat:
-                    data.m_porkMeatData.m_tempConsumption += (uint)amount;
+                case ExtendedTransferManager.Pork:
+                    data.m_porkData.m_tempConsumption += (uint)amount;
                     break;
             }
 
@@ -87,29 +72,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 case ExtendedTransferManager.Pigs:
                     data.m_pigsData.m_tempProduction += (uint)amount;
                     break;
-                case ExtendedTransferManager.BeefMeat:
-                    data.m_beefMeatData.m_tempProduction += (uint)amount;
-                    break;
-                case ExtendedTransferManager.CowMilk:
-                    data.m_cowMilkData.m_tempProduction += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandBeefMeat:
-                    data.m_highlandBeefData.m_tempProduction += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandCowMilk:
-                    data.m_highlandMilkData.m_tempProduction += (uint)amount;
-                    break;
-                case ExtendedTransferManager.LambMeat:
-                    data.m_lambMeatData.m_tempProduction += (uint)amount;
-                    break;
-                case ExtendedTransferManager.SheepMilk:
-                    data.m_sheepMilkData.m_tempProduction += (uint)amount;
+                case ExtendedTransferManager.Milk:
+                    data.m_milkData.m_tempProduction += (uint)amount;
                     break;
                 case ExtendedTransferManager.Wool:
                     data.m_woolData.m_tempProduction += (uint)amount;
                     break;
-                case ExtendedTransferManager.PorkMeat:
-                    data.m_porkMeatData.m_tempProduction += (uint)amount;
+                case ExtendedTransferManager.Pork:
+                    data.m_porkData.m_tempProduction += (uint)amount;
                     break;
             }
 
@@ -143,29 +113,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 case ExtendedTransferManager.Pigs:
                     data.m_pigsData.Add(amount, incoming, capacity);
                     break;
-                case ExtendedTransferManager.BeefMeat:
-                    data.m_beefMeatData.Add(amount, incoming, capacity);
-                    break;
-                case ExtendedTransferManager.CowMilk:
-                    data.m_cowMilkData.Add(amount, incoming, capacity);
-                    break;
-                case ExtendedTransferManager.HighlandBeefMeat:
-                    data.m_highlandBeefData.Add(amount, incoming, capacity);
-                    break;
-                case ExtendedTransferManager.HighlandCowMilk:
-                    data.m_highlandMilkData.Add(amount, incoming, capacity);
-                    break;
-                case ExtendedTransferManager.LambMeat:
-                    data.m_lambMeatData.Add(amount, incoming, capacity);
-                    break;
-                case ExtendedTransferManager.SheepMilk:
-                    data.m_sheepMilkData.Add(amount, incoming, capacity);
+                case ExtendedTransferManager.Milk:
+                    data.m_milkData.Add(amount, incoming, capacity);
                     break;
                 case ExtendedTransferManager.Wool:
                     data.m_woolData.Add(amount, incoming, capacity);
                     break;
-                case ExtendedTransferManager.PorkMeat:
-                    data.m_porkMeatData.Add(amount, incoming, capacity);
+                case ExtendedTransferManager.Pork:
+                    data.m_porkData.Add(amount, incoming, capacity);
                     break;
             }
 
@@ -199,29 +154,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 case ExtendedTransferManager.Pigs:
                     data.m_pigsData.m_tempImport += (uint)amount;
                     break;
-                case ExtendedTransferManager.BeefMeat:
-                    data.m_beefMeatData.m_tempImport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.CowMilk:
-                    data.m_cowMilkData.m_tempImport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandBeefMeat:
-                    data.m_highlandBeefData.m_tempImport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandCowMilk:
-                    data.m_highlandMilkData.m_tempImport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.LambMeat:
-                    data.m_lambMeatData.m_tempImport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.SheepMilk:
-                    data.m_sheepMilkData.m_tempImport += (uint)amount;
+                case ExtendedTransferManager.Milk:
+                    data.m_milkData.m_tempImport += (uint)amount;
                     break;
                 case ExtendedTransferManager.Wool:
                     data.m_woolData.m_tempImport += (uint)amount;
                     break;
-                case ExtendedTransferManager.PorkMeat:
-                    data.m_porkMeatData.m_tempImport += (uint)amount;
+                case ExtendedTransferManager.Pork:
+                    data.m_porkData.m_tempImport += (uint)amount;
                     break;
             }
 
@@ -255,29 +195,14 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 case ExtendedTransferManager.Pigs:
                     data.m_pigsData.m_tempExport += (uint)amount;
                     break;
-                case ExtendedTransferManager.BeefMeat:
-                    data.m_beefMeatData.m_tempExport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.CowMilk:
-                    data.m_cowMilkData.m_tempExport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandBeefMeat:
-                    data.m_highlandBeefData.m_tempExport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.HighlandCowMilk:
-                    data.m_highlandMilkData.m_tempExport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.LambMeat:
-                    data.m_lambMeatData.m_tempExport += (uint)amount;
-                    break;
-                case ExtendedTransferManager.SheepMilk:
-                    data.m_sheepMilkData.m_tempExport += (uint)amount;
+                case ExtendedTransferManager.Milk:
+                    data.m_milkData.m_tempExport += (uint)amount;
                     break;
                 case ExtendedTransferManager.Wool:
                     data.m_woolData.m_tempExport += (uint)amount;
                     break;
-                case ExtendedTransferManager.PorkMeat:
-                    data.m_porkMeatData.m_tempExport += (uint)amount;
+                case ExtendedTransferManager.Pork:
+                    data.m_porkData.m_tempExport += (uint)amount;
                     break;
             }
 

@@ -10,6 +10,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(BuildingInfo), "InitializePrefab")]
     public static class InitializePrefabBuildingPatch
     {
+        [HarmonyPrefix]
         public static void Prefix(BuildingInfo __instance)
         {
             try
@@ -37,7 +38,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = __instance.gameObject.AddComponent<AquacultureFarmAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         newAI.m_outputResource = TransferManager.TransferReason.Fish;
-                        if (__instance.name.Contains("Seaweed"))
+                        if (__instance.name.Contains("Algae"))
                         {
                             newAI.m_outputResource = ExtendedTransferManager.Algae;
                         }
@@ -225,11 +226,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
                         if (__instance.name.Contains("Slaughter House"))
                         {
-                            processingFacilityAI.m_outputResource = ExtendedTransferManager.BeefMeat;
+                            processingFacilityAI.m_outputResource = TransferManager.TransferReason.AnimalProducts;
                         }
                         else if (__instance.name.Contains("Milking Parlour"))
                         {
-                            processingFacilityAI.m_outputResource = ExtendedTransferManager.CowMilk;
+                            processingFacilityAI.m_outputResource = ExtendedTransferManager.Milk;
                         }
                     }
                 }
@@ -250,6 +251,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
         }
 
+        [HarmonyPostfix]
         public static void Postfix(BuildingInfo __instance)
         {
             uint index = 0U;

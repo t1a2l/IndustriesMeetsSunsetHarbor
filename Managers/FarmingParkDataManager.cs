@@ -20,14 +20,9 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public DistrictAreaResourceData m_pigsData;
 
             // Products
-            public DistrictAreaResourceData m_beefMeatData;
-            public DistrictAreaResourceData m_cowMilkData;
-            public DistrictAreaResourceData m_highlandBeefData;
-            public DistrictAreaResourceData m_highlandMilkData;
-            public DistrictAreaResourceData m_lambMeatData;
-            public DistrictAreaResourceData m_sheepMilkData;
+            public DistrictAreaResourceData m_milkData;
             public DistrictAreaResourceData m_woolData;
-            public DistrictAreaResourceData m_porkMeatData;
+            public DistrictAreaResourceData m_porkData;
         }
 
         public static void Init()

@@ -22,14 +22,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData.Update();
                 data.m_sheepData.Update();
                 data.m_pigsData.Update();
-                data.m_beefMeatData.Update();
-                data.m_cowMilkData.Update();
-                data.m_highlandBeefData.Update();
-                data.m_highlandMilkData.Update();
-                data.m_lambMeatData.Update();
-                data.m_sheepMilkData.Update();
+                data.m_milkData.Update();
                 data.m_woolData.Update();
-                data.m_porkMeatData.Update();
+                data.m_porkData.Update();
 
                 data.m_fruitsData.Reset();
                 data.m_vegetablesData.Reset();
@@ -38,14 +33,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData.Reset();
                 data.m_sheepData.Reset();
                 data.m_pigsData.Reset();
-                data.m_beefMeatData.Reset();
-                data.m_cowMilkData.Reset();
-                data.m_highlandBeefData.Reset();
-                data.m_highlandMilkData.Reset();
-                data.m_lambMeatData.Reset();
-                data.m_sheepMilkData.Reset();
+                data.m_milkData.Reset();
                 data.m_woolData.Reset();
-                data.m_porkMeatData.Reset();
+                data.m_porkData.Reset();
 
                 FarmingParkDataManager.SetCustomBuffer(parkID, data);
             }
@@ -67,14 +57,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData.Add(ref data.m_highlandCowsData);
                 data.m_sheepData.Add(ref data.m_sheepData);
                 data.m_pigsData.Add(ref data.m_pigsData);
-                data.m_beefMeatData.Add(ref data.m_beefMeatData);
-                data.m_cowMilkData.Add(ref data.m_cowMilkData);
-                data.m_highlandBeefData.Add(ref data.m_highlandBeefData);
-                data.m_highlandMilkData.Add(ref data.m_highlandMilkData);
-                data.m_lambMeatData.Add(ref data.m_lambMeatData);
-                data.m_sheepMilkData.Add(ref data.m_sheepMilkData);
+                data.m_milkData.Add(ref data.m_milkData);
                 data.m_woolData.Add(ref data.m_woolData);
-                data.m_porkMeatData.Add(ref data.m_porkMeatData);
+                data.m_porkData.Add(ref data.m_porkData);
 
                 data.m_fruitsData.Update();
                 data.m_vegetablesData.Update();
@@ -83,14 +68,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData.Update();
                 data.m_sheepData.Update();
                 data.m_pigsData.Update();
-                data.m_beefMeatData.Update();
-                data.m_cowMilkData.Update();
-                data.m_highlandBeefData.Update();
-                data.m_highlandMilkData.Update();
-                data.m_lambMeatData.Update();
-                data.m_sheepMilkData.Update();
+                data.m_milkData.Update();
                 data.m_woolData.Update();
-                data.m_porkMeatData.Update();
+                data.m_porkData.Update();
 
                 data.m_fruitsData.Reset();
                 data.m_vegetablesData.Reset();
@@ -99,14 +79,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData.Reset();
                 data.m_sheepData.Reset();
                 data.m_pigsData.Reset();
-                data.m_beefMeatData.Reset();
-                data.m_cowMilkData.Reset();
-                data.m_highlandBeefData.Reset();
-                data.m_highlandMilkData.Reset();
-                data.m_lambMeatData.Reset();
-                data.m_sheepMilkData.Reset();
+                data.m_milkData.Reset();
                 data.m_woolData.Reset();
-                data.m_porkMeatData.Reset();
+                data.m_porkData.Reset();
 
                 FarmingParkDataManager.SetCustomBuffer(parkID, data);
             }
@@ -119,14 +94,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 data.m_highlandCowsData.ResetBuffers();
                 data.m_sheepData.ResetBuffers();
                 data.m_pigsData.ResetBuffers();
-                data.m_beefMeatData.ResetBuffers();
-                data.m_cowMilkData.ResetBuffers();
-                data.m_highlandBeefData.ResetBuffers();
-                data.m_highlandMilkData.ResetBuffers();
-                data.m_lambMeatData.ResetBuffers();
-                data.m_sheepMilkData.ResetBuffers();
+                data.m_milkData.ResetBuffers();
                 data.m_woolData.ResetBuffers();
-                data.m_porkMeatData.ResetBuffers();
+                data.m_porkData.ResetBuffers();
 
                 FarmingParkDataManager.SetCustomBuffer(parkID, data);
             }
