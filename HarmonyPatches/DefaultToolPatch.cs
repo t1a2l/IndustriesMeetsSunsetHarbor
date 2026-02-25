@@ -17,12 +17,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id.Building].Info;
                 ExtendedProcessingFacilityAI extendedProcessingFacilityAI = info.m_buildingAI as ExtendedProcessingFacilityAI;
+                WarehouseAI warehouseAI = info.m_buildingAI as WarehouseAI;
+                WarehouseStationAI warehouseStationAI = info.m_buildingAI as WarehouseStationAI;
                 RestaurantAI restaurantAI = info.m_buildingAI as RestaurantAI;
                 if (Singleton<InstanceManager>.instance.SelectInstance(id))
                 {
                     if(extendedProcessingFacilityAI != null)
 		    {
 		        WorldInfoPanel.Show<ExtendedProcessingFacilityWorldInfoPanel>(position, id);
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
                         return false;
 		    }
@@ -30,11 +33,20 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 		    {
 		        WorldInfoPanel.Show<RestaurantWorldInfoPanel>(position, id);
                         WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         return false;
 		    }
+                    else if (warehouseAI != null || warehouseStationAI != null)
+                    {
+                        WorldInfoPanel.Show<ExtendedWarehouseWorldInfoPanel>(position, id);
+                        WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                        return false;
+                    }
                     else
                     {
                         WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();
+                        WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
                     }
                 }
@@ -51,6 +63,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     if (Singleton<DistrictManager>.instance.m_parks.m_buffer[id.Park].m_parkType == DistrictPark.ParkType.Farming)
                     {
                         WorldInfoPanel.Show<FarmingWorldInfoPanel>(position, id);
+                        WorldInfoPanel.Hide<IndustryWorldInfoPanel>();
                         return false;
                     }
                     else
