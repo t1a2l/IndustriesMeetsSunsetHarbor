@@ -69,7 +69,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private List<string> m_outputItems;
 
-        public UIComponent movingPanel
+        public UIComponent MovingPanel
         {
             get
             {
@@ -83,7 +83,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        public bool isCityServiceEnabled
+        public bool IsCityServiceEnabled
         {
             get
             {
@@ -255,54 +255,32 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
                 UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
-                uILabel.text = GetInputResourceName(ref m_inputItems, i);
-                var atlas = GetInputResourceAtlas(ref m_inputItems, i);
-                if (atlas != null)
-                {
-                    uISprite.atlas = atlas;
-                }
-                else
-                {
-                    uISprite.atlas = UITextures.InGameAtlas;
-                }
-                uISprite.spriteName = GetInputResourceSpriteName(ref m_inputItems, i);
-
+                uILabel.text = GetResourceName(ref m_inputItems, i);
+                uISprite.atlas = GetResourceAtlas(ref m_inputItems, i);
+                uISprite.spriteName = GetResourceSpriteName(ref m_inputItems, i);
                 UIPanel Storage = m_inputs.items[i].Find<UIPanel>("Storage");
                 UISprite Arrow = m_inputs.items[i].Find<UISprite>("Arrow");
-
                 Storage.relativePosition = new Vector3(0, 80);
                 Arrow.relativePosition = new Vector3(58, 138);
-
             }
             for (int i = 0; i < m_outputResourceCount; i++)
             {
                 UILabel uILabel = m_outputs.items[i].Find<UILabel>("ProductLabel");
                 UISprite uISprite = m_outputs.items[i].Find<UISprite>("LuxuryProductIcon");
-                var text = GetOutputResourceName(ref m_outputItems, i);
+                var text = GetResourceName(ref m_outputItems, i);
                 if(text.Contains("Products") && text.Length > 15)
                 {
                     text = text.Replace("Products", "Prods");
                 }
                 uILabel.text = text;
-                var atlas = GetOutputResourceAtlas(ref m_outputItems, i);
-                if (atlas != null)
-                {
-                    uISprite.atlas = atlas;
-                }
-                else
-                {
-                    uISprite.atlas = UITextures.InGameAtlas;
-                }
-                uISprite.spriteName = GetOutputResourceSpriteName(ref m_outputItems, i);
-
+                uISprite.atlas = GetResourceAtlas(ref m_outputItems, i);
+                uISprite.spriteName = GetResourceSpriteName(ref m_outputItems, i);
                 uILabel.relativePosition = new Vector3(-30, 145);
                 uISprite.relativePosition = new Vector3(15, 113);
-
                 UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
                 UISprite ArrowEnd = m_outputs.items[i].Find<UISprite>("ArrowEnd");
                 UISprite BigArrow = m_outputs.items[i].Find<UISprite>("Big Arrow");
                 UIPanel ProductStorage = m_outputs.items[i].Find<UIPanel>("ProductStorage");
-
                 uIProgressBar.relativePosition = new Vector3(0, 80);
                 ArrowEnd.relativePosition = new Vector3(-9, 31);
                 BigArrow.relativePosition = new Vector3(55, 9);
@@ -329,7 +307,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                         selectedIndex = i;
                     }
                 }
-                m_VariationDropdown.items = list.ToArray();
+                m_VariationDropdown.items = [.. list];
                 m_VariationDropdown.selectedIndex = selectedIndex;
             }
             byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
@@ -408,10 +386,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
-                uIProgressBar.value = GetInputBufferProgress(ref m_inputItems, i, out var amount, out var capacity);
+                uIProgressBar.value = GetBufferProgress(ref m_inputItems, i, out var amount, out var capacity);
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
                 string text;
-                var inputResource = GetInputResource(ref m_inputItems, i);
+                var inputResource = GetResource(ref m_inputItems, i);
                 var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource);
                 uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
                 text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
@@ -421,10 +399,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
                 UIPanel productStorage = m_outputs.items[i].Find<UIPanel>("ProductStorage");
-                uIProgressBar.value = GetOutputBufferProgress(ref m_outputItems, i, out var amount, out var capacity);
+                uIProgressBar.value = GetBufferProgress(ref m_outputItems, i, out var amount, out var capacity);
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
                 string text;
-                var outputResource = GetOutputResource(ref m_outputItems, i);
+                var outputResource = GetResource(ref m_outputItems, i);
                 var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, outputResource);
                 uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(outputResource);
                 text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
@@ -482,7 +460,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
         }
 
-        private float GetInputBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
+        private float GetBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
         {
             ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
@@ -499,19 +477,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     amount = (int)custom_buffers.m_customBuffer2;
                     capacity = extendedProcessingFacilityAI.GetInputBufferSize(ref buildingData, extendedProcessingFacilityAI.m_inputRate2);
                     break;
-            }
-            return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
-        }
-
-        private float GetOutputBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
-        {
-            ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            amount = 0;
-            capacity = 0;
-            switch (items[resourceIndex])
-            {
                 case "m_outputResource1":
                     amount = (int)custom_buffers.m_customBuffer9;
                     capacity = extendedProcessingFacilityAI.GetOutputBufferSize(ref buildingData, extendedProcessingFacilityAI.m_outputRate1, extendedProcessingFacilityAI.m_outputVehicleCount1);
@@ -524,57 +489,31 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
         }
 
-        private string GetInputResourceName(ref List<string> items, int resourceIndex)
+        private string GetResourceName(ref List<string> items, int resourceIndex)
         {
             ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
             string key = "N/A";
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_inputResource1);
-                    if (extendedProcessingFacilityAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
-                    {
-                        return key;
-                    }
+                    key = extendedProcessingFacilityAI.m_inputResource1.ToString();
                     break;
                 case "m_inputResource2":
-                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_inputResource2);
-                    if (extendedProcessingFacilityAI.m_inputResource2 >= ExtendedTransferManager.MealsDeliveryLow)
-                    {
-                        return key;
-                    }
+                    key = extendedProcessingFacilityAI.m_inputResource2.ToString();
                     break;
-            }
-            return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
-        }
-
-        private string GetOutputResourceName(ref List<string> items, int resourceIndex)
-        {
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            string key = "N/A";
-            switch (items[resourceIndex])
-            {
                 case "m_outputResource1":
-                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_outputResource1);
-                    if (extendedProcessingFacilityAI.m_outputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
-                    {
-                        return key;
-                    }
+                    key = extendedProcessingFacilityAI.m_outputResource1.ToString();
                     break;
                 case "m_outputResource2":
-                    key = AtlasUtils.GetSpriteName(extendedProcessingFacilityAI.m_outputResource2);
-                    if (extendedProcessingFacilityAI.m_outputResource2 >= ExtendedTransferManager.MealsDeliveryLow)
-                    {
-                        return key;
-                    }
+                    key = extendedProcessingFacilityAI.m_outputResource2.ToString();
                     break;
             }
             return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
         }
 
-        private UITextureAtlas GetInputResourceAtlas(ref List<string> items, int resourceIndex)
+        private UITextureAtlas GetResourceAtlas(ref List<string> items, int resourceIndex)
         {
-            var reason = GetInputResource(ref items, resourceIndex);
+            var reason = GetResource(ref items, resourceIndex);
             if (reason != TransferManager.TransferReason.None)
             {
                 if (reason >= ExtendedTransferManager.MealsDeliveryLow)
@@ -585,64 +524,35 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return UITextures.InGameAtlas;
         }
 
-        private UITextureAtlas GetOutputResourceAtlas(ref List<string> items, int resourceIndex)
-        {
-            var reason = GetOutputResource(ref items, resourceIndex);
-            if (reason != TransferManager.TransferReason.None)
-            {
-                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
-                {
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
-                }
-            }
-            return UITextures.InGameAtlas;
-        }
-
-        private string GetInputResourceSpriteName(ref List<string> items, int resourceIndex)
+        private string GetResourceSpriteName(ref List<string> items, int resourceIndex)
         {
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
                 case "m_inputResource2":
-                    return AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex));;
+                case "m_outputResource1":
+                case "m_outputResource2":
+                    return AtlasUtils.GetSpriteName(GetResource(ref items, resourceIndex));;
             }
             return null;
         }
 
-        private string GetOutputResourceSpriteName(ref List<string> items, int resourceIndex)
-        {
-            return items[resourceIndex] switch
-            {
-                "m_outputResource1" or "m_outputResource2" => AtlasUtils.GetSpriteName(GetOutputResource(ref items, resourceIndex)),
-                _ => null,
-            };
-        }
-
-        private TransferManager.TransferReason GetInputResource(ref List<string> items, int resourceIndex)
+        private TransferManager.TransferReason GetResource(ref List<string> items, int resourceIndex)
         {
             ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
             return items[resourceIndex] switch
             {
                 "m_inputResource1" => extendedProcessingFacilityAI.m_inputResource1,
                 "m_inputResource2" => extendedProcessingFacilityAI.m_inputResource2,
-                _ => TransferManager.TransferReason.None
-            };
-        }
-
-        private TransferManager.TransferReason GetOutputResource(ref List<string> items, int resourceIndex)
-        {
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            return items[resourceIndex] switch
-            {
                 "m_outputResource1" => extendedProcessingFacilityAI.m_outputResource1,
                 "m_outputResource2" => extendedProcessingFacilityAI.m_outputResource2,
-                _ => TransferManager.TransferReason.None,
+                _ => TransferManager.TransferReason.None
             };
         }
 
         private void OnOnOffChanged(UIComponent comp, bool value)
         {
-            isCityServiceEnabled = value;
+            IsCityServiceEnabled = value;
         }
 
         private bool IsDisasterServiceRequired()
@@ -675,7 +585,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     RebuildBuilding(info, position, angle, buildingID, info.m_fixedHeight);
                     if (info.m_subBuildings != null && info.m_subBuildings.Length != 0)
                     {
-                        Matrix4x4 matrix4x = default(Matrix4x4);
+                        Matrix4x4 matrix4x = default;
                         matrix4x.SetTRS(position, Quaternion.AngleAxis(angle * 57.29578f, Vector3.down), Vector3.one);
                         for (int i = 0; i < info.m_subBuildings.Length; i++)
                         {
@@ -783,13 +693,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UIView.library.Hide(GetType().Name);
             });
-            movingPanel.Find<UILabel>("MovingLabel").text = LocaleFormatter.FormatGeneric("BUILDING_MOVING", base.buildingName);
-            movingPanel.Show();
+            MovingPanel.Find<UILabel>("MovingLabel").text = LocaleFormatter.FormatGeneric("BUILDING_MOVING", base.buildingName);
+            MovingPanel.Show();
         }
 
         public void TempShow(Vector3 worldPosition, InstanceID instanceID)
         {
-            movingPanel.Hide();
+            MovingPanel.Hide();
             Show<ExtendedProcessingFacilityWorldInfoPanel>(worldPosition, instanceID);
             ValueAnimator.Animate("Relocating", delegate (float val)
             {
@@ -802,21 +712,21 @@ namespace IndustriesMeetsSunsetHarbor.UI
             if (m_IsRelocating)
             {
                 BuildingTool currentTool = GetCurrentTool<BuildingTool>();
-                if (currentTool != null && IsValidTarget() && currentTool.m_relocate != 0 && !movingPanel.isVisible)
+                if (currentTool != null && IsValidTarget() && currentTool.m_relocate != 0 && !MovingPanel.isVisible)
                 {
-                    movingPanel.Show();
+                    MovingPanel.Show();
                     return;
                 }
                 if (!IsValidTarget() || (currentTool != null && currentTool.m_relocate == 0))
                 {
                     mainToolbar.ResetLastTool();
-                    movingPanel.Hide();
+                    MovingPanel.Hide();
                     m_IsRelocating = false;
                 }
             }
             if (base.component.isVisible)
             {
-                bool flag = isCityServiceEnabled;
+                bool flag = IsCityServiceEnabled;
                 if (m_OnOff.isChecked != flag)
                 {
                     m_OnOff.eventCheckChanged -= OnOnOffChanged;
@@ -858,7 +768,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             else
             {
-                movingPanel.Hide();
+                MovingPanel.Hide();
                 BuildingTool tool2 = GetTool<BuildingTool>();
                 if (tool2 == GetCurrentTool<BuildingTool>())
                 {
@@ -874,7 +784,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
             }
-            movingPanel.Hide();
+            MovingPanel.Hide();
         }
 
     }
