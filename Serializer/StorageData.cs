@@ -156,6 +156,24 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
             return UInt16Array;
         }
 
+        public static void WriteFloatArrayWithoutLength(float[] FloatArray, FastList<byte> Data)
+        {
+            for (int i = 0; i != FloatArray.Length; i++)
+            {
+                StorageData.WriteFloat(FloatArray[i], Data);
+            }
+        }
+
+        public static float[] ReadFloatArrayWithoutLength(byte[] Data, ref int Index, int ArrayLength)
+        {
+            float[] FloatArray = new float[ArrayLength];
+            for (int i = 0; i < ArrayLength; i++)
+            {
+                FloatArray[i] = StorageData.ReadFloat(Data, ref Index);
+            }
+            return FloatArray;
+        }
+
         public static void AddToData(byte[] Bytes, FastList<byte> Data)
         {
             for (int i = 0; i < Bytes.Length; i++)
