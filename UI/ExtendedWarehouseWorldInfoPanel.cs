@@ -105,6 +105,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private TransferManager.TransferReason[] m_transferReasons;
 
+        private TransferManager.TransferReason[] m_transferReasonsFarming;
+
         private readonly WarehouseModes[] m_warehouseModes =
         [
                 WarehouseModes.Balanced,
@@ -187,30 +189,19 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 TransferManager.TransferReason.None,
                 TransferManager.TransferReason.AnimalProducts,
                 TransferManager.TransferReason.Flours,
+                ExtendedTransferManager.Milk,
+                ExtendedTransferManager.RawHides,
+                ExtendedTransferManager.Pork,
+                ExtendedTransferManager.Wool,
+                ExtendedTransferManager.ProcessedVegetableOil,
+                ExtendedTransferManager.ChemicalProducts,
+                ExtendedTransferManager.Leather,
                 TransferManager.TransferReason.Paper,
                 TransferManager.TransferReason.PlanedTimber,
                 TransferManager.TransferReason.Petroleum,
                 TransferManager.TransferReason.Plastics,
                 TransferManager.TransferReason.Glass,
-                TransferManager.TransferReason.Metals,
-                TransferManager.TransferReason.LuxuryProducts,
-                TransferManager.TransferReason.Lumber,
-                TransferManager.TransferReason.Food,
-                TransferManager.TransferReason.Coal,
-                TransferManager.TransferReason.Petrol,
-                TransferManager.TransferReason.Goods,
-                ExtendedTransferManager.Milk,
-                ExtendedTransferManager.Pork,
-                ExtendedTransferManager.Fruits,
-                ExtendedTransferManager.Vegetables,
-                ExtendedTransferManager.Wool,
-                ExtendedTransferManager.Cotton,
-                ExtendedTransferManager.Cows,
-                ExtendedTransferManager.HighlandCows,
-                ExtendedTransferManager.Sheep,
-                ExtendedTransferManager.Pigs,
-                ExtendedTransferManager.ProcessedVegetableOil,
-                ExtendedTransferManager.Leather,
+                TransferManager.TransferReason.Metals, 
                 ExtendedTransferManager.FoodProducts,
                 ExtendedTransferManager.BeverageProducts,
                 ExtendedTransferManager.BakedGoods,
@@ -227,6 +218,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 ExtendedTransferManager.Cars,
                 ExtendedTransferManager.Footwear,
                 ExtendedTransferManager.HouseParts,
+                TransferManager.TransferReason.LuxuryProducts,
+                TransferManager.TransferReason.Lumber,
+                TransferManager.TransferReason.Food,
+                TransferManager.TransferReason.Coal,
+                TransferManager.TransferReason.Petrol,
+                TransferManager.TransferReason.Goods,
             ];
             List<TransferManager.TransferReason> list2 = list;
             if (Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Urban))
@@ -240,7 +237,16 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 list2.Add(ExtendedTransferManager.Seaweed);
                 list2.Add(ExtendedTransferManager.Trout);
             }
+            List<TransferManager.TransferReason> list3 =
+            [
+                TransferManager.TransferReason.None,
+                TransferManager.TransferReason.Grain,
+                ExtendedTransferManager.Fruits,
+                ExtendedTransferManager.Vegetables,
+                ExtendedTransferManager.Cotton
+            ];
             m_transferReasons = [.. list2];
+            m_transferReasonsFarming = [.. list3];
             m_Type = Find<UILabel>("Type");
             m_Upkeep = Find<UILabel>("Upkeep");
             m_Info = Find<UILabel>("Info");
@@ -326,6 +332,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void RefreshDropdownLists()
         {
+            //var buildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
+            //DistrictManager instance = Singleton<DistrictManager>.instance;
+            //byte b = instance.GetPark(buildingData.m_position);
+            //if (b != 0 && instance.m_parks.m_buffer[b].IsIndustry && instance.m_parks.m_buffer[b].)
+            //{
+            //    b = 0;
+            //}
             string[] array = new string[m_transferReasons.Length];
             for (int i = 0; i < m_transferReasons.Length; i++)
             {
