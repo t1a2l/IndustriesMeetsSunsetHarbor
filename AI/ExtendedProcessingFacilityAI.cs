@@ -218,7 +218,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             string text = base.GetDebugString(buildingID, ref data);
             if (m_inputResource1.Length != 0)
             {
-                int inputBufferSize1 = GetInputBufferSize(ref data, m_inputRate1);
+                int inputBufferSize1 = GetInputBufferSize1(buildingID, ref data);
                 int customBuffer1 = 0;
                 int count1 = 0;
                 int cargo1 = 0;
@@ -243,7 +243,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource2.Length != 0)
             {
-                int inputBufferSize2 = GetInputBufferSize(ref data, m_inputRate2);
+                int inputBufferSize2 = GetInputBufferSize2(buildingID, ref data);
                 int customBuffer2 = 0;
                 int count2 = 0;
                 int cargo2 = 0;
@@ -268,7 +268,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource3.Length != 0)
             {
-                int inputBufferSize3 = GetInputBufferSize(ref data, m_inputRate3);
+                int inputBufferSize3 = GetInputBufferSize3(buildingID, ref data);
                 int customBuffer3 = 0;
                 int count3 = 0;
                 int cargo3 = 0;
@@ -293,7 +293,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource4.Length != 0)
             {
-                int inputBufferSize4 = GetInputBufferSize(ref data, m_inputRate4);
+                int inputBufferSize4 = GetInputBufferSize4(buildingID, ref data);
                 int customBuffer4 = 0;
                 int count4 = 0;
                 int cargo4 = 0;
@@ -318,7 +318,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource5.Length != 0)
             {
-                int inputBufferSize5 = GetInputBufferSize(ref data, m_inputRate5);
+                int inputBufferSize5 = GetInputBufferSize5(buildingID, ref data);
                 int customBuffer5 = 0;
                 int count5 = 0;
                 int cargo5 = 0;
@@ -343,7 +343,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource6.Length != 0)
             {
-                int inputBufferSize6 = GetInputBufferSize(ref data, m_inputRate6);
+                int inputBufferSize6 = GetInputBufferSize6(buildingID, ref data);
                 int customBuffer6 = 0;
                 int count6 = 0;
                 int cargo6 = 0;
@@ -368,7 +368,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource7.Length != 0)
             {
-                int inputBufferSize7 = GetInputBufferSize(ref data, m_inputRate7);
+                int inputBufferSize7 = GetInputBufferSize7(buildingID, ref data);
                 int customBuffer7 = 0;
                 int count7 = 0;
                 int cargo7 = 0;
@@ -393,7 +393,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_inputResource8.Length != 0)
             {
-                int inputBufferSize8 = GetInputBufferSize(ref data, m_inputRate8);
+                int inputBufferSize8 = GetInputBufferSize8(buildingID, ref data);
                 int customBuffer8 = 0;
                 int count8 = 0;
                 int cargo8 = 0;
@@ -418,7 +418,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_outputResource1 != TransferManager.TransferReason.None)
             {
-                int outputBufferSize1 = GetOutputBufferSize(ref data, m_outputRate1, m_outputVehicleCount1);
+                int outputBufferSize1 = GetOutputBufferSize1(buildingID, ref data);
                 int outputBuffer1 = (int)custom_buffers.Get((int)m_outputResource1);
                 int count1 = 0;
                 int cargo1 = 0;
@@ -436,7 +436,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_outputResource2 != TransferManager.TransferReason.None)
             {
-                int outputBufferSize2 = GetOutputBufferSize(ref data, m_outputRate2, m_outputVehicleCount2);
+                int outputBufferSize2 = GetOutputBufferSize2(buildingID, ref data);
                 int outputBuffer2 = (int)custom_buffers.Get((int)m_outputResource2);
                 int count2 = 0;
                 int cargo2 = 0;
@@ -545,7 +545,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (Array.IndexOf(m_inputResource1, material) != -1)
             {
-                int inputBufferSize1 = GetInputBufferSize(ref data, m_inputRate1);
+                int inputBufferSize1 = GetInputBufferSize1(buildingID, ref data);
                 int m_customBuffer1 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer1, inputBufferSize1 - m_customBuffer1);
                 m_customBuffer1 += amountDelta;
@@ -553,7 +553,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource2, material) != -1)
             {
-                int inputBufferSize2 = GetInputBufferSize(ref data, m_inputRate2);
+                int inputBufferSize2 = GetInputBufferSize2(buildingID, ref data);
                 int m_customBuffer2 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer2, inputBufferSize2 - m_customBuffer2);
                 m_customBuffer2 += amountDelta;
@@ -561,7 +561,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource3, material) != -1)
             {
-                int inputBufferSize3 = GetInputBufferSize(ref data, m_inputRate3);
+                int inputBufferSize3 = GetInputBufferSize3(buildingID, ref data);
                 int m_customBuffer3 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer3, inputBufferSize3 - m_customBuffer3);
                 m_customBuffer3 += amountDelta;
@@ -569,7 +569,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource4, material) != -1)
             {
-                int inputBufferSize4 = GetInputBufferSize(ref data, m_inputRate4);
+                int inputBufferSize4 = GetInputBufferSize4(buildingID, ref data);
                 int m_customBuffer4 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer4, inputBufferSize4 - m_customBuffer4);
                 m_customBuffer4 += amountDelta;
@@ -577,7 +577,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource5, material) != -1)
             {
-                int inputBufferSize5 = GetInputBufferSize(ref data, m_inputRate5);
+                int inputBufferSize5 = GetInputBufferSize5(buildingID, ref data);
                 int m_customBuffer5 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer5, inputBufferSize5 - m_customBuffer5);
                 m_customBuffer5 += amountDelta;
@@ -585,7 +585,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource6, material) != -1)
             {
-                int inputBufferSize6 = GetInputBufferSize(ref data, m_inputRate6);
+                int inputBufferSize6 = GetInputBufferSize6(buildingID, ref data);
                 int m_customBuffer6 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer6, inputBufferSize6 - m_customBuffer6);
                 m_customBuffer6 += amountDelta;
@@ -593,7 +593,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource7, material) != -1)
             {
-                int inputBufferSize7 = GetInputBufferSize(ref data, m_inputRate7);
+                int inputBufferSize7 = GetInputBufferSize7(buildingID, ref data);
                 int m_customBuffer7 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer7, inputBufferSize7 - m_customBuffer7);
                 m_customBuffer7 += amountDelta;
@@ -601,7 +601,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (Array.IndexOf(m_inputResource8, material) != -1)
             {
-                int inputBufferSize8 = GetInputBufferSize(ref data, m_inputRate8);
+                int inputBufferSize8 = GetInputBufferSize8(buildingID, ref data);
                 int m_customBuffer8 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer8, inputBufferSize8 - m_customBuffer8);
                 m_customBuffer8 += amountDelta;
@@ -609,7 +609,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_outputResource1)
             {
-                int outputBufferSize9 = GetOutputBufferSize(ref data, m_outputRate1, m_outputVehicleCount1);
+                int outputBufferSize9 = GetOutputBufferSize1(buildingID, ref data);
                 int m_customBuffer9 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer9, outputBufferSize9 - m_customBuffer9);
                 m_customBuffer9 += amountDelta;
@@ -617,7 +617,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             else if (material == m_outputResource2)
             {
-                int outputBufferSize10 = GetOutputBufferSize(ref data, m_outputRate2, m_outputVehicleCount2);
+                int outputBufferSize10 = GetOutputBufferSize2(buildingID, ref data);
                 int m_customBuffer10 = (int)custom_buffers.Get((int)material);
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer10, outputBufferSize10 - m_customBuffer10);
                 m_customBuffer10 += amountDelta;
@@ -845,7 +845,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer1 = 0;
                 if (m_inputResource1.Length != 0)
                 {
-                    InputBufferSize1 = GetInputBufferSize(ref buildingData, m_inputRate1);
+                    InputBufferSize1 = GetInputBufferSize1(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource1)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -864,7 +864,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer2 = 0;
                 if (m_inputResource2.Length != 0)
                 {
-                    InputBufferSize2 = GetInputBufferSize(ref buildingData, m_inputRate2);
+                    InputBufferSize2 = GetInputBufferSize2(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource2)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -883,7 +883,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer3 = 0;
                 if (m_inputResource3.Length != 0)
                 {
-                    InputBufferSize3 = GetInputBufferSize(ref buildingData, m_inputRate3);
+                    InputBufferSize3 = GetInputBufferSize3(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource3)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -902,7 +902,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer4 = 0;
                 if (m_inputResource4.Length != 0)
                 {
-                    InputBufferSize4 = GetInputBufferSize(ref buildingData, m_inputRate4);
+                    InputBufferSize4 = GetInputBufferSize4(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource4)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -921,7 +921,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer5 = 0;
                 if (m_inputResource5.Length != 0)
                 {
-                    InputBufferSize5 = GetInputBufferSize(ref buildingData, m_inputRate5);
+                    InputBufferSize5 = GetInputBufferSize5(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource5)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -940,7 +940,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer6 = 0;
                 if (m_inputResource6.Length != 0)
                 {
-                    InputBufferSize6 = GetInputBufferSize(ref buildingData, m_inputRate6);
+                    InputBufferSize6 = GetInputBufferSize6(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource6)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -959,7 +959,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer7 = 0;
                 if (m_inputResource7.Length != 0)
                 {
-                    InputBufferSize7 = GetInputBufferSize(ref buildingData, m_inputRate7);
+                    InputBufferSize7 = GetInputBufferSize7(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource7)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -978,7 +978,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomInputBuffer8 = 0;
                 if (m_inputResource8.Length != 0)
                 {
-                    InputBufferSize8 = GetInputBufferSize(ref buildingData, m_inputRate8);
+                    InputBufferSize8 = GetInputBufferSize8(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     foreach (var inputResource in m_inputResource8)
                     {
                         if (inputResource != TransferManager.TransferReason.None)
@@ -997,7 +997,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomOutputBuffer1 = 0;
                 if (m_outputResource1 != TransferManager.TransferReason.None)
                 {
-                    OutputBufferSize1 = GetOutputBufferSize(ref buildingData, m_outputRate1, m_outputVehicleCount1);
+                    OutputBufferSize1 = GetOutputBufferSize1(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     CustomOutputBuffer1 = (int)custom_buffers.Get((int)m_outputResource1);
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     if (OutputBufferSize1 - CustomOutputBuffer1 < OutputProductionRate)
@@ -1022,7 +1022,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int CustomOutputBuffer2 = 0;
                 if (m_outputResource2 != TransferManager.TransferReason.None)
                 {
-                    OutputBufferSize2 = GetOutputBufferSize(ref buildingData, m_outputRate2, m_outputVehicleCount2);
+                    OutputBufferSize2 = GetOutputBufferSize2(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     CustomOutputBuffer2 = (int)custom_buffers.Get((int)m_outputResource2);
                     int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
                     if (OutputBufferSize2 - CustomOutputBuffer2 < OutputProductionRate)
@@ -1282,10 +1282,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
         private void CheckCapacity(ushort buildingID, ref Building buildingData)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            int outputBufferSize = GetOutputBufferSize(ref buildingData, m_outputRate1, m_outputVehicleCount1) + GetOutputBufferSize(ref buildingData, m_outputRate2, m_outputVehicleCount2);
-            var index1 = CustomBuffersManager.GetIndex((int)m_outputResource1);
-            var index2 = CustomBuffersManager.GetIndex((int)m_outputResource2);
-            float customBuffer = custom_buffers.m_volumes[index1] + custom_buffers.m_volumes[index2];
+            int outputBufferSize = GetOutputBufferSize1(buildingID, ref buildingData) + GetOutputBufferSize2(buildingID, ref buildingData);
+            int customBuffer = (int)(custom_buffers.Get((int)m_outputResource1) + custom_buffers.Get((int)m_outputResource2));
             if (customBuffer * 3 >= outputBufferSize * 2)
             {
                 if ((buildingData.m_flags & Building.Flags.CapacityFull) != Building.Flags.CapacityFull)
@@ -1450,61 +1448,304 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 || m_outputResource2 != TransferManager.TransferReason.None;
         }
 
-        public int GetInputBufferSize(ref Building data, int inputRate)
+        public int GetInputBufferSize1(ushort buildingID, ref Building data)
         {
             DistrictManager instance = Singleton<DistrictManager>.instance;
             byte b = instance.GetPark(data.m_position);
-            var park = instance.m_parks.m_buffer[b];
-            var m_finalStorageDelta = park.m_finalStorageDelta;
             if (b != 0)
             {
-                if (!park.IsIndustry)
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
                 {
-                    m_finalStorageDelta = 0;
+                    b = 0;
                 }
-                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != park.m_parkType)
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
                 {
-                    m_finalStorageDelta = 0;
+                    b = 0;
                 }
             }
-            int num = inputRate * 32 + 8000;
-            if ((park.m_parkPolicies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            return GetInputBufferSize1(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize1(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate1 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
             {
                 num = (num * 6 + 4) / 5;
             }
-            num = (num * (100 + m_finalStorageDelta) + 50) / 100;
+            num = (num * (100 + storageDelta) + 50) / 100;
             return Mathf.Clamp(num, 8000, 64000);
         }
 
-        public int GetOutputBufferSize(ref Building data, int outputRate, int vehicleCount)
+        public int GetInputBufferSize2(ushort buildingID, ref Building data)
         {
             DistrictManager instance = Singleton<DistrictManager>.instance;
             byte b = instance.GetPark(data.m_position);
-            var park = instance.m_parks.m_buffer[b];
-            var m_finalStorageDelta = park.m_finalStorageDelta;
             if (b != 0)
             {
-                if (!park.IsIndustry)
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
                 {
-                    m_finalStorageDelta = 0;
+                    b = 0;
                 }
-                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != park.m_parkType)
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
                 {
-                    m_finalStorageDelta = 0;
+                    b = 0;
                 }
             }
-            if (vehicleCount == 0)
+            return GetInputBufferSize2(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize2(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate2 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
             {
-                int num = outputRate * 100;
-                return Mathf.Clamp(num, 1, 64000);
+                num = (num * 6 + 4) / 5;
             }
-            int num2 = outputRate * 32 + 8000;
-            if ((park.m_parkPolicies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetInputBufferSize3(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
             {
-                num2 = (num2 * 6 + 4) / 5;
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
             }
-            num2 = (num2 * (100 + m_finalStorageDelta) + 50) / 100;
-            return Mathf.Clamp(num2, 8000, 64000);
+            return GetInputBufferSize3(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize3(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate3 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetInputBufferSize4(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetInputBufferSize4(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize4(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate4 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetInputBufferSize5(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetInputBufferSize5(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize5(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate5 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetInputBufferSize6(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetInputBufferSize6(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize6(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate6 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetInputBufferSize7(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetInputBufferSize7(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize7(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate7 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetInputBufferSize8(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetInputBufferSize8(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetInputBufferSize8(DistrictPolicies.Park policies, int storageDelta)
+        {
+            int num = m_inputRate8 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetOutputBufferSize1(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetOutputBufferSize1(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetOutputBufferSize1(DistrictPolicies.Park policies, int storageDelta)
+        {
+            if (m_outputVehicleCount1 == 0)
+            {
+                int value = m_outputRate1 * 100;
+                return Mathf.Clamp(value, 1, 64000);
+            }
+            int num = m_outputRate1 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
+        }
+
+        public int GetOutputBufferSize2(ushort buildingID, ref Building data)
+        {
+            DistrictManager instance = Singleton<DistrictManager>.instance;
+            byte b = instance.GetPark(data.m_position);
+            if (b != 0)
+            {
+                if (!instance.m_parks.m_buffer[b].IsIndustry)
+                {
+                    b = 0;
+                }
+                else if (m_industryType == DistrictPark.ParkType.Industry || m_industryType != instance.m_parks.m_buffer[b].m_parkType)
+                {
+                    b = 0;
+                }
+            }
+            return GetOutputBufferSize2(instance.m_parks.m_buffer[b].m_parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
+        }
+
+        private int GetOutputBufferSize2(DistrictPolicies.Park policies, int storageDelta)
+        {
+            if (m_outputVehicleCount2 == 0)
+            {
+                int value = m_outputRate2 * 100;
+                return Mathf.Clamp(value, 1, 64000);
+            }
+            int num = m_outputRate2 * 32 + 8000;
+            if ((policies & DistrictPolicies.Park.ImprovedLogistics) != DistrictPolicies.Park.None)
+            {
+                num = (num * 6 + 4) / 5;
+            }
+            num = (num * (100 + storageDelta) + 50) / 100;
+            return Mathf.Clamp(num, 8000, 64000);
         }
 
         private bool IsRawMaterial(TransferManager.TransferReason material)
