@@ -88,74 +88,147 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 }
                 else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
                 {
-                    var component = __instance.GetComponent<PrefabAI>();
-                    if (__instance.GetAI() is UniqueFactoryAI uniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    if (__instance.GetAI() is UniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedUniqueFactoryAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                         if (__instance.name.Contains("Food Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.FoodProducts;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.AnimalProducts, ExtendedTransferManager.Pork];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Flours];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.Milk];
+                            newAI.m_inputResource4 = [ExtendedTransferManager.ProcessedVegetableOil];
+                            newAI.m_inputResource5 = [ExtendedTransferManager.Algae, ExtendedTransferManager.Seaweed];
+                            newAI.m_inputResource6 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_inputResource7 = [TransferManager.TransferReason.Metals];
+                            newAI.m_outputResource1 = ExtendedTransferManager.FoodProducts;
                         }
                         else if (__instance.name.Contains("Lemonade Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.BeverageProducts;
                             __instance.name = "Drinks Factory 01";
+                            newAI.m_inputResource1 = [ExtendedTransferManager.LiquidConcentrates, ExtendedTransferManager.Milk];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Grain];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Glass];
+                            newAI.m_inputResource4 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.BeverageProducts;
+                        }
+                        else if (__instance.name.Contains("Bakery"))
+                        {
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.Flours];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.Milk];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.Fruits];
+                            newAI.m_outputResource1 = ExtendedTransferManager.BakedGoods;
                         }
                         else if (__instance.name.Contains("Food Factory 02"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.CannedFish;
+                            newAI.m_inputResource1 = [ExtendedTransferManager.Salmon, ExtendedTransferManager.Tuna, ExtendedTransferManager.Trout];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.ProcessedVegetableOil];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.Algae, ExtendedTransferManager.Seaweed];
+                            newAI.m_inputResource4 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_inputResource5 = [TransferManager.TransferReason.Metals];
+                            newAI.m_outputResource1 = ExtendedTransferManager.CannedFish;
                         }
                         else if (__instance.name.Contains("Furniture Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Furnitures;
-                        }
-                        else if (__instance.name.Contains("Industrial Steel Plant 01"))
-                        {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.IndustrialSteel;
-                        }
-                        else if (__instance.name.Contains("Household Plastic Factory 01"))
-                        {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Tupperware;
-                        }
-                        else if (__instance.name.Contains("Toy Factory 01"))
-                        {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Toys;
-                        }
-                        else if (__instance.name.Contains("Printing Press 01"))
-                        {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.PrintedProducts;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.PlanedTimber];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.Leather, ExtendedTransferManager.Cotton];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.Algae, ExtendedTransferManager.Seaweed];
+                            newAI.m_inputResource4 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource5 = [TransferManager.TransferReason.Paper];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Furnitures;
                         }
                         else if (__instance.name.Contains("Electronics Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.ElectronicProducts;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.Metals];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Glass];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.ElectronicProducts;
                         }
-                        else if (__instance.name.Contains("Clothing Factory 01"))
+                        else if (__instance.name.Contains("Industrial Steel Plant 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Cloths;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.Metals];
+                            newAI.m_outputResource1 = ExtendedTransferManager.IndustrialSteel;
                         }
-                        else if (__instance.name.Contains("Petroleum Refinery 01"))
+                        else if (__instance.name.Contains("Household Plastic Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.PetroleumProducts;
+                            newAI.m_inputResource1 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.ProcessedVegetableOil];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Tupperware;
+                        }
+                        else if (__instance.name.Contains("Toy Factory 01"))
+                        {
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.PlanedTimber];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.Cotton, ExtendedTransferManager.Wool];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource4 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Toys;
+                        }
+                        else if (__instance.name.Contains("Printing Press 01"))
+                        {
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.Paper];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.ProcessedVegetableOil];
+                            newAI.m_inputResource4 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.PrintedProducts;
                         }
                         else if (__instance.name.Contains("Soft Paper Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.TissuePaper;
+                            newAI.m_inputResource1 = [ExtendedTransferManager.Cotton];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Paper];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource4 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.TissuePaper;
                         }
-                        else if (__instance.name.Contains("Sneaker Factory 01"))
+                        else if (__instance.name.Contains("Clothing Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Footwear;
+                            newAI.m_inputResource1 = [ExtendedTransferManager.Cotton, ExtendedTransferManager.Wool];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.Leather];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Plastics, TransferManager.TransferReason.Paper];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Cloths;
                         }
-                        else if (__instance.name.Contains("Modular House Factory 01"))
+                        else if (__instance.name.Contains("Petroleum Refinery 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.HouseParts;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.Metals];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Petroleum];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_outputResource1 = ExtendedTransferManager.PetroleumProducts;
                         }
                         else if (__instance.name.Contains("Car Factory 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Cars;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.Metals];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.Leather];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_inputResource4 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource5 = [TransferManager.TransferReason.Glass];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Cars;
+                        }
+                        else if (__instance.name.Contains("Sneaker Factory 01"))
+                        {
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.PlanedTimber];
+                            newAI.m_inputResource2 = [ExtendedTransferManager.Cotton, ExtendedTransferManager.Leather];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Plastics];
+                            newAI.m_inputResource4 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Footwear;
+                        }
+                        else if (__instance.name.Contains("Modular House Factory 01"))
+                        {
+                            newAI.m_inputResource1 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Metals, TransferManager.TransferReason.PlanedTimber];
+                            newAI.m_inputResource3 = [TransferManager.TransferReason.Paper, TransferManager.TransferReason.Plastics];
+                            newAI.m_inputResource4 = [TransferManager.TransferReason.Glass];
+                            newAI.m_outputResource1 = ExtendedTransferManager.HouseParts;
                         }
                         else if (__instance.name.Contains("Dry Dock 01"))
                         {
-                            uniqueFactoryAI.m_outputResource = ExtendedTransferManager.Ship;
-                            uniqueFactoryAI.m_outputVehicleCount = 0;
+                            newAI.m_inputResource1 = [TransferManager.TransferReason.PlanedTimber, TransferManager.TransferReason.Metals];
+                            newAI.m_inputResource2 = [TransferManager.TransferReason.Plastics, TransferManager.TransferReason.Glass];
+                            newAI.m_inputResource3 = [ExtendedTransferManager.ChemicalProducts];
+                            newAI.m_inputResource4 = [ExtendedTransferManager.Leather, ExtendedTransferManager.Cotton];
+                            newAI.m_outputResource1 = ExtendedTransferManager.Ship;
+                            newAI.m_outputVehicleCount1 = 0;
                         }
                     }
                     else if (__instance.name.Contains("Animal Pasture") && __instance.GetAI() is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
@@ -164,7 +237,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_inputResource1 = [TransferManager.TransferReason.Grain, ExtendedTransferManager.Vegetables];
+                        newAI.m_inputResource1 = [TransferManager.TransferReason.Grain];
+                        newAI.m_inputResource2 = [ExtendedTransferManager.Vegetables];
                         newAI.m_inputRate1 = 1000;
                         if (__instance.name.Contains("Sheep"))
                         {
