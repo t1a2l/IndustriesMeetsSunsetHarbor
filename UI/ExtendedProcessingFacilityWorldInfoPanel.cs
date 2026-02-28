@@ -1,73 +1,130 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using ColossalFramework;
 using ColossalFramework.Globalization;
+using ColossalFramework.Threading;
 using ColossalFramework.UI;
 using ICities;
 using UnityEngine;
-using IndustriesMeetsSunsetHarbor.AI;
-using System.Collections.Generic;
-using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons;
-using System.Reflection;
-using ColossalFramework.Threading;
-using MoreTransferReasons.Utils;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
-    public class ExtendedProcessingFacilityWorldInfoPanel : BuildingWorldInfoPanel
+    public sealed class ExtendedProcessingFacilityWorldInfoPanel : BuildingWorldInfoPanel
     {
-        private UIPanel m_mainPanel;
+        private UIPanel m_right;
 
-        private UILabel m_status;
+        private UIPanel m_mainBottom;
 
-        private UIButton m_RebuildButton;
+        private UIPanel m_wrapper;
 
-        private UICheckBox m_OnOff;
-
-        private UIPanel m_horizontalLine;
-
-        private UIPanel m_inputContainer;
-
-        private UIPanel m_outputContainer;
-
-        private UITemplateList<UIPanel> m_inputs;
-
-        private UITemplateList<UIPanel> m_outputs;
-
-        private int m_inputResourceCount;
-
-        private int m_outputResourceCount;
-
-        private UISlider m_productionSlider;
-
-        private UILabel m_productionRateLabel;
-
-        private UILabel m_workplaces;
-
-        private UILabel m_generatedInfo;
-
-        private bool m_IsRelocating;
+        private UIButton m_BudgetButton;
 
         private UIButton m_MoveButton;
 
+        private UIPanel m_ActionPanel;
+
+        private UIButton m_RebuildButton;
+
+        private UIComponent m_MovingPanel;
+
+        private UILabel m_Type;
+
+        private UILabel m_Status;
+
         private UILabel m_Upkeep;
 
-        private UILabel m_income;
+        private UISprite m_Thumbnail;
 
-        private UILabel m_expenses;
+        private UILabel m_BuildingInfo;
+
+        private UILabel m_BuildingDesc;
+
+        private UISprite m_BuildingService;
+
+        private UIPanel m_Parkbuttons;
+
+        private UIButton m_ShowIndustryInfoButton;
+
+        private UICheckBox m_OnOff;
+
+        private bool m_IsRelocating;
 
         private UIPanel m_VariationPanel;
 
         private UIDropDown m_VariationDropdown;
 
-        private ExtendedProcessingFacilityAI m_ExtendedProcessingFacilityAI;
+        private IndustryBuildingAI m_IndustryBuildingAI;
 
-        private UIComponent m_MovingPanel;
+        private UIPanel m_workersTooltip;
 
-        private List<string> m_inputItems;
+        private UILabel m_workersInfoLabel;
 
-        private List<string> m_outputItems;
+        private UILabel m_UneducatedPlaces;
+
+        private UILabel m_EducatedPlaces;
+
+        private UILabel m_WellEducatedPlaces;
+
+        private UILabel m_HighlyEducatedPlaces;
+
+        private UILabel m_UneducatedWorkers;
+
+        private UILabel m_EducatedWorkers;
+
+        private UILabel m_WellEducatedWorkers;
+
+        private UILabel m_HighlyEducatedWorkers;
+
+        private UILabel m_OverWorkSituation;
+
+        private UILabel m_JobsAvailLegend;
+
+        private UIRadialChart m_WorkPlacesEducationChart;
+
+        private UIRadialChart m_WorkersEducationChart;
+
+        public Color32 m_UneducatedColor;
+
+        public Color32 m_EducatedColor;
+
+        public Color32 m_WellEducatedColor;
+
+        public Color32 m_HighlyEducatedColor;
+
+        public Color32 m_UnoccupiedWorkplaceColor;
+
+        public float m_WorkersColorScalar = 0.5f;
+
+        private UIProgressBar m_inputBuffer;
+
+        private UILabel m_inputLabel;
+
+        private UIPanel m_inputSection;
+
+        private UIProgressBar m_outputBuffer;
+
+        private UILabel m_outputLabel;
+
+        private UIPanel m_outputSection;
+
+        private PlayerBuildingAI m_playerBuildingAI;
+
+        private ProcessingFacilityAI m_processingFacilityAI;
+
+        private UISprite m_arrow1;
+
+        private UISprite m_arrow2;
+
+        private UISprite m_arrow3;
+
+        private UISprite m_inputSprite;
+
+        private UISprite m_outputSprite;
+
+        private UIPanel m_inputOutputSection;
+
+        private bool m_needResetTarget;
 
         public UIComponent MovingPanel
         {
@@ -104,103 +161,106 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         protected override void Start()
         {
-            m_status = Find<UILabel>("Status");
+            m_right = Find<UIPanel>("Right");
+            m_mainBottom = Find<UIPanel>("MainBottom");
             base.Start();
-            m_generatedInfo = Find<UILabel>("LabelInfo");
-            m_horizontalLine = Find<UIPanel>("HorizontalLinePanel");
-            m_inputContainer = Find<UIPanel>("LayoutPanel");
-
-            var Diagram = Find<UIPanel>("Diagram");
-
-            GameObject outputContainer = Instantiate(m_inputContainer.gameObject, Diagram.transform);
-            m_outputContainer = outputContainer.GetComponent<UIPanel>();
-
-            m_outputContainer.relativePosition = new Vector3(m_inputContainer.relativePosition.x, 200);
-
-            var InputResource = m_outputContainer.Find<UIPanel>("UniqueFactoryInputResource");
-
-            GameObject outputResource = Instantiate(InputResource.gameObject, InputResource.transform);
-            outputResource.name = "UniqueFactoryOutputResource";
-
-            outputResource.transform.SetParent(outputContainer.transform);
-
-            m_outputContainer.AttachUIComponent(outputResource);
-
-            var outputResource_Panel = outputResource.GetComponent<UIPanel>();
-
-            outputResource_Panel.relativePosition = new Vector3(InputResource.relativePosition.x, 200);
-
-            DestroyImmediate(InputResource.gameObject);
-
-            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
-            DestroyImmediate(outputResourceArrow.gameObject);
-
-            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
-            DestroyImmediate(outputResourceStorage.gameObject);
-
-            var m_productStorage = Find<UIPanel>("ProductStorage");
-            var m_BigArrow = Find<UISprite>("Big Arrow");
-
-            m_productStorage.transform.SetParent(outputResource_Panel.transform);
-            m_BigArrow.transform.SetParent(outputResource_Panel.transform);
-
-            outputResource_Panel.AttachUIComponent(m_productStorage.gameObject);
-            outputResource_Panel.AttachUIComponent(m_BigArrow.gameObject);
-
-            UITemplateManager instance = Singleton<UITemplateManager>.instance;
-
-            var m_Templates = (Dictionary<string, UIComponent>)typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(instance);
-
-            m_Templates.Add("UniqueFactoryOutputResource", outputResource_Panel);
-
-            typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instance, m_Templates);
-
-            var UniqueFactoryInputResource = m_inputContainer.Find<UIPanel>("UniqueFactoryInputResource");
-
-            UniqueFactoryInputResource.transform.parent = null;
-
-            outputResource.transform.parent = null;
-
-            m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
-            m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryOutputResource");
-
-            m_productionSlider = Find<UISlider>("ProductionSlider");
-            m_productionSlider.eventValueChanged += OnProductionRateChanged;
-            m_productionRateLabel = Find<UILabel>("LabelProductionRate");
-            m_workplaces = Find<UILabel>("LabelWorkplaces");
+            m_wrapper = Find<UIPanel>("Wrapper");
+            m_Type = Find<UILabel>("Type");
+            m_Status = Find<UILabel>("Status");
+            m_Upkeep = Find<UILabel>("Upkeep");
+            m_Thumbnail = Find<UISprite>("Thumbnail");
+            m_BuildingInfo = Find<UILabel>("Info");
+            m_BuildingDesc = Find<UILabel>("Desc");
+            m_BuildingService = Find<UISprite>("Service");
+            m_BudgetButton = Find<UIButton>("Budget");
             m_MoveButton = Find<UIButton>("RelocateAction");
+            m_BudgetButton.isEnabled = ToolsModifierControl.IsUnlocked(UnlockManager.Feature.Economy);
+
+            Find<UIButton>("OpenPedestrianAreaButton").isVisible = false;
+            Find<UIPanel>("WonderEffectPanel").isVisible = false;
+            Find<UIPanel>("TotalWorksPanel").isVisible = false;
+            Find<UIPanel>("Checkboxes").isVisible = false;
+            Find<UIPanel>("IntercityTrainsPanel").isVisible = false;
+            Find<UICheckBox>("AcceptIntercityTrains").isVisible = false;
+            Find<UIButton>("OpenCampusPanelButton").isVisible = false;
+            Find<UIButton>("OpenAirportPanelButton").isVisible = false;
+            Find<UIButton>("LinesOverview").isVisible = false;
+            Find<UIButton>("LevelUpButton").isVisible = false;
+            Find<UIButton>("OpenPedestrianAreaButton").isVisible = false;
+            Find<UIButton>("OpenMuseumCampusPanelButton").isVisible = false;
+            Find<UIPanel>("TicketPriceSection").isVisible = false;
+            Find<UIPanel>("AcademicWorksPanel").isVisible = false;
+            Find<UILabel>("AcademicWorksPanelTitle").isVisible = false;
+            Find<UIPanel>("BuildingVariationContainer").isVisible = false;
+            Find<UIButton>("OpenParkPanelButton").isVisible = false;
+
+            m_ShowIndustryInfoButton = Find<UIButton>("OpenIndustryPanelButton");
+            m_Parkbuttons = Find<UIPanel>("ParkButtons");
+            m_ActionPanel = Find<UIPanel>("ActionPanel");
             m_RebuildButton = Find<UIButton>("RebuildButton");
             m_OnOff = Find<UICheckBox>("On/Off");
             m_OnOff.eventCheckChanged += OnOnOffChanged;
-            m_Upkeep = Find<UILabel>("Upkeep");
-            m_income = Find<UILabel>("IncomeLabel");
-            m_expenses = Find<UILabel>("ExpensesLabel");
-            m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
-
-            var _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
-
-            var City_VariationPanel = _cityServiceWorldInfoPanel.Find<UIPanel>("VariationPanel");
-
-            GameObject VariationPanel = Instantiate(City_VariationPanel.gameObject, Diagram.transform);
-
-            m_VariationPanel = VariationPanel.GetComponent<UIPanel>();
-
-            m_VariationPanel.transform.SetParent(Diagram.transform);
-
-            m_VariationPanel.relativePosition = new Vector3(100, 316);
-
-            Diagram.AttachUIComponent(m_VariationPanel.gameObject);
-
-            m_VariationDropdown = m_VariationPanel.Find<UIDropDown>("DropdownVariation");
+            m_VariationPanel = Find<UIPanel>("VariationPanel");
+            m_VariationDropdown = Find<UIDropDown>("DropdownVariation");
             m_VariationDropdown.eventSelectedIndexChanged += OnVariationDropdownChanged;
-
-            m_inputItems = [];
-            m_outputItems = [];
+            m_workersTooltip = Find<UIPanel>("WorkersTooltip");
+            m_workersTooltip.Hide();
+            m_workersInfoLabel = Find<UILabel>("TotalWorkerInfo");
+            m_OverWorkSituation = Find<UILabel>("OverWorkSituation");
+            m_UneducatedPlaces = Find<UILabel>("UneducatedPlaces");
+            m_UneducatedWorkers = Find<UILabel>("UneducatedWorkers");
+            m_EducatedPlaces = Find<UILabel>("EducatedPlaces");
+            m_EducatedWorkers = Find<UILabel>("EducatedWorkers");
+            m_WellEducatedPlaces = Find<UILabel>("WellEducatedPlaces");
+            m_WellEducatedWorkers = Find<UILabel>("WellEducatedWorkers");
+            m_HighlyEducatedPlaces = Find<UILabel>("HighlyEducatedPlaces");
+            m_HighlyEducatedWorkers = Find<UILabel>("HighlyEducatedWorkers");
+            m_JobsAvailLegend = Find<UILabel>("JobsAvailAmount");
+            m_JobsAvailLegend.color = m_UnoccupiedWorkplaceColor;
+            m_WorkPlacesEducationChart = Find<UIRadialChart>("WorkPlacesEducationChart");
+            m_WorkersEducationChart = Find<UIRadialChart>("WorkersEducationChart");
+            Color[] array = [m_UneducatedColor, m_EducatedColor, m_WellEducatedColor, m_HighlyEducatedColor];
+            Color32 color;
+            for (int i = 0; i < 4; i++)
+            {
+                UIRadialChart.SliceSettings slice = m_WorkPlacesEducationChart.GetSlice(i);
+                color = array[i];
+                m_WorkPlacesEducationChart.GetSlice(i).outterColor = color;
+                slice.innerColor = color;
+                UIRadialChart.SliceSettings slice2 = m_WorkersEducationChart.GetSlice(i);
+                color = MultiplyColor(array[i], m_WorkersColorScalar);
+                m_WorkersEducationChart.GetSlice(i).outterColor = color;
+                slice2.innerColor = color;
+            }
+            UIRadialChart.SliceSettings slice3 = m_WorkersEducationChart.GetSlice(4);
+            color = m_UnoccupiedWorkplaceColor;
+            m_WorkersEducationChart.GetSlice(4).outterColor = color;
+            slice3.innerColor = color;
+            m_UneducatedPlaces.color = m_UneducatedColor;
+            m_EducatedPlaces.color = m_EducatedColor;
+            m_WellEducatedPlaces.color = m_WellEducatedColor;
+            m_HighlyEducatedPlaces.color = m_HighlyEducatedColor;
+            m_UneducatedWorkers.color = MultiplyColor(m_UneducatedColor, m_WorkersColorScalar);
+            m_EducatedWorkers.color = MultiplyColor(m_EducatedColor, m_WorkersColorScalar);
+            m_WellEducatedWorkers.color = MultiplyColor(m_WellEducatedColor, m_WorkersColorScalar);
+            m_HighlyEducatedWorkers.color = MultiplyColor(m_HighlyEducatedColor, m_WorkersColorScalar);
+            m_inputBuffer = Find<UIProgressBar>("InputBuffer");
+            m_inputLabel = Find<UILabel>("StorageInputLabel");
+            m_inputSection = Find<UIPanel>("InputSection");
+            m_inputSprite = Find<UISprite>("ResourceIconInput");
+            m_outputSprite = Find<UISprite>("ResourceIconOutput");
+            m_outputBuffer = Find<UIProgressBar>("OutputBuffer");
+            m_outputLabel = Find<UILabel>("StorageOutputLabel");
+            m_outputSection = Find<UIPanel>("OutputSection");
+            m_arrow1 = Find<UISprite>("Arrow1");
+            m_arrow2 = Find<UISprite>("Arrow2");
+            m_arrow3 = Find<UISprite>("Arrow3");
+            m_inputOutputSection = Find<UIPanel>("InputOutputSection");
         }
 
         private void OnVariationDropdownChanged(UIComponent component, int value)
         {
-            if (!m_ExtendedProcessingFacilityAI.GetVariations(out var variations))
+            if (!m_IndustryBuildingAI.GetVariations(out var variations))
             {
                 return;
             }
@@ -219,80 +279,151 @@ namespace IndustriesMeetsSunsetHarbor.UI
             });
         }
 
-        private void OnProductionRateChanged(UIComponent component, float value)
+        private void OnOnOffChanged(UIComponent comp, bool value)
         {
-            m_productionRateLabel.text = value + "%";
-            if (Singleton<SimulationManager>.exists && m_InstanceID.Building != 0)
-            {
-                Singleton<SimulationManager>.instance.AddAction(SetProductionRate(m_InstanceID.Building, Mathf.RoundToInt(value)));
-            }
+            IsCityServiceEnabled = value;
         }
 
-        private IEnumerator SetProductionRate(ushort id, int value)
+        private IEnumerator ToggleBuilding(ushort id, bool value)
         {
             if (Singleton<BuildingManager>.exists)
             {
                 BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id].Info;
-                info.m_buildingAI.SetProductionRate(id, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[id], (byte)value);
+                info.m_buildingAI.SetProductionRate(id, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[id], (byte)(value ? 100 : 0));
             }
             yield return 0;
         }
 
+        private void OnMovingPanelCloseClicked(UIComponent comp, UIMouseEventParameter p)
+        {
+            m_IsRelocating = false;
+            ToolsModifierControl.GetTool<BuildingTool>().CancelRelocate();
+        }
+
+        private void TempHide()
+        {
+            ToolsModifierControl.cameraController.ClearTarget();
+            ValueAnimator.Animate("Relocating", delegate (float val)
+            {
+                base.component.opacity = val;
+            }, new AnimatedFloat(1f, 0f, 0.33f), delegate
+            {
+                UIView.library.Hide(GetType().Name);
+            });
+            MovingPanel.Find<UILabel>("MovingLabel").text = LocaleFormatter.FormatGeneric("BUILDING_MOVING", base.buildingName);
+            MovingPanel.Show();
+        }
+
+        public void TempShow(Vector3 worldPosition, InstanceID instanceID)
+        {
+            MovingPanel.Hide();
+            WorldInfoPanel.Show<CityServiceWorldInfoPanel>(worldPosition, instanceID);
+            ValueAnimator.Animate("Relocating", delegate (float val)
+            {
+                base.component.opacity = val;
+            }, new AnimatedFloat(0f, 1f, 0.33f));
+        }
+
+        private void Update()
+        {
+            if (m_needResetTarget)
+            {
+                OnSetTarget();
+            }
+            if (m_IsRelocating)
+            {
+                BuildingTool currentTool = ToolsModifierControl.GetCurrentTool<BuildingTool>();
+                if (currentTool != null && IsValidTarget() && currentTool.m_relocate != 0 && !MovingPanel.isVisible)
+                {
+                    MovingPanel.Show();
+                    return;
+                }
+                if (!IsValidTarget() || (currentTool != null && currentTool.m_relocate == 0))
+                {
+                    ToolsModifierControl.mainToolbar.ResetLastTool();
+                    MovingPanel.Hide();
+                    m_IsRelocating = false;
+                }
+            }
+            if (base.component.isVisible)
+            {
+                bool flag = IsCityServiceEnabled;
+                if (m_OnOff.isChecked != flag)
+                {
+                    m_OnOff.eventCheckChanged -= OnOnOffChanged;
+                    m_OnOff.isChecked = flag;
+                    m_OnOff.eventCheckChanged += OnOnOffChanged;
+                }
+            }
+        }
+
+        private void RelocateCompleted(InstanceID newID)
+        {
+            if (ToolsModifierControl.GetTool<BuildingTool>() != null)
+            {
+                ToolsModifierControl.GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
+            }
+            m_IsRelocating = false;
+            if (!newID.IsEmpty)
+            {
+                m_InstanceID = newID;
+            }
+            if (IsValidTarget())
+            {
+                BuildingTool tool = ToolsModifierControl.GetTool<BuildingTool>();
+                if (tool == ToolsModifierControl.GetCurrentTool<BuildingTool>())
+                {
+                    ToolsModifierControl.SetTool<DefaultTool>();
+                    if (InstanceManager.GetPosition(m_InstanceID, out var position, out var _, out var size))
+                    {
+                        position.y += size.y * 0.8f;
+                    }
+                    TempShow(position, m_InstanceID);
+                }
+            }
+            else
+            {
+                MovingPanel.Hide();
+                BuildingTool tool2 = ToolsModifierControl.GetTool<BuildingTool>();
+                if (tool2 == ToolsModifierControl.GetCurrentTool<BuildingTool>())
+                {
+                    ToolsModifierControl.SetTool<DefaultTool>();
+                }
+                Hide();
+            }
+        }
+
+        protected override void OnHide()
+        {
+            if (m_IsRelocating && ToolsModifierControl.GetTool<BuildingTool>() != null)
+            {
+                ToolsModifierControl.GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
+            }
+            MovingPanel.Hide();
+        }
+
         protected override void OnSetTarget()
         {
+            m_needResetTarget = false;
             base.OnSetTarget();
-            m_inputItems = [];
-            m_outputItems = [];
+            if (m_InstanceID.Type != InstanceType.Building || m_InstanceID.Building == 0)
+            {
+                return;
+            }
             ushort building = m_InstanceID.Building;
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
-            m_ExtendedProcessingFacilityAI = data.Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            m_inputResourceCount = GetInputResourceCount(ref m_inputItems, m_ExtendedProcessingFacilityAI);
-            m_inputs.SetItemCount(m_inputResourceCount);
-            m_outputResourceCount = GetOutputResourceCount(ref m_outputItems, m_ExtendedProcessingFacilityAI);
-            m_outputs.SetItemCount(m_outputResourceCount);
-            m_horizontalLine.width = m_inputContainer.width;
-            for (int i = 0; i < m_inputResourceCount; i++)
-            {
-                UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
-                UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
-                uILabel.text = GetResourceName(ref m_inputItems, i);
-                uISprite.atlas = GetResourceAtlas(ref m_inputItems, i);
-                uISprite.spriteName = GetResourceSpriteName(ref m_inputItems, i);
-                UIPanel Storage = m_inputs.items[i].Find<UIPanel>("Storage");
-                UISprite Arrow = m_inputs.items[i].Find<UISprite>("Arrow");
-                Storage.relativePosition = new Vector3(0, 80);
-                Arrow.relativePosition = new Vector3(58, 138);
-            }
-            for (int i = 0; i < m_outputResourceCount; i++)
-            {
-                UILabel uILabel = m_outputs.items[i].Find<UILabel>("ProductLabel");
-                UISprite uISprite = m_outputs.items[i].Find<UISprite>("LuxuryProductIcon");
-                var text = GetResourceName(ref m_outputItems, i);
-                if(text.Contains("Products") && text.Length > 15)
-                {
-                    text = text.Replace("Products", "Prods");
-                }
-                uILabel.text = text;
-                uISprite.atlas = GetResourceAtlas(ref m_outputItems, i);
-                uISprite.spriteName = GetResourceSpriteName(ref m_outputItems, i);
-                uILabel.relativePosition = new Vector3(-30, 145);
-                uISprite.relativePosition = new Vector3(15, 113);
-                UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
-                UISprite ArrowEnd = m_outputs.items[i].Find<UISprite>("ArrowEnd");
-                UISprite BigArrow = m_outputs.items[i].Find<UISprite>("Big Arrow");
-                UIPanel ProductStorage = m_outputs.items[i].Find<UIPanel>("ProductStorage");
-                uIProgressBar.relativePosition = new Vector3(0, 80);
-                ArrowEnd.relativePosition = new Vector3(-9, 31);
-                BigArrow.relativePosition = new Vector3(55, 9);
-                ProductStorage.relativePosition = new Vector3(35, -46);
-            }
+            m_playerBuildingAI = data.Info.GetAI() as PlayerBuildingAI;
+            m_IndustryBuildingAI = data.Info.GetAI() as IndustryBuildingAI;
+            m_processingFacilityAI = m_IndustryBuildingAI as ProcessingFacilityAI;
+            m_ShowHideRoutesButton.isVisible = CanBuildingHaveRoutes(building);
+            int num = 0;
             m_VariationPanel.isVisible = false;
-            var IsCarFactory = false;
-            if(m_ExtendedProcessingFacilityAI.m_outputResource2 == ExtendedTransferManager.Cars)
+            if (m_playerBuildingAI != null)
             {
-                IsCarFactory = true;
+                m_playerBuildingAI.CountWorkPlaces(out var workPlaceCount, out var workPlaceCount2, out var workPlaceCount3, out var workPlaceCount4);
+                num = workPlaceCount + workPlaceCount2 + workPlaceCount3 + workPlaceCount4;
             }
-            if (m_ExtendedProcessingFacilityAI != null && !IsCarFactory && m_ExtendedProcessingFacilityAI.GetVariations(out var variations) && variations.m_size > 1)
+            if (m_IndustryBuildingAI != null && m_IndustryBuildingAI.GetVariations(out var variations) && variations.m_size > 1)
             {
                 m_VariationPanel.isVisible = true;
                 List<string> list = [];
@@ -302,7 +433,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     string id = "FIELDVARIATION" + "_" + Singleton<SimulationManager>.instance.m_metaData.m_environment.ToUpper();
                     string empty = (Locale.Exists(id, variations.m_buffer[i].m_info.name) ? Locale.Get(id, variations.m_buffer[i].m_info.name) : ((!Locale.Exists("FIELDVARIATION", variations.m_buffer[i].m_info.name)) ? variations.m_buffer[i].m_info.GetUncheckedLocalizedTitle() : Locale.Get("FIELDVARIATION", variations.m_buffer[i].m_info.name)));
                     list.Add(empty);
-                    if (m_ExtendedProcessingFacilityAI.m_info.name == variations.m_buffer[i].m_info.name)
+                    if (m_IndustryBuildingAI.m_info.name == variations.m_buffer[i].m_info.name)
                     {
                         selectedIndex = i;
                     }
@@ -310,259 +441,137 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_VariationDropdown.items = [.. list];
                 m_VariationDropdown.selectedIndex = selectedIndex;
             }
-            byte productionRate = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate;
-            if (productionRate > 0)
-            {
-                m_productionSlider.value = (int)productionRate;
-            }
+            m_workersInfoLabel.isVisible = num > 0;
+            m_inputOutputSection.isVisible = true;
+            m_inputSection.isVisible = true;
+            m_outputSection.isVisible = true;
+            m_inputOutputSection.isVisible = true;
+            m_inputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_processingFacilityAI.m_inputResource1);
+            string text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_processingFacilityAI.m_inputResource1.ToString());
+            m_inputLabel.text = text2;
+            m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_processingFacilityAI.m_outputResource);
+            string text3 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_processingFacilityAI.m_outputResource.ToString());
+            m_outputLabel.text = text3;
+            string tooltip = StringUtils.SafeFormat(Locale.Get("INUDSTRYBUILDING_PROCESSINGTOOLTIP"), text2, text3);
+            m_arrow1.tooltip = tooltip;
+            m_arrow2.tooltip = tooltip;
+            m_arrow3.tooltip = tooltip;
+            m_inputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_processingFacilityAI.m_inputResource1);
+            m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_processingFacilityAI.m_outputResource);
+            m_ShowIndustryInfoButton.isVisible = !m_processingFacilityAI.isFishFactory;
         }
 
-        private int GetInputResourceCount(ref List<string> items, ExtendedProcessingFacilityAI ai)
+        private bool CanBuildingHaveRoutes(ushort id)
         {
-            int count = 0;
-            if (ai.m_inputResource1 != TransferManager.TransferReason.None)
+            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[id].Info.m_circular)
             {
-                if(!items.Contains("m_inputResource1"))
-                {
-                    items.Add("m_inputResource1");
-                }
-                count++;
+                return false;
             }
-            if (ai.m_inputResource2 != TransferManager.TransferReason.None)
+            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[id].Info.m_placementMode == BuildingInfo.PlacementMode.OnWater)
             {
-                if(!items.Contains("m_inputResource2"))
-                {
-                    items.Add("m_inputResource2");
-                }
-                count++;
+                return false;
             }
-            return count;
-        }
-
-        private int GetOutputResourceCount(ref List<string> items, ExtendedProcessingFacilityAI ai)
-        {
-            int count = 0;
-            if (ai.m_outputResource1 != TransferManager.TransferReason.None)
-            {
-                if(!items.Contains("m_outputResource1"))
-                {
-                    items.Add("m_outputResource1");
-                }
-                count++;
-            }
-            if (ai.m_outputResource2 != ExtendedTransferManager.TransferReason.None)
-            {
-                if(!items.Contains("m_outputResource2"))
-                {
-                    items.Add("m_outputResource2");
-                }
-                count++;
-            }
-            return count;
+            return true;
         }
 
         protected override void UpdateBindings()
         {
             base.UpdateBindings();
-            ushort buildingId = m_InstanceID.Building;
-            BuildingManager instance = Singleton<BuildingManager>.instance;
-            Building building = instance.m_buildings.m_buffer[buildingId];
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = building.Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            m_Upkeep.text = LocaleFormatter.FormatUpkeep(extendedProcessingFacilityAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
-            m_status.text = extendedProcessingFacilityAI.GetLocalizedStatus(buildingId, ref building);
-
-            if (m_mainPanel != null)
+            if (Singleton<BuildingManager>.exists && m_InstanceID.Type == InstanceType.Building && m_InstanceID.Building != 0)
             {
-                if(m_inputResourceCount > 4)
+                ushort building = m_InstanceID.Building;
+                BuildingManager instance = Singleton<BuildingManager>.instance;
+                Building building2 = instance.m_buildings.m_buffer[building];
+                BuildingInfo info = building2.Info;
+                BuildingAI buildingAI = info.m_buildingAI;
+                m_Type.text = Singleton<BuildingManager>.instance.GetDefaultBuildingName(building, InstanceID.Empty);
+                m_Status.text = buildingAI.GetLocalizedStatus(building, ref instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                m_Upkeep.text = LocaleFormatter.FormatUpkeep(buildingAI.GetResourceRate(building, ref instance.m_buildings.m_buffer[building], EconomyManager.Resource.Maintenance), isDistanceBased: false);
+                m_Thumbnail.atlas = info.m_Atlas;
+                m_Thumbnail.spriteName = info.m_Thumbnail;
+                if (m_Thumbnail.atlas != null && !string.IsNullOrEmpty(m_Thumbnail.spriteName))
                 {
-                     m_mainPanel.width = m_inputContainer.width + 22;
+                    UITextureAtlas.SpriteInfo spriteInfo = m_Thumbnail.atlas[m_Thumbnail.spriteName];
+                    if (spriteInfo != null)
+                    {
+                        m_Thumbnail.size = spriteInfo.pixelSize;
+                    }
+                }
+                m_BuildingDesc.text = info.GetLocalizedDescriptionShortWithEnviroment();
+                m_BuildingInfo.text = buildingAI.GetLocalizedStats(building, ref instance.m_buildings.m_buffer[building]);
+                m_BuildingInfo.isVisible = m_BuildingInfo.text != string.Empty;
+                ItemClass.Service service = info.GetService();
+                if (service != ItemClass.Service.None)
+                {
+                    string text = ColossalFramework.Utils.GetNameByValue(service, "Game");
+                    m_BuildingService.spriteName = "UIFilterProcessingBuildings";
+                    m_BuildingService.tooltip = Locale.Get("MAIN_TOOL", text);
+                }
+                m_BuildingService.isVisible = service != ItemClass.Service.None;
+                m_MoveButton.isEnabled = buildingAI != null && buildingAI.CanBeRelocated(building, ref instance.m_buildings.m_buffer[building]);
+                if ((building2.m_flags & Building.Flags.Collapsed) != Building.Flags.None)
+                {
+                    m_RebuildButton.tooltip = ((!IsDisasterServiceRequired()) ? LocaleFormatter.FormatCost(buildingAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
+                    m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
+                    m_RebuildButton.isEnabled = CanRebuild();
+                    m_ActionPanel.isVisible = false;
+                    m_VariationDropdown.isEnabled = false;
+                    m_VariationDropdown.tooltip = Locale.Get("VARIATIONBUILDING_COLLAPSED_TOOLTIP");
+                }
+                else if (building2.m_fireIntensity > 0)
+                {
+                    m_ActionPanel.isVisible = false;
+                    m_VariationDropdown.isEnabled = false;
+                    m_VariationDropdown.tooltip = Locale.Get("VARIATIONBUILDING_ONFIRE_TOOLTIP");
                 }
                 else
                 {
-                    m_mainPanel.width = 540;
+                    m_RebuildButton.isVisible = false;
+                    m_ActionPanel.isVisible = true;
+                    m_VariationDropdown.isEnabled = true;
+                    m_VariationDropdown.tooltip = string.Empty;
                 }
-            }
-
-            for (int i = 0; i < m_inputResourceCount; i++)
-            {
-                UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
-                uIProgressBar.value = GetBufferProgress(ref m_inputItems, i, out var amount, out var capacity);
-                var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
-                string text;
-                var inputResource = GetResource(ref m_inputItems, i);
-                var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, inputResource);
-                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
-                text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
-            }
-            for (int i = 0; i < m_outputResourceCount; i++)
-            {
-                UIProgressBar uIProgressBar = m_outputs.items[i].Find<UIProgressBar>("ProductBuffer");
-                UIPanel productStorage = m_outputs.items[i].Find<UIPanel>("ProductStorage");
-                uIProgressBar.value = GetBufferProgress(ref m_outputItems, i, out var amount, out var capacity);
-                var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
-                string text;
-                var outputResource = GetResource(ref m_outputItems, i);
-                var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, outputResource);
-                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(outputResource);
-                text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", outputResource.ToString()));
-                productStorage.tooltip = text;
-            }
-            if ((building.m_flags & Building.Flags.Collapsed) != 0)
-            {
-                m_VariationDropdown.isEnabled = false;
-                m_VariationDropdown.tooltip = Locale.Get("VARIATIONBUILDING_COLLAPSED_TOOLTIP");
-            }
-            else if (building.m_fireIntensity > 0)
-            {
-                m_VariationDropdown.isEnabled = false;
-                m_VariationDropdown.tooltip = Locale.Get("VARIATIONBUILDING_ONFIRE_TOOLTIP");
-            }
-            else
-            {
-                m_VariationDropdown.isEnabled = true;
-                m_VariationDropdown.tooltip = string.Empty;
-            }
-            m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (m_ExtendedProcessingFacilityAI.m_workPlaceCount0 + m_ExtendedProcessingFacilityAI.m_workPlaceCount1 + m_ExtendedProcessingFacilityAI.m_workPlaceCount2 + m_ExtendedProcessingFacilityAI.m_workPlaceCount3).ToString());
-            if ((building.m_flags & Building.Flags.Collapsed) != 0)
-            {
-                m_RebuildButton.tooltip = ((!IsDisasterServiceRequired()) ? LocaleFormatter.FormatCost(m_ExtendedProcessingFacilityAI.GetRelocationCost(), isDistanceBased: false) : Locale.Get("CITYSERVICE_TOOLTIP_DISASTERSERVICEREQUIRED"));
-                m_RebuildButton.isVisible = Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters);
-                m_RebuildButton.isEnabled = CanRebuild();
-                m_MoveButton.isVisible = false;
-            }
-            else
-            {
-                m_RebuildButton.isVisible = false;
-                m_MoveButton.isVisible = true;
-            }
-            m_generatedInfo.text = m_ExtendedProcessingFacilityAI.GetLocalizedStats(buildingId, ref building);
-            long inputs_expenses = 0;
-            inputs_expenses += building.m_health * m_ExtendedProcessingFacilityAI.m_inputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(m_ExtendedProcessingFacilityAI.m_inputResource1) / 10000;
-            inputs_expenses += building.m_health * m_ExtendedProcessingFacilityAI.m_inputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(m_ExtendedProcessingFacilityAI.m_inputResource2) / 10000;
-            m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-
-            long outputs_income = 0;
-            outputs_income += building.m_education3 * m_ExtendedProcessingFacilityAI.m_outputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(m_ExtendedProcessingFacilityAI.m_outputResource1) / 10000;
-            outputs_income += building.m_education3 * m_ExtendedProcessingFacilityAI.m_outputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(m_ExtendedProcessingFacilityAI.m_outputResource2) / 10000;
-            m_income.text = outputs_income.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
-
-            if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
-            {
-                m_productionSlider.isEnabled = true;
-                m_productionSlider.tooltip = string.Empty;
-            }
-            else
-            {
-                m_productionSlider.isEnabled = false;
-                m_productionSlider.tooltip = Locale.Get("UNIQUEFACTORYPANEL_SLIDERDISABLEDTOOLTIP");
-            }
-        }
-
-        private float GetBufferProgress(ref List<string> items, int resourceIndex, out int amount, out int capacity)
-        {
-            ref Building buildingData = ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            amount = 0;
-            capacity = 0;
-            switch (items[resourceIndex])
-            {
-                case "m_inputResource1":
-                    amount = (int)custom_buffers.m_customBuffer1;
-                    capacity = extendedProcessingFacilityAI.GetInputBufferSize(ref buildingData, extendedProcessingFacilityAI.m_inputRate1);
-                    break;
-                case "m_inputResource2":
-                    amount = (int)custom_buffers.m_customBuffer2;
-                    capacity = extendedProcessingFacilityAI.GetInputBufferSize(ref buildingData, extendedProcessingFacilityAI.m_inputRate2);
-                    break;
-                case "m_outputResource1":
-                    amount = (int)custom_buffers.m_customBuffer9;
-                    capacity = extendedProcessingFacilityAI.GetOutputBufferSize(ref buildingData, extendedProcessingFacilityAI.m_outputRate1, extendedProcessingFacilityAI.m_outputVehicleCount1);
-                    break;
-                case "m_outputResource2":
-                    amount = (int)custom_buffers.m_customBuffer10;
-                    capacity = extendedProcessingFacilityAI.GetOutputBufferSize(ref buildingData, extendedProcessingFacilityAI.m_outputRate2, extendedProcessingFacilityAI.m_outputVehicleCount2);
-                    break;
-            }
-            return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
-        }
-
-        private string GetResourceName(ref List<string> items, int resourceIndex)
-        {
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            string key = "N/A";
-            switch (items[resourceIndex])
-            {
-                case "m_inputResource1":
-                    key = extendedProcessingFacilityAI.m_inputResource1.ToString();
-                    break;
-                case "m_inputResource2":
-                    key = extendedProcessingFacilityAI.m_inputResource2.ToString();
-                    break;
-                case "m_outputResource1":
-                    key = extendedProcessingFacilityAI.m_outputResource1.ToString();
-                    break;
-                case "m_outputResource2":
-                    key = extendedProcessingFacilityAI.m_outputResource2.ToString();
-                    break;
-            }
-            return Locale.Get("WAREHOUSEPANEL_RESOURCE", key);
-        }
-
-        private UITextureAtlas GetResourceAtlas(ref List<string> items, int resourceIndex)
-        {
-            var reason = GetResource(ref items, resourceIndex);
-            if (reason != TransferManager.TransferReason.None)
-            {
-                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                if (m_workersInfoLabel.isVisible && m_playerBuildingAI != null)
                 {
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    UpdateWorkers(building, ref instance.m_buildings.m_buffer[building]);
                 }
+                int customBuffer2 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer2;
+                int inputBufferSize = m_processingFacilityAI.GetInputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                m_inputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer2, inputBufferSize);
+                m_inputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer2), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)inputBufferSize, m_processingFacilityAI.m_inputResource1));
+                int customBuffer3 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer1;
+                int outputBufferSize2 = m_processingFacilityAI.GetOutputBufferSize(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer3, outputBufferSize2);
+                m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer3), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize2, m_processingFacilityAI.m_outputResource));                
+                base.component.size = m_wrapper.size;
+                m_mainBottom.width = m_wrapper.width;
+                m_BuildingInfo.width = m_right.width;
             }
-            return UITextures.InGameAtlas;
+            m_BudgetButton.isEnabled = ToolsModifierControl.IsUnlocked(UnlockManager.Feature.Economy);
+            m_Parkbuttons.isVisible = true;
         }
 
-        private string GetResourceSpriteName(ref List<string> items, int resourceIndex)
+        public void OnBudgetClicked()
         {
-            switch (items[resourceIndex])
+            if (ToolsModifierControl.IsUnlocked(UnlockManager.Feature.Economy))
             {
-                case "m_inputResource1":
-                case "m_inputResource2":
-                case "m_outputResource1":
-                case "m_outputResource2":
-                    return AtlasUtils.GetSpriteName(GetResource(ref items, resourceIndex));;
+                ToolsModifierControl.mainToolbar.ShowEconomyPanel(1);
+                WorldInfoPanel.Hide<CityServiceWorldInfoPanel>();
             }
-            return null;
         }
 
-        private TransferManager.TransferReason GetResource(ref List<string> items, int resourceIndex)
+        public void OnRelocateBuilding()
         {
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            return items[resourceIndex] switch
+            if (ToolsModifierControl.GetTool<BuildingTool>() != null)
             {
-                "m_inputResource1" => extendedProcessingFacilityAI.m_inputResource1,
-                "m_inputResource2" => extendedProcessingFacilityAI.m_inputResource2,
-                "m_outputResource1" => extendedProcessingFacilityAI.m_outputResource1,
-                "m_outputResource2" => extendedProcessingFacilityAI.m_outputResource2,
-                _ => TransferManager.TransferReason.None
-            };
-        }
-
-        private void OnOnOffChanged(UIComponent comp, bool value)
-        {
-            IsCityServiceEnabled = value;
-        }
-
-        private bool IsDisasterServiceRequired()
-        {
-            ushort building = m_InstanceID.Building;
-            if (building != 0)
-            {
-                return Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_levelUpProgress != byte.MaxValue;
+                ToolsModifierControl.GetTool<BuildingTool>().m_relocateCompleted += RelocateCompleted;
             }
-            return false;
+            ToolsModifierControl.keepThisWorldInfoPanel = true;
+            BuildingTool buildingTool = ToolsModifierControl.SetTool<BuildingTool>();
+            buildingTool.m_prefab = null;
+            buildingTool.m_relocate = m_InstanceID.Building;
+            m_IsRelocating = true;
+            TempHide();
         }
 
         public void OnRebuildClicked()
@@ -576,7 +585,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 BuildingManager instance = Singleton<BuildingManager>.instance;
                 BuildingInfo info = instance.m_buildings.m_buffer[buildingID].Info;
-                if (info is not null && (instance.m_buildings.m_buffer[buildingID].m_flags & Building.Flags.Collapsed) != 0)
+                if (info is not null && (instance.m_buildings.m_buffer[buildingID].m_flags & Building.Flags.Collapsed) != Building.Flags.None)
                 {
                     int relocationCost = info.m_buildingAI.GetRelocationCost();
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Construction, relocationCost, info.m_class);
@@ -585,7 +594,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     RebuildBuilding(info, position, angle, buildingID, info.m_fixedHeight);
                     if (info.m_subBuildings != null && info.m_subBuildings.Length != 0)
                     {
-                        Matrix4x4 matrix4x = default;
+                        Matrix4x4 matrix4x = default(Matrix4x4);
                         matrix4x.SetTRS(position, Quaternion.AngleAxis(angle * 57.29578f, Vector3.down), Vector3.one);
                         for (int i = 0; i < info.m_subBuildings.Length; i++)
                         {
@@ -605,16 +614,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     }
                 }
             });
-        }
-
-        private IEnumerator ToggleBuilding(ushort id, bool value)
-        {
-            if (Singleton<BuildingManager>.exists)
-            {
-                BuildingInfo info = Singleton<BuildingManager>.instance.m_buildings.m_buffer[id].Info;
-                info.m_buildingAI.SetProductionRate(id, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[id], (byte)(value ? 100 : 0));
-            }
-            yield return 0;
         }
 
         private ushort RebuildBuilding(BuildingInfo info, Vector3 position, float angle, ushort buildingID, bool fixedHeight)
@@ -669,123 +668,151 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return false;
         }
 
-        public void OnRelocateBuilding()
+        private bool IsDisasterServiceRequired()
         {
-            if (GetTool<BuildingTool>() != null)
+            ushort building = m_InstanceID.Building;
+            if (building != 0)
             {
-                GetTool<BuildingTool>().m_relocateCompleted += RelocateCompleted;
+                return Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_levelUpProgress != byte.MaxValue;
             }
-            keepThisWorldInfoPanel = true;
-            BuildingTool buildingTool = SetTool<BuildingTool>();
-            buildingTool.m_prefab = null;
-            buildingTool.m_relocate = m_InstanceID.Building;
-            m_IsRelocating = true;
-            TempHide();
+            return false;
         }
 
-        private void TempHide()
+        public void OpenParkInfoPanel()
         {
-            cameraController.ClearTarget();
-            ValueAnimator.Animate("Relocating", delegate (float val)
+            ushort building = m_InstanceID.Building;
+            Vector3 position = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_position;
+            WorldInfoPanel.Show<ParkWorldInfoPanel>(position, new InstanceID
             {
-                base.component.opacity = val;
-            }, new AnimatedFloat(1f, 0f, 0.33f), delegate
-            {
-                UIView.library.Hide(GetType().Name);
+                Park = Singleton<DistrictManager>.instance.GetPark(position)
             });
-            MovingPanel.Find<UILabel>("MovingLabel").text = LocaleFormatter.FormatGeneric("BUILDING_MOVING", base.buildingName);
-            MovingPanel.Show();
+            OnCloseButton();
         }
 
-        public void TempShow(Vector3 worldPosition, InstanceID instanceID)
+        public void OpenIndustryInfoPanel()
         {
-            MovingPanel.Hide();
-            Show<ExtendedProcessingFacilityWorldInfoPanel>(worldPosition, instanceID);
-            ValueAnimator.Animate("Relocating", delegate (float val)
+            ushort building = m_InstanceID.Building;
+            Vector3 position = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building].m_position;
+            WorldInfoPanel.Show<IndustryWorldInfoPanel>(position, new InstanceID
             {
-                base.component.opacity = val;
-            }, new AnimatedFloat(0f, 1f, 0.33f));
+                Park = Singleton<DistrictManager>.instance.GetPark(position)
+            });
+            OnCloseButton();
         }
 
-        private void Update()
+        private void UpdateWorkers(ushort buildingID, ref Building building)
         {
-            if (m_IsRelocating)
+            if (!Singleton<CitizenManager>.exists || !(m_playerBuildingAI != null))
             {
-                BuildingTool currentTool = GetCurrentTool<BuildingTool>();
-                if (currentTool != null && IsValidTarget() && currentTool.m_relocate != 0 && !MovingPanel.isVisible)
-                {
-                    MovingPanel.Show();
-                    return;
-                }
-                if (!IsValidTarget() || (currentTool != null && currentTool.m_relocate == 0))
-                {
-                    mainToolbar.ResetLastTool();
-                    MovingPanel.Hide();
-                    m_IsRelocating = false;
-                }
+                return;
             }
-            if (base.component.isVisible)
+            m_playerBuildingAI.CountWorkPlaces(out var workPlaceCount, out var workPlaceCount2, out var workPlaceCount3, out var workPlaceCount4);
+            CitizenManager instance = Singleton<CitizenManager>.instance;
+            uint num = building.m_citizenUnits;
+            int num2 = 0;
+            int num3 = 0;
+            int num5 = 0;
+            int num6 = 0;
+            int num7 = 0;
+            int num8 = 0;
+            int num4 = workPlaceCount + workPlaceCount2 + workPlaceCount3 + workPlaceCount4;
+            while (num != 0)
             {
-                bool flag = IsCityServiceEnabled;
-                if (m_OnOff.isChecked != flag)
+                uint nextUnit = instance.m_units.m_buffer[num].m_nextUnit;
+                if ((instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != CitizenUnit.Flags.None)
                 {
-                    m_OnOff.eventCheckChanged -= OnOnOffChanged;
-                    m_OnOff.isChecked = flag;
-                    m_OnOff.eventCheckChanged += OnOnOffChanged;
-                }
-            }
-        }
-
-        private void OnMovingPanelCloseClicked(UIComponent comp, UIMouseEventParameter p)
-        {
-            m_IsRelocating = false;
-            GetTool<BuildingTool>().CancelRelocate();
-        }
-
-        private void RelocateCompleted(InstanceID newID)
-        {
-            if (GetTool<BuildingTool>() != null)
-            {
-                GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
-            }
-            m_IsRelocating = false;
-            if (!newID.IsEmpty)
-            {
-                m_InstanceID = newID;
-            }
-            if (IsValidTarget())
-            {
-                BuildingTool tool = GetTool<BuildingTool>();
-                if (tool == GetCurrentTool<BuildingTool>())
-                {
-                    SetTool<DefaultTool>();
-                    if (InstanceManager.GetPosition(m_InstanceID, out var position, out var _, out var size))
+                    for (int i = 0; i < 5; i++)
                     {
-                        position.y += size.y * 0.8f;
+                        uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                        if (citizen != 0 && !instance.m_citizens.m_buffer[citizen].Dead && (instance.m_citizens.m_buffer[citizen].m_flags & Citizen.Flags.MovingIn) == 0)
+                        {
+                            num3++;
+                            switch (instance.m_citizens.m_buffer[citizen].EducationLevel)
+                            {
+                                case Citizen.Education.Uneducated:
+                                    num5++;
+                                    break;
+                                case Citizen.Education.OneSchool:
+                                    num6++;
+                                    break;
+                                case Citizen.Education.TwoSchools:
+                                    num7++;
+                                    break;
+                                case Citizen.Education.ThreeSchools:
+                                    num8++;
+                                    break;
+                            }
+                        }
                     }
-                    TempShow(position, m_InstanceID);
                 }
-            }
-            else
-            {
-                MovingPanel.Hide();
-                BuildingTool tool2 = GetTool<BuildingTool>();
-                if (tool2 == GetCurrentTool<BuildingTool>())
+                num = nextUnit;
+                if (++num2 > 524288)
                 {
-                    SetTool<DefaultTool>();
+                    CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                    break;
                 }
-                Hide();
             }
-        }
-
-        protected override void OnHide()
-        {
-            if (m_IsRelocating && GetTool<BuildingTool>() != null)
+            int num9 = 0;
+            int num10 = workPlaceCount - num5;
+            if (num6 > workPlaceCount2)
             {
-                GetTool<BuildingTool>().m_relocateCompleted -= RelocateCompleted;
+                num9 += Mathf.Max(0, Mathf.Min(num10, num6 - workPlaceCount2));
             }
-            MovingPanel.Hide();
+            num10 += workPlaceCount2 - num6;
+            if (num7 > workPlaceCount3)
+            {
+                num9 += Mathf.Max(0, Mathf.Min(num10, num7 - workPlaceCount3));
+            }
+            num10 += workPlaceCount3 - num7;
+            if (num8 > workPlaceCount4)
+            {
+                num9 += Mathf.Max(0, Mathf.Min(num10, num8 - workPlaceCount4));
+            }
+            string format = Locale.Get((num9 != 1) ? "ZONEDBUILDING_OVEREDUCATEDWORKERS" : "ZONEDBUILDING_OVEREDUCATEDWORKER");
+            m_OverWorkSituation.text = StringUtils.SafeFormat(format, num9);
+            m_OverWorkSituation.isVisible = num9 > 0;
+            m_UneducatedPlaces.text = workPlaceCount.ToString();
+            m_EducatedPlaces.text = workPlaceCount2.ToString();
+            m_WellEducatedPlaces.text = workPlaceCount3.ToString();
+            m_HighlyEducatedPlaces.text = workPlaceCount4.ToString();
+            m_UneducatedWorkers.text = num5.ToString();
+            m_EducatedWorkers.text = num6.ToString();
+            m_WellEducatedWorkers.text = num7.ToString();
+            m_HighlyEducatedWorkers.text = num8.ToString();
+            m_JobsAvailLegend.text = Mathf.Max(0, num4 - (num5 + num6 + num7 + num8)).ToString();
+            int num11 = GetValue(workPlaceCount, num4);
+            int value = GetValue(workPlaceCount2, num4);
+            int value2 = GetValue(workPlaceCount3, num4);
+            int value3 = GetValue(workPlaceCount4, num4);
+            int num12 = num11 + value + value2 + value3;
+            if (num12 != 0 && num12 != 100)
+            {
+                num11 = 100 - (value + value2 + value3);
+            }
+            m_WorkPlacesEducationChart.SetValues(num11, value, value2, value3);
+            int value4 = GetValue(num5, num4);
+            int value5 = GetValue(num6, num4);
+            int value6 = GetValue(num7, num4);
+            int value7 = GetValue(num8, num4);
+            int num13 = 0;
+            int num14 = value4 + value5 + value6 + value7;
+            num13 = 100 - num14;
+            m_WorkersEducationChart.SetValues(value4, value5, value6, value7, num13);
+            m_workersInfoLabel.text = StringUtils.SafeFormat(Locale.Get("ZONEDBUILDING_WORKERS"), num3, num4);
         }
 
+        private static int GetValue(int value, int total)
+        {
+            float num = (float)value / (float)total;
+            return Mathf.Clamp(Mathf.FloorToInt(num * 100f), 0, 100);
+        }
+
+        private Color32 MultiplyColor(Color col, float scalar)
+        {
+            Color color = col * scalar;
+            color.a = col.a;
+            return color;
+        }
     }
+
 }
