@@ -171,7 +171,6 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         if (__instance.name.Contains("Sheep"))
                         {
                             newAI.m_outputResource1 = ExtendedTransferManager.Sheep;
-                            newAI.m_outputResource2 = ExtendedTransferManager.Wool;
                         }
                         else if (__instance.name.Contains("Highland Cow"))
                         {
