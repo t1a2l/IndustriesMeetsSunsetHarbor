@@ -4,7 +4,6 @@ using IndustriesMeetsSunsetHarbor.Managers;
 using System;
 using ColossalFramework.Math;
 using ColossalFramework.DataBinding;
-using MoreTransferReasons;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -61,7 +60,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             {
                 for (int i = 0; i < m_info.m_paths.Length; i++)
                 {
-                    if ((object)m_info.m_paths[i].m_netInfo != null && m_info.m_paths[i].m_netInfo.m_class.m_service == ItemClass.Service.Road && m_info.m_paths[i].m_netInfo.m_placementStyle == ItemClass.Placement.Manual && m_info.m_paths[i].m_nodes != null)
+                    if (m_info.m_paths[i].m_netInfo is not null && m_info.m_paths[i].m_netInfo.m_class.m_service == ItemClass.Service.Road && m_info.m_paths[i].m_netInfo.m_placementStyle == ItemClass.Placement.Manual && m_info.m_paths[i].m_nodes != null)
                     {
                         for (int j = 0; j < m_info.m_paths[i].m_nodes.Length; j++)
                         {
