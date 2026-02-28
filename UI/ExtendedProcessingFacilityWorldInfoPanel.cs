@@ -6,6 +6,10 @@ using ColossalFramework.Globalization;
 using ColossalFramework.Threading;
 using ColossalFramework.UI;
 using ICities;
+using IndustriesMeetsSunsetHarbor.AI;
+using IndustriesMeetsSunsetHarbor.Managers;
+using MoreTransferReasons;
+using MoreTransferReasons.Utils;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.UI
@@ -17,6 +21,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private UIPanel m_mainBottom;
 
         private UIPanel m_wrapper;
+
+        private UIPanel m_layout;
 
         private UIButton m_BudgetButton;
 
@@ -98,19 +104,31 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIProgressBar m_inputBuffer;
 
+        private UIProgressBar m_input2Buffer;
+
         private UILabel m_inputLabel;
 
         private UIPanel m_inputSection;
 
+        private UIPanel m_storageInput;
+
+        private UIPanel m_storageInput2;
+
         private UIProgressBar m_outputBuffer;
+
+        private UIProgressBar m_output2Buffer;
 
         private UILabel m_outputLabel;
 
         private UIPanel m_outputSection;
 
+        private UIPanel m_storageOutput;
+
+        private UIPanel m_storageOutput2;
+
         private PlayerBuildingAI m_playerBuildingAI;
 
-        private ProcessingFacilityAI m_processingFacilityAI;
+        private ExtendedProcessingFacilityAI m_extendedProcessingFacilityAI;
 
         private UISprite m_arrow1;
 
@@ -245,17 +263,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_WellEducatedWorkers.color = MultiplyColor(m_WellEducatedColor, m_WorkersColorScalar);
             m_HighlyEducatedWorkers.color = MultiplyColor(m_HighlyEducatedColor, m_WorkersColorScalar);
             m_inputBuffer = Find<UIProgressBar>("InputBuffer");
+            m_storageInput = Find<UIPanel>("StorageInput");
             m_inputLabel = Find<UILabel>("StorageInputLabel");
+            m_inputSection = Find<UIPanel>("InputSection");
             m_inputSection = Find<UIPanel>("InputSection");
             m_inputSprite = Find<UISprite>("ResourceIconInput");
             m_outputSprite = Find<UISprite>("ResourceIconOutput");
             m_outputBuffer = Find<UIProgressBar>("OutputBuffer");
+            m_storageOutput = Find<UIPanel>("StorageOutput");
             m_outputLabel = Find<UILabel>("StorageOutputLabel");
             m_outputSection = Find<UIPanel>("OutputSection");
             m_arrow1 = Find<UISprite>("Arrow1");
             m_arrow2 = Find<UISprite>("Arrow2");
             m_arrow3 = Find<UISprite>("Arrow3");
             m_inputOutputSection = Find<UIPanel>("InputOutputSection");
+            m_layout = Find<UIPanel>("Layout");
+            // 26, 26 arrow
         }
 
         private void OnVariationDropdownChanged(UIComponent component, int value)
@@ -414,7 +437,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             m_playerBuildingAI = data.Info.GetAI() as PlayerBuildingAI;
             m_IndustryBuildingAI = data.Info.GetAI() as IndustryBuildingAI;
-            m_processingFacilityAI = m_IndustryBuildingAI as ProcessingFacilityAI;
+            m_extendedProcessingFacilityAI = m_IndustryBuildingAI as ExtendedProcessingFacilityAI;
             m_ShowHideRoutesButton.isVisible = CanBuildingHaveRoutes(building);
             int num = 0;
             m_VariationPanel.isVisible = false;
@@ -446,19 +469,66 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputSection.isVisible = true;
             m_outputSection.isVisible = true;
             m_inputOutputSection.isVisible = true;
-            m_inputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_processingFacilityAI.m_inputResource1);
-            string text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_processingFacilityAI.m_inputResource1.ToString());
-            m_inputLabel.text = text2;
-            m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_processingFacilityAI.m_outputResource);
-            string text3 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_processingFacilityAI.m_outputResource.ToString());
+
+            string text2 = "";
+            if (m_extendedProcessingFacilityAI.m_inputResource1.Length != 0)
+            {
+                m_inputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource1.ToString());
+                m_inputSprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                m_inputLabel.text = text2;
+                m_inputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                m_arrow1.size = new Vector2(26f, 26f);
+                m_arrow1.relativePosition = new Vector2(18f, 7f);
+                m_arrow2.size = new Vector2(26f, 26f);
+                m_arrow2.relativePosition = new Vector2(201f, 7f);
+            }
+            if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0)
+            {
+                m_inputOutputSection.size = new Vector2(484f, 95f);
+                m_layout.size = new Vector2(405f, 95f);
+                m_inputSection.size = new Vector2(200f, 90f);
+                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource2.ToString());
+                var spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource2[0]);
+                var atlas2 = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                MakeStorageInput(new GameObject(), text2, spriteName, atlas2, out m_input2Buffer);
+                m_arrow1.size = new Vector2(56f, 26f);
+                m_arrow1.relativePosition = new Vector2(18f, 18f);
+                m_arrow2.size = new Vector2(56f, 26f);
+                m_arrow2.relativePosition = new Vector2(201f, 18f);
+            }
+
+            m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_outputResource1);
+            string text3 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource1.ToString());
             m_outputLabel.text = text3;
-            string tooltip = StringUtils.SafeFormat(Locale.Get("INUDSTRYBUILDING_PROCESSINGTOOLTIP"), text2, text3);
+            m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_extendedProcessingFacilityAI.m_outputResource1);
+
+            if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0 && m_extendedProcessingFacilityAI.m_outputResource2 == TransferManager.TransferReason.None)
+            {
+                m_storageOutput.relativePosition = new Vector2(-1f, 28f);
+                m_arrow3.relativePosition = new Vector2(185f, 28f);
+            }
+
+            string text4 = "";
+            if (m_extendedProcessingFacilityAI.m_outputResource2 != TransferManager.TransferReason.None)
+            {
+                m_inputOutputSection.size = new Vector2(484f, 95f);
+                m_layout.size = new Vector2(405f, 95f);
+                m_outputSection.size = new Vector2(200f, 90f);
+                text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource2.ToString());
+                var atlas2 = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource2);
+                var spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource2[0]);
+                MakeStorageOutput(new GameObject(), text4, spriteName, atlas2, out m_output2Buffer);
+                m_arrow3.size = new Vector2(56f, 26f);
+                m_arrow3.relativePosition = new Vector2(185f, 18f);
+            }
+
+            string tooltip = StringUtils.SafeFormat(Locale.Get("INUDSTRYBUILDING_PROCESSINGTOOLTIP"), text2, text3, text4);
             m_arrow1.tooltip = tooltip;
             m_arrow2.tooltip = tooltip;
-            m_arrow3.tooltip = tooltip;
-            m_inputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_processingFacilityAI.m_inputResource1);
-            m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_processingFacilityAI.m_outputResource);
-            m_ShowIndustryInfoButton.isVisible = !m_processingFacilityAI.isFishFactory;
+            m_arrow3.tooltip = tooltip;        
+            
+            m_ShowIndustryInfoButton.isVisible = true;
         }
 
         private bool CanBuildingHaveRoutes(ushort id)
@@ -533,16 +603,37 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 if (m_workersInfoLabel.isVisible && m_playerBuildingAI != null)
                 {
-                    UpdateWorkers(building, ref instance.m_buildings.m_buffer[building]);
+                    UpdateWorkers(ref instance.m_buildings.m_buffer[building]);
                 }
-                int customBuffer2 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer2;
-                int inputBufferSize = m_processingFacilityAI.GetInputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
-                m_inputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer2, inputBufferSize);
-                m_inputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer2), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)inputBufferSize, m_processingFacilityAI.m_inputResource1));
-                int customBuffer3 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_customBuffer1;
-                int outputBufferSize2 = m_processingFacilityAI.GetOutputBufferSize(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
-                m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(customBuffer3, outputBufferSize2);
-                m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)customBuffer3), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize2, m_processingFacilityAI.m_outputResource));                
+
+                var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
+
+                int inputBufferValue1 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                int inputBufferSize1 = m_extendedProcessingFacilityAI.GetInputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                m_inputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(inputBufferValue1, inputBufferSize1);
+                m_storageInput.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)inputBufferValue1), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)inputBufferSize1, m_extendedProcessingFacilityAI.m_inputResource1[0]));
+
+                if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0)
+                {
+                    int inputBufferValue2 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_inputResource2[0]);
+                    int inputBufferSize2 = m_extendedProcessingFacilityAI.GetInputBufferSize2(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                    m_input2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(inputBufferValue2, inputBufferSize2);
+                    m_storageInput2.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)inputBufferValue1), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)inputBufferSize1, m_extendedProcessingFacilityAI.m_inputResource1[0]));
+                }
+
+                int outputBufferValue1 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_outputResource1);
+                int outputBufferSize1 = m_extendedProcessingFacilityAI.GetOutputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(outputBufferValue1, outputBufferSize1);
+                m_storageOutput.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)outputBufferValue1), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize1, m_extendedProcessingFacilityAI.m_outputResource1));
+
+                if (m_extendedProcessingFacilityAI.m_outputResource2 != TransferManager.TransferReason.None)
+                {
+                    int outputBufferValue2 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_outputResource2);
+                    int outputBufferSize2 = m_extendedProcessingFacilityAI.GetOutputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
+                    m_output2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(outputBufferValue2, outputBufferSize2);
+                    m_storageOutput2.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)outputBufferValue2), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize2, m_extendedProcessingFacilityAI.m_outputResource2));
+                }
+
                 base.component.size = m_wrapper.size;
                 m_mainBottom.width = m_wrapper.width;
                 m_BuildingInfo.width = m_right.width;
@@ -594,7 +685,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     RebuildBuilding(info, position, angle, buildingID, info.m_fixedHeight);
                     if (info.m_subBuildings != null && info.m_subBuildings.Length != 0)
                     {
-                        Matrix4x4 matrix4x = default(Matrix4x4);
+                        Matrix4x4 matrix4x = default;
                         matrix4x.SetTRS(position, Quaternion.AngleAxis(angle * 57.29578f, Vector3.down), Vector3.one);
                         for (int i = 0; i < info.m_subBuildings.Length; i++)
                         {
@@ -700,7 +791,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             OnCloseButton();
         }
 
-        private void UpdateWorkers(ushort buildingID, ref Building building)
+        private void UpdateWorkers(ref Building building)
         {
             if (!Singleton<CitizenManager>.exists || !(m_playerBuildingAI != null))
             {
@@ -794,9 +885,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             int value5 = GetValue(num6, num4);
             int value6 = GetValue(num7, num4);
             int value7 = GetValue(num8, num4);
-            int num13 = 0;
             int num14 = value4 + value5 + value6 + value7;
-            num13 = 100 - num14;
+            int num13 = 100 - num14;
             m_WorkersEducationChart.SetValues(value4, value5, value6, value7, num13);
             m_workersInfoLabel.text = StringUtils.SafeFormat(Locale.Get("ZONEDBUILDING_WORKERS"), num3, num4);
         }
@@ -812,6 +902,93 @@ namespace IndustriesMeetsSunsetHarbor.UI
             Color color = col * scalar;
             color.a = col.a;
             return color;
+        }
+
+        private TransferManager.TransferReason[] GetInputResource(ref List<string> items, int resourceIndex)
+        {
+            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
+            return items[resourceIndex] switch
+            {
+                "m_inputResource1" => extendedProcessingFacilityAI.m_inputResource1,
+                "m_inputResource2" => extendedProcessingFacilityAI.m_inputResource2,
+                _ => []
+            };
+        }
+
+        private void MakeStorageInput(GameObject gameObject, string label, string iconSprite, UITextureAtlas atlas, out UIProgressBar buffer)
+        {
+            gameObject = Instantiate(m_storageInput.gameObject, m_inputOutputSection.transform, false);
+            m_storageInput2 = gameObject.GetComponent<UIPanel>();
+            m_storageInput2.name = "StorageInput2";
+            m_storageInput2.anchor = UIAnchorStyle.None;
+            m_storageInput2.relativePosition = new Vector3(16f, 50f);
+            m_storageInput2.autoLayout = false;
+            m_storageInput2.size = new Vector2(160f, 35f);
+            m_storageInput2.backgroundSprite = "";
+
+            var icon = gameObject.transform.Find("ResourceIconInput").GetComponent<UISprite>();
+            icon.atlas = atlas;
+            icon.spriteName = iconSprite;
+            icon.name = "ResourceIconInput2";
+            icon.relativePosition = new Vector3(2f, 2f);
+            icon.size = new Vector2(30f, 30f);
+
+            buffer = gameObject.transform.Find("InputBuffer").GetComponent<UIProgressBar>();
+            buffer.name = "Input2Buffer";
+            buffer.relativePosition = new Vector3(62f, -62f);
+            buffer.size = new Vector2(35f, 160f);
+            buffer.color = Color.white;
+
+            var lbl = gameObject.transform.Find("StorageInputLabel").GetComponent<UILabel>();
+            lbl.text = label;
+            lbl.name = "StorageInput2Label";
+            lbl.relativePosition = new Vector3(34f, -1.5f);
+            lbl.textScale = 0.8125f;
+            lbl.textAlignment = UIHorizontalAlignment.Left;
+        }
+
+        private void MakeStorageOutput(GameObject gameObject, string label, string iconSprite, UITextureAtlas atlas, out UIProgressBar buffer)
+        {
+            gameObject = Instantiate(m_storageOutput.gameObject, m_inputOutputSection.transform, false);
+            m_storageOutput2 = gameObject.GetComponent<UIPanel>();
+            m_storageOutput2.name = "StorageOutput2";
+            m_storageOutput2.anchor = UIAnchorStyle.None;
+            m_storageOutput2.relativePosition = new Vector3(16f, 50f);
+            m_storageOutput2.autoLayout = false;
+            m_storageOutput2.size = new Vector2(160f, 35f);
+            m_storageOutput2.backgroundSprite = "";
+
+            var icon = gameObject.transform.Find("ResourceIconOutput").GetComponent<UISprite>();
+            icon.atlas = atlas;
+            icon.spriteName = iconSprite;
+            icon.name = "ResourceIconOutput2";
+            icon.relativePosition = new Vector3(2f, 2f);
+            icon.size = new Vector2(30f, 30f);
+
+            buffer = gameObject.transform.Find("OutputBuffer").GetComponent<UIProgressBar>();
+            buffer.name = "Output2Buffer";
+            buffer.relativePosition = new Vector3(62f, -62f);
+            buffer.size = new Vector2(35f, 160f);
+            buffer.color = Color.white;
+
+            var lbl = gameObject.transform.Find("StorageOutputLabel").GetComponent<UILabel>();
+            lbl.text = label;
+            lbl.name = "StorageOutput2Label";
+            lbl.relativePosition = new Vector3(34f, -1.5f);
+            lbl.textScale = 0.8125f;
+            lbl.textAlignment = UIHorizontalAlignment.Left;
+        }
+
+        private UITextureAtlas GetResourceAtlas(TransferManager.TransferReason reason)
+        {
+            if (reason != TransferManager.TransferReason.None)
+            {
+                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                {
+                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                }
+            }
+            return UITextures.InGameAtlas;
         }
     }
 
