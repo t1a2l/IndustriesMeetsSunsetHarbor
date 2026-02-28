@@ -164,13 +164,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
-                        newAI.m_inputResource2 = ExtendedTransferManager.Vegetables;
+                        newAI.m_inputResource1 = [TransferManager.TransferReason.Grain, ExtendedTransferManager.Vegetables];
                         newAI.m_inputRate1 = 1000;
-                        newAI.m_inputRate2 = 1000;
                         if (__instance.name.Contains("Sheep"))
                         {
                             newAI.m_outputResource1 = ExtendedTransferManager.Sheep;
+                            newAI.m_outputResource2 = ExtendedTransferManager.Wool;
                         }
                         else if (__instance.name.Contains("Highland Cow"))
                         {
@@ -213,24 +212,25 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         Object.DestroyImmediate(oldAI);
                         var newAI = __instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                        newAI.m_inputResource1 = TransferManager.TransferReason.Grain;
-                        newAI.m_inputResource2 = ExtendedTransferManager.Vegetables;
+                        newAI.m_inputResource1 = [TransferManager.TransferReason.Grain, ExtendedTransferManager.Vegetables];
                         newAI.m_inputRate1 = 1000;
-                        newAI.m_inputRate2 = 1000;
                         newAI.m_outputResource1 = ExtendedTransferManager.Cows;
                     }
-                    else if (__instance.name.Contains("Slaughter House") && __instance.GetAI() is ProcessingFacilityAI processingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Contains("Slaughter House") && __instance.GetAI() is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
-                        processingFacilityAI.m_inputResource1 = ExtendedTransferManager.Cows;
-                        processingFacilityAI.m_inputRate1 = 1000;
-
+                        var oldAI = __instance.GetComponent<PrefabAI>();
+                        Object.DestroyImmediate(oldAI);
+                        var newAI = __instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
+                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                        newAI.m_inputResource1 = [ExtendedTransferManager.Cows];
+                        newAI.m_inputRate1 = 1000;
                         if (__instance.name.Contains("Slaughter House"))
                         {
-                            processingFacilityAI.m_outputResource = TransferManager.TransferReason.AnimalProducts;
+                            newAI.m_outputResource1 = TransferManager.TransferReason.AnimalProducts;
                         }
                         else if (__instance.name.Contains("Milking Parlour"))
                         {
-                            processingFacilityAI.m_outputResource = ExtendedTransferManager.Milk;
+                            newAI.m_outputResource1 = ExtendedTransferManager.Milk;
                         }
                     }
                 }
