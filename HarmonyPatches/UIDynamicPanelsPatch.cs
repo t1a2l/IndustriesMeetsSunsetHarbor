@@ -20,8 +20,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         public static void Init(UIDynamicPanels __instance, UIView view)
         {
             var m_CachedPanels = (Dictionary<string, DynamicPanelInfo>)typeof(UIDynamicPanels).GetField("m_CachedPanels", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(__instance);
+            var extendedUniqueFactoryWorldInfoPanel = CreateDynamicPanelInfo(__instance, view, "ExtendedUniqueFactoryWorldInfoPanel", "UniqueFactoryWorldInfoPanel");
+            if(extendedUniqueFactoryWorldInfoPanel != null)
+            {
+                m_CachedPanels.Add(extendedUniqueFactoryWorldInfoPanel.name, extendedUniqueFactoryWorldInfoPanel);
+            }
             var extendedProcessingFacilityWorldInfoPanel = CreateDynamicPanelInfo(__instance, view, "ExtendedProcessingFacilityWorldInfoPanel", "CityServiceWorldInfoPanel");
-            if(extendedProcessingFacilityWorldInfoPanel != null)
+            if (extendedProcessingFacilityWorldInfoPanel != null)
             {
                 m_CachedPanels.Add(extendedProcessingFacilityWorldInfoPanel.name, extendedProcessingFacilityWorldInfoPanel);
             }
@@ -61,12 +66,12 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             GameObject ClonedGameObject = Object.Instantiate(customOldWorldInfoPanel.panelRoot.gameObject);
             ClonedGameObject.name = "(Library) " + customWorldInfoPanelName;
-            if(customWorldInfoPanelName == "ExtendedProcessingFacilityWorldInfoPanel")
+            if(customWorldInfoPanelName == "ExtendedUniqueFactoryWorldInfoPanel")
             {
-                var old_component = ClonedGameObject.GetComponent<CityServiceWorldInfoPanel>();
+                var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
-                var extendedProcessingFacilityComp = ClonedGameObject.AddComponent<ExtendedProcessingFacilityWorldInfoPanel>();
-                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, extendedProcessingFacilityComp, false);
+                var extendedUniqueFactoryComp = ClonedGameObject.AddComponent<ExtendedUniqueFactoryWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, extendedUniqueFactoryComp, false);
                 for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {
                     var child = ClonedGameObject.transform.GetChild(i);
@@ -78,6 +83,37 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             {
                                 var caption_child = child.transform.GetChild(j);
                                 if(caption_child != null)
+                                {
+                                    var caption_child_bind = caption_child.GetComponent<BindEvent>();
+                                    caption_child_bind?.dataTarget.component = extendedUniqueFactoryComp;
+                                }
+                            }
+                        }
+                        var bind = child.GetComponent<BindEvent>();
+                        bind?.dataTarget.component = extendedUniqueFactoryComp;
+                    }
+                }
+                var main_panel = extendedUniqueFactoryComp.Find<UIPanel>("(Library) ExtendedUniqueFactoryWorldInfoPanel");
+                main_panel.cachedName = "(Library) ExtendedUniqueFactoryWorldInfoPanel";
+                typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
+            }
+            else if (customWorldInfoPanelName == "ExtendedProcessingFacilityWorldInfoPanel")
+            {
+                var old_component = ClonedGameObject.GetComponent<CityServiceWorldInfoPanel>();
+                Object.DestroyImmediate(old_component);
+                var extendedProcessingFacilityComp = ClonedGameObject.AddComponent<ExtendedProcessingFacilityWorldInfoPanel>();
+                PrefabUtil.TryCopyAttributes<WorldInfoPanel>(old_component, extendedProcessingFacilityComp, false);
+                for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
+                {
+                    var child = ClonedGameObject.transform.GetChild(i);
+                    if (child != null)
+                    {
+                        if (child.name == "Caption")
+                        {
+                            for (int j = 0; j < child.transform.childCount; j++)
+                            {
+                                var caption_child = child.transform.GetChild(j);
+                                if (caption_child != null)
                                 {
                                     var caption_child_bind = caption_child.GetComponent<BindEvent>();
                                     caption_child_bind?.dataTarget.component = extendedProcessingFacilityComp;
@@ -124,7 +160,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 main_panel.cachedName = "(Library) FarmingWorldInfoPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
-            else if(customWorldInfoPanelName == "RestaurantWorldInfoPanel")
+            else if (customWorldInfoPanelName == "RestaurantWorldInfoPanel")
             {
                 var old_component = ClonedGameObject.GetComponent<UniqueFactoryWorldInfoPanel>();
                 Object.DestroyImmediate(old_component);
@@ -137,14 +173,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {
                     var child = ClonedGameObject.transform.GetChild(i);
-                    if(child != null)
+                    if (child != null)
                     {
-                        if(child.name == "Caption")
+                        if (child.name == "Caption")
                         {
                             for (int j = 0; j < child.transform.childCount; j++)
                             {
                                 var caption_child = child.transform.GetChild(j);
-                                if(caption_child != null)
+                                if (caption_child != null)
                                 {
                                     var caption_child_bind = caption_child.GetComponent<BindEvent>();
                                     caption_child_bind?.dataTarget.component = restaurantComp;
@@ -159,7 +195,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 main_panel.cachedName = "(Library) RestaurantWorldInfoPanel";
                 typeof(DynamicPanelInfo).GetField("m_PanelRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(dynamicPanelInfo, main_panel);
             }
-            else if(customWorldInfoPanelName == "RestaurantInfoViewPanel")
+            else if (customWorldInfoPanelName == "RestaurantInfoViewPanel")
             {
                 var old_component = ClonedGameObject.GetComponent<PostInfoViewPanel>();
                 Object.DestroyImmediate(old_component);
@@ -168,14 +204,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 for (int i = 0; i < ClonedGameObject.transform.childCount; i++)
                 {
                     var child = ClonedGameObject.transform.GetChild(i);
-                    if(child != null)
+                    if (child != null)
                     {
-                        if(child.name == "Caption")
+                        if (child.name == "Caption")
                         {
                             for (int j = 0; j < child.transform.childCount; j++)
                             {
                                 var caption_child = child.transform.GetChild(j);
-                                if(caption_child != null)
+                                if (caption_child != null)
                                 {
                                     var caption_child_bind = caption_child.GetComponent<BindEvent>();
                                     caption_child_bind?.dataTarget.component = restaurantInfoViewPanelComp;
