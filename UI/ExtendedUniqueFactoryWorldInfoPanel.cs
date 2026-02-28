@@ -272,6 +272,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                         uILabel.text = "Mixed Resources";
                         uISprite.atlas = TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
                         uISprite.spriteName = "MixedResources";
+                        MakeHoverDetail(m_inputs.items[i], transferReasons);
                     }
                     UIPanel Storage = m_inputs.items[i].Find<UIPanel>("Storage");
                     UISprite Arrow = m_inputs.items[i].Find<UISprite>("Arrow");
@@ -515,14 +516,15 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_generatedInfo.text = extendedUniqueFactoryAI.GetLocalizedStats(buildingId, ref building);
             long inputs_expenses = 0;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource1) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource2) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate3 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource3) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate4 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource4) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate5 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource5) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate6 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource6) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate7 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource7) / 10000;
-            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate8 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource8) / 10000;
+            // IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_inputResource1[0])
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate1 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate2 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate3 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate4 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate5 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate6 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate7 * 16 / 100 * 1 / 10000;
+            inputs_expenses += building.m_health * extendedUniqueFactoryAI.m_inputRate8 * 16 / 100 * 1 / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
 
             long outputs_income = 0;
