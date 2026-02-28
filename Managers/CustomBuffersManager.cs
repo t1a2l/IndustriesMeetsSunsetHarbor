@@ -58,6 +58,11 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             CustomBuffers[buildingID] = buffer_struct;
         }
 
+        public static void RemoveCustomBuffer(ushort buildingID)
+        {
+            CustomBuffers.Remove(buildingID);
+        }
+
         public static int GetIndex(int materialId)
         {
             return materialId switch
