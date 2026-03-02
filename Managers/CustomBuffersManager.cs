@@ -6,7 +6,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
     {
         public static Dictionary<ushort, CustomBuffer> CustomBuffers;
 
-        public const int RESOURCE_COUNT = 59;
+        public const int RESOURCE_COUNT = 53;
 
         public struct CustomBuffer
         {
@@ -46,13 +46,18 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             CustomBuffers = [];
         }
 
+        public static bool CustomBufferExist(ushort buildingID)
+        {
+            return CustomBuffers.ContainsKey(buildingID);
+        }
+
         public static CustomBuffer GetCustomBuffer(ushort buildingID)
         {
             if(!CustomBuffers.TryGetValue(buildingID, out CustomBuffer buffer_struct))
             {
                 buffer_struct = new CustomBuffer
                 {
-                    m_volumes = new float[53],
+                    m_volumes = new float[RESOURCE_COUNT],
                     m_mealsSitDown = new float[4],
                     m_mealsDelivery = new float[4]
                 };

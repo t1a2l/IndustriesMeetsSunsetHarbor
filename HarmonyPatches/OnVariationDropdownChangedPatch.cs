@@ -2,6 +2,7 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
+using System;
 using System.Reflection;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -30,10 +31,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             else if (buildingAI is ExtendedProcessingFacilityAI)
             {
                 var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingId);
-                custom_buffers.m_customBuffer1 = 0;
-                custom_buffers.m_customBuffer2 = 0;
-                custom_buffers.m_customBuffer3 = 0;
-                custom_buffers.m_customBuffer4 = 0;
+                Array.Clear(custom_buffers.m_volumes, 0, CustomBuffersManager.RESOURCE_COUNT);
+                Array.Clear(custom_buffers.m_mealsSitDown, 0, 4);
+                Array.Clear(custom_buffers.m_mealsDelivery, 0, 4);
                 CustomBuffersManager.SetCustomBuffer(buildingId, custom_buffers);
             }
         }
