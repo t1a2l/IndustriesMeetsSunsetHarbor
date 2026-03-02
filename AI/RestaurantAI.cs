@@ -78,29 +78,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
         [CustomizableProperty("Output Meals Count")]
         public int m_outputMealsCount = 100;
 
-        [CustomizableProperty("Meal 1 Name")]
-        public string[] m_mealName1 = new string[1];
+        [CustomizableProperty("Meal Names")] // ["Burger", "Pasta", "Steak", "Salad"]
+        public string[] m_mealNames = new string[4];
 
-        [CustomizableProperty("Meal 1 Ingredient")]
-        public float[] m_mealRecipe1 = new float[8];
-
-        [CustomizableProperty("Meal 2 Name")]
-        public string[] m_mealName2 = new string[1];
-
-        [CustomizableProperty("Meal 2 Ingredient")]
-        public float[] m_mealRecipe2 = new float[8];
-
-        [CustomizableProperty("Meal 3 Name")]
-        public string[] m_mealName3 = new string[1];
-
-        [CustomizableProperty("Meal 3 Ingredient")]
-        public float[] m_mealRecipe3 = new float[8];
-
-        [CustomizableProperty("Meal 4 Name")]
-        public string[] m_mealName4 = new string[1];
-
-        [CustomizableProperty("Meal 4 Ingredient")]
-        public float[] m_mealRecipe4 = new float[8];
+        [CustomizableProperty("Meal Recipes")] // 4 meals × 8 ingredients = 32 slots
+        public float[] m_mealRecipes = new float[32];
 
         [NonSerialized]
         public bool m_canCookMeal1;
@@ -160,6 +142,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         [CustomizableProperty("Food Output Resource")]
         public TransferManager.TransferReason m_outputResource2 = ExtendedTransferManager.MealsLow; // eat in place
+
+        public float GetRecipeIngredient(int mealIndex, int ingredientIndex) => m_mealRecipes[mealIndex * 8 + ingredientIndex];
+
+        public void SetRecipeIngredient(int mealIndex, int ingredientIndex, float value) => m_mealRecipes[mealIndex * 8 + ingredientIndex] = value;
 
         public override Color GetColor(ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode)
         {
@@ -262,7 +248,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 byte district = instance.GetDistrict(data.m_position);
                                 DistrictPolicies.CityPlanning cityPlanningPolicies = instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
                                 DistrictPolicies.Taxation taxationPolicies = instance.m_districts.m_buffer[district].m_taxationPolicies;
-                                int taxRate = GetTaxRate(buildingID, ref data, taxationPolicies);
+                                int taxRate = GetTaxRate(ref data, taxationPolicies);
                                 GetAccumulation(new Randomizer(buildingID), data.m_adults * 100, taxRate, cityPlanningPolicies, taxationPolicies, out var _, out var attractiveness);
                                 if (attractiveness != 0)
                                 {
@@ -298,7 +284,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        private int GetTaxRate(ushort buildingID, ref Building buildingData, DistrictPolicies.Taxation taxationPolicies)
+        private int GetTaxRate(ref Building buildingData, DistrictPolicies.Taxation taxationPolicies)
         {
             return Singleton<EconomyManager>.instance.GetTaxRate(m_info.m_class.m_service, m_info.m_class.m_subService, (ItemClass.Level)buildingData.m_level, taxationPolicies);
         }
@@ -395,7 +381,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 else
                 {
                     // while 30 minutes has not passed try to cook meals for customer
-                    var meal_cooked = CookMeal(buildingID, ref buildingData, false, item.mealType);
+                    var meal_cooked = CookMeal(buildingID, false, item.mealType);
                     if (meal_cooked)
                     {
                         EatMeal(buildingID, ref buildingData, item.citizenId, item.mealType);
@@ -431,7 +417,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         var delivery = DeliveriesList[i];
                         if (delivery.mealCooked == false)
                         {
-                            var delivery_meal_cooked = CookMeal(buildingID, ref buildingData, true, delivery.mealType);
+                            var delivery_meal_cooked = CookMeal(buildingID, true, delivery.mealType);
                             if (delivery_meal_cooked)
                             {
                                 delivery.mealCooked = true;
@@ -465,7 +451,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     mealType = mealType
                 };
 
-                bool delivery_meal_cooked = CookMeal(buildingID, ref data, true, mealType);
+                bool delivery_meal_cooked = CookMeal(buildingID, true, mealType);
                 if (delivery_meal_cooked)
                 {
                     NewDelivery.mealCooked = true;
@@ -487,7 +473,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         var DeliveriesWithNoVehicleIndexList = Enumerable.Range(0, DeliveriesList.Count).Where(i => DeliveriesList[i].deliveryVehicleId == 0 && DeliveriesList[i].mealCooked == true && DeliveriesList[i].buildingId != 0 && DeliveriesList[i].citizenId != 0).ToList();
 
                         var first_delivery = false;
-                        RestaurantManager.RestaurantDeliveryData deliveryData = new RestaurantManager.RestaurantDeliveryData
+                        RestaurantManager.RestaurantDeliveryData deliveryData = new()
                         {
                             deliveryVehicleId = 0,
                             buildingId = 0,
@@ -534,59 +520,59 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 default:
                     if (material == m_inputResource1)
                     {
-                        float m_customBuffer1 = custom_buffers.m_customBuffer1;
+                        float m_customBuffer1 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer1, m_inputCapacity1 - m_customBuffer1);
                         m_customBuffer1 += amountDelta;
-                        custom_buffers.m_customBuffer1 = m_customBuffer1;
+                        custom_buffers.Set((int)material, m_customBuffer1);
                     }
                     else if (material == m_inputResource2)
                     {
-                        float m_customBuffer2 = custom_buffers.m_customBuffer2;
+                        float m_customBuffer2 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer2, m_inputCapacity2 - m_customBuffer2);
                         m_customBuffer2 += amountDelta;
-                        custom_buffers.m_customBuffer2 = m_customBuffer2;
+                        custom_buffers.Set((int)material, m_customBuffer2);
                     }
                     else if (material == m_inputResource3)
                     {
-                        float m_customBuffer3 = custom_buffers.m_customBuffer3;
+                        float m_customBuffer3 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer3, m_inputCapacity3 - m_customBuffer3);
                         m_customBuffer3 += amountDelta;
-                        custom_buffers.m_customBuffer3 = m_customBuffer3;
+                        custom_buffers.Set((int)material, m_customBuffer3);
                     }
                     else if (material == m_inputResource4)
                     {
-                        float m_customBuffer4 = custom_buffers.m_customBuffer4;
+                        float m_customBuffer4 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer4, m_inputCapacity4 - m_customBuffer4);
                         m_customBuffer4 += amountDelta;
-                        custom_buffers.m_customBuffer4 = m_customBuffer4;
+                        custom_buffers.Set((int)material, m_customBuffer4);
                     }
                     else if(material == m_inputResource5)
                     {
-                        float m_customBuffer5 = custom_buffers.m_customBuffer5;
+                        float m_customBuffer5 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer5, m_inputCapacity5 - m_customBuffer5);
                         m_customBuffer5 += amountDelta;
-                        custom_buffers.m_customBuffer5 = m_customBuffer5;
+                        custom_buffers.Set((int)material, m_customBuffer5);
                     }
                     else if (material == m_inputResource6)
                     {
-                        float m_customBuffer6 = custom_buffers.m_customBuffer6;
+                        float m_customBuffer6 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer6, m_inputCapacity6 - m_customBuffer6);
                         m_customBuffer6 += amountDelta;
-                        custom_buffers.m_customBuffer6 = m_customBuffer6;
+                        custom_buffers.Set((int)material, m_customBuffer6);
                     }
                     else if (material == m_inputResource7)
                     {
-                        float m_customBuffer7 = custom_buffers.m_customBuffer7;
+                        float m_customBuffer7 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer7, m_inputCapacity7 - m_customBuffer7);
                         m_customBuffer7 += amountDelta;
-                        custom_buffers.m_customBuffer7 = m_customBuffer7;
+                        custom_buffers.Set((int)material, m_customBuffer7);
                     }
                     else if (material == m_inputResource8)
                     {
-                        float m_customBuffer8 = custom_buffers.m_customBuffer8;
+                        float m_customBuffer8 = custom_buffers.Get((int)material);
                         amountDelta = (int)Mathf.Clamp(amountDelta, -m_customBuffer8, m_inputCapacity8 - m_customBuffer8);
                         m_customBuffer8 += amountDelta;
-                        custom_buffers.m_customBuffer8 = m_customBuffer8;
+                        custom_buffers.Set((int)material, m_customBuffer8);
                     }
                     else
                     {
@@ -669,7 +655,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override void VisitorEnter(ushort buildingID, ref Building data, uint citizen)
         {
             int mealType = ChooseMealType();
-            bool meal_cooked = CookMeal(buildingID, ref data, false, mealType);
+            bool meal_cooked = CookMeal(buildingID, false, mealType);
             if (meal_cooked)
             {
                 // meal was cooked - citizen eats the meal
@@ -710,215 +696,75 @@ namespace IndustriesMeetsSunsetHarbor.AI
             int TempOutput = 0;
             if (m_inputResource1 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer1 < m_resourceThreshold)
+                int CustomInputBuffer1 = (int)custom_buffers.Get((int)m_inputResource1);
+                if (CustomInputBuffer1 < m_resourceThreshold)
                 {
                     problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count1 = 0;
-                int cargo1 = 0;
-                int capacity1 = 0;
-                int outside1 = 0;
-                base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource1, ref count1, ref cargo1, ref capacity1, ref outside1);
-                if (outside1 != 0)
-                {
-                    TempOutput |= 1;
-                }
-                float InputSize1 = custom_buffers.m_customBuffer1 + cargo1;
-                if (InputSize1 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer = default;
-                    offer.Building = buildingID;
-                    offer.Position = buildingData.m_position;
-                    offer.Amount = 1;
-                    offer.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource1, offer);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource1, TempOutput, 1, CustomInputBuffer1);
             }
             if (m_inputResource2 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer2 < m_resourceThreshold)
+                int CustomInputBuffer2 = (int)custom_buffers.Get((int)m_inputResource2);
+                if (CustomInputBuffer2 < m_resourceThreshold)
                 {
                     problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count2 = 0;
-                int cargo2 = 0;
-                int capacity2 = 0;
-                int outside2 = 0;
-                base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
-                if (outside2 != 0)
-                {
-                    TempOutput |= 2;
-                }
-                float InputSize2 = custom_buffers.m_customBuffer2 + cargo2;
-                if (InputSize2 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer2 = default;
-                    offer2.Building = buildingID;
-                    offer2.Position = buildingData.m_position;
-                    offer2.Amount = 1;
-                    offer2.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource2, offer2);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource2, TempOutput, 2, CustomInputBuffer2);
             }
             if (m_inputResource3 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer3 < m_resourceThreshold)
+                int CustomInputBuffer3 = (int)custom_buffers.Get((int)m_inputResource3);
+                if (CustomInputBuffer3 < m_resourceThreshold)
                 {
                     problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count3 = 0;
-                int cargo3 = 0;
-                int capacity3 = 0;
-                int outside3 = 0;
-                base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource3, ref count3, ref cargo3, ref capacity3, ref outside3);
-                if (outside3 != 0)
-                {
-                    TempOutput |= 4;
-                }
-                float InputSize3 = custom_buffers.m_customBuffer3 + cargo3;
-                if (InputSize3 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer3 = default;
-                    offer3.Building = buildingID;
-                    offer3.Position = buildingData.m_position;
-                    offer3.Amount = 1;
-                    offer3.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource3, offer3);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource3, TempOutput, 4, CustomInputBuffer3);
             }
             if (m_inputResource4 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer4 < m_resourceThreshold)
+                int CustomInputBuffer4 = (int)custom_buffers.Get((int)m_inputResource4);
+                if (CustomInputBuffer4 < m_resourceThreshold)
                 {
                     problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count4 = 0;
-                int cargo4 = 0;
-                int capacity4 = 0;
-                int outside4 = 0;
-                base.CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource4, ref count4, ref cargo4, ref capacity4, ref outside4);
-                if (outside4 != 0)
-                {
-                    TempOutput |= 8;
-                }
-                float InputSize4 = custom_buffers.m_customBuffer4 + cargo4;
-                if (InputSize4 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer4 = default;
-                    offer4.Building = buildingID;
-                    offer4.Position = buildingData.m_position;
-                    offer4.Amount = 1;
-                    offer4.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource4, offer4);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource4, TempOutput, 8, CustomInputBuffer4);
             }
             if (m_inputResource5 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer5 < m_resourceThreshold)
+                int CustomInputBuffer5 = (int)custom_buffers.Get((int)m_inputResource5);
+                if (CustomInputBuffer5 < m_resourceThreshold)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, (!IsRawMaterial(m_inputResource5)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources);
+                    problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count5 = 0;
-                int cargo5 = 0;
-                int capacity5 = 0;
-                int outside5 = 0;
-                CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource5, ref count5, ref cargo5, ref capacity5, ref outside5);
-                if (outside5 != 0)
-                {
-                    TempOutput |= 16;
-                }
-                float InputSize5 = custom_buffers.m_customBuffer5 + cargo5;
-                if (InputSize5 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer5 = default;
-                    offer5.Priority = (int)Mathf.Max(1, InputSize5 * 8 / m_inputCapacity5);
-                    offer5.Building = buildingID;
-                    offer5.Position = buildingData.m_position;
-                    offer5.Amount = 1;
-                    offer5.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource5, offer5);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource5, TempOutput, 16, CustomInputBuffer5);
             }
             if (m_inputResource6 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer6 < m_resourceThreshold)
+                int CustomInputBuffer6 = (int)custom_buffers.Get((int)m_inputResource6);
+                if (CustomInputBuffer6 < m_resourceThreshold)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, (!IsRawMaterial(m_inputResource6)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources);
+                    problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count6 = 0;
-                int cargo6 = 0;
-                int capacity6 = 0;
-                int outside6 = 0;
-                CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource6, ref count6, ref cargo6, ref capacity6, ref outside6);
-                if (outside6 != 0)
-                {
-                    TempOutput |= 32;
-                }
-                float InputSize6 = custom_buffers.m_customBuffer6 + cargo6;
-                if (InputSize6 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer6 = default;
-                    offer6.Priority = (int)Mathf.Max(1, InputSize6 * 8 / m_inputCapacity6);
-                    offer6.Building = buildingID;
-                    offer6.Position = buildingData.m_position;
-                    offer6.Amount = 1;
-                    offer6.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource6, offer6);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource6, TempOutput, 32, CustomInputBuffer6);
             }
             if (m_inputResource7 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer7 < m_resourceThreshold)
+                int CustomInputBuffer7 = (int)custom_buffers.Get((int)m_inputResource7);
+                if (CustomInputBuffer7 < m_resourceThreshold)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, (!IsRawMaterial(m_inputResource7)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources);
+                    problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count7 = 0;
-                int cargo7 = 0;
-                int capacity7 = 0;
-                int outside7 = 0;
-                CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource7, ref count7, ref cargo7, ref capacity7, ref outside7);
-                if (outside7 != 0)
-                {
-                    TempOutput |= 64;
-                }
-                float InputSize7 = custom_buffers.m_customBuffer7 + cargo7;
-                if (InputSize7 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer7 = default;
-                    offer7.Priority = (int)Mathf.Max(1, InputSize7 * 8 / m_inputCapacity7);
-                    offer7.Building = buildingID;
-                    offer7.Position = buildingData.m_position;
-                    offer7.Amount = 1;
-                    offer7.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource7, offer7);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource7, TempOutput, 64, CustomInputBuffer7);
             }
             if (m_inputResource8 != TransferManager.TransferReason.None)
             {
-                if (custom_buffers.m_customBuffer8 < m_resourceThreshold)
+                int CustomInputBuffer8 = (int)custom_buffers.Get((int)m_inputResource8);
+                if (CustomInputBuffer8 < m_resourceThreshold)
                 {
-                    problemStruct = Notification.AddProblems(problemStruct, (!IsRawMaterial(m_inputResource8)) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources);
+                    problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoInputProducts);
                 }
-                int count8 = 0;
-                int cargo8 = 0;
-                int capacity8 = 0;
-                int outside8 = 0;
-                CalculateGuestVehicles(buildingID, ref buildingData, m_inputResource8, ref count8, ref cargo8, ref capacity8, ref outside8);
-                if (outside8 != 0)
-                {
-                    TempOutput |= 128;
-                }
-                float InputSize8 = custom_buffers.m_customBuffer8 + cargo8;
-                if (InputSize8 <= m_resourceThreshold)
-                {
-                    TransferManager.TransferOffer offer8 = default;
-                    offer8.Priority = (int)Mathf.Max(1, InputSize8 * 8 / m_inputCapacity8);
-                    offer8.Building = buildingID;
-                    offer8.Position = buildingData.m_position;
-                    offer8.Amount = 1;
-                    offer8.Active = false;
-                    Singleton<TransferManager>.instance.AddIncomingOffer(m_inputResource8, offer8);
-                }
+                TempOutput = AddIncomingOffer(buildingID, ref buildingData, m_inputResource8, TempOutput, 128, CustomInputBuffer8);
             }
             buildingData.m_tempImport |= (byte)TempOutput;
             if (m_outputResource1 != TransferManager.TransferReason.None && m_DeliveryVehicleCount != 0 && allow_delivery)
@@ -1146,14 +992,26 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     material = ExtendedTransferManager.MealsDeliveryHigh;
                 }
-                float delivery_meals_cooked = custom_buffers.m_customBuffer9 + custom_buffers.m_customBuffer10 + custom_buffers.m_customBuffer11 + custom_buffers.m_customBuffer12;
+                float delivery_meals_cooked = 0f;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    delivery_meals_cooked += custom_buffers.m_mealsDelivery[i];
+                }
+
                 base.CalculateOwnVehicles(buildingID, ref data, material, ref used_count, ref cargo, ref capacity, ref outside);
                 text = text + Environment.NewLine + "Delivery Vehicles In Use " + used_count + "/" + delivery_vehicle_count;
                 text = text + Environment.NewLine + "Ordered Meals Cooked " + (int)delivery_meals_cooked;
             }
             if (m_outputResource2 != TransferManager.TransferReason.None)
             {
-                float customers_meals_cooked = custom_buffers.m_customBuffer13 + custom_buffers.m_customBuffer14 + custom_buffers.m_customBuffer15 + custom_buffers.m_customBuffer16;
+                float customers_meals_cooked = 0f;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    customers_meals_cooked += custom_buffers.m_mealsSitDown[i];
+                }
+
                 text = text + Environment.NewLine + "Customers Meals Cooked " + (int)customers_meals_cooked;
             }
             return text;
@@ -1239,425 +1097,39 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         private int ChooseMealType()
         {
-            int mealType = new System.Random().Next(1, 5);
+            int mealType = new System.Random().Next(0, 4);
             return mealType;
         }
 
-        private bool CookMeal(ushort buildingID, ref Building data, bool isDelivery, int mealType)
+        private bool CookMeal(ushort buildingID, bool isDelivery, int mealType)
         {
-            bool meal_cooked = false;
-            // every visitor that enter - try to cook a meal for him
-            switch(mealType)
-            {
-                case 1:
-                    meal_cooked = CookMeal1(buildingID, ref data , isDelivery);
-                    break;
-                case 2:
-                    meal_cooked = CookMeal2(buildingID, ref data , isDelivery);
-                    break;
-                case 3:
-                    meal_cooked = CookMeal3(buildingID, ref data , isDelivery);
-                    break;
-                case 4:
-                    meal_cooked = CookMeal4(buildingID, ref data , isDelivery);
-                    break;
-            }
-            return meal_cooked;
-        }
+            var buf = CustomBuffersManager.GetCustomBuffer(buildingID);
+            var inputs = new[] { m_inputResource1, m_inputResource2, m_inputResource3,
+                         m_inputResource4, m_inputResource5, m_inputResource6,
+                         m_inputResource7, m_inputResource8 };
 
-        private bool CookMeal1(ushort buildingID, ref Building data, bool isDelivery)
-        {
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            float CustomBuffer1 = custom_buffers.m_customBuffer1;
-            float CustomBuffer2 = custom_buffers.m_customBuffer2;
-            float CustomBuffer3 = custom_buffers.m_customBuffer3;
-            float CustomBuffer4 = custom_buffers.m_customBuffer4;
-            float CustomBuffer5 = custom_buffers.m_customBuffer5;
-            float CustomBuffer6 = custom_buffers.m_customBuffer6;
-            float CustomBuffer7 = custom_buffers.m_customBuffer7;
-            float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe1[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None && CustomBuffer1 < 5)
+            // Check all 8 ingredients for this meal
+            for (int i = 0; i < 8; i++)
             {
-                return false;
+                float required = GetRecipeIngredient(mealType, i);
+                if (required <= 0f) continue;
+                if (inputs[i] == TransferManager.TransferReason.None) return false;
+                if (buf.Get((int)inputs[i]) < required) return false;
             }
-            if(m_mealRecipe1[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None && CustomBuffer2 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None && CustomBuffer3 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None && CustomBuffer4 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe1[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer1 -= m_mealRecipe1[0];
-                custom_buffers.m_customBuffer1 = CustomBuffer1;
-            }
-            if(m_mealRecipe1[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer2 -= m_mealRecipe1[1];
-                custom_buffers.m_customBuffer2 = CustomBuffer2;
-            }
-            if(m_mealRecipe1[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer3 -= m_mealRecipe1[2];
-                custom_buffers.m_customBuffer3 = CustomBuffer3;
-            }
-            if(m_mealRecipe1[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer4 -= m_mealRecipe1[3];
-                custom_buffers.m_customBuffer4 = CustomBuffer4;
-            }
-            if(m_mealRecipe1[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer5 -= m_mealRecipe1[4];
-                custom_buffers.m_customBuffer5 = CustomBuffer5;
-            }
-            if(m_mealRecipe1[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer6 -= m_mealRecipe1[5];
-                custom_buffers.m_customBuffer6 = CustomBuffer6;
-            }
-            if(m_mealRecipe1[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer7 -= m_mealRecipe1[6];
-                custom_buffers.m_customBuffer7 = CustomBuffer7;
-            }
-            if(m_mealRecipe1[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer8 -= m_mealRecipe1[7];
-                custom_buffers.m_customBuffer8 = CustomBuffer8;
-            }
-            if(isDelivery)
-            {
-                float CustomBuffer9 = custom_buffers.m_customBuffer9;
-                CustomBuffer9 += 1;
-                custom_buffers.m_customBuffer9 = CustomBuffer9;
-            }
-            else
-            {
-                float CustomBuffer13 = custom_buffers.m_customBuffer13;
-                CustomBuffer13 += 1;
-                custom_buffers.m_customBuffer13 = CustomBuffer13;
-            }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
-            return true;
-        }
 
-        private bool CookMeal2(ushort buildingID, ref Building data, bool isDelivery)
-        {
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            float CustomBuffer1 = custom_buffers.m_customBuffer1;
-            float CustomBuffer2 = custom_buffers.m_customBuffer2;
-            float CustomBuffer3 = custom_buffers.m_customBuffer3;
-            float CustomBuffer4 = custom_buffers.m_customBuffer4;
-            float CustomBuffer5 = custom_buffers.m_customBuffer5;
-            float CustomBuffer6 = custom_buffers.m_customBuffer6;
-            float CustomBuffer7 = custom_buffers.m_customBuffer7;
-            float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe2[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None && CustomBuffer1 < 5)
+            // Consume ingredients
+            for (int i = 0; i < 8; i++)
             {
-                return false;
+                float required = GetRecipeIngredient(mealType, i);
+                if (required <= 0f) continue;
+                buf.Add((int)inputs[i], -required);
             }
-            if(m_mealRecipe2[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None && CustomBuffer2 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None && CustomBuffer3 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None && CustomBuffer4 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe2[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer1 -= m_mealRecipe2[0];
-                custom_buffers.m_customBuffer1 = CustomBuffer1;
-            }
-            if(m_mealRecipe2[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer2 -= m_mealRecipe2[1];
-                custom_buffers.m_customBuffer2 = CustomBuffer2;
-            }
-            if(m_mealRecipe2[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer3 -= m_mealRecipe2[2];
-                custom_buffers.m_customBuffer3 = CustomBuffer3;
-            }
-            if(m_mealRecipe2[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer4 -= m_mealRecipe2[3];
-                custom_buffers.m_customBuffer4 = CustomBuffer4;
-            }
-            if(m_mealRecipe2[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer5 -= m_mealRecipe2[4];
-                custom_buffers.m_customBuffer5 = CustomBuffer5;
-            }
-            if(m_mealRecipe2[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer6 -= m_mealRecipe2[5];
-                custom_buffers.m_customBuffer6 = CustomBuffer6;
-            }
-            if(m_mealRecipe2[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer7 -= m_mealRecipe2[6];
-                custom_buffers.m_customBuffer7 = CustomBuffer7;
-            }
-            if(m_mealRecipe2[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer8 -= m_mealRecipe2[7];
-                custom_buffers.m_customBuffer8 = CustomBuffer8;
-            }
-            if(isDelivery)
-            {
-                float CustomBuffer10 = custom_buffers.m_customBuffer10;
-                CustomBuffer10 += 1;
-                custom_buffers.m_customBuffer10 = CustomBuffer10;
-            }
-            else
-            {
-                float CustomBuffer14 = custom_buffers.m_customBuffer14;
-                CustomBuffer14 += 1;
-                custom_buffers.m_customBuffer14 = CustomBuffer14;
-            }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
-            return true;
-        }
 
-        private bool CookMeal3(ushort buildingID, ref Building data, bool isDelivery)
-        {
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            float CustomBuffer1 = custom_buffers.m_customBuffer1;
-            float CustomBuffer2 = custom_buffers.m_customBuffer2;
-            float CustomBuffer3 = custom_buffers.m_customBuffer3;
-            float CustomBuffer4 = custom_buffers.m_customBuffer4;
-            float CustomBuffer5 = custom_buffers.m_customBuffer5;
-            float CustomBuffer6 = custom_buffers.m_customBuffer6;
-            float CustomBuffer7 = custom_buffers.m_customBuffer7;
-            float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe3[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None && CustomBuffer1 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None && CustomBuffer2 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None && CustomBuffer3 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None && CustomBuffer4 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe3[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer1 -= m_mealRecipe3[0];
-                custom_buffers.m_customBuffer1 = CustomBuffer1;
-            }
-            if(m_mealRecipe3[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer2 -= m_mealRecipe3[1];
-                custom_buffers.m_customBuffer2 = CustomBuffer2;
-            }
-            if(m_mealRecipe3[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer3 -= m_mealRecipe3[2];
-                custom_buffers.m_customBuffer3 = CustomBuffer3;
-            }
-            if(m_mealRecipe3[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer4 -= m_mealRecipe3[3];
-                custom_buffers.m_customBuffer4 = CustomBuffer4;
-            }
-            if(m_mealRecipe3[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer5 -= m_mealRecipe3[4];
-                custom_buffers.m_customBuffer5 = CustomBuffer5;
-            }
-            if(m_mealRecipe3[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer6 -= m_mealRecipe3[5];
-                custom_buffers.m_customBuffer6 = CustomBuffer6;
-            }
-            if(m_mealRecipe3[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer7 -= m_mealRecipe3[6];
-                custom_buffers.m_customBuffer7 = CustomBuffer7;
-            }
-            if(m_mealRecipe3[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer8 -= m_mealRecipe3[7];
-                custom_buffers.m_customBuffer8 = CustomBuffer8;
-            }
-            if(isDelivery)
-            {
-                float CustomBuffer11 = custom_buffers.m_customBuffer11;
-                CustomBuffer11 += 1;
-                custom_buffers.m_customBuffer11 = CustomBuffer11;
-            }
-            else
-            {
-                float CustomBuffer15 = custom_buffers.m_customBuffer15;
-                CustomBuffer15 += 1;
-                custom_buffers.m_customBuffer15 = CustomBuffer15;
-            }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
-            return true;
-        }
+            if (isDelivery) buf.m_mealsDelivery[mealType] += 1f;
+            else buf.m_mealsSitDown[mealType] += 1f;
 
-        private bool CookMeal4(ushort buildingID, ref Building data, bool isDelivery)
-        {
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            float CustomBuffer1 = custom_buffers.m_customBuffer1;
-            float CustomBuffer2 = custom_buffers.m_customBuffer2;
-            float CustomBuffer3 = custom_buffers.m_customBuffer3;
-            float CustomBuffer4 = custom_buffers.m_customBuffer4;
-            float CustomBuffer5 = custom_buffers.m_customBuffer5;
-            float CustomBuffer6 = custom_buffers.m_customBuffer6;
-            float CustomBuffer7 = custom_buffers.m_customBuffer7;
-            float CustomBuffer8 = custom_buffers.m_customBuffer8;
-            if(m_mealRecipe4[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None && CustomBuffer1 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None && CustomBuffer2 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None && CustomBuffer3 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None && CustomBuffer4 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None && CustomBuffer5 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None && CustomBuffer6 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None && CustomBuffer7 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None && CustomBuffer8 < 5)
-            {
-                return false;
-            }
-            if(m_mealRecipe4[0] > 0 && m_inputResource1 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer1 -= m_mealRecipe4[0];
-                custom_buffers.m_customBuffer1 = CustomBuffer1;
-            }
-            if(m_mealRecipe4[1] > 0 && m_inputResource2 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer2 -= m_mealRecipe4[1];
-                custom_buffers.m_customBuffer2 = CustomBuffer2;
-            }
-            if(m_mealRecipe4[2] > 0 && m_inputResource3 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer3 -= m_mealRecipe4[2];
-                custom_buffers.m_customBuffer3 = CustomBuffer3;
-            }
-            if(m_mealRecipe4[3] > 0 && m_inputResource4 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer4 -= m_mealRecipe4[3];
-                custom_buffers.m_customBuffer4 = CustomBuffer4;
-            }
-            if(m_mealRecipe4[4] > 0 && m_inputResource5 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer5 -= m_mealRecipe4[4];
-                custom_buffers.m_customBuffer5 = CustomBuffer5;
-            }
-            if(m_mealRecipe4[5] > 0 && m_inputResource6 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer6 -= m_mealRecipe4[5];
-                custom_buffers.m_customBuffer6 = CustomBuffer6;
-            }
-            if(m_mealRecipe4[6] > 0 && m_inputResource7 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer7 -= m_mealRecipe4[6];
-                custom_buffers.m_customBuffer7 = CustomBuffer7;
-            }
-            if(m_mealRecipe4[7] > 0 && m_inputResource8 != TransferManager.TransferReason.None)
-            {
-                CustomBuffer8 -= m_mealRecipe4[7];
-                custom_buffers.m_customBuffer8 = CustomBuffer8;
-            }
-            if(isDelivery)
-            {
-                float CustomBuffer12 = custom_buffers.m_customBuffer12;
-                CustomBuffer12 += 1;
-                custom_buffers.m_customBuffer12 = CustomBuffer12;
-            }
-            else
-            {
-                float CustomBuffer16 = custom_buffers.m_customBuffer16;
-                CustomBuffer16 += 1;
-                custom_buffers.m_customBuffer16 = CustomBuffer16;
-            }
-            CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+            CustomBuffersManager.SetCustomBuffer(buildingID, buf);
+
             return true;
         }
 
@@ -1667,36 +1139,13 @@ namespace IndustriesMeetsSunsetHarbor.AI
             BuildingManager instance2 = Singleton<BuildingManager>.instance;
             var citizen_data = instance.m_citizens.m_buffer[citizen];
             uint containingUnit = citizen_data.GetContainingUnit(citizen, instance2.m_buildings.m_buffer[citizen_data.m_homeBuilding].m_citizenUnits, CitizenUnit.Flags.Home);
-            var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+            var buf = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (containingUnit != 0)
             {
-                if(mealType == 1)
-                {
-                    float m_customBuffer13 = custom_buffers.m_customBuffer13;
-                    m_customBuffer13 -= 1;
-                    custom_buffers.m_customBuffer13 = m_customBuffer13;
-                }
-                else if(mealType == 2)
-                {
-                    float m_customBuffer14 = custom_buffers.m_customBuffer14;
-                    m_customBuffer14 -= 1;
-                    custom_buffers.m_customBuffer14 = m_customBuffer14;
-                }
-                else if(mealType == 3)
-                {
-                    float m_customBuffer15 = custom_buffers.m_customBuffer15;
-                    m_customBuffer15 -= 1;
-                    custom_buffers.m_customBuffer15 = m_customBuffer15;
-                }
-                else if(mealType == 4)
-                {
-                    float m_customBuffer16 = custom_buffers.m_customBuffer16;
-                    m_customBuffer16 -= 1;
-                    custom_buffers.m_customBuffer16 = m_customBuffer16;
-                }
+                buf.m_mealsSitDown[mealType] -= 1;
                 instance.m_units.m_buffer[containingUnit].m_goods += 100;
                 citizen_data.m_flags &= ~Citizen.Flags.NeedGoods;
-                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+                CustomBuffersManager.SetCustomBuffer(buildingID, buf);
             }
         }
 
@@ -1738,8 +1187,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
             DistrictPolicies.Services servicePolicies = instance.m_districts.m_buffer[district].m_servicePolicies;
             DistrictPolicies.CityPlanning cityPlanningPolicies = instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
             DistrictPolicies.Taxation taxationPolicies = instance.m_districts.m_buffer[district].m_taxationPolicies;
-            GetConsumptionRates((ItemClass.Level)data.m_level, new Randomizer(buildingID), 100, out var electricityConsumption, out var waterConsumption, out var sewageAccumulation, out var garbageAccumulation, out var incomeAccumulation, out var mailAccumulation);
-            int taxRate = GetTaxRate(buildingID, ref data, taxationPolicies);
+            GetConsumptionRates(new Randomizer(buildingID), 100, out var electricityConsumption, out var waterConsumption, out var sewageAccumulation, out var garbageAccumulation, out var incomeAccumulation, out var mailAccumulation);
+            int taxRate = GetTaxRate(ref data, taxationPolicies);
             if (electricityConsumption != 0 && instance.IsPolicyLoaded(DistrictPolicies.Policies.ExtraInsulation))
             {
                 if ((servicePolicies & DistrictPolicies.Services.ExtraInsulation) != 0)
@@ -1749,11 +1198,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
             if (m_info.m_class.isCommercialLeisure && (cityPlanningPolicies & DistrictPolicies.CityPlanning.NoLoudNoises) != 0 && Singleton<SimulationManager>.instance.m_isNightTime)
             {
-                electricityConsumption = electricityConsumption + 1 >> 1;
-                waterConsumption = waterConsumption + 1 >> 1;
-                sewageAccumulation = sewageAccumulation + 1 >> 1;
-                garbageAccumulation = garbageAccumulation + 1 >> 1;
-                mailAccumulation = mailAccumulation + 1 >> 1;
+                _ = electricityConsumption + 1 >> 1;
+                _ = waterConsumption + 1 >> 1;
+                _ = sewageAccumulation + 1 >> 1;
+                _ = garbageAccumulation + 1 >> 1;
+                _ = mailAccumulation + 1 >> 1;
                 incomeAccumulation = 0;
             }
             Citizen.BehaviourData behaviour = default;
@@ -1808,7 +1257,31 @@ namespace IndustriesMeetsSunsetHarbor.AI
             }
         }
 
-        public void GetConsumptionRates(ItemClass.Level level, Randomizer r, int productionRate, out int electricityConsumption, out int waterConsumption, out int sewageAccumulation, out int garbageAccumulation, out int incomeAccumulation, out int mailAccumulation)
+        private int AddIncomingOffer(ushort buildingID, ref Building buildingData, TransferManager.TransferReason inputResource, int tempOut, int tempOutOutside, int CustomInputBuffer)
+        {
+            int count = 0;
+            int cargo = 0;
+            int capacity = 0;
+            int outside = 0;
+            base.CalculateGuestVehicles(buildingID, ref buildingData, inputResource, ref count, ref cargo, ref capacity, ref outside);
+            if (outside != 0)
+            {
+                tempOut |= tempOutOutside;
+            }
+            float InputSize1 = CustomInputBuffer + cargo;
+            if (InputSize1 <= m_resourceThreshold)
+            {
+                TransferManager.TransferOffer offer = default;
+                offer.Building = buildingID;
+                offer.Position = buildingData.m_position;
+                offer.Amount = 1;
+                offer.Active = false;
+                Singleton<TransferManager>.instance.AddIncomingOffer(inputResource, offer);
+            }
+            return tempOut;
+        }
+
+        public void GetConsumptionRates(Randomizer r, int productionRate, out int electricityConsumption, out int waterConsumption, out int sewageAccumulation, out int garbageAccumulation, out int incomeAccumulation, out int mailAccumulation)
         {
             electricityConsumption = 0;
             waterConsumption = 0;

@@ -138,34 +138,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     // remove meals from restaurant and add to delivery vehicle
                     foreach(var delivery in VehicleDeliveryList)
                     {
-                        if(delivery.mealType == 1)
-                        {
-                            float m_customBuffer9 = custom_buffers.m_customBuffer9;
-                            m_customBuffer9 -= 1;
-                            data.m_transferSize += 1;
-                            custom_buffers.m_customBuffer9 = m_customBuffer9;
-                        }
-                        else if(delivery.mealType == 2)
-                        {
-                            float m_customBuffer10 = custom_buffers.m_customBuffer10;
-                            m_customBuffer10 -= 1;
-                            data.m_transferSize += 1;
-                            custom_buffers.m_customBuffer10 = m_customBuffer10;
-                        }
-                        else if(delivery.mealType == 3)
-                        {
-                            float m_customBuffer11 = custom_buffers.m_customBuffer11;
-                            m_customBuffer11 -= 1;
-                            data.m_transferSize += 1;
-                            custom_buffers.m_customBuffer11 = m_customBuffer11;
-                        }
-                        else if(delivery.mealType == 4)
-                        {
-                            float m_customBuffer12 = custom_buffers.m_customBuffer12;
-                            m_customBuffer12 -= 1;
-                            data.m_transferSize += 1;
-                            custom_buffers.m_customBuffer12 = m_customBuffer12;
-                        }
+                        custom_buffers.m_mealsDelivery[delivery.mealType] -= 1;
+                        data.m_transferSize += 1;
                     }
                     CustomBuffersManager.SetCustomBuffer(sourceBuilding, custom_buffers);
 		}
