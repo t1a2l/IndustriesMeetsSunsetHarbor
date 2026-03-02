@@ -29,8 +29,12 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 StorageData.WriteUInt16(kvp.Key, Data);
 
                 StorageData.WriteInt32(kvp.Value.m_volumes.Length, Data);
+                StorageData.WriteInt32(kvp.Value.m_mealsSitDown.Length, Data);
+                StorageData.WriteInt32(kvp.Value.m_mealsDelivery.Length, Data);
 
                 StorageData.WriteFloatArrayWithoutLength(kvp.Value.m_volumes, Data);
+                StorageData.WriteFloatArrayWithoutLength(kvp.Value.m_mealsSitDown, Data);
+                StorageData.WriteFloatArrayWithoutLength(kvp.Value.m_mealsDelivery, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -51,9 +55,13 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     CheckStartTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                     ushort buildingId = StorageData.ReadUInt16(Data, ref iIndex);
                     int volumesLength = StorageData.ReadInt32(Data, ref iIndex);
+                    int mealsSitDownLength = StorageData.ReadInt32(Data, ref iIndex);
+                    int mealsDeliveryLength = StorageData.ReadInt32(Data, ref iIndex);
                     CustomBuffersManager.CustomBuffer new_strcut = new()
                     {
-                        m_volumes = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, volumesLength)
+                        m_volumes = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, volumesLength),
+                        m_mealsSitDown = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, mealsSitDownLength),
+                        m_mealsDelivery = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, mealsDeliveryLength)
                     };
                     CustomBuffersManager.CustomBuffers.Add(buildingId, new_strcut);
                     CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);

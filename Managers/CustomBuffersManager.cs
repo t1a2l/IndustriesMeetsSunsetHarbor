@@ -6,9 +6,15 @@ namespace IndustriesMeetsSunsetHarbor.Managers
     {
         public static Dictionary<ushort, CustomBuffer> CustomBuffers;
 
+        public const int RESOURCE_COUNT = 59;
+
         public struct CustomBuffer
         {
             public float[] m_volumes;
+
+            // Meal counters — not transfer reasons, just internal production tracking
+            public float[] m_mealsSitDown;
+            public float[] m_mealsDelivery;
 
             public readonly void Add(int materialId, float amount)
             {
@@ -46,7 +52,9 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 buffer_struct = new CustomBuffer
                 {
-                    m_volumes = new float[52] // 52 materials
+                    m_volumes = new float[53],
+                    m_mealsSitDown = new float[4],
+                    m_mealsDelivery = new float[4]
                 };
                 CustomBuffers.Add(buildingID, buffer_struct);
             }
@@ -101,24 +109,25 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 165 => 31, // Wool
                 166 => 32, // Cotton
                 171 => 33, // ProcessedVegetableOil
-                172 => 34, // ChemicalProducts
-                173 => 35, // Leather
-                174 => 36, // FoodProducts
-                175 => 37, // BeverageProducts
-                176 => 38, // BakedGoods
-                177 => 39, // CannedFish
-                178 => 40, // Furnitures
-                179 => 41, // ElectronicProducts
-                180 => 42, // IndustrialSteel
-                181 => 43, // Tupperware
-                182 => 44, // Toys
-                183 => 45, // PrintedProducts
-                184 => 46, // TissuePaper
-                185 => 47, // Cloths
-                186 => 48, // PetroleumProducts
-                187 => 49, // Cars
-                188 => 50, // Footwear
-                189 => 51, // HouseParts
+                172 => 34, // LiquidConcentrates
+                173 => 35, // ChemicalProducts
+                174 => 36, // Leather
+                175 => 37, // FoodProducts
+                176 => 38, // BeverageProducts
+                177 => 39, // BakedGoods
+                178 => 40, // CannedFish
+                179 => 41, // Furnitures
+                180 => 42, // ElectronicProducts
+                181 => 43, // IndustrialSteel
+                182 => 44, // Tupperware
+                183 => 45, // Toys
+                184 => 46, // PrintedProducts
+                185 => 47, // TissuePaper
+                186 => 48, // Cloths
+                187 => 49, // PetroleumProducts
+                188 => 50, // Cars
+                189 => 51, // Footwear
+                190 => 52, // HouseParts
                 _ => -1,
             };
         }
