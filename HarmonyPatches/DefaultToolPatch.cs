@@ -93,6 +93,14 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     WorldInfoPanel.Hide<FarmingWorldInfoPanel>();
                 }
             }
+            else
+            {
+                WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();
+                WorldInfoPanel.Hide<ExtendedUniqueFactoryWorldInfoPanel>();
+                WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
+                WorldInfoPanel.Hide<RestaurantWorldInfoPanel>();
+                WorldInfoPanel.Hide<FarmingWorldInfoPanel>();
+            }
             return true;
         }
     }
