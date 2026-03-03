@@ -196,6 +196,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 ExtendedTransferManager.ProcessedVegetableOil,
                 ExtendedTransferManager.ChemicalProducts,
                 ExtendedTransferManager.Leather,
+                ExtendedTransferManager.LiquidConcentrates,
                 TransferManager.TransferReason.Paper,
                 TransferManager.TransferReason.PlanedTimber,
                 TransferManager.TransferReason.Petroleum,
