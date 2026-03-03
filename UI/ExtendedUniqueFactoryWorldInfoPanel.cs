@@ -179,6 +179,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_expenses = Find<UILabel>("ExpensesLabel");
             m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
 
+            Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                Hide();
+            };
+
             var _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
 
             var City_VariationPanel = _cityServiceWorldInfoPanel.Find<UIPanel>("VariationPanel");

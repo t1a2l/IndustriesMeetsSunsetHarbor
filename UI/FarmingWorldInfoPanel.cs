@@ -83,6 +83,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 tabStrip.eventSelectedIndexChanged += OnTabChanged;
 
             BuildFarmingDiagram();
+
+            Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                Hide();
+            };
         }
 
         private void OnTabChanged(UIComponent c, int index)

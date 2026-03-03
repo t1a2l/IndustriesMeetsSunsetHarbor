@@ -314,6 +314,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_originalHeight = component.height;
             m_resourceDescription = Find<UILabel>("ResourceDescription");
             m_resourceSprite = Find<UISprite>("ResourceIcon");
+            Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                Hide();
+            };
         }
 
         private void OnDropdownModeChanged(UIComponent component, int index)
@@ -332,17 +336,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void RefreshDropdownLists()
         {
-            //var buildingData = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building];
-            //DistrictManager instance = Singleton<DistrictManager>.instance;
-            //byte b = instance.GetPark(buildingData.m_position);
-            //if (b != 0 && instance.m_parks.m_buffer[b].IsIndustry && instance.m_parks.m_buffer[b].)
-            //{
-            //    b = 0;
-            //}
-            string[] array = new string[m_transferReasons.Length];
-            for (int i = 0; i < m_transferReasons.Length; i++)
+            BuildingInfo buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info;
+            bool isFarming = buildingInfo.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming;
+            TransferManager.TransferReason[] transferReasons;
+            if (isFarming)
             {
-                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_transferReasons[i].ToString());
+                transferReasons = m_transferReasonsFarming;
+            }
+            else
+            {
+                transferReasons = m_transferReasons;
+            }
+
+            string[] array = new string[transferReasons.Length];
+            for (int i = 0; i < transferReasons.Length; i++)
+            {
+                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", transferReasons[i].ToString());
                 array[i] = text;
             }
             m_dropdownResource.items = array;
@@ -358,13 +367,24 @@ namespace IndustriesMeetsSunsetHarbor.UI
         protected override void OnSetTarget()
         {
             base.OnSetTarget();
-            WarehouseAI warehouseAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as WarehouseAI;
+            BuildingInfo buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info;
+            WarehouseAI warehouseAI = buildingInfo.m_buildingAI as WarehouseAI;
             m_resourcePanel.isVisible = warehouseAI.m_storageType == TransferManager.TransferReason.None;
             component.height = !m_resourcePanel.isVisible ? m_originalHeight - m_resourcePanel.height : m_originalHeight;
             if (m_resourcePanel.isVisible)
             {
+                bool isFarming = buildingInfo.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming;
+                TransferManager.TransferReason[] transferReasons;
+                if (isFarming)
+                {
+                    transferReasons = m_transferReasonsFarming;
+                }
+                else
+                {
+                    transferReasons = m_transferReasons;
+                }
+
                 int num = 0;
-                TransferManager.TransferReason[] transferReasons = m_transferReasons;
                 foreach (TransferManager.TransferReason transferReason in transferReasons)
                 {
                     if (transferReason == warehouseAI.GetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]))
@@ -374,6 +394,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     }
                     num++;
                 }
+
             }
             m_dropdownMode.selectedIndex = (int)WarehouseMode;
         }
@@ -422,7 +443,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
             m_resourceDescription.isVisible = transferReason != TransferManager.TransferReason.None;
             m_resourceDescription.text = GenerateResourceDescription(transferReason, isForWarehousePanel: true);
-            m_resourceSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(actualTransferReason);
+            m_resourceSprite.atlas = GetResourceAtlas(actualTransferReason);
+            m_resourceSprite.spriteName = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(actualTransferReason);
             string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)warehouseAI.m_storageCapacity, actualTransferReason));
             m_buffer.tooltip = text;
             m_capacityLabel.text = text;
@@ -810,6 +832,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_workersInfoLabel.text = StringUtils.SafeFormat(Locale.Get("ZONEDBUILDING_WORKERS"), num3, num4);
         }
 
+        private UITextureAtlas GetResourceAtlas(TransferManager.TransferReason reason)
+        {
+            if (reason != TransferManager.TransferReason.None)
+            {
+                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                {
+                    return MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                }
+            }
+            return UITextures.InGameAtlas;
+        }
+
         public static string GenerateResourceDescription(TransferManager.TransferReason resource, bool isForWarehousePanel = false)
         {
             string text = Locale.Get("RESOURCEDESCRIPTION", resource.ToString());
@@ -839,5 +873,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             return text + "- " + Locale.Get("RESOURCE_STOREINWAREHOUSE");
         }
+
     }
 }

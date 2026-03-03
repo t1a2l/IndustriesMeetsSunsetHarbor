@@ -147,6 +147,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_deliveryMealsType1BigArrow.relativePosition = new Vector3(155f, 200f);
             m_deliveryMealsType1Capacity.relativePosition = new Vector3(100f, 255f);
 
+            Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                Hide();
+            };
+
             var Diagram = Find<UIPanel>("Diagram");
 
             GameObject BigArrow2 = Instantiate(m_deliveryMealsType1BigArrow.gameObject, Diagram.transform);

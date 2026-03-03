@@ -47,7 +47,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         WorldInfoPanel.Hide<ExtendedWarehouseWorldInfoPanel>();
                         return false;
                     }
-                    else if (warehouseAI != null || warehouseStationAI != null)
+                    else if ((warehouseAI != null || warehouseStationAI != null) &&
+                        (info.m_class.m_subService == ItemClass.SubService.None ||
+                        info.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming))
                     {
                         WorldInfoPanel.Show<ExtendedWarehouseWorldInfoPanel>(position, id);
                         WorldInfoPanel.Hide<ExtendedProcessingFacilityWorldInfoPanel>();

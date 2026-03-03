@@ -278,6 +278,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_arrow3 = Find<UISprite>("Arrow3");
             m_inputOutputSection = Find<UIPanel>("InputOutputSection");
             m_layout = Find<UIPanel>("Layout");
+            Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                Hide();
+            };
             // 26, 26 arrow
         }
 
