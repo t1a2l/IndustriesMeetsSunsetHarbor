@@ -40,15 +40,20 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                                 continue;
                             }
                         }
-                        if (newAIField != null && newAIField.GetType().Equals(fieldInfo.GetType()))
+                        if (newAIField != null && newAIField.FieldType.Equals(fieldInfo.FieldType))
                         {
                             var obj = fieldInfo.GetValue(src);
                             if(obj != null && obj.ToString() == "LuxuryProducts") continue;
                             newAIField.SetValue(dst, fieldInfo.GetValue(src));
                         }
                     }
+                    catch (ArgumentException)
+                    {
+                        // type mismatch — skip silently
+                    }
                     catch (NullReferenceException)
                     {
+                        // destroyed Unity object edge case
                     }
                 }
             }
