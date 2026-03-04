@@ -18,19 +18,19 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var oldAI = __instance.GetComponent<PrefabAI>();
                 if (__instance.m_class.m_service == ItemClass.Service.Fishing)
                 {
-                    if (__instance.name.Contains("Fish Market 01") && __instance.GetAI() is not ResourceMarketAI)
+                    if (__instance.name.Contains("Fish Market 01") && oldAI is not ResourceMarketAI)
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<ResourceMarketAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                     }
-                    else if ((__instance.name.Contains("Aqua Crops Extractor") || __instance.name.Contains("Aqua Fish Extractor")) && __instance.GetAI() is not AquacultureExtractorAI)
+                    if ((__instance.name.Contains("Aqua Crops Extractor") || __instance.name.Contains("Aqua Fish Extractor")) && oldAI is not AquacultureExtractorAI)
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureExtractorAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                     }
-                    else if (__instance.name.Contains("Aquaculture") && __instance.name.Contains("Dock") && __instance.GetAI() is not AquacultureFarmAI)
+                    if (__instance.name.Contains("Aquaculture") && __instance.name.Contains("Dock") && oldAI is not AquacultureFarmAI)
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
@@ -56,7 +56,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             }
                         }                        
                     }
-                    else if (__instance.GetAI() is FishingHarborAI fishingHarborAI)
+                    if (oldAI is FishingHarborAI fishingHarborAI)
                     {
                         if (__instance.name.Contains("Fishing Boat Harbor 02"))
                         {
@@ -75,7 +75,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             fishingHarborAI.m_outputResource = ExtendedTransferManager.Anchovy;
                         }
                     }
-                    else if (__instance.GetAI() is FishFarmAI fishFarmAI && !__instance.name.Contains("Sub"))
+                    if (oldAI is FishFarmAI fishFarmAI && !__instance.name.Contains("Sub"))
                     {
                         if (__instance.name.Contains("Fish Farm 01"))
                         {
@@ -91,9 +91,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         }
                     }
                 }
-                else if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
+                if (__instance.m_class.m_service == ItemClass.Service.PlayerIndustry)
                 {
-                    if (__instance.GetAI() is UniqueFactoryAI && !__instance.name.Contains("Sub"))
+                    if (oldAI is UniqueFactoryAI && !__instance.name.Contains("Sub"))
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedUniqueFactoryAI>();
@@ -239,7 +239,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             }
                         }
                     }
-                    else if (__instance.name.Contains("Animal Pasture") && __instance.GetAI() is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Contains("Animal Pasture") && oldAI is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
@@ -270,7 +270,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             }
                         }
                     }
-                    else if (__instance.GetAI() is ExtractingFacilityAI extractingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (oldAI is ExtractingFacilityAI extractingFacilityAI && !__instance.name.Contains("Sub"))
                     {
                         if (__instance.name.Contains("Crop Field"))
                         {
@@ -292,7 +292,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             extractingFacilityAI.m_outputResource = ExtendedTransferManager.Fruits;
                         }
                     }
-                    else if (__instance.name.Contains("Cattle Shed") && __instance.GetAI() is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Contains("Cattle Shed") && oldAI is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
@@ -307,7 +307,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Cows;
                         }
                     }
-                    else if (__instance.name.Contains("Slaughter House") && __instance.GetAI() is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (__instance.name.Contains("Slaughter House") && oldAI is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
                     {
                         Object.DestroyImmediate(oldAI);
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
@@ -328,7 +328,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         }
                     }
                 }
-                else if (__instance.m_class.m_service == ItemClass.Service.Commercial)
+                if (__instance.m_class.m_service == ItemClass.Service.Commercial)
                 {
                     var component = __instance.GetComponent<PrefabAI>();
                     if (component != null && component is RestaurantAI)
@@ -341,7 +341,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             catch (Exception e)
             {
-                LogHelper.Error(e.ToString());
+                LogHelper.Error("InitializePrefabBuildingPatch Error: " + e.ToString());
             }
         }
 

@@ -31,25 +31,11 @@ namespace IndustriesMeetsSunsetHarbor.Utils
                     newAIFieldDic.TryGetValue(fieldInfo.Name, out FieldInfo newAIField);
                     try
                     {
-                        if (fieldInfo.FieldType.DeclaringType != null && newAIField != null && newAIField.FieldType.DeclaringType != null)
-                        {
-                            var isTransferManager = fieldInfo.FieldType.DeclaringType.Name == "TransferManager";
-                            var isExtendedTransferManager = newAIField.FieldType.DeclaringType.Name == "ExtendedTransferManager";
-                            if (isTransferManager && isExtendedTransferManager)
-                            {
-                                continue;
-                            }
-                        }
                         if (newAIField != null && newAIField.FieldType.Equals(fieldInfo.FieldType))
                         {
                             var obj = fieldInfo.GetValue(src);
-                            if(obj != null && obj.ToString() == "LuxuryProducts") continue;
                             newAIField.SetValue(dst, fieldInfo.GetValue(src));
                         }
-                    }
-                    catch (ArgumentException)
-                    {
-                        // type mismatch — skip silently
                     }
                     catch (NullReferenceException)
                     {
