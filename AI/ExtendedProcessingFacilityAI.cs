@@ -542,6 +542,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
+            if (material == TransferManager.TransferReason.None)
+            {
+                base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
+                return;
+            }
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             if (Array.IndexOf(m_inputResource1, material) != -1)
             {
@@ -1282,8 +1287,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
         private void CheckCapacity(ushort buildingID, ref Building buildingData)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            int outputBufferSize = GetOutputBufferSize1(buildingID, ref buildingData) + GetOutputBufferSize2(buildingID, ref buildingData);
-            int customBuffer = (int)(custom_buffers.Get((int)m_outputResource1) + custom_buffers.Get((int)m_outputResource2));
+            int outputBufferSize = 0;
+            int customBuffer = 0;
+            if(m_outputResource1 != TransferManager.TransferReason.None)
+            {
+                outputBufferSize += GetOutputBufferSize1(buildingID, ref buildingData);
+                customBuffer += (int)custom_buffers.Get((int)m_outputResource1);
+            }
+            if(m_outputResource2 != TransferManager.TransferReason.None)
+            {
+                outputBufferSize += GetOutputBufferSize2(buildingID, ref buildingData);
+                customBuffer += (int)custom_buffers.Get((int)m_outputResource2);
+            }
             if (customBuffer * 3 >= outputBufferSize * 2)
             {
                 if ((buildingData.m_flags & Building.Flags.CapacityFull) != Building.Flags.CapacityFull)

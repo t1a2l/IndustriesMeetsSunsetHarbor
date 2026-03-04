@@ -982,11 +982,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     {
                         label = reason.ToString();
                     }
+                    var go = new GameObject();
+                    MakeStorageBox(go, label, reason, cx, out UIProgressBar buffer);
+                    cx += 200f;
+                    buffer.value = custom_buffers.Get((int)reason);
                 }
-                var go = new GameObject();
-                MakeStorageBox(go, label, reason, cx, out UIProgressBar buffer);
-                cx += 200f;
-                buffer.value = custom_buffers.Get((int)reason);
             }
 
             // Show/hide on hover

@@ -433,36 +433,36 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource1);
-                    capacity = restaurantAI.m_inputCapacity1;
+                    amount = restaurantAI.m_inputResource1 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource1) : 0;
+                    capacity = restaurantAI.m_inputResource1 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity1 : 0;
                     break;
                 case "m_inputResource2":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource2);
-                    capacity = restaurantAI.m_inputCapacity2;
+                    amount = restaurantAI.m_inputResource2 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource2) : 0;
+                    capacity = restaurantAI.m_inputResource2 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity2 : 0;
                     break;
                 case "m_inputResource3":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource3);
-                    capacity = restaurantAI.m_inputCapacity3;
+                    amount = restaurantAI.m_inputResource3 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource3) : 0;
+                    capacity = restaurantAI.m_inputResource3 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity3 : 0;
                     break;
                 case "m_inputResource4":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource4);
-                    capacity = restaurantAI.m_inputCapacity4;
+                    amount = restaurantAI.m_inputResource4 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource4) : 0;
+                    capacity = restaurantAI.m_inputResource4 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity4 : 0;
                     break;
                 case "m_inputResource5":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource5);
-                    capacity = restaurantAI.m_inputCapacity5;
+                    amount = restaurantAI.m_inputResource5 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource5) : 0;
+                    capacity = restaurantAI.m_inputResource5 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity5 : 0;
                     break;
                 case "m_inputResource6":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource6);
-                    capacity = restaurantAI.m_inputCapacity6;
+                    amount = restaurantAI.m_inputResource6 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource6) : 0;
+                    capacity = restaurantAI.m_inputResource6 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity6 : 0;
                     break;
                 case "m_inputResource7":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource7);
-                    capacity = restaurantAI.m_inputCapacity7;
+                    amount = restaurantAI.m_inputResource7 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource7) : 0;
+                    capacity = restaurantAI.m_inputResource7 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity7 : 0;
                     break;
                 case "m_inputResource8":
-                    amount = custom_buffers.Get((int)restaurantAI.m_inputResource8);
-                    capacity = restaurantAI.m_inputCapacity8;
+                    amount = restaurantAI.m_inputResource8 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource8) : 0;
+                    capacity = restaurantAI.m_inputResource8 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity8 : 0;
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);

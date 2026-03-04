@@ -507,6 +507,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void ModifyMaterialBuffer(ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
+            if(material == TransferManager.TransferReason.None)
+            {
+                base.ModifyMaterialBuffer(buildingID, ref data, material, ref amountDelta);
+                return;
+            }
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
             switch (material)
             {
