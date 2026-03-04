@@ -142,6 +142,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UIPanel m_inputOutputSection;
 
+        private UIPanel m_VariationSelectorContainer;
+
+        private VariationSelector m_VariationSelector;
+
         private bool m_needResetTarget;
 
         public UIComponent MovingPanel
@@ -211,6 +215,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             Find<UILabel>("AcademicWorksPanelTitle").isVisible = false;
             Find<UIPanel>("BuildingVariationContainer").isVisible = false;
             Find<UIButton>("OpenParkPanelButton").isVisible = false;
+            Find<UIPanel>("VehicleSelectorContainer").isVisible = false;
+            Find<UIPanel>("AdditionalVehicleSelectorContainer").isVisible = false;
+            Find<UIButton>("SpecialAction").isVisible = false;
+            Find<UIButton>("DeleteFishingRouteButton").isVisible = false;
 
             m_ShowIndustryInfoButton = Find<UIButton>("OpenIndustryPanelButton");
             m_Parkbuttons = Find<UIPanel>("ParkButtons");
@@ -278,9 +286,23 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_arrow3 = Find<UISprite>("Arrow3");
             m_inputOutputSection = Find<UIPanel>("InputOutputSection");
             m_layout = Find<UIPanel>("Layout");
+            m_VariationSelectorContainer = Find<UIPanel>("BuildingVariationContainer");
+            m_VariationSelector = m_VariationSelectorContainer.GetComponent<VariationSelector>();
             Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
             {
                 Hide();
+            };
+            m_MoveButton.eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                OnRelocateBuilding();
+            };
+            m_RebuildButton.eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                OnRebuildClicked();
+            };
+            m_ShowIndustryInfoButton.eventClick += delegate (UIComponent c, UIMouseEventParameter r)
+            {
+                OpenIndustryInfoPanel();
             };
             // 26, 26 arrow
         }
@@ -478,10 +500,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             if (m_extendedProcessingFacilityAI.m_inputResource1.Length != 0)
             {
                 m_inputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_inputResource1[0]);
-                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource1.ToString());
+                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource1[0].ToString());
                 m_inputSprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource1[0]);
                 m_inputLabel.text = text2;
-                m_inputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                m_inputSprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource1[0]);
                 m_arrow1.size = new Vector2(26f, 26f);
                 m_arrow1.relativePosition = new Vector2(18f, 7f);
                 m_arrow2.size = new Vector2(26f, 26f);
@@ -492,10 +514,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_inputOutputSection.size = new Vector2(484f, 95f);
                 m_layout.size = new Vector2(405f, 95f);
                 m_inputSection.size = new Vector2(200f, 90f);
-                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource2.ToString());
+                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource2[0].ToString());
                 var spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource2[0]);
-                var atlas2 = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource1[0]);
-                MakeStorageInput(new GameObject(), text2, spriteName, atlas2, out m_input2Buffer);
+                var atlas2 = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource2[0]);
+                MakeStorageInput(new GameObject(), text2, spriteName, atlas2, m_storageInput.relativePosition.x, out m_input2Buffer);
                 m_arrow1.size = new Vector2(56f, 26f);
                 m_arrow1.relativePosition = new Vector2(18f, 18f);
                 m_arrow2.size = new Vector2(56f, 26f);
@@ -505,7 +527,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_outputResource1);
             string text3 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource1.ToString());
             m_outputLabel.text = text3;
-            m_outputSprite.spriteName = IndustryWorldInfoPanel.ResourceSpriteName(m_extendedProcessingFacilityAI.m_outputResource1);
+            m_outputSprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource1);
+            m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_outputResource1);
 
             if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0 && m_extendedProcessingFacilityAI.m_outputResource2 == TransferManager.TransferReason.None)
             {
@@ -521,8 +544,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 m_outputSection.size = new Vector2(200f, 90f);
                 text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource2.ToString());
                 var atlas2 = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource2);
-                var spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource2[0]);
-                MakeStorageOutput(new GameObject(), text4, spriteName, atlas2, out m_output2Buffer);
+                var spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_outputResource2);
+                MakeStorageOutput(new GameObject(), text4, spriteName, atlas2, m_storageOutput.relativePosition.x, out m_output2Buffer);
                 m_arrow3.size = new Vector2(56f, 26f);
                 m_arrow3.relativePosition = new Vector2(185f, 18f);
             }
@@ -533,6 +556,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_arrow3.tooltip = tooltip;        
             
             m_ShowIndustryInfoButton.isVisible = true;
+            m_VariationSelectorContainer.isVisible = true;
         }
 
         private bool CanBuildingHaveRoutes(ushort id)
@@ -638,6 +662,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     m_storageOutput2.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)outputBufferValue2), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize2, m_extendedProcessingFacilityAI.m_outputResource2));
                 }
 
+                m_VariationSelector.buildingId = building;
+                m_VariationSelector.Refresh();
                 base.component.size = m_wrapper.size;
                 m_mainBottom.width = m_wrapper.width;
                 m_BuildingInfo.width = m_right.width;
@@ -908,24 +934,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return color;
         }
 
-        private TransferManager.TransferReason[] GetInputResource(ref List<string> items, int resourceIndex)
+        private void MakeStorageInput(GameObject gameObject, string label, string iconSprite, UITextureAtlas atlas, float CX, out UIProgressBar buffer)
         {
-            ExtendedProcessingFacilityAI extendedProcessingFacilityAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedProcessingFacilityAI;
-            return items[resourceIndex] switch
-            {
-                "m_inputResource1" => extendedProcessingFacilityAI.m_inputResource1,
-                "m_inputResource2" => extendedProcessingFacilityAI.m_inputResource2,
-                _ => []
-            };
-        }
-
-        private void MakeStorageInput(GameObject gameObject, string label, string iconSprite, UITextureAtlas atlas, out UIProgressBar buffer)
-        {
-            gameObject = Instantiate(m_storageInput.gameObject, m_inputOutputSection.transform, false);
+            gameObject = Instantiate(m_storageInput.gameObject, m_inputSection.transform, false);
             m_storageInput2 = gameObject.GetComponent<UIPanel>();
             m_storageInput2.name = "StorageInput2";
             m_storageInput2.anchor = UIAnchorStyle.None;
-            m_storageInput2.relativePosition = new Vector3(16f, 50f);
+            m_storageInput2.relativePosition = new Vector3(CX, 50f);
             m_storageInput2.autoLayout = false;
             m_storageInput2.size = new Vector2(160f, 35f);
             m_storageInput2.backgroundSprite = "";
@@ -951,13 +966,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             lbl.textAlignment = UIHorizontalAlignment.Left;
         }
 
-        private void MakeStorageOutput(GameObject gameObject, string label, string iconSprite, UITextureAtlas atlas, out UIProgressBar buffer)
+        private void MakeStorageOutput(GameObject gameObject, string label, string iconSprite, UITextureAtlas atlas, float CX, out UIProgressBar buffer)
         {
-            gameObject = Instantiate(m_storageOutput.gameObject, m_inputOutputSection.transform, false);
+            gameObject = Instantiate(m_storageOutput.gameObject, m_outputSection.transform, false);
             m_storageOutput2 = gameObject.GetComponent<UIPanel>();
             m_storageOutput2.name = "StorageOutput2";
             m_storageOutput2.anchor = UIAnchorStyle.None;
-            m_storageOutput2.relativePosition = new Vector3(16f, 50f);
+            m_storageOutput2.relativePosition = new Vector3(CX, 50f);
             m_storageOutput2.autoLayout = false;
             m_storageOutput2.size = new Vector2(160f, 35f);
             m_storageOutput2.backgroundSprite = "";

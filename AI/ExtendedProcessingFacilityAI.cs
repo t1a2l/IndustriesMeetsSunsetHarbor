@@ -1421,12 +1421,18 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetLocalizedStats(ushort buildingID, ref Building data)
         {
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
-            var index1 = CustomBuffersManager.GetIndex((int)m_outputResource1);
-            int outputBuffer1 = (int)custom_buffers.m_volumes[index1];
-            var index2 = CustomBuffersManager.GetIndex((int)m_outputResource2);
-            int outputBuffer2 = (int)custom_buffers.m_volumes[index2];
-            int output1_production_rate = outputBuffer1 * m_outputRate1 * 16 / 100;
-            int output2_production_rate = outputBuffer2 * m_outputRate2 * 16 / 100;
+            int output1_production_rate = 0;
+            int output2_production_rate = 0;
+            if (m_outputResource1 != TransferManager.TransferReason.None)
+            {
+                int outputBuffer1 = (int)custom_buffers.Get((int)m_outputResource1);
+                output1_production_rate = outputBuffer1 * m_outputRate1 * 16 / 100;
+            }
+            if (m_outputResource2 != TransferManager.TransferReason.None)
+            {
+                int outputBuffer2 = (int)custom_buffers.Get((int)m_outputResource2);
+                output2_production_rate = outputBuffer2 * m_outputRate1 * 16 / 100;
+            }
             string text = LocaleFormatter.FormatGeneric("AIINFO_INDUSTRY_PRODUCTION_RATE", [output1_production_rate, output2_production_rate]);
             if (m_outputResource1 != TransferManager.TransferReason.None && m_outputVehicleCount1 != 0)
             {
