@@ -5,6 +5,7 @@ using ColossalFramework;
 using ColossalFramework.Globalization;
 using ColossalFramework.UI;
 using ICities;
+using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
 using UnityEngine;
 
@@ -106,6 +107,20 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private TransferManager.TransferReason[] m_transferReasons;
 
         private TransferManager.TransferReason[] m_transferReasonsFarming;
+
+        private UILabel m_qualityHighLabel;
+
+        private UILabel m_qualityMedLabel;
+
+        private UILabel m_qualityLowLabel;
+
+        private UISprite m_qualityBarHigh;
+
+        private UISprite m_qualityBarMed;
+
+        private UISprite m_qualityBarLow;
+
+        private UIPanel m_qualityRow;
 
         private readonly WarehouseModes[] m_warehouseModes =
         [
@@ -270,6 +285,33 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_emptyingOldResource = Find<UIPanel>("EmptyingOldResource");
             m_buffer = Find<UIPanel>("Buffer");
             m_capacityLabel = Find<UILabel>("MaxCapacityLabel");
+
+            m_qualityRow = m_resourcePanel.AddUIComponent<UIPanel>();
+            m_qualityRow.width = m_resourcePanel.width - 16f;
+            m_qualityRow.height = 60f; // enough for bar + 3 label rows
+            m_qualityRow.isVisible = false; // hidden by default
+
+            // Three bar segments — anchored left, widths set dynamically on refresh
+            m_qualityBarHigh = m_qualityRow.AddUIComponent<UISprite>();
+            m_qualityBarHigh.spriteName = "WhiteRect"; // flat white, tinted by .color
+            m_qualityBarHigh.color = new Color32(255, 215, 0, 255);   // gold
+            m_qualityBarHigh.height = 8f;
+
+            m_qualityBarMed = m_qualityRow.AddUIComponent<UISprite>();
+            m_qualityBarHigh.spriteName = "WhiteRect"; // flat white, tinted by .color
+            m_qualityBarMed.color = new Color32(192, 192, 192, 255);  // silver
+            m_qualityBarMed.height = 8f;
+
+            m_qualityBarLow = m_qualityRow.AddUIComponent<UISprite>();
+            m_qualityBarHigh.spriteName = "WhiteRect"; // flat white, tinted by .color
+            m_qualityBarLow.color = new Color32(205, 127, 50, 255);   // bronze
+            m_qualityBarLow.height = 8f;
+
+            // Labels
+            m_qualityHighLabel = m_qualityRow.AddUIComponent<UILabel>();
+            m_qualityMedLabel = m_qualityRow.AddUIComponent<UILabel>();
+            m_qualityLowLabel = m_qualityRow.AddUIComponent<UILabel>();
+
             m_Status = Find<UILabel>("Status");
             m_workersTooltip = Find<UIPanel>("WorkersTooltip");
             m_workersTooltip.Hide();
@@ -453,6 +495,38 @@ namespace IndustriesMeetsSunsetHarbor.UI
             if (warehouseAI != null)
             {
                 UpdateWorkers(warehouseAI, ref instance.m_buildings.m_buffer[building]);
+            }
+
+            if(IsUniqueMaterialType(actualTransferReason))
+            {
+                // In your warehouse panel refresh:
+                var custom_buffers = CustomBuffersManager.GetCustomBuffer(building);
+
+                var qualityBuckets = custom_buffers.GetQualityBuckets(actualTransferReason);
+                int total = qualityBuckets[0] + qualityBuckets[1] + qualityBuckets[2];
+
+                if (total > 0)
+                {
+                    float width = m_qualityRow.width;
+                    m_qualityBarHigh.width = width * qualityBuckets[0] / total;
+                    m_qualityBarMed.width = width * qualityBuckets[1] / total;
+                    m_qualityBarLow.width = width * qualityBuckets[2] / total;
+
+                    // Position segments left to right
+                    m_qualityBarHigh.relativePosition = new Vector3(0, 0);
+                    m_qualityBarMed.relativePosition = new Vector3(m_qualityBarHigh.width, 0);
+                    m_qualityBarLow.relativePosition = new Vector3(m_qualityBarHigh.width + m_qualityBarMed.width, 0);
+
+                    m_qualityHighLabel.text = $"★★★ High    {qualityBuckets[0]}t  ({qualityBuckets[0] * 100 / total}%)";
+                    m_qualityMedLabel.text = $"★★  Medium  {qualityBuckets[1]}t  ({qualityBuckets[1] * 100 / total}%)";
+                    m_qualityLowLabel.text = $"★   Low     {qualityBuckets[2]} t  ( {qualityBuckets[2] * 100 / total}%)";
+
+                    m_qualityRow.isVisible = true;
+                }
+                else
+                {
+                    m_qualityRow.isVisible = false; // hide for non-quality resources
+                }
             }
         }
 
@@ -873,6 +947,27 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 return text + "- " + LocaleFormatter.FormatGeneric("RESOURCE_STOREINSTORAGEBUILDING", Locale.Get("WAREHOUSEPANEL_RESOURCE", resource.ToString()));
             }
             return text + "- " + Locale.Get("RESOURCE_STOREINWAREHOUSE");
+        }
+
+        private bool IsUniqueMaterialType(TransferManager.TransferReason material)
+        {
+            return material == ExtendedTransferManager.BakedGoods ||
+                material == ExtendedTransferManager.CannedFish ||
+                material == ExtendedTransferManager.Cars ||
+                material == ExtendedTransferManager.ChemicalProducts ||
+                material == ExtendedTransferManager.Cloths ||
+                material == ExtendedTransferManager.ElectronicProducts ||
+                material == ExtendedTransferManager.FoodProducts ||
+                material == ExtendedTransferManager.Footwear ||
+                material == ExtendedTransferManager.Furnitures ||
+                material == ExtendedTransferManager.HouseParts ||
+                material == ExtendedTransferManager.IndustrialSteel ||
+                material == ExtendedTransferManager.PetroleumProducts ||
+                material == ExtendedTransferManager.PrintedProducts ||
+                material == ExtendedTransferManager.Toys ||
+                material == ExtendedTransferManager.TissuePaper ||
+                material == ExtendedTransferManager.Tupperware ||
+                material == TransferManager.TransferReason.LuxuryProducts;
         }
 
     }
