@@ -73,6 +73,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             ExtendedTransferManager.Tuna,
             ExtendedTransferManager.Algae,
             ExtendedTransferManager.Seaweed,
+            ExtendedTransferManager.Mussels,
             ExtendedTransferManager.Trout,
             ExtendedTransferManager.Milk,
             ExtendedTransferManager.Pork,
