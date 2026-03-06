@@ -43,10 +43,32 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-        [HarmonyPatch(typeof(CommercialBuildingAI), "ProduceGoods")]
+        [HarmonyPatch(typeof(CommercialBuildingAI), "SimulationStepActive")]
         [HarmonyPostfix]
-        public static void Postfix(ushort buildingID, ref Building buildingData)
+        public static void SimulationStepActive(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
         {
+            // Only apply quality bonus if building has received unique factory goods
+            if (buildingData.m_education1 == 0)
+            {
+                return;
+            }
+
+            if (buildingData.m_education1 > 0)
+            {
+                // Faster decay default — quality effect fades in ~30 days
+                var decay = (Singleton<SimulationManager>.instance.m_currentFrameIndex & 7) == 0;
+                if (Mod.IsRealTimeEnabled)
+                {
+                    // Slower decay — fades in ~1 year
+                    decay = (Singleton<SimulationManager>.instance.m_currentFrameIndex & 31) == 0;
+                }
+                if (decay)
+                {
+                    // 255 steps = ~255 days of quality memory after last delivery
+                    buildingData.m_education1--;
+                }
+            }
+
             float quality = buildingData.m_education2 / 2f; // 0.0 to 1.0
             float visitMultiplier = Mathf.Lerp(0.4f, 1.0f, quality); // 40%–100%
 
@@ -82,6 +104,8 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 
         private static void AccumulateQuality(ref Building data, byte incomingQuality, int amount, int bufferCapacity)
         {
+            data.m_education1 = 255; // mark as having received quality goods
+
             // weighted average: blend existing quality toward incoming
             // weight = amount delivered vs total buffer size (smoothing factor)
             float weight = Mathf.Clamp01(amount / (float)Mathf.Max(1, bufferCapacity));
