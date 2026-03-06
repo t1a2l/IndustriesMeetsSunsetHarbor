@@ -16,9 +16,13 @@ namespace IndustriesMeetsSunsetHarbor
 
         public static float VisitChance = 50f;
 
-        string IUserMod.Name => "Industries meets Sunset Harbor Mod";
+        public static bool IsRealTimeEnabled = false;
 
-        string IUserMod.Description => "Mix Industries and Sunset Harbor together";
+        public static string ModName => "Industries meets Sunset Harbor Mod";
+
+        public string Name => ModName;
+
+        public string Description => "Mix Industries and Sunset Harbor together";
 
         public void OnEnabled()
         {
@@ -63,13 +67,22 @@ namespace IndustriesMeetsSunsetHarbor
                 return;
             }
             inGame = true;
+            var realTime = ModUtils.GetEnabledAssembly("RealTime");
+            if(realTime != null)
+            {
+                IsRealTimeEnabled = true;
+                LogHelper.Information("Real Time Detected, enabling Real Time support");
+            }
+            else
+            {
+                LogHelper.Information("Real Time Not Detected, skipping Real Time support");
+            }
         }
 
         public override void OnLevelUnloading()
         {
             base.OnLevelUnloading();
-            if (!inGame)
-                return;
+            if (!inGame) return;
             inGame = false;
             AquacultureFarmManager.Deinit();
             AquacultureExtractorManager.Deinit();

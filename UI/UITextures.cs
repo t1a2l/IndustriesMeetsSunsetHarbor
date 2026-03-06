@@ -208,7 +208,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         /// <returns>Read-only file stream.</returns>
         private static Stream OpenResourceFile(string fileName)
         {
-            string path = Path.Combine(Utils.Utils.AssemblyPath, "Resources");
+            string path = Path.Combine(ModUtils.GetAssemblyPath(), "Resources");
             return File.OpenRead(Path.Combine(path, fileName));
         }
     }
