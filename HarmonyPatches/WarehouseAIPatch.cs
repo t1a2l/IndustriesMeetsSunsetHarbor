@@ -212,5 +212,78 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             ReversePatches.BaseProduceGoods(__instance, buildingID, ref buildingData, ref frameData, productionRate, finalProductionRate, ref behaviour, aliveWorkerCount, totalWorkerCount, workPlaceCount, aliveVisitorCount, totalVisitorCount, visitPlaceCount);
             return false;
         }
+
+        [HarmonyPatch(typeof(WarehouseAI), "ModifyMaterialBuffer")]
+        [HarmonyPrefix]
+        public static bool ModifyMaterialBuffer(WarehouseAI __instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
+        {
+            if (material == __instance.GetActualTransferReason(buildingID, ref data) && IsUniqueMaterialType(material))
+            {
+                int num = data.m_customBuffer1 * 100;
+                amountDelta = Mathf.Clamp(amountDelta, -num, __instance.m_storageCapacity - num);
+                data.m_customBuffer1 = (ushort)((num + amountDelta) / 100);
+
+                var custom_buffers = CustomBuffersManager.GetCustomBuffer(buildingID);
+
+                if (amountDelta > 0)
+                {
+                    // Find delivering truck
+                    ushort vehicleID = data.m_guestVehicles;
+                    while (vehicleID != 0)
+                    {
+                        var vehicle = Singleton<VehicleManager>.instance.m_vehicles.m_buffer[vehicleID];
+                        if (vehicle.m_transferType == (byte)material && vehicle.m_targetBuilding == buildingID)
+                        {
+                            byte incomingQuality = (byte)vehicle.m_touristCount;
+                            custom_buffers.AddQuality(material, incomingQuality, amountDelta);
+                            break;
+                        }
+                        vehicleID = vehicle.m_nextGuestVehicle;
+                    }
+                }
+                else if (amountDelta < 0)
+                {
+                    // Outgoing dispatch — deduct from best bucket, stamp onto own truck
+                    byte dispatchQuality = custom_buffers.GetBestAvailableQuality(material);
+                    custom_buffers.RemoveQuality(material, dispatchQuality, -amountDelta);
+
+                    ushort vehicleID = data.m_ownVehicles;
+                    while (vehicleID != 0)
+                    {
+                        ref Vehicle vehicle = ref Singleton<VehicleManager>.instance.m_vehicles.m_buffer[vehicleID];
+                        if ((TransferManager.TransferReason)vehicle.m_transferType == material && vehicle.m_sourceBuilding == buildingID)
+                        {
+                            vehicle.m_touristCount = dispatchQuality;
+                            break;
+                        }
+                        vehicleID = vehicle.m_nextOwnVehicle;
+                    }
+                }
+                CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsUniqueMaterialType(TransferManager.TransferReason material)
+        {
+            return material == ExtendedTransferManager.BakedGoods ||
+                material == ExtendedTransferManager.CannedFish ||
+                material == ExtendedTransferManager.Cars ||
+                material == ExtendedTransferManager.ChemicalProducts ||
+                material == ExtendedTransferManager.Cloths ||
+                material == ExtendedTransferManager.ElectronicProducts ||
+                material == ExtendedTransferManager.FoodProducts ||
+                material == ExtendedTransferManager.Footwear ||
+                material == ExtendedTransferManager.Furnitures ||
+                material == ExtendedTransferManager.HouseParts ||
+                material == ExtendedTransferManager.IndustrialSteel ||
+                material == ExtendedTransferManager.PetroleumProducts ||
+                material == ExtendedTransferManager.PrintedProducts ||
+                material == ExtendedTransferManager.Toys ||
+                material == ExtendedTransferManager.TissuePaper ||
+                material == ExtendedTransferManager.Tupperware ||
+                material == TransferManager.TransferReason.LuxuryProducts;
+        }
     }
 }

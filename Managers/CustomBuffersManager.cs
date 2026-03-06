@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.Managers
 {
@@ -16,6 +17,9 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             public float[] m_mealsSitDown;
             public float[] m_mealsDelivery;
 
+            // new — keyed by (int)TransferReason → [low, medium, high]
+            public Dictionary<int, int[]> m_qualityBuckets;
+
             public readonly void Add(int materialId, float amount)
             {
                 int idx = GetIndex(materialId);
@@ -32,6 +36,38 @@ namespace IndustriesMeetsSunsetHarbor.Managers
             {
                 int idx = GetIndex(materialId);
                 if (idx != -1) return m_volumes[idx];
+                return 0;
+            }
+
+            public int[] GetQualityBuckets(TransferManager.TransferReason reason)
+            {
+                m_qualityBuckets ??= [];
+
+                if (!m_qualityBuckets.TryGetValue((int)reason, out var buckets))
+                {
+                    buckets = new int[3];
+                    m_qualityBuckets[(int)reason] = buckets;
+                }
+                return buckets;
+            }
+
+            public void AddQuality(TransferManager.TransferReason reason, byte quality, int amount)
+            {
+                var buckets = GetQualityBuckets(reason);
+                buckets[quality] = Mathf.Max(0, buckets[quality] + amount);
+            }
+
+            public void RemoveQuality(TransferManager.TransferReason reason, byte quality, int amount)
+            {
+                var buckets = GetQualityBuckets(reason);
+                buckets[quality] = Mathf.Max(0, buckets[quality] - amount);
+            }
+
+            public byte GetBestAvailableQuality(TransferManager.TransferReason reason, int threshold = 8000)
+            {
+                var buckets = GetQualityBuckets(reason);
+                for (byte q = 2; q >= 0; q--)
+                    if (buckets[q] >= threshold) return q;
                 return 0;
             }
         }
@@ -59,7 +95,8 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 {
                     m_volumes = new float[RESOURCE_COUNT],
                     m_mealsSitDown = new float[4],
-                    m_mealsDelivery = new float[4]
+                    m_mealsDelivery = new float[4],
+                    m_qualityBuckets = []
                 };
                 CustomBuffers.Add(buildingID, buffer_struct);
             }

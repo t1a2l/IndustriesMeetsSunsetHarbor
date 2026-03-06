@@ -510,7 +510,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         public override void StartTransfer(ushort buildingID, ref Building data, TransferManager.TransferReason material, TransferManager.TransferOffer offer)
         {
-            if (material == m_outputResource1)
+            if (material == m_outputResource1 || material == m_outputResource2)
             {
                 int variationGroupID = m_variationGroupID;
                 ItemClass.Level level = ((variationGroupID == 1 || variationGroupID == 9) ? ItemClass.Level.Level2 : ItemClass.Level.Level1);
@@ -619,6 +619,25 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 amountDelta = Mathf.Clamp(amountDelta, -m_customBuffer9, outputBufferSize9 - m_customBuffer9);
                 m_customBuffer9 += amountDelta;
                 custom_buffers.Add((int)material, m_customBuffer9);
+                if (amountDelta < 0 && IsUniqueMaterialType(material))
+                {
+                    byte dispatchQuality = custom_buffers.GetBestAvailableQuality(material);
+                    custom_buffers.RemoveQuality(material, dispatchQuality, -amountDelta); // negate to positive
+
+                    // Also stamp quality onto the loading truck right now
+                    // Find the truck that is currently loading from this building
+                    ushort vehicleID = data.m_ownVehicles;
+                    while (vehicleID != 0)
+                    {
+                        ref Vehicle vehicle = ref Singleton<VehicleManager>.instance.m_vehicles.m_buffer[vehicleID];
+                        if ((TransferManager.TransferReason)vehicle.m_transferType == material && vehicle.m_sourceBuilding == buildingID)
+                        {
+                            vehicle.m_touristCount = dispatchQuality;
+                            break;
+                        }
+                        vehicleID = vehicle.m_nextOwnVehicle;
+                    }
+                }
             }
             else if (material == m_outputResource2)
             {
@@ -812,10 +831,10 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num12, m_info.m_class);
                 }
             }
-            int num13 = m_outputRate1 + m_outputRate2;
+            int totalOutputRate = m_outputRate1 + m_outputRate2;
             if ((parkPolicies & DistrictPolicies.Park.AdvancedAutomation) != DistrictPolicies.Park.None)
             {
-                num13 = (num13 * 110 + 50) / 100;
+                totalOutputRate = (totalOutputRate * 110 + 50) / 100;
                 int num14 = GetMaintenanceCost() / 100;
                 num14 = finalProductionRate * num14 / 1000;
                 if (num14 != 0)
@@ -998,17 +1017,78 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         problemStruct = Notification.AddProblems(problemStruct, (!flag) ? ((!IsRawMaterial(m_inputResource8[0])) ? Notification.Problem1.NoInputProducts : Notification.Problem1.NoResources) : Notification.Problem1.NoFishingGoods);
                     }
                 }
+
+                // ====== QUALITY CALCULATION ======
+                if(m_outputResource1 != TransferManager.TransferReason.None && IsUniqueMaterialType(m_outputResource1))
+                {
+                    // custom_buffers still has pre-consumption amounts per specific reason here
+                    buildingData.m_education2 = 2; // default High
+                    byte outputQuality = 2; // default High
+                    bool hasQualitySensitiveSlot = false;
+
+                    if (m_inputResource1.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource1, custom_buffers));
+                    }
+                    if (m_inputResource2.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource2, custom_buffers));
+                    }
+                    if (m_inputResource3.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource3, custom_buffers));
+                    }
+                    if (m_inputResource4.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource4, custom_buffers));
+                    }
+                    if (m_inputResource5.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource5, custom_buffers));
+                    }
+                    if (m_inputResource6.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource6, custom_buffers));
+                    }
+                    if (m_inputResource7.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource7, custom_buffers));
+                    }
+                    if (m_inputResource8.Length > 1)
+                    {
+                        hasQualitySensitiveSlot = true;
+                        outputQuality = Math.Min(outputQuality, CalculateSlotQuality(m_inputResource8, custom_buffers));
+                    }
+
+                    if (hasQualitySensitiveSlot)
+                    {
+                        // the store in m_education2 is to see what is currently being made
+                        buildingData.m_education2 = outputQuality; // 0=Low, 1=Med, 2=High
+                    }
+                }
+                // ====== END QUALITY CALCULATION ======
+
                 int OutputBufferSize1 = 0;
                 int CustomOutputBuffer1 = 0;
+                // Snapshot BEFORE production this tick
+                int previousCustomOutputBuffer1 = 0;
                 if (m_outputResource1 != TransferManager.TransferReason.None)
                 {
                     OutputBufferSize1 = GetOutputBufferSize1(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     CustomOutputBuffer1 = (int)custom_buffers.Get((int)m_outputResource1);
-                    int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
+                    previousCustomOutputBuffer1 = CustomOutputBuffer1;
+                    int OutputProductionRate = (totalOutputRate * finalProductionRate + 99) / 100;
                     if (OutputBufferSize1 - CustomOutputBuffer1 < OutputProductionRate)
                     {
                         OutputProductionRate = Mathf.Max(0, OutputBufferSize1 - CustomOutputBuffer1);
-                        finalProductionRate = (OutputProductionRate * 100 + num13 - 1) / num13;
+                        finalProductionRate = (OutputProductionRate * 100 + totalOutputRate - 1) / totalOutputRate;
                         if (m_outputVehicleCount1 != 0)
                         {
                             problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoPlaceforGoods);
@@ -1029,11 +1109,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 {
                     OutputBufferSize2 = GetOutputBufferSize2(parkPolicies, instance.m_parks.m_buffer[b].m_finalStorageDelta);
                     CustomOutputBuffer2 = (int)custom_buffers.Get((int)m_outputResource2);
-                    int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
+                    int OutputProductionRate = (totalOutputRate * finalProductionRate + 99) / 100;
                     if (OutputBufferSize2 - CustomOutputBuffer2 < OutputProductionRate)
                     {
                         OutputProductionRate = Mathf.Max(0, OutputBufferSize2 - CustomOutputBuffer2);
-                        finalProductionRate = (OutputProductionRate * 100 + num13 - 1) / num13;
+                        finalProductionRate = (OutputProductionRate * 100 + totalOutputRate - 1) / totalOutputRate;
                         if (m_outputVehicleCount2 != 0)
                         {
                             problemStruct = Notification.AddProblems(problemStruct, Notification.Problem1.NoPlaceforGoods);
@@ -1098,16 +1178,25 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 if (m_outputResource1 != TransferManager.TransferReason.None)
                 {
-                    int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
+                    int OutputProductionRate = (totalOutputRate * finalProductionRate + 99) / 100;
                     CustomOutputBuffer1 = Mathf.Min(OutputBufferSize1, CustomOutputBuffer1 + OutputProductionRate);
                     custom_buffers.Set((int)m_outputResource1, CustomOutputBuffer1);
                     instance.m_parks.m_buffer[b].AddProductionAmount(m_outputResource1, OutputProductionRate);
+                    if(IsUniqueMaterialType(m_outputResource1))
+                    {
+                        // True delta = what was actually added this tick
+                        int actualAdded = CustomOutputBuffer1 - previousCustomOutputBuffer1;
+                        if (actualAdded > 0)
+                        {
+                            custom_buffers.AddQuality(m_outputResource1, buildingData.m_education2, actualAdded);
+                        } 
+                    }
                 }
                 if (m_outputResource2 != TransferManager.TransferReason.None)
                 {
-                    int OutputProductionRate = (num13 * finalProductionRate + 99) / 100;
+                    int OutputProductionRate = (totalOutputRate * finalProductionRate + 99) / 100;
                     CustomOutputBuffer2 = Mathf.Min(OutputBufferSize2, CustomOutputBuffer2 + OutputProductionRate);
-                    custom_buffers.Set((int)m_outputResource1, CustomOutputBuffer2);
+                    custom_buffers.Set((int)m_outputResource2, CustomOutputBuffer2);
                     instance.m_parks.m_buffer[b].AddProductionAmount(m_outputResource2, OutputProductionRate);
                 }
                 num16 = (finalProductionRate * num16 + 50) / 100;
@@ -1203,7 +1292,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         if (m_outputVehicleCount2 == 0)
                         {
-                            if (CustomOutputBuffer2 == OutputBufferSize1)
+                            if (CustomOutputBuffer2 == OutputBufferSize2)
                             {
                                 int num42 = (CustomOutputBuffer2 * GetResourcePrice(m_outputResource2) + 50) / 100;
                                 if ((instance.m_districts.m_buffer[district].m_cityPlanningPolicies & DistrictPolicies.CityPlanning.SustainableFishing) != 0)
@@ -1214,7 +1303,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num42, m_info.m_class);
                                 if (b != 0)
                                 {
-                                    instance.m_parks.m_buffer[b].AddExportAmount(m_outputResource2, CustomOutputBuffer1);
+                                    instance.m_parks.m_buffer[b].AddExportAmount(m_outputResource2, CustomOutputBuffer2);
                                 }
                                 CustomOutputBuffer2 = 0;
                                 custom_buffers.Set((int)m_outputResource2, CustomOutputBuffer2);
@@ -1227,11 +1316,11 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             int cargo2 = 0;
                             int capacity2 = 0;
                             int outside2 = 0;
-                            base.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource1, ref count2, ref cargo2, ref capacity2, ref outside2);
+                            base.CalculateOwnVehicles(buildingID, ref buildingData, m_outputResource2, ref count2, ref cargo2, ref capacity2, ref outside2);
                             buildingData.m_tempExport = (byte)Mathf.Clamp(outside2, buildingData.m_tempExport, 255);
                             int budget = Singleton<EconomyManager>.instance.GetBudget(m_info.m_class);
                             int productionRate2 = GetProductionRate(100, budget);
-                            int OutputProductionRate = (productionRate2 * m_outputVehicleCount1 + 99) / 100;
+                            int OutputProductionRate = (productionRate2 * m_outputVehicleCount2 + 99) / 100;
                             if (CustomOutputBuffer2 >= 8000 && count2 < OutputProductionRate)
                             {
                                 TransferManager.TransferOffer transferOffer = default;
@@ -1242,7 +1331,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                                 transferOffer.Active = true;
                                 Singleton<TransferManager>.instance.AddOutgoingOffer(m_outputResource2, transferOffer);
                             }
-                            instance.m_parks.m_buffer[b].AddBufferStatus(m_outputResource1, CustomOutputBuffer1, 0, OutputBufferSize1);
+                            instance.m_parks.m_buffer[b].AddBufferStatus(m_outputResource2, CustomOutputBuffer2, 0, OutputBufferSize2);
                         }
                     }
                 }
@@ -1265,8 +1354,8 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
             }
             buildingData.m_problems = problemStruct;
-            var rate = (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate1), 0, 255);
-            buildingData.m_education3 = (byte)(rate + (byte)Mathf.Clamp(finalProductionRate * num13 / Mathf.Max(1, m_outputRate2), 0, 255));
+            var rate = (byte)Mathf.Clamp(finalProductionRate * totalOutputRate / Mathf.Max(1, m_outputRate1), 0, 255);
+            buildingData.m_education3 = (byte)(rate + (byte)Mathf.Clamp(finalProductionRate * totalOutputRate / Mathf.Max(1, m_outputRate2), 0, 255));
             buildingData.m_health = (byte)Mathf.Clamp(finalProductionRate, 0, 255);
             CustomBuffersManager.SetCustomBuffer(buildingID, custom_buffers);
             if (b != 0)
@@ -1860,6 +1949,40 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     instance.m_parks.m_buffer[parkID].AddBufferStatus(inputResource, amount, incoming, capacity);
                 }
             }
+        }
+
+        private byte CalculateSlotQuality(TransferManager.TransferReason[] reasons, CustomBuffersManager.CustomBuffer buffers)
+        {
+            for (int i = 0; i < reasons.Length; i++)
+            {
+                if (reasons[i] != TransferManager.TransferReason.None && buffers.Get((int)reasons[i]) > 0)
+                {
+                    // index 0 → quality 2 (High), index 1 → 1 (Medium), index 2+ → 0 (Low)
+                    return (byte)Mathf.Max(0, 2 - i);
+                }
+            }
+            return 0;
+        }
+
+        private bool IsUniqueMaterialType(TransferManager.TransferReason material)
+        {
+            return material == ExtendedTransferManager.BakedGoods ||
+                material == ExtendedTransferManager.CannedFish ||
+                material == ExtendedTransferManager.Cars ||
+                material == ExtendedTransferManager.ChemicalProducts ||
+                material == ExtendedTransferManager.Cloths ||
+                material == ExtendedTransferManager.ElectronicProducts ||
+                material == ExtendedTransferManager.FoodProducts ||
+                material == ExtendedTransferManager.Footwear ||
+                material == ExtendedTransferManager.Furnitures ||
+                material == ExtendedTransferManager.HouseParts ||
+                material == ExtendedTransferManager.IndustrialSteel ||
+                material == ExtendedTransferManager.PetroleumProducts ||
+                material == ExtendedTransferManager.PrintedProducts ||
+                material == ExtendedTransferManager.Toys ||
+                material == ExtendedTransferManager.TissuePaper ||
+                material == ExtendedTransferManager.Tupperware ||
+                material == TransferManager.TransferReason.LuxuryProducts;
         }
     }
 }
