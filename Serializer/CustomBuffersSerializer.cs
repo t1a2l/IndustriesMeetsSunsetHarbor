@@ -36,6 +36,14 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                 StorageData.WriteFloatArrayWithoutLength(kvp.Value.m_mealsSitDown, Data);
                 StorageData.WriteFloatArrayWithoutLength(kvp.Value.m_mealsDelivery, Data);
 
+                StorageData.WriteInt32(kvp.Value.m_qualityBuckets.Count, Data);
+
+                foreach (KeyValuePair<int, int[]> qualityBucket in kvp.Value.m_qualityBuckets)
+                {
+                    StorageData.WriteInt32(qualityBucket.Key, Data);
+                    StorageData.WriteInt32(qualityBucket.Value.Length, Data);
+                    StorageData.WriteInt32ArrayWithoutLength(qualityBucket.Value, Data);
+                }
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
             }
@@ -61,8 +69,20 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     {
                         m_volumes = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, volumesLength),
                         m_mealsSitDown = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, mealsSitDownLength),
-                        m_mealsDelivery = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, mealsDeliveryLength)
+                        m_mealsDelivery = StorageData.ReadFloatArrayWithoutLength(Data, ref iIndex, mealsDeliveryLength),
+                        m_qualityBuckets = []
                     };
+
+                    int qualityBucketsCount = StorageData.ReadInt32(Data, ref iIndex);
+
+                    for (int j = 0; j < qualityBucketsCount; j++)
+                    {
+                        int key = StorageData.ReadInt32(Data, ref iIndex);
+                        int arrayLength = StorageData.ReadInt32(Data, ref iIndex);
+                        int[] value = StorageData.ReadInt32ArrayWithoutLength(Data, ref iIndex, arrayLength);
+                        new_strcut.m_qualityBuckets.Add(key, value);
+                    }
+
                     CustomBuffersManager.CustomBuffers.Add(buildingId, new_strcut);
                     CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
                 }
