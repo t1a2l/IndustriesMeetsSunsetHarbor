@@ -24,53 +24,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         var newAI = (PrefabAI)__instance.gameObject.AddComponent<ResourceMarketAI>();
                         PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
                     }
-                    if ((__instance.name.Contains("Aqua Crops Extractor") || __instance.name.Contains("Aqua Fish Extractor")) && oldAI is not AquacultureExtractorAI)
-                    {
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureExtractorAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-                    }
-                    if (__instance.name.Contains("Aquaculture") && __instance.name.Contains("Dock") && oldAI is not AquacultureFarmAI)
-                    {
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<AquacultureFarmAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-
-                        if (newAI is AquacultureFarmAI aquacultureFarmAI)
-                        {
-                            if (__instance.name.Contains("Algae"))
-                            {
-                                aquacultureFarmAI.m_outputResource = ExtendedTransferManager.Algae;
-                            }
-                            else if (__instance.name.Contains("Seaweed"))
-                            {
-                                aquacultureFarmAI.m_outputResource = ExtendedTransferManager.Seaweed;
-                            }
-                            else if (__instance.name.Contains("Mussels"))
-                            {
-                                aquacultureFarmAI.m_outputResource = ExtendedTransferManager.Trout;
-                            }
-                            else
-                            {
-                                aquacultureFarmAI.m_outputResource = TransferManager.TransferReason.Fish;
-                            }
-                        }                        
-                    }
                     if (oldAI is FishingHarborAI fishingHarborAI)
                     {
-                        if (__instance.name.Contains("Fishing Boat Harbor 02"))
+                        if (__instance.name.Contains("Fishing Boat Harbor 02") || __instance.name.Contains("Salmon"))
                         {
                             fishingHarborAI.m_outputResource = ExtendedTransferManager.Salmon;
                         }
-                        else if (__instance.name.Contains("Fishing Boat Harbor 03"))
+                        else if (__instance.name.Contains("Fishing Boat Harbor 03") || __instance.name.Contains("Shellfish"))
                         {
                             fishingHarborAI.m_outputResource = ExtendedTransferManager.Shellfish;
                         }
-                        else if (__instance.name.Contains("Fishing Boat Harbor 04"))
+                        else if (__instance.name.Contains("Fishing Boat Harbor 04") || __instance.name.Contains("Tuna"))
                         {
                             fishingHarborAI.m_outputResource = ExtendedTransferManager.Tuna;
                         }
-                        else if (__instance.name.Contains("Fishing Boat Harbor 05"))
+                        else if (__instance.name.Contains("Fishing Boat Harbor 05") || __instance.name.Contains("Anchovies"))
                         {
                             fishingHarborAI.m_outputResource = ExtendedTransferManager.Anchovy;
                         }
