@@ -4,7 +4,6 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using ColossalFramework;
-using UnityEngine;
 using MoreTransferReasons.Utils;
 using MoreTransferReasons;
 using ColossalFramework.Threading;
@@ -16,7 +15,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     {
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPostfix]
-        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel, ref UIDropDown ___m_VariationDropdown)
+        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection)
         {
             ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
@@ -24,74 +23,49 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             FishingHarborAI m_fishingHarborAI = data.Info.GetAI() as FishingHarborAI;
             FishFarmAI m_fishFarmAI = data.Info.GetAI() as FishFarmAI;
             ExtractingFacilityAI m_extractingFacilityAI = data.Info.GetAI() as ExtractingFacilityAI;
-            if (m_aquacultureFarmAI != null)
+            TransferManager.TransferReason outputResource = TransferManager.TransferReason.None;
+            ___m_ShowIndustryInfoButton.isVisible = false;
+            if (m_aquacultureFarmAI != null || m_fishingHarborAI != null || m_fishFarmAI != null)
             {
                 ___m_inputSection.isVisible = false;
                 ___m_outputSection.isVisible = true;
                 ___m_inputOutputSection.isVisible = true;
-                ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_aquacultureFarmAI.m_outputResource);
-                string text = AtlasUtils.GetSpriteName(m_aquacultureFarmAI.m_outputResource);
+                if (m_aquacultureFarmAI != null)
+                {
+                    outputResource = m_aquacultureFarmAI.m_outputResource;
+                }
+                if (m_fishingHarborAI != null)
+                {
+                    outputResource = m_fishingHarborAI.m_outputResource;
+                }
+                if (m_fishFarmAI != null)
+                {
+                    outputResource = m_fishFarmAI.m_outputResource;
+                }
+                ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(TransferManager.TransferReason.Fish);
+                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", outputResource.ToString());
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_aquacultureFarmAI.m_outputResource);
-                ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_aquacultureFarmAI.m_outputResource);
-                ___m_ShowIndustryInfoButton.isVisible = false;
-                int num = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
-		int storageBufferSize = m_aquacultureFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-		___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
-		___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize, m_aquacultureFarmAI.m_outputResource));
-            }
-            if (m_fishingHarborAI != null)
-            {
-                ___m_inputSection.isVisible = false;
-                ___m_outputBuffer.progressColor = Color.white;
-                string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishingHarborAI.m_outputResource.ToString());
-                ___m_outputLabel.text = text4;
-                ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
-                ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_fishingHarborAI.m_outputResource);
-                ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_fishingHarborAI.m_outputResource);
-                ___m_ShowIndustryInfoButton.isVisible = false;
-            }
-            if (m_fishFarmAI != null)
-            {
-                ___m_inputSection.isVisible = false;
-                ___m_outputBuffer.progressColor = Color.white;
-                string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_fishFarmAI.m_outputResource.ToString());
-                ___m_outputLabel.text = text4;
-                ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
-                ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_fishFarmAI.m_outputResource);
-                ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_fishFarmAI.m_outputResource);
-                ___m_ShowIndustryInfoButton.isVisible = false;
+                ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(outputResource);
+                ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(outputResource);
             }
             if (m_extractingFacilityAI != null)
             {
-                if(data.Info.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming)
-                {
-                    ___m_inputSection.isVisible = false;
-                    ___m_outputBuffer.progressColor = Color.white;
-                    string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extractingFacilityAI.m_outputResource.ToString());
-                    ___m_outputLabel.text = text4;
-                    ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
-                    ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_extractingFacilityAI.m_outputResource);
-                    ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_extractingFacilityAI.m_outputResource);
-                    ___m_ShowIndustryInfoButton.isVisible = true;
-                }
-                else
-                {
-                    ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_extractingFacilityAI.m_outputResource);
-                }
+                ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(TransferManager.TransferReason.Grain);
+                ___m_inputSection.isVisible = false;
+                ___m_outputSection.isVisible = true;
+                ___m_ShowIndustryInfoButton.isVisible = true;
             }
             if (AquacultureExtractorPanel._aquacultureExtractorPanel == null)
             {
                 AquacultureExtractorPanel.Init();
             }
-
             AquacultureExtractorPanel.ExtractorDropdownCheck();
         }
 
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "UpdateBindings")]
         [HarmonyPostfix]
-        public static void UpdateBindings(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UISprite ___m_BuildingService, ref UIProgressBar ___m_outputBuffer, ref UIPanel ___m_outputSection)
+        public static void UpdateBindings(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UISprite ___m_BuildingService, ref UIProgressBar ___m_outputBuffer, ref UIPanel ___m_outputSection, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite)
         {
             if (Singleton<BuildingManager>.exists && ___m_InstanceID.Type == InstanceType.Building && ___m_InstanceID.Building != 0)
             {
@@ -118,33 +92,45 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     ___m_BuildingService.spriteName = spriteName;
                     ___m_BuildingService.tooltip = Locale.Get(id, text);
                 }
-                if (m_aquacultureFarmAI != null)
+                if (m_aquacultureFarmAI != null || m_fishingHarborAI != null || m_fishFarmAI != null || m_extractingFacilityAI != null)
                 {
-                    int num = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
-                    int storageBufferSize = m_aquacultureFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
+                    int storageBufferSize = 0;
+                    int num = building2.m_customBuffer2 * 100;
+                    TransferManager.TransferReason outputResource = TransferManager.TransferReason.None;
+                    if (m_aquacultureFarmAI != null)
+                    {
+                        outputResource = m_aquacultureFarmAI.m_outputResource;
+                        storageBufferSize = m_aquacultureFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref building2);
+                    }
+                    if (m_fishingHarborAI != null)
+                    {
+                        outputResource = m_fishingHarborAI.m_outputResource;
+                        storageBufferSize = m_fishingHarborAI.m_storageBufferSize;
+                    }
+                    if (m_fishFarmAI != null)
+                    {
+                        outputResource = m_fishFarmAI.m_outputResource;
+                        storageBufferSize = m_fishFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref building2);
+                    }
+                    if (m_extractingFacilityAI != null)
+                    {
+                        outputResource = m_extractingFacilityAI.m_outputResource;
+                        storageBufferSize = m_extractingFacilityAI.GetOutputBufferSize(___m_InstanceID.Building, ref building2);
+                        if (sub_service == ItemClass.SubService.PlayerIndustryFarming)
+                        {
+                            string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extractingFacilityAI.m_outputResource.ToString());
+                            ___m_outputLabel.text = text4;
+                            ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
+                            ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_extractingFacilityAI.m_outputResource);
+                            ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_extractingFacilityAI.m_outputResource);
+                        }
+                        else
+                        {
+                            ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_extractingFacilityAI.m_outputResource);
+                        }
+                    }
                     ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
-                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize, m_aquacultureFarmAI.m_outputResource));
-                }
-                else if (m_fishFarmAI != null)
-                {
-                    int num2 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
-                    int storageBufferSize2 = m_fishFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building]);
-                    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num2, storageBufferSize2);
-                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num2), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize2, m_fishFarmAI.m_outputResource));
-                }
-                else if (m_fishingHarborAI != null)
-                {
-                    int num3 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
-                    int storageBufferSize3 = m_fishingHarborAI.m_storageBufferSize;
-                    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num3, storageBufferSize3);
-                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num3), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize3, m_fishingHarborAI.m_outputResource));
-                }
-                else if (m_extractingFacilityAI != null && sub_service == ItemClass.SubService.PlayerIndustryFarming)
-                {
-                    int num4 = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].m_customBuffer2 * 100;
-                    int storageBufferSize4 = m_extractingFacilityAI.GetOutputBufferSize(___m_InstanceID.Building, ref building2);
-                    ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num4, storageBufferSize4);
-                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num4), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize4, m_extractingFacilityAI.m_outputResource));
+                    ___m_outputSection.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)storageBufferSize, outputResource));
                 }
             }
         }

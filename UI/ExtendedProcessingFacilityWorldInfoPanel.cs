@@ -12,7 +12,6 @@ using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
 using MoreTransferReasons.Utils;
 using UnityEngine;
-using static RenderManager;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -315,7 +314,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 OpenIndustryInfoPanel();
             };
-            // 26, 26 arrow
         }
 
         private void OnVariationDropdownChanged(UIComponent component, int value)
@@ -648,80 +646,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_inputSection.isVisible = true;
             m_outputSection.isVisible = true;
             m_inputOutputSection.isVisible = true;
-
+            m_ShowIndustryInfoButton.isVisible = true;
             m_storageInput2.isVisible = false;
             m_storageOutput2.isVisible = false;
-
-            string text2 = "";
-            if (m_extendedProcessingFacilityAI.m_inputResource1.Length != 0)
-            {
-                m_input1Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_inputResource1[0]);
-                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource1[0].ToString()); 
-                m_input1Label.text = text2;
-                m_input1Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource1[0]);
-                m_input1Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource1[0]);
-                m_arrow1.size = new Vector2(26f, 26f);
-                m_arrow1.relativePosition = new Vector2(18f, 7f);
-                m_arrow2.size = new Vector2(26f, 26f);
-                m_arrow2.relativePosition = new Vector2(201f, 7f);
-            }
-            if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0)
-            {
-                m_inputOutputSection.size = new Vector2(484f, 95f);
-                m_layout.size = new Vector2(405f, 95f);
-                m_inputSection.size = new Vector2(200f, 90f);
-                text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource2[0].ToString());
-                m_input2Label.text = text2;
-                m_input2Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource2[0]);
-                m_input2Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource2[0]);
-                m_arrow1.size = new Vector2(56f, 26f);
-                m_arrow1.relativePosition = new Vector2(18f, 18f);
-                m_arrow2.size = new Vector2(56f, 26f);
-                m_arrow2.relativePosition = new Vector2(201f, 18f);
-                m_storageInput2.isVisible = true;
-            }
-
-            string text3 = "";
-            if (m_extendedProcessingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
-            {
-                m_storageOutput1.relativePosition = new Vector2(-1f, 28f);
-                m_output1Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_outputResource1);
-                text3 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource1.ToString());
-                m_output1Label.text = text3;
-                m_output1Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource1);
-                m_output1Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_outputResource1);
-                m_arrow3.size = new Vector2(26f, 26f);
-                m_arrow3.relativePosition = new Vector2(185f, 7f);
-            }
-
-            if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0 && m_extendedProcessingFacilityAI.m_outputResource2 == TransferManager.TransferReason.None)
-            {
-                m_storageOutput1.relativePosition = new Vector2(-1f, 28f);
-                m_arrow3.relativePosition = new Vector2(185f, 28f);
-            }
-
-            string text4 = "";
-            if (m_extendedProcessingFacilityAI.m_outputResource2 != TransferManager.TransferReason.None)
-            {
-                m_storageOutput1.relativePosition = new Vector2(-1f, 0f);
-                m_inputOutputSection.size = new Vector2(484f, 95f);
-                m_layout.size = new Vector2(405f, 95f);
-                m_outputSection.size = new Vector2(200f, 90f);
-                text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource2.ToString());
-                m_output2Label.text = text4;
-                m_output2Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource2);
-                m_output2Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_outputResource2);
-                m_arrow3.size = new Vector2(56f, 26f);
-                m_arrow3.relativePosition = new Vector2(185f, 18f);
-                m_storageOutput2.isVisible = true;
-            }
-
-            string tooltip = StringUtils.SafeFormat(Locale.Get("INUDSTRYBUILDING_PROCESSINGTOOLTIP"), text2, text3, text4);
-            m_arrow1.tooltip = tooltip;
-            m_arrow2.tooltip = tooltip;
-            m_arrow3.tooltip = tooltip;        
-            
-            m_ShowIndustryInfoButton.isVisible = true;
         }
 
         private bool CanBuildingHaveRoutes(ushort id)
@@ -766,9 +693,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 ItemClass.Service service = info.GetService();
                 if (service != ItemClass.Service.None)
                 {
-                    string text = ColossalFramework.Utils.GetNameByValue(service, "Game");
+                    string text0 = ColossalFramework.Utils.GetNameByValue(service, "Game");
                     m_BuildingService.spriteName = "UIFilterProcessingBuildings";
-                    m_BuildingService.tooltip = Locale.Get("MAIN_TOOL", text);
+                    m_BuildingService.tooltip = Locale.Get("MAIN_TOOL", text0);
                 }
                 m_BuildingService.isVisible = service != ItemClass.Service.None;
                 m_MoveButton.isEnabled = buildingAI != null && buildingAI.CanBeRelocated(building, ref instance.m_buildings.m_buffer[building]);
@@ -801,8 +728,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
                 var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
 
+                string text = string.Empty;
+                string text2 = string.Empty;
+                string text3 = string.Empty;
+                string text4 = string.Empty;
+
                 if (m_extendedProcessingFacilityAI.m_inputResource1.Length != 0)
                 {
+                    m_input1Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                    text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource1[0].ToString());
+                    m_input1Label.text = text;
+                    m_input1Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                    m_input1Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource1[0]);
+                    m_arrow1.size = new Vector2(26f, 26f);
+                    m_arrow1.relativePosition = new Vector2(18f, 7f);
+                    m_arrow2.size = new Vector2(26f, 26f);
+                    m_arrow2.relativePosition = new Vector2(201f, 7f);
                     int inputBufferValue1 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_inputResource1[0]);
                     int inputBufferSize1 = m_extendedProcessingFacilityAI.GetInputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
                     m_input1Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(inputBufferValue1, inputBufferSize1);
@@ -811,6 +752,18 @@ namespace IndustriesMeetsSunsetHarbor.UI
   
                 if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0)
                 {
+                    m_inputOutputSection.size = new Vector2(484f, 95f);
+                    m_layout.size = new Vector2(405f, 95f);
+                    m_inputSection.size = new Vector2(200f, 90f);
+                    text2 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_inputResource2[0].ToString());
+                    m_input2Label.text = text2;
+                    m_input2Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_inputResource2[0]);
+                    m_input2Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_inputResource2[0]);
+                    m_arrow1.size = new Vector2(56f, 26f);
+                    m_arrow1.relativePosition = new Vector2(18f, 18f);
+                    m_arrow2.size = new Vector2(56f, 26f);
+                    m_arrow2.relativePosition = new Vector2(201f, 18f);
+                    m_storageInput2.isVisible = true;
                     int inputBufferValue2 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_inputResource2[0]);
                     int inputBufferSize2 = m_extendedProcessingFacilityAI.GetInputBufferSize2(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
                     m_input2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(inputBufferValue2, inputBufferSize2);
@@ -819,19 +772,49 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
                 if (m_extendedProcessingFacilityAI.m_outputResource1 != TransferManager.TransferReason.None)
                 {
+                    m_storageOutput1.relativePosition = new Vector2(-1f, 28f);
+                    m_output1Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(m_extendedProcessingFacilityAI.m_outputResource1);
+                    text3 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource1.ToString());
+                    m_output1Label.text = text3;
+                    m_output1Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource1);
+                    m_output1Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_outputResource1);
+                    m_arrow3.size = new Vector2(26f, 26f);
+                    m_arrow3.relativePosition = new Vector2(185f, 7f);
                     int outputBufferValue1 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_outputResource1);
                     int outputBufferSize1 = m_extendedProcessingFacilityAI.GetOutputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
                     m_output1Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(outputBufferValue1, outputBufferSize1);
                     m_storageOutput1.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)outputBufferValue1), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize1, m_extendedProcessingFacilityAI.m_outputResource1));
                 }
 
+                if (m_extendedProcessingFacilityAI.m_inputResource2.Length != 0 && m_extendedProcessingFacilityAI.m_outputResource2 == TransferManager.TransferReason.None)
+                {
+                    m_storageOutput1.relativePosition = new Vector2(-1f, 28f);
+                    m_arrow3.relativePosition = new Vector2(185f, 28f);
+                }
+
                 if (m_extendedProcessingFacilityAI.m_outputResource2 != TransferManager.TransferReason.None)
                 {
+                    m_storageOutput1.relativePosition = new Vector2(-1f, 0f);
+                    m_inputOutputSection.size = new Vector2(484f, 95f);
+                    m_layout.size = new Vector2(405f, 95f);
+                    m_outputSection.size = new Vector2(200f, 90f);
+                    text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extendedProcessingFacilityAI.m_outputResource2.ToString());
+                    m_output2Label.text = text4;
+                    m_output2Sprite.atlas = GetResourceAtlas(m_extendedProcessingFacilityAI.m_outputResource2);
+                    m_output2Sprite.spriteName = AtlasUtils.GetSpriteName(m_extendedProcessingFacilityAI.m_outputResource2);
+                    m_arrow3.size = new Vector2(56f, 26f);
+                    m_arrow3.relativePosition = new Vector2(185f, 18f);
+                    m_storageOutput2.isVisible = true;
                     int outputBufferValue2 = (int)custom_buffers.Get((int)m_extendedProcessingFacilityAI.m_outputResource2);
                     int outputBufferSize2 = m_extendedProcessingFacilityAI.GetOutputBufferSize1(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
                     m_output2Buffer.value = IndustryWorldInfoPanel.SafelyNormalize(outputBufferValue2, outputBufferSize2);
                     m_storageOutput2.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)outputBufferValue2), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)outputBufferSize2, m_extendedProcessingFacilityAI.m_outputResource2));
                 }
+
+                string tooltip = StringUtils.SafeFormat(Locale.Get("INUDSTRYBUILDING_PROCESSINGTOOLTIP"), text, text2, text3, text4);
+                m_arrow1.tooltip = tooltip;
+                m_arrow2.tooltip = tooltip;
+                m_arrow3.tooltip = tooltip;
 
                 base.component.size = m_wrapper.size;
                 m_mainBottom.width = m_wrapper.width;
