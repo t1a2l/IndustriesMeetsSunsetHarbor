@@ -1967,6 +1967,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         private bool IsUniqueMaterialType(TransferManager.TransferReason material)
         {
             return material == ExtendedTransferManager.BakedGoods ||
+                material == ExtendedTransferManager.BeverageProducts ||
                 material == ExtendedTransferManager.CannedFish ||
                 material == ExtendedTransferManager.Cars ||
                 material == ExtendedTransferManager.ChemicalProducts ||
