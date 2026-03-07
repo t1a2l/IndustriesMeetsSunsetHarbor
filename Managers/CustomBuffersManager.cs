@@ -7,7 +7,7 @@ namespace IndustriesMeetsSunsetHarbor.Managers
     {
         public static Dictionary<ushort, CustomBuffer> CustomBuffers;
 
-        public const int RESOURCE_COUNT = 53;
+        public const int RESOURCE_COUNT = 56;
 
         public struct CustomBuffer
         {
@@ -19,6 +19,8 @@ namespace IndustriesMeetsSunsetHarbor.Managers
 
             // new — keyed by (int)TransferReason → [low, medium, high]
             public Dictionary<int, int[]> m_qualityBuckets;
+
+            public int m_animalVariationIndex;
 
             public readonly void Add(int materialId, float amount)
             {
@@ -96,7 +98,8 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                     m_volumes = new float[RESOURCE_COUNT],
                     m_mealsSitDown = new float[4],
                     m_mealsDelivery = new float[4],
-                    m_qualityBuckets = []
+                    m_qualityBuckets = [],
+                    m_animalVariationIndex = 0
                 };
                 CustomBuffers.Add(buildingID, buffer_struct);
             }
@@ -142,34 +145,37 @@ namespace IndustriesMeetsSunsetHarbor.Managers
                 156 => 22, // Tuna
                 157 => 23, // Algae
                 158 => 24, // Seaweed
-                159 => 25, // Trout
-                160 => 26, // Milk
-                161 => 27, // RawHides
-                162 => 28, // Pork
-                163 => 29, // Fruits
-                164 => 30, // Vegetables
-                165 => 31, // Wool
-                166 => 32, // Cotton
-                171 => 33, // ProcessedVegetableOil
-                172 => 34, // LiquidConcentrates
-                173 => 35, // ChemicalProducts
-                174 => 36, // Leather
-                175 => 37, // FoodProducts
-                176 => 38, // BeverageProducts
-                177 => 39, // BakedGoods
-                178 => 40, // CannedFish
-                179 => 41, // Furnitures
-                180 => 42, // ElectronicProducts
-                181 => 43, // IndustrialSteel
-                182 => 44, // Tupperware
-                183 => 45, // Toys
-                184 => 46, // PrintedProducts
-                185 => 47, // TissuePaper
-                186 => 48, // Cloths
-                187 => 49, // PetroleumProducts
-                188 => 50, // Cars
-                189 => 51, // Footwear
-                190 => 52, // HouseParts
+                159 => 25, // Mussels
+                160 => 26, // Trout
+                161 => 27, // Milk
+                162 => 28, // RawHides
+                163 => 29, // Pork
+                164 => 30, // Fruits
+                165 => 31, // Vegetables
+                166 => 32, // Wool
+                167 => 33, // Cotton
+                172 => 34, // ProcessedVegetableOil
+                173 => 35, // LiquidConcentrates
+                174 => 36, // FishMeal
+                175 => 37, // FishOil
+                176 => 38, // ChemicalProducts
+                177 => 39, // Leather
+                178 => 40, // FoodProducts
+                179 => 41, // BeverageProducts
+                180 => 42, // BakedGoods
+                181 => 43, // CannedFish
+                182 => 44, // Furnitures
+                183 => 45, // ElectronicProducts
+                184 => 46, // IndustrialSteel
+                185 => 47, // Tupperware
+                186 => 48, // Toys
+                187 => 49, // PrintedProducts
+                188 => 50, // TissuePaper
+                189 => 51, // Cloths
+                190 => 52, // PetroleumProducts
+                191 => 53, // Cars
+                192 => 54, // Footwear
+                193 => 55, // HouseParts
                 _ => -1,
             };
         }

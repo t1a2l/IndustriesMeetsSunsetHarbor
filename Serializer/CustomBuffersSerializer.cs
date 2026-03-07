@@ -44,6 +44,9 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                     StorageData.WriteInt32(qualityBucket.Value.Length, Data);
                     StorageData.WriteInt32ArrayWithoutLength(qualityBucket.Value, Data);
                 }
+
+                StorageData.WriteInt32(kvp.Value.m_animalVariationIndex, Data);
+
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
             }
@@ -82,6 +85,8 @@ namespace IndustriesMeetsSunsetHarbor.Serializer
                         int[] value = StorageData.ReadInt32ArrayWithoutLength(Data, ref iIndex, arrayLength);
                         new_strcut.m_qualityBuckets.Add(key, value);
                     }
+
+                    new_strcut.m_animalVariationIndex = StorageData.ReadInt32(Data, ref iIndex);
 
                     CustomBuffersManager.CustomBuffers.Add(buildingId, new_strcut);
                     CheckEndTuple($"Buffer({i})", iCustomBuffersVersion, Data, ref iIndex);
