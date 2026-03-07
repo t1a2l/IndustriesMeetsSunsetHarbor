@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using ColossalFramework;
 using ColossalFramework.Globalization;
 using ColossalFramework.UI;
-using HarmonyLib;
 using ICities;
 using IndustriesMeetsSunsetHarbor.Managers;
 using MoreTransferReasons;
@@ -105,23 +104,27 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private UISprite m_resourceSprite;
 
+        private TransferManager.TransferReason[] m_selectedTransferReasons;
+
         private TransferManager.TransferReason[] m_transferReasons;
 
         private TransferManager.TransferReason[] m_transferReasonsFarming;
 
-        private UILabel m_qualityHighLabel;
+        private TransferManager.TransferReason[] m_transferReasonsFishing;
 
-        private UILabel m_qualityMedLabel;
+        private UIProgressBar m_qualityProgressBarHigh;
 
-        private UILabel m_qualityLowLabel;
+        private UIProgressBar m_qualityProgressBarMed;
 
-        private UISprite m_qualityBarHigh;
+        private UIProgressBar m_qualityProgressBarLow;
 
-        private UISprite m_qualityBarMed;
+        private UILabel m_qualityLabel;
 
-        private UISprite m_qualityBarLow;
+        private UILabel m_qualityLabelHigh;
 
-        private UIPanel m_qualityRow;
+        private UILabel m_qualityLabelMed;
+
+        private UILabel m_qualityLabelLow;
 
         private readonly WarehouseModes[] m_warehouseModes =
         [
@@ -200,6 +203,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         protected override void Start()
         {
             base.Start();
+            component.height = 620f;
             List<TransferManager.TransferReason> list =
             [
                 TransferManager.TransferReason.None,
@@ -252,6 +256,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 list2.Add(ExtendedTransferManager.Tuna);
                 list2.Add(ExtendedTransferManager.Algae);
                 list2.Add(ExtendedTransferManager.Seaweed);
+                list2.Add(ExtendedTransferManager.Mussels);
                 list2.Add(ExtendedTransferManager.Trout);
             }
             List<TransferManager.TransferReason> list3 =
@@ -262,8 +267,23 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 ExtendedTransferManager.Vegetables,
                 ExtendedTransferManager.Cotton
             ];
+            List<TransferManager.TransferReason> list4 =
+            [
+                TransferManager.TransferReason.None,
+                TransferManager.TransferReason.Fish,
+                ExtendedTransferManager.Anchovy,
+                ExtendedTransferManager.Salmon,
+                ExtendedTransferManager.Shellfish,
+                ExtendedTransferManager.Tuna,
+                ExtendedTransferManager.Algae,
+                ExtendedTransferManager.Seaweed,
+                ExtendedTransferManager.Mussels,
+                ExtendedTransferManager.Trout
+            ];
+            m_selectedTransferReasons = [];
             m_transferReasons = [.. list2];
             m_transferReasonsFarming = [.. list3];
+            m_transferReasonsFishing = [.. list4];
             m_Type = Find<UILabel>("Type");
             m_Upkeep = Find<UILabel>("Upkeep");
             m_Info = Find<UILabel>("Info");
@@ -287,31 +307,68 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_buffer = Find<UIPanel>("Buffer");
             m_capacityLabel = Find<UILabel>("MaxCapacityLabel");
 
-            m_qualityRow = m_resourcePanel.AddUIComponent<UIPanel>();
-            m_qualityRow.width = m_resourcePanel.width - 16f;
-            m_qualityRow.height = 60f; // enough for bar + 3 label rows
-            m_qualityRow.isVisible = false; // hidden by default
+            GameObject ResourceProgressBar1 = Instantiate(m_resourceProgressBar.gameObject, m_buffer.transform);
+            GameObject ResourceProgressBar2 = Instantiate(m_resourceProgressBar.gameObject, m_buffer.transform);
+            GameObject ResourceProgressBar3 = Instantiate(m_resourceProgressBar.gameObject, m_buffer.transform);
 
-            // Three bar segments — anchored left, widths set dynamically on refresh
-            m_qualityBarHigh = m_qualityRow.AddUIComponent<UISprite>();
-            m_qualityBarHigh.spriteName = "WhiteRect"; // flat white, tinted by .color
-            m_qualityBarHigh.color = new Color32(255, 215, 0, 255);   // gold
-            m_qualityBarHigh.height = 8f;
+            m_qualityProgressBarHigh = ResourceProgressBar1.GetComponent<UIProgressBar>();
+            m_qualityProgressBarMed = ResourceProgressBar2.GetComponent<UIProgressBar>();
+            m_qualityProgressBarLow = ResourceProgressBar3.GetComponent<UIProgressBar>();
 
-            m_qualityBarMed = m_qualityRow.AddUIComponent<UISprite>();
-            m_qualityBarHigh.spriteName = "WhiteRect"; // flat white, tinted by .color
-            m_qualityBarMed.color = new Color32(192, 192, 192, 255);  // silver
-            m_qualityBarMed.height = 8f;
+            m_qualityProgressBarHigh.name = "QualityProgressBarHigh";
+            m_qualityProgressBarMed.name = "QualityProgressBarMed";
+            m_qualityProgressBarLow.name = "QualityProgressBarLow";
 
-            m_qualityBarLow = m_qualityRow.AddUIComponent<UISprite>();
-            m_qualityBarHigh.spriteName = "WhiteRect"; // flat white, tinted by .color
-            m_qualityBarLow.color = new Color32(205, 127, 50, 255);   // bronze
-            m_qualityBarLow.height = 8f;
+            m_qualityProgressBarHigh.height = 50f;
+            m_qualityProgressBarMed.height = 50f;
+            m_qualityProgressBarLow.height = 50f;
 
-            // Labels
-            m_qualityHighLabel = m_qualityRow.AddUIComponent<UILabel>();
-            m_qualityMedLabel = m_qualityRow.AddUIComponent<UILabel>();
-            m_qualityLowLabel = m_qualityRow.AddUIComponent<UILabel>();
+            m_qualityProgressBarHigh.zOrder = 0;
+            m_qualityProgressBarMed.zOrder = 0;
+            m_qualityProgressBarLow.zOrder = 0;
+
+            m_qualityProgressBarHigh.relativePosition = new Vector3(-10f, 20f);
+            m_qualityProgressBarMed.relativePosition = new Vector3(44f, 20f);
+            m_qualityProgressBarLow.relativePosition = new Vector3(98f, 20f);
+
+            m_qualityProgressBarHigh.isVisible = false;
+            m_qualityProgressBarMed.isVisible = false;
+            m_qualityProgressBarLow.isVisible = false;
+
+            GameObject ResourceLabel0 = Instantiate(m_resourceLabel.gameObject, m_buffer.transform);
+            GameObject ResourceLabel1 = Instantiate(m_resourceLabel.gameObject, m_buffer.transform);
+            GameObject ResourceLabel2 = Instantiate(m_resourceLabel.gameObject, m_buffer.transform);
+            GameObject ResourceLabel3 = Instantiate(m_resourceLabel.gameObject, m_buffer.transform);
+
+            m_qualityLabel = ResourceLabel0.GetComponent<UILabel>();
+            m_qualityLabelHigh = ResourceLabel1.GetComponent<UILabel>();
+            m_qualityLabelMed = ResourceLabel2.GetComponent<UILabel>();
+            m_qualityLabelLow = ResourceLabel3.GetComponent<UILabel>();
+
+            m_qualityLabel.name = "QualityLabel";
+            m_qualityLabelHigh.name = "QualityLabelHigh";
+            m_qualityLabelMed.name = "QualityLabelMed";
+            m_qualityLabelLow.name = "QualityLabelLow";
+
+            m_qualityLabel.relativePosition = new Vector3(0f, 95f);
+            m_qualityLabelHigh.relativePosition = new Vector3(-55f, 55f);
+            m_qualityLabelMed.relativePosition = new Vector3(0f, 55f);
+            m_qualityLabelLow.relativePosition = new Vector3(55f, 55f);
+
+            m_qualityLabel.textColor = new Color32(255, 255, 255, 0);
+            m_qualityLabelHigh.textColor = new Color32(255, 255, 255, 0);
+            m_qualityLabelMed.textColor = new Color32(255, 255, 255, 0);
+            m_qualityLabelLow.textColor = new Color32(255, 255, 255, 0);
+
+            m_qualityLabel.text = "Quality";
+            m_qualityLabelHigh.text = "High\n★★★";
+            m_qualityLabelMed.text = "Med\n★★";
+            m_qualityLabelLow.text = "Low\n★";
+
+            m_qualityLabel.opacity = 0f;
+            m_qualityLabelHigh.opacity = 0f;
+            m_qualityLabelMed.opacity = 0f;
+            m_qualityLabelLow.opacity = 0f;
 
             m_Status = Find<UILabel>("Status");
             m_workersTooltip = Find<UIPanel>("WorkersTooltip");
@@ -357,6 +414,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_HighlyEducatedWorkers.color = MultiplyColor(m_HighlyEducatedColor, m_WorkersColorScalar);
             m_originalHeight = component.height;
             m_resourceDescription = Find<UILabel>("ResourceDescription");
+            m_resourceDescription.relativePosition = new Vector3(23f, 336f);
+            m_resourceDescription.height = 95f;
             m_resourceSprite = Find<UISprite>("ResourceIcon");
             Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
             {
@@ -374,28 +433,40 @@ namespace IndustriesMeetsSunsetHarbor.UI
             WarehouseAI ai = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as WarehouseAI;
             Singleton<SimulationManager>.instance.AddAction(delegate
             {
-                ai.SetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building], m_transferReasons[index]);
+                ai.SetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building], m_selectedTransferReasons[index]);
+                if (IsUniqueMaterialType(m_selectedTransferReasons[index]))
+                {
+                    m_resourceProgressBar.Hide();
+                    m_qualityProgressBarHigh.Show();
+                    m_qualityProgressBarMed.Show();
+                    m_qualityProgressBarLow.Show();
+                    m_qualityLabel.opacity = 1f;
+                    m_qualityLabelHigh.opacity = 1f;
+                    m_qualityLabelMed.opacity = 1f;
+                    m_qualityLabelLow.opacity = 1f;
+                    m_resourceLabel.relativePosition = new Vector3(0f, -15f);
+                }
+                else
+                {
+                    m_resourceProgressBar.Show();
+                    m_qualityProgressBarHigh.Hide();
+                    m_qualityProgressBarMed.Hide();
+                    m_qualityProgressBarLow.Hide();
+                    m_qualityLabel.opacity = 0f;
+                    m_qualityLabelHigh.opacity = 0f;
+                    m_qualityLabelMed.opacity = 0f;
+                    m_qualityLabelLow.opacity = 0f;
+                    m_resourceLabel.relativePosition = new Vector3(0f, 60f);
+                }
             });
         }
 
         private void RefreshDropdownLists()
         {
-            BuildingInfo buildingInfo = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info;
-            bool isFarming = buildingInfo.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming;
-            TransferManager.TransferReason[] transferReasons;
-            if (isFarming)
+            string[] array = new string[m_selectedTransferReasons.Length];
+            for (int i = 0; i < m_selectedTransferReasons.Length; i++)
             {
-                transferReasons = m_transferReasonsFarming;
-            }
-            else
-            {
-                transferReasons = m_transferReasons;
-            }
-
-            string[] array = new string[transferReasons.Length];
-            for (int i = 0; i < transferReasons.Length; i++)
-            {
-                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", transferReasons[i].ToString());
+                string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_selectedTransferReasons[i].ToString());
                 array[i] = text;
             }
             m_dropdownResource.items = array;
@@ -418,18 +489,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
             if (m_resourcePanel.isVisible)
             {
                 bool isFarming = buildingInfo.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming;
-                TransferManager.TransferReason[] transferReasons;
+                bool isFishing = buildingInfo.m_class.m_service == ItemClass.Service.Fishing;
                 if (isFarming)
                 {
-                    transferReasons = m_transferReasonsFarming;
+                    m_selectedTransferReasons = m_transferReasonsFarming;
+                }
+                else if (isFishing)
+                {
+                    m_selectedTransferReasons = m_transferReasonsFishing;
                 }
                 else
                 {
-                    transferReasons = m_transferReasons;
+                    m_selectedTransferReasons = m_transferReasons;
                 }
-
+                RefreshDropdownLists();
                 int num = 0;
-                foreach (TransferManager.TransferReason transferReason in transferReasons)
+                foreach (TransferManager.TransferReason transferReason in m_selectedTransferReasons)
                 {
                     if (transferReason == warehouseAI.GetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]))
                     {
@@ -438,7 +513,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     }
                     num++;
                 }
-
             }
             m_dropdownMode.selectedIndex = (int)WarehouseMode;
         }
@@ -479,10 +553,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             WarehouseAI warehouseAI = buildingAI as WarehouseAI;
             int num = building2.m_customBuffer1 * 100;
-            m_resourceProgressBar.value = num / (float)warehouseAI.m_storageCapacity;
             TransferManager.TransferReason transferReason = warehouseAI.GetTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
             TransferManager.TransferReason actualTransferReason = warehouseAI.GetActualTransferReason(m_InstanceID.Building, ref Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building]);
-            m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(actualTransferReason);
             m_resourceLabel.text = Locale.Get("WAREHOUSEPANEL_RESOURCE", actualTransferReason.ToString());
             m_emptyingOldResource.isVisible = transferReason != actualTransferReason;
             m_resourceDescription.isVisible = transferReason != TransferManager.TransferReason.None;
@@ -497,37 +569,31 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 UpdateWorkers(warehouseAI, ref instance.m_buildings.m_buffer[building]);
             }
-
             if(IsUniqueMaterialType(actualTransferReason))
             {
                 // In your warehouse panel refresh:
                 var custom_buffers = CustomBuffersManager.GetCustomBuffer(building);
 
                 var qualityBuckets = custom_buffers.GetQualityBuckets(actualTransferReason);
-                int total = qualityBuckets[0] + qualityBuckets[1] + qualityBuckets[2];
+                int high = qualityBuckets[0];
+                int med = qualityBuckets[1];
+                int low = qualityBuckets[2];
 
-                if (total > 0)
-                {
-                    float width = m_qualityRow.width;
-                    m_qualityBarHigh.width = width * qualityBuckets[0] / total;
-                    m_qualityBarMed.width = width * qualityBuckets[1] / total;
-                    m_qualityBarLow.width = width * qualityBuckets[2] / total;
+                m_resourceLabel.relativePosition = new Vector3(0f, -15f);
 
-                    // Position segments left to right
-                    m_qualityBarHigh.relativePosition = new Vector3(0, 0);
-                    m_qualityBarMed.relativePosition = new Vector3(m_qualityBarHigh.width, 0);
-                    m_qualityBarLow.relativePosition = new Vector3(m_qualityBarHigh.width + m_qualityBarMed.width, 0);
+                m_qualityProgressBarHigh.value = high / (float)warehouseAI.m_storageCapacity;
+                m_qualityProgressBarHigh.progressColor = new Color32(255, 215, 0, 255); // Gold
 
-                    m_qualityHighLabel.text = $"★★★ High    {qualityBuckets[0]}t  ({qualityBuckets[0] * 100 / total}%)";
-                    m_qualityMedLabel.text = $"★★  Medium  {qualityBuckets[1]}t  ({qualityBuckets[1] * 100 / total}%)";
-                    m_qualityLowLabel.text = $"★   Low     {qualityBuckets[2]} t  ( {qualityBuckets[2] * 100 / total}%)";
+                m_qualityProgressBarMed.value = med / (float)warehouseAI.m_storageCapacity;
+                m_qualityProgressBarMed.progressColor = new Color32(192, 192, 192, 255); // Silver
 
-                    m_qualityRow.isVisible = true;
-                }
-                else
-                {
-                    m_qualityRow.isVisible = false; // hide for non-quality resources
-                }
+                m_qualityProgressBarLow.value = low / (float)warehouseAI.m_storageCapacity;
+                m_qualityProgressBarLow.progressColor = new Color32(205, 127, 50, 255); // Bronze
+            }
+            else
+            {
+                m_resourceProgressBar.value = num / (float)warehouseAI.m_storageCapacity;
+                m_resourceProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(actualTransferReason);
             }
         }
 
@@ -953,6 +1019,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private bool IsUniqueMaterialType(TransferManager.TransferReason material)
         {
             return material == ExtendedTransferManager.BakedGoods ||
+                material == ExtendedTransferManager.BeverageProducts ||
                 material == ExtendedTransferManager.CannedFish ||
                 material == ExtendedTransferManager.Cars ||
                 material == ExtendedTransferManager.ChemicalProducts ||
