@@ -4,6 +4,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Utils;
 using Object = UnityEngine.Object;
 using MoreTransferReasons;
+using System.Linq;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -207,91 +208,47 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             }
                         }
                     }
-                    else if (__instance.name.Contains("Animal Pasture") && oldAI is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
-                    {
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-
-                        if (newAI is ExtendedProcessingFacilityAI extendedProcessingFacilityAI)
-                        {
-                            extendedProcessingFacilityAI.m_inputResource1 = [TransferManager.TransferReason.Grain];
-                            extendedProcessingFacilityAI.m_inputResource2 = [ExtendedTransferManager.Vegetables];
-                            extendedProcessingFacilityAI.m_inputRate1 = 1000;
-                            extendedProcessingFacilityAI.m_inputRate2 = 1000;
-                            if (__instance.name.Contains("Sheep"))
-                            {
-                                extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Sheep;
-                                extendedProcessingFacilityAI.m_outputResource2 = ExtendedTransferManager.Wool;
-                            }
-                            else if (__instance.name.Contains("Highland Cow"))
-                            {
-                                extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.HighlandCows;
-                            }
-                            else if (__instance.name.Contains("Pig"))
-                            {
-                                extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Pigs;
-                            }
-                            else
-                            {
-                                extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Cows;
-                            }
-                        }
-                    }
                     else if (oldAI is ExtractingFacilityAI extractingFacilityAI && !__instance.name.Contains("Sub"))
                     {
-                        if (__instance.name.Contains("Crop Field"))
-                        {
-                            if (__instance.name.Contains("Corn") || __instance.name.Contains("Potato") || __instance.name.Contains("Green House"))
-                            {
-                                extractingFacilityAI.m_outputResource = ExtendedTransferManager.Vegetables;
-                            }
-                            else if (__instance.name.Contains("Cotton"))
-                            {
-                                extractingFacilityAI.m_outputResource = ExtendedTransferManager.Cotton;
-                            }
-                            else if (__instance.name.Contains("Wheat"))
-                            {
-                                extractingFacilityAI.m_outputResource = TransferManager.TransferReason.Grain;
-                            }
-                        }
-                        else if (__instance.name.Contains("Fruit Field"))
+                        if (__instance.name.Contains("Fruit Field"))
                         {
                             extractingFacilityAI.m_outputResource = ExtendedTransferManager.Fruits;
                         }
                     }
-                    else if (__instance.name.Contains("Cattle Shed") && oldAI is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
+                    else if (oldAI is ProcessingFacilityAI processingFacilityAI && !__instance.name.Contains("Sub"))
                     {
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
-
-                        if (newAI is ExtendedProcessingFacilityAI extendedProcessingFacilityAI)
+                        string[] names = ["Animal Pasture", "Cattle Shed", "Slaughter House", "Milking Parlour"];
+                        if (names.Any(s => __instance.name.Contains(s)))
                         {
-                            extendedProcessingFacilityAI.m_inputResource1 = [TransferManager.TransferReason.Grain];
-                            extendedProcessingFacilityAI.m_inputResource2 = [ExtendedTransferManager.Vegetables];
-                            extendedProcessingFacilityAI.m_inputRate1 = 1000;
-                            extendedProcessingFacilityAI.m_inputRate2 = 1000;
-                            extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Cows;
-                        }
-                    }
-                    else if (__instance.name.Contains("Slaughter House") && oldAI is not ExtendedProcessingFacilityAI && !__instance.name.Contains("Sub"))
-                    {
-                        Object.DestroyImmediate(oldAI);
-                        var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
-                        PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
+                            Object.DestroyImmediate(oldAI);
+                            var newAI = (PrefabAI)__instance.gameObject.AddComponent<ExtendedProcessingFacilityAI>();
+                            PrefabUtil.TryCopyAttributes(oldAI, newAI, false);
 
-                        if (newAI is ExtendedProcessingFacilityAI extendedProcessingFacilityAI)
-                        {
-                            extendedProcessingFacilityAI.m_inputResource1 = [ExtendedTransferManager.Cows];
-                            extendedProcessingFacilityAI.m_inputRate1 = 1000;
-                            if (__instance.name.Contains("Slaughter House"))
+                            if (newAI is ExtendedProcessingFacilityAI extendedProcessingFacilityAI)
                             {
-                                extendedProcessingFacilityAI.m_outputResource1 = TransferManager.TransferReason.AnimalProducts;
-                            }
-                            else if (__instance.name.Contains("Milking Parlour"))
-                            {
-                                extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Milk;
+                                if (__instance.name.Contains("Animal Pasture") || __instance.name.Contains("Cattle Shed"))
+                                {
+                                    extendedProcessingFacilityAI.m_inputResource1 = [TransferManager.TransferReason.Grain];
+                                    extendedProcessingFacilityAI.m_inputResource2 = [ExtendedTransferManager.Vegetables];
+                                    extendedProcessingFacilityAI.m_inputRate1 = 1000;
+                                    extendedProcessingFacilityAI.m_inputRate2 = 1000;
+                                    extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Cows;
+                                    extendedProcessingFacilityAI.m_outputResource2 = TransferManager.TransferReason.None;
+                                }
+                                if (__instance.name.Contains("Slaughter House") || __instance.name.Contains("Milking Parlour"))
+                                {
+                                    extendedProcessingFacilityAI.m_inputRate1 = 1000;
+                                    if (__instance.name.Contains("Slaughter House"))
+                                    {
+                                        extendedProcessingFacilityAI.m_outputResource1 = TransferManager.TransferReason.AnimalProducts;
+                                        extendedProcessingFacilityAI.m_outputResource2 = ExtendedTransferManager.RawHides;
+                                    }
+                                    else if (__instance.name.Contains("Milking Parlour"))
+                                    {
+                                        extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Milk;
+                                        extendedProcessingFacilityAI.m_outputResource2 = TransferManager.TransferReason.None;
+                                    }
+                                }
                             }
                         }
                     }
