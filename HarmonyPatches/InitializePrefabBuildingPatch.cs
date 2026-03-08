@@ -213,6 +213,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         if (__instance.name.Contains("Fruit Field"))
                         {
                             extractingFacilityAI.m_outputResource = ExtendedTransferManager.Fruits;
+                            extractingFacilityAI.m_outputRate = 1000;
                         }
                     }
                     else if (oldAI is ProcessingFacilityAI processingFacilityAI && !__instance.name.Contains("Sub"))
@@ -234,19 +235,26 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                     extendedProcessingFacilityAI.m_inputRate2 = 1000;
                                     extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Cows;
                                     extendedProcessingFacilityAI.m_outputResource2 = TransferManager.TransferReason.None;
+                                    extendedProcessingFacilityAI.m_outputRate1 = 1000;
+                                    extendedProcessingFacilityAI.m_outputRate2 = 0;
                                 }
                                 if (__instance.name.Contains("Slaughter House") || __instance.name.Contains("Milking Parlour"))
                                 {
+                                    extendedProcessingFacilityAI.m_inputResource1 = [ExtendedTransferManager.Cows];
                                     extendedProcessingFacilityAI.m_inputRate1 = 1000;
                                     if (__instance.name.Contains("Slaughter House"))
                                     {
                                         extendedProcessingFacilityAI.m_outputResource1 = TransferManager.TransferReason.AnimalProducts;
                                         extendedProcessingFacilityAI.m_outputResource2 = ExtendedTransferManager.RawHides;
+                                        extendedProcessingFacilityAI.m_outputRate1 = 1000;
+                                        extendedProcessingFacilityAI.m_outputRate2 = 1000;
                                     }
                                     else if (__instance.name.Contains("Milking Parlour"))
                                     {
                                         extendedProcessingFacilityAI.m_outputResource1 = ExtendedTransferManager.Milk;
                                         extendedProcessingFacilityAI.m_outputResource2 = TransferManager.TransferReason.None;
+                                        extendedProcessingFacilityAI.m_outputRate1 = 1000;
+                                        extendedProcessingFacilityAI.m_outputRate2 = 0;
                                     }
                                 }
                             }
