@@ -332,7 +332,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 if (Singleton<BuildingManager>.exists)
                 {
-                    if(variations != null)
+                    if(variations != null && variations.m_size > 1)
                     {
                         Singleton<BuildingManager>.instance.UpdateBuildingInfo(m_InstanceID.Building, variations[m_VariationDropdown.selectedIndex].m_info);
                     }
@@ -347,7 +347,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                     {
                         m_NameField.text = GetName();      
                     });
-                    if (variations != null)
+                    if (variations != null && variations.m_size > 1)
                     {
                         IndustryBuildingAI industryBuildingAI = (IndustryBuildingAI)Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI;
                         industryBuildingAI.SetLastVariationIndex(value);
@@ -383,11 +383,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 {
                     inputResource1 = [ExtendedTransferManager.Sheep];
                     outputResource1 = TransferManager.TransferReason.AnimalProducts;
+                    outputResource2 = ExtendedTransferManager.RawHides;
                 }
                 else if (building.Info.name.Contains("Milking Parlour"))
                 {
                     inputResource1 = [ExtendedTransferManager.Sheep];
                     outputResource1 = ExtendedTransferManager.Milk;
+                    outputResource2 = TransferManager.TransferReason.None;
                 }
             }
             else if (selectedValue.Contains("Highland Cow"))
@@ -401,11 +403,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 {
                     inputResource1 = [ExtendedTransferManager.HighlandCows];
                     outputResource1 = TransferManager.TransferReason.AnimalProducts;
+                    outputResource2 = ExtendedTransferManager.RawHides;
                 }
                 else if (building.Info.name.Contains("Milking Parlour"))
                 {
                     inputResource1 = [ExtendedTransferManager.HighlandCows];
                     outputResource1 = ExtendedTransferManager.Milk;
+                    outputResource2 = TransferManager.TransferReason.None;
                 }
             }
             else if (selectedValue.Contains("Pig"))
@@ -419,6 +423,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 {
                     inputResource1 = [ExtendedTransferManager.Pigs];
                     outputResource1 = ExtendedTransferManager.Pork;
+                    outputResource2 = ExtendedTransferManager.RawHides;
                 }
             }
             else
@@ -432,11 +437,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 {
                     inputResource1 = [ExtendedTransferManager.Cows];
                     outputResource1 = TransferManager.TransferReason.AnimalProducts;
+                    outputResource2 = ExtendedTransferManager.RawHides;
                 }
                 else if (building.Info.name.Contains("Milking Parlour"))
                 {
                     inputResource1 = [ExtendedTransferManager.Cows];
                     outputResource1 = ExtendedTransferManager.Milk;
+                    outputResource2 = TransferManager.TransferReason.None;
                 }
             }
             bool resourceChanged = false;
@@ -790,6 +797,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 {
                     m_storageOutput1.relativePosition = new Vector2(-1f, 28f);
                     m_arrow3.relativePosition = new Vector2(185f, 28f);
+                }
+
+                if (m_extendedProcessingFacilityAI.m_inputResource2.Length == 0 && m_extendedProcessingFacilityAI.m_outputResource2 == TransferManager.TransferReason.None)
+                {
+                    m_storageOutput1.relativePosition = new Vector2(-1f, 0f);
+                    m_arrow3.relativePosition = new Vector2(185f, 7f);
                 }
 
                 if (m_extendedProcessingFacilityAI.m_outputResource2 != TransferManager.TransferReason.None)
