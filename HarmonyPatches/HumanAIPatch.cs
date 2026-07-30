@@ -4,7 +4,7 @@ using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.AI;
 using System.Collections.Generic;
 using UnityEngine;
-using MoreTransferReasons;
+using TransferManagerCore;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -40,17 +40,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
-                        material = ExtendedTransferManager.MealsDeliveryLow;
+                        material = (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow;
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
-                        material = ExtendedTransferManager.MealsDeliveryMedium;
+                        material = (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryMedium;
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
-                        material = ExtendedTransferManager.MealsDeliveryHigh;
+                        material = (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryHigh;
                     }
                     if(material != TransferManager.TransferReason.None)
                     {
@@ -70,17 +70,17 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     // Quality 1's should be mainly for Low Wealth citizens, but not impossible for medium and high
                     if (level == 1)
                     {
-                        material = ExtendedTransferManager.MealsLow;
+                        material = (TransferManager.TransferReason)CustomTransferReason.Reason.MealsLow;
                     }
                     // Quality 2 are ideal for medium wealth citizens, but possible for all
                     else if (level == 2)
                     {
-                        material = ExtendedTransferManager.MealsMedium;
+                        material = (TransferManager.TransferReason)CustomTransferReason.Reason.MealsMedium;
                     }
                     // Quality 3's are best suited for high wealth citizens, but some medium wealth citizens can afford it
                     else if (level == 3)
                     {
-                        material = ExtendedTransferManager.MealsHigh;
+                        material = (TransferManager.TransferReason)CustomTransferReason.Reason.MealsHigh;
                     }
                     if(material != TransferManager.TransferReason.None)
                     {

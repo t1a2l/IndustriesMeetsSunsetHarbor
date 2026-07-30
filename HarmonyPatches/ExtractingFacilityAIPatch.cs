@@ -3,7 +3,7 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -181,9 +181,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int num28 = (num13 * finalProductionRate + 99) / 100;
                     num25 = Mathf.Min(num24, num25 + num28);
                     buildingData.m_customBuffer1 = (ushort)num25;
-                    if (__instance.m_outputResource >= ExtendedTransferManager.MealsDeliveryLow)
+                    if (__instance.m_outputResource >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        DistrictParkManager.AddProductionAmount(b, __instance.m_outputResource, num28);
+                        DistrictParkManager.AddProductionAmount(b, (CustomTransferReason.Reason)__instance.m_outputResource, num28);
                     }
                     else
                     {
@@ -229,9 +229,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             };
                             Singleton<TransferManager>.instance.AddOutgoingOffer(__instance.m_outputResource, offer);
                         }
-                        if (__instance.m_outputResource >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (__instance.m_outputResource >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                         {
-                            DistrictParkManager.AddBufferStatus(b, __instance.m_outputResource, num25, 0, num24);
+                            DistrictParkManager.AddBufferStatus(b, (CustomTransferReason.Reason)__instance.m_outputResource, num25, 0, num24);
                         }
                         else
                         {

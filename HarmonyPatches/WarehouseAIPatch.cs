@@ -3,7 +3,7 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -24,9 +24,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             if (finalProductionRate != 0)
             {
                 ReversePatches.HandleDead(__instance, buildingID, ref buildingData, ref behaviour, totalWorkerCount);
-                TransferManager.TransferReason actualTransferReason = __instance.GetActualTransferReason(buildingID, ref buildingData);
-                TransferManager.TransferReason transferReason = __instance.GetTransferReason(buildingID, ref buildingData);
-                if (actualTransferReason != TransferManager.TransferReason.None)
+                CustomTransferReason.Reason actualTransferReason = (CustomTransferReason.Reason)__instance.GetActualTransferReason(buildingID, ref buildingData);
+                CustomTransferReason.Reason transferReason = (CustomTransferReason.Reason)__instance.GetTransferReason(buildingID, ref buildingData);
+                if (actualTransferReason != CustomTransferReason.Reason.None)
                 {
                     int maxLoadSize = ReversePatches.GetMaxLoadSize(__instance);
                     bool flag = __instance.IsFull(buildingID, ref buildingData);
@@ -36,23 +36,23 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int cargo = 0;
                     int capacity = 0;
                     int outside = 0;
-                    __instance.CalculateOwnVehicles(buildingID, ref buildingData, actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
+                    __instance.CalculateOwnVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)actualTransferReason, ref count, ref cargo, ref capacity, ref outside);
                     buildingData.m_tempExport = (byte)Mathf.Clamp(outside, buildingData.m_tempExport, 255);
                     int count2 = 0;
                     int cargo2 = 0;
                     int capacity2 = 0;
                     int outside2 = 0;
-                    __instance.CalculateGuestVehicles(buildingID, ref buildingData, actualTransferReason, ref count2, ref cargo2, ref capacity2, ref outside2);
+                    __instance.CalculateGuestVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)actualTransferReason, ref count2, ref cargo2, ref capacity2, ref outside2);
                     buildingData.m_tempImport = (byte)Mathf.Clamp(outside2, buildingData.m_tempImport, 255);
                     if (b != 0)
                     {
-                        if (actualTransferReason >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (actualTransferReason >= CustomTransferReason.Reason.MealsDeliveryLow)
                         {
                             DistrictParkManager.AddBufferStatus(b, actualTransferReason, num, cargo2, __instance.m_storageCapacity);
                         }
                         else
                         {
-                            instance.m_parks.m_buffer[b].AddBufferStatus(actualTransferReason, num, cargo2, __instance.m_storageCapacity);
+                            instance.m_parks.m_buffer[b].AddBufferStatus((TransferManager.TransferReason)actualTransferReason, num, cargo2, __instance.m_storageCapacity);
                         }
                     }
                     ushort num3 = buildingID;
@@ -104,7 +104,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             offer.Active = true;
                             offer.Exclude = flag2;
                             offer.Unlimited = !flag2;
-                            Singleton<TransferManager>.instance.AddOutgoingOffer(actualTransferReason, offer);
+                            Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer);
                         }
                         if ((buildingData.m_flags & Building.Flags.Downgrading) != Building.Flags.None)
                         {
@@ -114,7 +114,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             while (num5 != 0 && cargo2 > 0 && (float)(num + cargo2) > (float)__instance.m_storageCapacity * 0.2f + (float)maxLoadSize)
                             {
                                 ushort nextGuestVehicle = buffer[num5].m_nextGuestVehicle;
-                                if (buffer[num5].m_targetBuilding == buildingID && (TransferManager.TransferReason)buffer[num5].m_transferType == actualTransferReason)
+                                if (buffer[num5].m_targetBuilding == buildingID && (CustomTransferReason.Reason)buffer[num5].m_transferType == actualTransferReason)
                                 {
                                     VehicleInfo info2 = buffer[num5].Info;
                                     if (info2 != null)
@@ -167,7 +167,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                 offer2.Active = false;
                                 offer2.Exclude = flag2;
                                 offer2.Unlimited = !flag2;
-                                Singleton<TransferManager>.instance.AddIncomingOffer(actualTransferReason, offer2);
+                                Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)actualTransferReason, offer2);
                             }
                         }
                     }
@@ -183,7 +183,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             Exclude = flag2,
                             Unlimited = !flag2
                         };
-                        Singleton<TransferManager>.instance.AddOutgoingOffer(actualTransferReason, offer3);
+                        Singleton<TransferManager>.instance.AddOutgoingOffer((TransferManager.TransferReason)actualTransferReason, offer3);
                     }
                     bool flag4 = __instance.IsFull(buildingID, ref buildingData);
                     if (flag != flag4)
@@ -201,7 +201,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 if (actualTransferReason != transferReason && buildingData.m_customBuffer1 == 0)
                 {
                     buildingData.m_adults = buildingData.m_seniors;
-                    ReversePatches.SetContentFlags(__instance, buildingID, ref buildingData, transferReason);
+                    ReversePatches.SetContentFlags(__instance, buildingID, ref buildingData, (TransferManager.TransferReason)transferReason);
                 }
                 int num7 = finalProductionRate * __instance.m_noiseAccumulation / 100;
                 if (num7 != 0)
@@ -217,7 +217,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool ModifyMaterialBuffer(WarehouseAI __instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
-            if (material == __instance.GetActualTransferReason(buildingID, ref data) && IsUniqueMaterialType(material))
+            if (material == __instance.GetActualTransferReason(buildingID, ref data) && IsUniqueMaterialType((CustomTransferReason.Reason)material))
             {
                 int num = data.m_customBuffer1 * 100;
                 amountDelta = Mathf.Clamp(amountDelta, -num, __instance.m_storageCapacity - num);
@@ -265,26 +265,26 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-        private static bool IsUniqueMaterialType(TransferManager.TransferReason material)
+        private static bool IsUniqueMaterialType(CustomTransferReason.Reason material)
         {
-            return material == ExtendedTransferManager.BakedGoods ||
-                material == ExtendedTransferManager.BeverageProducts ||
-                material == ExtendedTransferManager.CannedFish ||
-                material == ExtendedTransferManager.Cars ||
-                material == ExtendedTransferManager.ChemicalProducts ||
-                material == ExtendedTransferManager.Cloths ||
-                material == ExtendedTransferManager.ElectronicProducts ||
-                material == ExtendedTransferManager.FoodProducts ||
-                material == ExtendedTransferManager.Footwear ||
-                material == ExtendedTransferManager.Furnitures ||
-                material == ExtendedTransferManager.HouseParts ||
-                material == ExtendedTransferManager.IndustrialSteel ||
-                material == ExtendedTransferManager.PetroleumProducts ||
-                material == ExtendedTransferManager.PrintedProducts ||
-                material == ExtendedTransferManager.Toys ||
-                material == ExtendedTransferManager.TissuePaper ||
-                material == ExtendedTransferManager.Tupperware ||
-                material == TransferManager.TransferReason.LuxuryProducts;
+            return material == CustomTransferReason.Reason.BakedGoods ||
+                material == CustomTransferReason.Reason.BeverageProducts ||
+                material == CustomTransferReason.Reason.CannedFish ||
+                material == CustomTransferReason.Reason.Cars ||
+                material == CustomTransferReason.Reason.ChemicalProducts ||
+                material == CustomTransferReason.Reason.Cloths ||
+                material == CustomTransferReason.Reason.ElectronicProducts ||
+                material == CustomTransferReason.Reason.FoodProducts ||
+                material == CustomTransferReason.Reason.Footwear ||
+                material == CustomTransferReason.Reason.Furnitures ||
+                material == CustomTransferReason.Reason.HouseParts ||
+                material == CustomTransferReason.Reason.IndustrialSteel ||
+                material == CustomTransferReason.Reason.PetroleumProducts ||
+                material == CustomTransferReason.Reason.PrintedProducts ||
+                material == CustomTransferReason.Reason.Toys ||
+                material == CustomTransferReason.Reason.TissuePaper ||
+                material == CustomTransferReason.Reason.Tupperware ||
+                material == CustomTransferReason.Reason.LuxuryProducts;
         }
     }
 }

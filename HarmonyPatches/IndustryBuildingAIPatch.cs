@@ -2,7 +2,7 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -14,7 +14,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool ExchangeResource(IndustryBuildingAI __instance, TransferManager.TransferReason material, int amount, ushort sourceBuilding, ushort targetBuilding)
         {
-            if(material < ExtendedTransferManager.MealsDeliveryLow)
+            CustomTransferReason.Reason reason = (CustomTransferReason.Reason)material;
+
+            if (reason < CustomTransferReason.Reason.MealsDeliveryLow)
             {
                 return true;
             }
@@ -35,11 +37,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             {
                 if (industryArea != 0)
                 {
-                    DistrictParkManager.AddExportAmount(industryArea, material, amount);
+                    DistrictParkManager.AddExportAmount(industryArea, reason, amount);
                 }
                 if (industryArea2 != 0)
                 {
-                    DistrictParkManager.AddImportAmount(industryArea, material, amount);
+                    DistrictParkManager.AddImportAmount(industryArea, reason, amount);
                 }
             }
             int num = (amount * IndustryBuildingAI.GetResourcePrice(material, info.m_class.m_service) + 50) / 100;

@@ -1,5 +1,5 @@
 using HarmonyLib;
-using MoreTransferReasons;
+using TransferManagerCore;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -27,9 +27,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             switch (material)
             {
-                case ExtendedTransferManager.MealsLow:
-                case ExtendedTransferManager.MealsMedium:
-                case ExtendedTransferManager.MealsHigh:
+                case (TransferManager.TransferReason)CustomTransferReason.Reason.MealsLow:
+                case (TransferManager.TransferReason)CustomTransferReason.Reason.MealsMedium:
+                case (TransferManager.TransferReason)CustomTransferReason.Reason.MealsHigh:
                     data.m_flags &= ~Citizen.Flags.Evacuating;
                     if (__instance.StartMoving(citizenID, ref data, source_building, offer.Building))
                     {

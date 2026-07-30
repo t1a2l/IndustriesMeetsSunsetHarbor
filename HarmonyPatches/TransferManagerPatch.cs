@@ -2,7 +2,7 @@ using System;
 using ColossalFramework;
 using ColossalFramework.Math;
 using HarmonyLib;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -10,21 +10,21 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     [HarmonyPatch(typeof(TransferManager))]
     public static class TransferManagerPatch
     {
-        private static readonly TransferManager.TransferReason[] UniqueFactoryProducts =
+        private static readonly CustomTransferReason.Reason[] UniqueFactoryProducts =
         [
-            ExtendedTransferManager.BakedGoods,
-            ExtendedTransferManager.BeverageProducts,
-            ExtendedTransferManager.CannedFish,
-            ExtendedTransferManager.Cloths,
-            ExtendedTransferManager.ElectronicProducts,
-            ExtendedTransferManager.FoodProducts,
-            ExtendedTransferManager.Footwear,
-            ExtendedTransferManager.Furnitures,
-            ExtendedTransferManager.HouseParts,
-            ExtendedTransferManager.PrintedProducts,
-            ExtendedTransferManager.Toys,
-            ExtendedTransferManager.Tupperware,
-            ExtendedTransferManager.TissuePaper
+            CustomTransferReason.Reason.BakedGoods,
+            CustomTransferReason.Reason.BeverageProducts,
+            CustomTransferReason.Reason.CannedFish,
+            CustomTransferReason.Reason.Cloths,
+            CustomTransferReason.Reason.ElectronicProducts,
+            CustomTransferReason.Reason.FoodProducts,
+            CustomTransferReason.Reason.Footwear,
+            CustomTransferReason.Reason.Furnitures,
+            CustomTransferReason.Reason.HouseParts,
+            CustomTransferReason.Reason.PrintedProducts,
+            CustomTransferReason.Reason.Toys,
+            CustomTransferReason.Reason.Tupperware,
+            CustomTransferReason.Reason.TissuePaper
         ];
 
         [HarmonyPatch(typeof(TransferManager), "AddIncomingOffer")]
@@ -44,7 +44,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         offer.Priority = Mathf.Clamp(offer.Priority + qualityBonus, 1, 7);
                         uint week = (uint)(Singleton<SimulationManager>.instance.m_currentGameTime.Ticks / (TimeSpan.TicksPerDay * 7));
                         var rng = new Randomizer((uint)offer.Building ^ week);
-                        material = UniqueFactoryProducts[rng.Int32((uint)UniqueFactoryProducts.Length)];
+                        material = (TransferManager.TransferReason)UniqueFactoryProducts[rng.Int32((uint)UniqueFactoryProducts.Length)];
                     }
                 } 
             }

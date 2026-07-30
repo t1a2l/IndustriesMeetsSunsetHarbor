@@ -4,9 +4,8 @@ using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.UI;
 using IndustriesMeetsSunsetHarbor.AI;
 using ColossalFramework;
-using MoreTransferReasons.Utils;
-using MoreTransferReasons;
 using ColossalFramework.Threading;
+using TransferManagerCore;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
 {
@@ -15,7 +14,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
     {
         [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
         [HarmonyPostfix]
-        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection)
+        public static void PostSetTarget(CityServiceWorldInfoPanel __instance, ref InstanceID ___m_InstanceID, ref UIProgressBar ___m_outputBuffer, ref UILabel ___m_outputLabel, ref UISprite ___m_arrow3, ref UISprite ___m_outputSprite, ref UIButton ___m_ShowIndustryInfoButton, ref UIPanel ___m_outputSection, ref UIPanel ___m_inputOutputSection, ref UIPanel ___m_inputSection, ref UIPanel ___m_VariationPanel)
         {
             ushort building = ___m_InstanceID.Building;
 	    Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
@@ -25,6 +24,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             ExtractingFacilityAI m_extractingFacilityAI = data.Info.GetAI() as ExtractingFacilityAI;
             TransferManager.TransferReason outputResource = TransferManager.TransferReason.None;
             ___m_ShowIndustryInfoButton.isVisible = false;
+            ___m_VariationPanel.isVisible = false;
             if (m_aquacultureFarmAI != null || m_fishingHarborAI != null || m_fishFarmAI != null)
             {
                 ___m_inputSection.isVisible = false;
@@ -32,7 +32,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 ___m_inputOutputSection.isVisible = true;
                 if (m_aquacultureFarmAI != null)
                 {
-                    outputResource = m_aquacultureFarmAI.m_outputResource;
+                    outputResource = (TransferManager.TransferReason)m_aquacultureFarmAI.m_outputResource;
                 }
                 if (m_fishingHarborAI != null)
                 {
@@ -46,14 +46,15 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 string text = Locale.Get("WAREHOUSEPANEL_RESOURCE", outputResource.ToString());
                 ___m_outputLabel.text = text;
                 ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text);
-                ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(outputResource);
-                ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(outputResource);
+                ___m_outputSprite.atlas = TransferManagerExtended.Util.AtlasUtils.GetResourceAtlas((CustomTransferReason.Reason)outputResource);
+                ___m_outputSprite.spriteName = TransferManagerExtended.Util.AtlasUtils.GetSpriteName((CustomTransferReason.Reason)outputResource);
             }
             if (m_extractingFacilityAI != null)
             {
                 ___m_outputBuffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(TransferManager.TransferReason.Grain);
                 ___m_inputSection.isVisible = false;
                 ___m_outputSection.isVisible = true;
+                ___m_VariationPanel.isVisible = true;
                 ___m_ShowIndustryInfoButton.isVisible = true;
             }
             if (AquacultureExtractorPanel._aquacultureExtractorPanel == null)
@@ -99,7 +100,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     TransferManager.TransferReason outputResource = TransferManager.TransferReason.None;
                     if (m_aquacultureFarmAI != null)
                     {
-                        outputResource = m_aquacultureFarmAI.m_outputResource;
+                        outputResource = (TransferManager.TransferReason)m_aquacultureFarmAI.m_outputResource;
                         storageBufferSize = m_aquacultureFarmAI.GetStorageBufferSize(___m_InstanceID.Building, ref building2);
                     }
                     if (m_fishingHarborAI != null)
@@ -116,17 +117,13 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     {
                         outputResource = m_extractingFacilityAI.m_outputResource;
                         storageBufferSize = m_extractingFacilityAI.GetOutputBufferSize(___m_InstanceID.Building, ref building2);
+                        ___m_outputSprite.atlas = TransferManagerExtended.Util.AtlasUtils.GetResourceAtlas((CustomTransferReason.Reason)m_extractingFacilityAI.m_outputResource);
                         if (sub_service == ItemClass.SubService.PlayerIndustryFarming)
                         {
                             string text4 = Locale.Get("WAREHOUSEPANEL_RESOURCE", m_extractingFacilityAI.m_outputResource.ToString());
                             ___m_outputLabel.text = text4;
                             ___m_arrow3.tooltip = StringUtils.SafeFormat(Locale.Get("INDUSTRYBUILDING_EXTRACTINGTOOLTIP"), text4);
-                            ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_extractingFacilityAI.m_outputResource);
-                            ___m_outputSprite.spriteName = AtlasUtils.GetSpriteName(m_extractingFacilityAI.m_outputResource);
-                        }
-                        else
-                        {
-                            ___m_outputSprite.atlas = AtlasUtils.GetResourceAtlas(m_extractingFacilityAI.m_outputResource);
+                            ___m_outputSprite.spriteName = TransferManagerExtended.Util.AtlasUtils.GetSpriteName((CustomTransferReason.Reason)m_extractingFacilityAI.m_outputResource);
                         }
                     }
                     ___m_outputBuffer.value = IndustryWorldInfoPanel.SafelyNormalize(num, storageBufferSize);
@@ -160,7 +157,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                         ExtractingFacilityAI m_extractingFacilityAI = building.Info.m_buildingAI as ExtractingFacilityAI;
                         if (m_extractingFacilityAI != null && building.Info.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming)
                         {
-                            CropFieldVariationChanged(ref building, m_extractingFacilityAI, selectedValue);
+                            FieldVariationChanged(ref building, m_extractingFacilityAI, selectedValue);
                         }
                         Singleton<BuildingManager>.instance.UpdateBuildingInfo(m_InstanceID.Building, variations[index].m_info);
                         ThreadHelper.dispatcher.Dispatch(delegate
@@ -176,27 +173,27 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             return true;
         }
 
-        private static void CropFieldVariationChanged(ref Building building, ExtractingFacilityAI m_extractingFacilityAI, string selectedValue)
+        private static void FieldVariationChanged(ref Building building, ExtractingFacilityAI m_extractingFacilityAI, string selectedValue)
         {
             var oldOutputResource = m_extractingFacilityAI.m_outputResource;
-            var outputResource = TransferManager.TransferReason.None; 
+            var outputResource = CustomTransferReason.Reason.Fruits;
             if (selectedValue.Contains("Corn") || selectedValue.Contains("Potato") || selectedValue.Contains("Green House"))
             {
-                outputResource = ExtendedTransferManager.Vegetables;
+                outputResource = CustomTransferReason.Reason.Vegetables;
             }
             else if (selectedValue.Contains("Cotton"))
             {
-                outputResource = ExtendedTransferManager.Cotton;
+                outputResource = CustomTransferReason.Reason.Cotton;
             }
             else if (selectedValue.Contains("Wheat"))
             {
-                outputResource = TransferManager.TransferReason.Grain;
+                outputResource = CustomTransferReason.Reason.Crops;
             }
-            if (outputResource != oldOutputResource)
+            if ((TransferManager.TransferReason)outputResource != oldOutputResource)
             {
                 building.m_customBuffer1 = 0;
             }
-            m_extractingFacilityAI.m_outputResource = outputResource;
+            m_extractingFacilityAI.m_outputResource = (TransferManager.TransferReason)outputResource;
         }
 
         private static string GetName(InstanceID m_InstanceID)

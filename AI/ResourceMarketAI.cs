@@ -3,7 +3,7 @@ using System;
 using IndustriesMeetsSunsetHarbor.Managers;
 using UnityEngine;
 using ColossalFramework.DataBinding;
-using MoreTransferReasons;
+using TransferManagerCore;
 
 namespace IndustriesMeetsSunsetHarbor.AI
 {
@@ -58,27 +58,27 @@ namespace IndustriesMeetsSunsetHarbor.AI
 
         int index = 0;
 
-        public TransferManager.TransferReason[] m_incomingResources =
+        public CustomTransferReason.Reason[] m_incomingResources =
         [
-            TransferManager.TransferReason.Fish,
-            TransferManager.TransferReason.Grain,
-            TransferManager.TransferReason.Food,
-            TransferManager.TransferReason.AnimalProducts,
-            TransferManager.TransferReason.Flours,
-            ExtendedTransferManager.BakedGoods,
-            ExtendedTransferManager.CannedFish,
-            ExtendedTransferManager.Anchovy,
-            ExtendedTransferManager.Salmon,
-            ExtendedTransferManager.Shellfish,
-            ExtendedTransferManager.Tuna,
-            ExtendedTransferManager.Algae,
-            ExtendedTransferManager.Seaweed,
-            ExtendedTransferManager.Mussels,
-            ExtendedTransferManager.Trout,
-            ExtendedTransferManager.Milk,
-            ExtendedTransferManager.Pork,
-            ExtendedTransferManager.Fruits,
-            ExtendedTransferManager.Vegetables,
+            CustomTransferReason.Reason.Fish,
+            CustomTransferReason.Reason.Crops,
+            CustomTransferReason.Reason.Food,
+            CustomTransferReason.Reason.AnimalProducts,
+            CustomTransferReason.Reason.Flours,
+            CustomTransferReason.Reason.BakedGoods,
+            CustomTransferReason.Reason.CannedFish,
+            CustomTransferReason.Reason.Anchovy,
+            CustomTransferReason.Reason.Salmon,
+            CustomTransferReason.Reason.Shellfish,
+            CustomTransferReason.Reason.Tuna,
+            CustomTransferReason.Reason.Algae,
+            CustomTransferReason.Reason.Seaweed,
+            CustomTransferReason.Reason.Mussels,
+            CustomTransferReason.Reason.Trout,
+            CustomTransferReason.Reason.Milk,
+            CustomTransferReason.Reason.Pork,
+            CustomTransferReason.Reason.Fruits,
+            CustomTransferReason.Reason.Vegetables,
         ];
 
         public int GetEntertainmentAccumulation(ushort buildingID, ref Building data)
@@ -161,7 +161,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         {
                             for (int i = 0; i < m_incomingResources.Length; i++)
                             {
-                                if (m_incomingResources[i] != TransferManager.TransferReason.None && (data.m_tempImport != 0 || data.m_finalImport != 0))
+                                if (m_incomingResources[i] != CustomTransferReason.Reason.None && (data.m_tempImport != 0 || data.m_finalImport != 0))
                                 {
                                     return Singleton<TransferManager>.instance.m_properties.m_resourceColors[(int)m_incomingResources[i]];
                                 }
@@ -193,7 +193,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
         public override string GetDebugString(ushort buildingID, ref Building data)
         {
             string text = base.GetDebugString(buildingID, ref data);
-            TransferManager.TransferReason[] incomingResources = m_incomingResources;
+            CustomTransferReason.Reason[] incomingResources = m_incomingResources;
             var marketBuffer = ResourceMarketManager.MarketBuffers[buildingID];
             for (int i = 0; i < incomingResources.Length; i++)
             {
@@ -201,9 +201,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 int num2 = 0;
                 int num3 = 0;
                 int num4 = 0;
-                if (incomingResources[i] != TransferManager.TransferReason.None)
+                if (incomingResources[i] != CustomTransferReason.Reason.None)
                 {
-                    base.CalculateGuestVehicles(buildingID, ref data, incomingResources[i], ref num, ref num2, ref num3, ref num4);
+                    base.CalculateGuestVehicles(buildingID, ref data, (TransferManager.TransferReason)incomingResources[i], ref num, ref num2, ref num3, ref num4);
                     text = StringUtils.SafeFormat("{0}\n{1}: {2} (+{3})",
                     [
                         text,
@@ -331,7 +331,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                         var found = false;
                         for (int i = 0; i < m_incomingResources.Length; i++)
                         {
-                            if (material == m_incomingResources[i])
+                            if (material == (TransferManager.TransferReason)m_incomingResources[i])
                             {
                                 index = i;
                                 if (!ResourceMarketManager.MarketBuffers.ContainsKey(buildingID))
@@ -363,7 +363,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             var found = false;
             for (int i = 0; i < m_incomingResources.Length; i++)
             {
-                if (material == m_incomingResources[i])
+                if (material == (TransferManager.TransferReason)m_incomingResources[i])
                 {
                     amount = ResourceMarketManager.MarketBuffers[buildingID].inputAmountBuffer[i];
                     found = true;
@@ -389,9 +389,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
             offer.Building = buildingID;
             for (int i = 0; i < m_incomingResources.Length; i++)
             {
-                if (m_incomingResources[i] != TransferManager.TransferReason.None)
+                if (m_incomingResources[i] != CustomTransferReason.Reason.None)
                 {
-                    Singleton<TransferManager>.instance.RemoveIncomingOffer(m_incomingResources[i], offer);
+                    Singleton<TransferManager>.instance.RemoveIncomingOffer((TransferManager.TransferReason)m_incomingResources[i], offer);
                 }
             }
             Singleton<TransferManager>.instance.RemoveOutgoingOffer(TransferManager.TransferReason.Entertainment, offer);
@@ -529,7 +529,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                     {
                         productionRateArr[i] = productionRate;
                         int num16 = goodsCapacity;
-                        if (i < m_incomingResources.Length && m_incomingResources[i] != TransferManager.TransferReason.None)
+                        if (i < m_incomingResources.Length && m_incomingResources[i] != CustomTransferReason.Reason.None)
                         {
                             num16 = Mathf.Min(num16, (int)marketBuffer.inputAmountBuffer[i]);
                         }
@@ -544,7 +544,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             num17 = num17 + 1 >> 1;
                         }
                         num17 = Mathf.Max(0, Mathf.Min(num17, num16));
-                        if (i < m_incomingResources.Length && m_incomingResources[i] != TransferManager.TransferReason.None)
+                        if (i < m_incomingResources.Length && m_incomingResources[i] != CustomTransferReason.Reason.None)
                         {
                             marketBuffer.inputAmountBuffer[i] -= (ushort)num17;
                         }
@@ -573,9 +573,9 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 for (int i = 0; i < m_incomingResources.Length; i++)
                 {
-                    if (m_incomingResources[i] != TransferManager.TransferReason.None)
+                    if (m_incomingResources[i] != CustomTransferReason.Reason.None)
                     {
-                        base.CalculateGuestVehicles(buildingID, ref buildingData, m_incomingResources[i], ref countArr[i], ref cargoArr[i], ref capacityArr[i], ref outsideArr[i]);
+                        base.CalculateGuestVehicles(buildingID, ref buildingData, (TransferManager.TransferReason)m_incomingResources[i], ref countArr[i], ref cargoArr[i], ref capacityArr[i], ref outsideArr[i]);
                         buildingData.m_tempImport = (byte)Mathf.Clamp(outsideArr[i], (int)buildingData.m_tempImport, 255);
                     }
                 }
@@ -603,7 +603,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                 }
                 for (int i = 0; i < m_incomingResources.Length; i++)
                 {
-                    if (buildingData.m_fireIntensity == 0 && m_incomingResources[i] != TransferManager.TransferReason.None)
+                    if (buildingData.m_fireIntensity == 0 && m_incomingResources[i] != CustomTransferReason.Reason.None)
                     {
                         int InputSize = (int)marketBuffer.inputAmountBuffer[i] + cargoArr[i];
                         if (InputSize < m_resourceThreshold)
@@ -614,7 +614,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
                             offer.Position = buildingData.m_position;
                             offer.Amount = 1;
                             offer.Active = false;
-                            Singleton<TransferManager>.instance.AddIncomingOffer(m_incomingResources[i], offer);
+                            Singleton<TransferManager>.instance.AddIncomingOffer((TransferManager.TransferReason)m_incomingResources[i], offer);
                         }
                     }
                 }
@@ -693,7 +693,7 @@ namespace IndustriesMeetsSunsetHarbor.AI
             int num, num2;
             for (int i = 0; i < m_incomingResources.Length; i++)
             {
-                string name = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(m_incomingResources[i]);
+                string name = TransferManagerExtended.Util.AtlasUtils.GetSpriteName((CustomTransferReason.Reason)m_incomingResources[i]);
                 name = name.Replace("Grain", "Crops");
                 name = name.Replace("Flours", "Flour");
                 name = name.Replace("AnimalProducts", "Meat");

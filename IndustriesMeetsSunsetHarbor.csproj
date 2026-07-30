@@ -34,7 +34,7 @@
     <EmbeddedResource Include="Utils\Atlas\InfoIconRestaurantButtonAtlas.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CitiesHarmony.API" Version="2.1.0" />
+    <PackageReference Include="CitiesHarmony.API" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -49,9 +49,8 @@
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MoreTransferReasons">
-      <HintPath>..\..\..\Users\User\AppData\Local\Colossal Order\Cities_Skylines\Addons\Mods\MoreTransferReasons\MoreTransferReasons.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="TransferManagerExtended">
+      <HintPath>..\TransferManagerExtended\Code\bin\Debug\net35\TransferManagerExtended.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>

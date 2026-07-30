@@ -2,7 +2,7 @@ using ColossalFramework;
 using HarmonyLib;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -182,9 +182,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int num32 = (__instance.m_inputRate1 * finalProductionRate + 99) / 100;
                     num18 = Mathf.Max(0, num18 - num32);
                     buildingData.m_customBuffer2 = (ushort)num18;
-                    if(__instance.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    if(__instance.m_inputResource1 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        DistrictParkManager.AddConsumptionAmount(b, __instance.m_inputResource1, num32);
+                        DistrictParkManager.AddConsumptionAmount(b, (CustomTransferReason.Reason)__instance.m_inputResource1, num32);
                     }
                     else
                     {
@@ -198,9 +198,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     num21 = Mathf.Max(0, num21 - num33);
                     buildingData.m_youngs = (byte)(num21 & 0xFF);
                     buildingData.m_teens = (byte)(num21 >> 8);
-                    if (__instance.m_inputResource2 >= ExtendedTransferManager.MealsDeliveryLow)
+                    if (__instance.m_inputResource2 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        DistrictParkManager.AddConsumptionAmount(b, __instance.m_inputResource2, num33);
+                        DistrictParkManager.AddConsumptionAmount(b, (CustomTransferReason.Reason)__instance.m_inputResource2, num33);
                     }
                     else
                     {
@@ -213,9 +213,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     num24 = Mathf.Max(0, num24 - num34);
                     buildingData.m_seniors = (byte)(num24 & 0xFF);
                     buildingData.m_adults = (byte)(num24 >> 8);
-                    if (__instance.m_inputResource3 >= ExtendedTransferManager.MealsDeliveryLow)
+                    if (__instance.m_inputResource3 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        DistrictParkManager.AddConsumptionAmount(b, __instance.m_inputResource3, num34);
+                        DistrictParkManager.AddConsumptionAmount(b, (CustomTransferReason.Reason)__instance.m_inputResource3, num34);
                     }
                     else
                     {
@@ -228,9 +228,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     num27 = Mathf.Max(0, num27 - num35);
                     buildingData.m_education2 = (byte)(num27 & 0xFF);
                     buildingData.m_education1 = (byte)(num27 >> 8);
-                    if (__instance.m_inputResource4 >= ExtendedTransferManager.MealsDeliveryLow)
+                    if (__instance.m_inputResource4 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        DistrictParkManager.AddConsumptionAmount(b, __instance.m_inputResource4, num35);
+                        DistrictParkManager.AddConsumptionAmount(b, (CustomTransferReason.Reason)__instance.m_inputResource4, num35);
                     }
                     else
                     {
@@ -242,9 +242,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                     int num36 = (num13 * finalProductionRate + 99) / 100;
                     num30 = Mathf.Min(num29, num30 + num36);
                     buildingData.m_customBuffer1 = (ushort)num30;
-                    if (__instance.m_outputResource >= ExtendedTransferManager.MealsDeliveryLow)
+                    if (__instance.m_outputResource >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        DistrictParkManager.AddProductionAmount(b, __instance.m_outputResource, num36);
+                        DistrictParkManager.AddProductionAmount(b, (CustomTransferReason.Reason)__instance.m_outputResource, num36);
                     }
                     else
                     {
@@ -285,9 +285,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             };
                             Singleton<TransferManager>.instance.AddIncomingOffer(__instance.m_inputResource1, offer);
                         }
-                        if (__instance.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (__instance.m_inputResource1 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                         {
-                            DistrictParkManager.AddBufferStatus(b, __instance.m_inputResource1, num18, cargo, num17);
+                            DistrictParkManager.AddBufferStatus(b, (CustomTransferReason.Reason)__instance.m_inputResource1, num18, cargo, num17);
                         }
                         else
                         {
@@ -319,9 +319,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             };
                             Singleton<TransferManager>.instance.AddIncomingOffer(__instance.m_inputResource2, offer2);
                         }
-                        if (__instance.m_inputResource2 >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (__instance.m_inputResource2 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                         {
-                            DistrictParkManager.AddBufferStatus(b, __instance.m_inputResource2, num21, cargo2, num20);
+                            DistrictParkManager.AddBufferStatus(b, (CustomTransferReason.Reason)__instance.m_inputResource2, num21, cargo2, num20);
                         }
                         else
                         {
@@ -352,9 +352,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             };
                             Singleton<TransferManager>.instance.AddIncomingOffer(__instance.m_inputResource3, offer3);
                         }
-                        if (__instance.m_inputResource3 >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (__instance.m_inputResource3 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                         {
-                            DistrictParkManager.AddBufferStatus(b, __instance.m_inputResource3, num24, cargo3, num23);
+                            DistrictParkManager.AddBufferStatus(b, (CustomTransferReason.Reason)__instance.m_inputResource3, num24, cargo3, num23);
                         }
                         else
                         {
@@ -385,9 +385,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                             };
                             Singleton<TransferManager>.instance.AddIncomingOffer(__instance.m_inputResource4, offer4);
                         }
-                        if (__instance.m_inputResource4 >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (__instance.m_inputResource4 >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                         {
-                            DistrictParkManager.AddBufferStatus(b, __instance.m_inputResource4, num27, cargo4, num26);
+                            DistrictParkManager.AddBufferStatus(b, (CustomTransferReason.Reason)__instance.m_inputResource4, num27, cargo4, num26);
                         }
                         else
                         {
@@ -410,9 +410,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                 Singleton<EconomyManager>.instance.AddResource(EconomyManager.Resource.ResourcePrice, num42, __instance.m_info.m_class);
                                 if (b != 0)
                                 {
-                                    if (__instance.m_outputResource >= ExtendedTransferManager.MealsDeliveryLow)
+                                    if (__instance.m_outputResource >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                                     {
-                                        DistrictParkManager.AddExportAmount(b, __instance.m_outputResource, num30);
+                                        DistrictParkManager.AddExportAmount(b, (CustomTransferReason.Reason)__instance.m_outputResource, num30);
                                     }
                                     else
                                     {
@@ -449,9 +449,9 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                                 Singleton<TransferManager>.instance.AddOutgoingOffer(__instance.m_outputResource, offer5);
                             }
                         }
-                        if (__instance.m_outputResource >= ExtendedTransferManager.MealsDeliveryLow)
+                        if (__instance.m_outputResource >= (TransferManager.TransferReason)CustomTransferReason.Reason.MealsDeliveryLow)
                         {
-                            DistrictParkManager.AddBufferStatus(b, __instance.m_outputResource, num30, 0, num29);
+                            DistrictParkManager.AddBufferStatus(b, (CustomTransferReason.Reason)__instance.m_outputResource, num30, 0, num29);
                         }
                         else
                         {

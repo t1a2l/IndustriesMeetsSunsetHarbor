@@ -15,7 +15,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
                 var component = __instance.GetComponent<PrefabAI>();
                 if (component != null && component is RestaurantDeliveryPersonAI)
                 {
-                    __instance.m_class.m_service = (ItemClass.Service)28;
+                    __instance.m_class.m_service = (ItemClass.Service)29;
                     __instance.m_class.m_subService = ItemClass.SubService.None;
                     __instance.m_class.m_level = ItemClass.Level.Level3;
                 }

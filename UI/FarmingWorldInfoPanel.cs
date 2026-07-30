@@ -145,7 +145,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void BuildInputRow()
         {
-            var mtrAtlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+            var mtrAtlas = TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
             MakeStorageBox(new GameObject(), "Grain", "Grain", UITextures.InGameAtlas, C1, INPUT_Y, out m_grainBuf);
             MakeStorageBox(new GameObject(), "Vegetables", "Vegetables", mtrAtlas, C2, INPUT_Y, out m_vegBuf);
             MakeStorageBox(new GameObject(), "Fruits", "Fruits", mtrAtlas, C3, INPUT_Y, out m_fruitsBuf);
@@ -175,7 +175,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void BuildAnimalRow()
         {
-            var atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+            var atlas = TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
             GameObject gameObjectSheep = new();
             GameObject gameObjectHighlandCows = new();
             GameObject gameObjectCows = new();
@@ -198,7 +198,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private void BuildProcessingRow()
         {
-            var mtrAtlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+            var mtrAtlas = TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
             MakeStorageBox(new GameObject(), "Wool", "Wool", mtrAtlas, WOOL_X, PROC_Y, out _);
             MakeStorageBox(new GameObject(), "Milk", "Milk", mtrAtlas, MILK_X, PROC_Y, out _);
             MakeStorageBox(new GameObject(), "Red Meat", "AnimalProducts", mtrAtlas, MEAT_X, PROC_Y, out _);

@@ -6,7 +6,7 @@ using ColossalFramework.Globalization;
 using ColossalFramework.UI;
 using ICities;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.UI
@@ -206,79 +206,79 @@ namespace IndustriesMeetsSunsetHarbor.UI
             component.height = 620f;
             List<TransferManager.TransferReason> list =
             [
-                TransferManager.TransferReason.None,
-                TransferManager.TransferReason.AnimalProducts,
-                TransferManager.TransferReason.Flours,
-                ExtendedTransferManager.Milk,
-                ExtendedTransferManager.RawHides,
-                ExtendedTransferManager.Pork,
-                ExtendedTransferManager.Wool,
-                ExtendedTransferManager.ProcessedVegetableOil,
-                ExtendedTransferManager.ChemicalProducts,
-                ExtendedTransferManager.Leather,
-                ExtendedTransferManager.LiquidConcentrates,
-                TransferManager.TransferReason.Paper,
-                TransferManager.TransferReason.PlanedTimber,
-                TransferManager.TransferReason.Petroleum,
-                TransferManager.TransferReason.Plastics,
-                TransferManager.TransferReason.Glass,
-                TransferManager.TransferReason.Metals, 
-                ExtendedTransferManager.FoodProducts,
-                ExtendedTransferManager.BeverageProducts,
-                ExtendedTransferManager.BakedGoods,
-                ExtendedTransferManager.CannedFish,
-                ExtendedTransferManager.Furnitures,
-                ExtendedTransferManager.ElectronicProducts,
-                ExtendedTransferManager.IndustrialSteel,
-                ExtendedTransferManager.Tupperware,
-                ExtendedTransferManager.Toys,
-                ExtendedTransferManager.PrintedProducts,
-                ExtendedTransferManager.TissuePaper,
-                ExtendedTransferManager.Cloths,
-                ExtendedTransferManager.PetroleumProducts,
-                ExtendedTransferManager.Cars,
-                ExtendedTransferManager.Footwear,
-                ExtendedTransferManager.HouseParts,
-                TransferManager.TransferReason.LuxuryProducts,
-                TransferManager.TransferReason.Lumber,
-                TransferManager.TransferReason.Food,
-                TransferManager.TransferReason.Coal,
-                TransferManager.TransferReason.Petrol,
-                TransferManager.TransferReason.Goods,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.None,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.AnimalProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Flours,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Milk,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.RawHides,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Pork,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Wool,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.ProcessedVegetableOil,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.ChemicalProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Leather,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.LiquidConcentrates,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Paper,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.PlanedTimber,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Petroleum,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Plastics,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Glass,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Metals,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.FoodProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.BeverageProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.BakedGoods,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.CannedFish,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Furnitures,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.ElectronicProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.IndustrialSteel,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Tupperware,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Toys,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.PrintedProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.TissuePaper,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Cloths,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.PetroleumProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Cars,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Footwear,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.HouseParts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.LuxuryProducts,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Lumber,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Food,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Coal,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Petrol,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Goods,
             ];
             List<TransferManager.TransferReason> list2 = list;
             if (Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Urban))
             {
-                list2.Add(TransferManager.TransferReason.Fish);
-                list2.Add(ExtendedTransferManager.Anchovy);
-                list2.Add(ExtendedTransferManager.Salmon);
-                list2.Add(ExtendedTransferManager.Shellfish);
-                list2.Add(ExtendedTransferManager.Tuna);
-                list2.Add(ExtendedTransferManager.Algae);
-                list2.Add(ExtendedTransferManager.Seaweed);
-                list2.Add(ExtendedTransferManager.Mussels);
-                list2.Add(ExtendedTransferManager.Trout);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Fish);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Anchovy);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Salmon);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Shellfish);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Tuna);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Algae);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Seaweed);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Mussels);
+                list2.Add((TransferManager.TransferReason)CustomTransferReason.Reason.Trout);
             }
             List<TransferManager.TransferReason> list3 =
             [
-                TransferManager.TransferReason.None,
-                TransferManager.TransferReason.Grain,
-                ExtendedTransferManager.Fruits,
-                ExtendedTransferManager.Vegetables,
-                ExtendedTransferManager.Cotton
+                (TransferManager.TransferReason)CustomTransferReason.Reason.None,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Crops,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Fruits,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Vegetables,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Cotton
             ];
             List<TransferManager.TransferReason> list4 =
             [
-                TransferManager.TransferReason.None,
-                TransferManager.TransferReason.Fish,
-                ExtendedTransferManager.Anchovy,
-                ExtendedTransferManager.Salmon,
-                ExtendedTransferManager.Shellfish,
-                ExtendedTransferManager.Tuna,
-                ExtendedTransferManager.Algae,
-                ExtendedTransferManager.Seaweed,
-                ExtendedTransferManager.Mussels,
-                ExtendedTransferManager.Trout
+                (TransferManager.TransferReason)CustomTransferReason.Reason.None,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Fish,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Anchovy,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Salmon,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Shellfish,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Tuna,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Algae,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Seaweed,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Mussels,
+                (TransferManager.TransferReason)CustomTransferReason.Reason.Trout
             ];
             m_selectedTransferReasons = [];
             m_transferReasons = [.. list2];
@@ -560,7 +560,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_resourceDescription.isVisible = transferReason != TransferManager.TransferReason.None;
             m_resourceDescription.text = GenerateResourceDescription(transferReason, isForWarehousePanel: true);
             m_resourceSprite.atlas = GetResourceAtlas(actualTransferReason);
-            m_resourceSprite.spriteName = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(actualTransferReason);
+            m_resourceSprite.spriteName = TransferManagerExtended.Util.AtlasUtils.GetSpriteName((CustomTransferReason.Reason)actualTransferReason);
             string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), IndustryWorldInfoPanel.FormatResource((uint)num), IndustryWorldInfoPanel.FormatResourceWithUnit((uint)warehouseAI.m_storageCapacity, actualTransferReason));
             m_buffer.tooltip = text;
             m_capacityLabel.text = text;
@@ -978,9 +978,9 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             if (reason != TransferManager.TransferReason.None)
             {
-                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                if ((CustomTransferReason.Reason)reason >= CustomTransferReason.Reason.MealsDeliveryLow)
                 {
-                    return MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
                 }
             }
             return UITextures.InGameAtlas;
@@ -1018,24 +1018,24 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private bool IsUniqueMaterialType(TransferManager.TransferReason material)
         {
-            return material == ExtendedTransferManager.BakedGoods ||
-                material == ExtendedTransferManager.BeverageProducts ||
-                material == ExtendedTransferManager.CannedFish ||
-                material == ExtendedTransferManager.Cars ||
-                material == ExtendedTransferManager.ChemicalProducts ||
-                material == ExtendedTransferManager.Cloths ||
-                material == ExtendedTransferManager.ElectronicProducts ||
-                material == ExtendedTransferManager.FoodProducts ||
-                material == ExtendedTransferManager.Footwear ||
-                material == ExtendedTransferManager.Furnitures ||
-                material == ExtendedTransferManager.HouseParts ||
-                material == ExtendedTransferManager.IndustrialSteel ||
-                material == ExtendedTransferManager.PetroleumProducts ||
-                material == ExtendedTransferManager.PrintedProducts ||
-                material == ExtendedTransferManager.Toys ||
-                material == ExtendedTransferManager.TissuePaper ||
-                material == ExtendedTransferManager.Tupperware ||
-                material == TransferManager.TransferReason.LuxuryProducts;
+            return material == (TransferManager.TransferReason)CustomTransferReason.Reason.BakedGoods ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.BeverageProducts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.CannedFish ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.Cars ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.ChemicalProducts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.Cloths ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.ElectronicProducts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.FoodProducts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.Footwear ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.Furnitures ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.HouseParts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.IndustrialSteel ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.PetroleumProducts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.PrintedProducts ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.Toys ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.TissuePaper ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.Tupperware ||
+                material == (TransferManager.TransferReason)CustomTransferReason.Reason.LuxuryProducts;
         }
 
     }

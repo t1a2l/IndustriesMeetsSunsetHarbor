@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ColossalFramework;
 using ColossalFramework.Globalization;
@@ -9,18 +10,13 @@ using ColossalFramework.UI;
 using ICities;
 using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
-using MoreTransferReasons;
-using MoreTransferReasons.Utils;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
     public class ExtendedUniqueFactoryWorldInfoPanel : BuildingWorldInfoPanel
     {
-        private UIPanel m_mainPanel;
-
-        private UIPanel m_details;
-
         private UILabel m_status;
 
         private UIButton m_RebuildButton;
@@ -71,6 +67,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
 
         private List<string> m_outputItems;
 
+        private List<UIPanel> m_tempInputs = [];
+
         public UIComponent MovingPanel
         {
             get
@@ -111,61 +109,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_generatedInfo = Find<UILabel>("LabelInfo");
             m_horizontalLine = Find<UIPanel>("HorizontalLinePanel");
             m_inputContainer = Find<UIPanel>("LayoutPanel");
-
-            var Diagram = Find<UIPanel>("Diagram");
-
-            GameObject outputContainer = Instantiate(m_inputContainer.gameObject, Diagram.transform);
-            m_outputContainer = outputContainer.GetComponent<UIPanel>();
-
-            m_outputContainer.relativePosition = new Vector3(m_inputContainer.relativePosition.x, 200);
-
-            var InputResource = m_outputContainer.Find<UIPanel>("UniqueFactoryInputResource");
-
-            GameObject outputResource = Instantiate(InputResource.gameObject, InputResource.transform);
-            outputResource.name = "UniqueFactoryOutputResource";
-
-            outputResource.transform.SetParent(outputContainer.transform);
-
-            m_outputContainer.AttachUIComponent(outputResource);
-
-            var outputResource_Panel = outputResource.GetComponent<UIPanel>();
-
-            outputResource_Panel.relativePosition = new Vector3(InputResource.relativePosition.x, 200);
-
-            DestroyImmediate(InputResource.gameObject);
-
-            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
-            DestroyImmediate(outputResourceArrow.gameObject);
-
-            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
-            DestroyImmediate(outputResourceStorage.gameObject);
-
-            var m_productStorage = Find<UIPanel>("ProductStorage");
-            var m_BigArrow = Find<UISprite>("Big Arrow");
-
-            m_productStorage.transform.SetParent(outputResource_Panel.transform);
-            m_BigArrow.transform.SetParent(outputResource_Panel.transform);
-
-            outputResource_Panel.AttachUIComponent(m_productStorage.gameObject);
-            outputResource_Panel.AttachUIComponent(m_BigArrow.gameObject);
-
-            UITemplateManager instance = Singleton<UITemplateManager>.instance;
-
-            var m_Templates = (Dictionary<string, UIComponent>)typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(instance);
-
-            m_Templates.Add("UniqueFactoryOutputResource", outputResource_Panel);
-
-            typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instance, m_Templates);
-
-            var UniqueFactoryInputResource = m_inputContainer.Find<UIPanel>("UniqueFactoryInputResource");
-
-            UniqueFactoryInputResource.transform.parent = null;
-
-            outputResource.transform.parent = null;
-
             m_inputs = new UITemplateList<UIPanel>(m_inputContainer, "UniqueFactoryInputResource");
-            m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryOutputResource");
-
             m_productionSlider = Find<UISlider>("ProductionSlider");
             m_productionSlider.eventValueChanged += OnProductionRateChanged;
             m_productionRateLabel = Find<UILabel>("LabelProductionRate");
@@ -177,32 +121,17 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep = Find<UILabel>("Upkeep");
             m_income = Find<UILabel>("IncomeLabel");
             m_expenses = Find<UILabel>("ExpensesLabel");
-            m_mainPanel = Find<UIPanel>("(Library) NewUniqueFactoryWorldInfoPanel");
-
+            SetupOutputTemplates();
+            SetupVariationPanel();
+            m_outputs = new UITemplateList<UIPanel>(m_outputContainer, "UniqueFactoryOutputResource");
+            m_VariationDropdown = m_VariationPanel.Find<UIDropDown>("DropdownVariation");
+            m_VariationDropdown.eventSelectedIndexChanged += OnVariationDropdownChanged;
+            m_inputItems = [];
+            m_outputItems = [];
             Find<UIButton>("Close").eventClick += delegate (UIComponent c, UIMouseEventParameter r)
             {
                 Hide();
             };
-
-            var _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
-
-            var City_VariationPanel = _cityServiceWorldInfoPanel.Find<UIPanel>("VariationPanel");
-
-            GameObject VariationPanel = Instantiate(City_VariationPanel.gameObject, Diagram.transform);
-
-            m_VariationPanel = VariationPanel.GetComponent<UIPanel>();
-
-            m_VariationPanel.transform.SetParent(Diagram.transform);
-
-            m_VariationPanel.relativePosition = new Vector3(100, 316);
-
-            Diagram.AttachUIComponent(m_VariationPanel.gameObject);
-
-            m_VariationDropdown = m_VariationPanel.Find<UIDropDown>("DropdownVariation");
-            m_VariationDropdown.eventSelectedIndexChanged += OnVariationDropdownChanged;
-
-            m_inputItems = [];
-            m_outputItems = [];
         }
 
         private void OnVariationDropdownChanged(UIComponent component, int value)
@@ -248,12 +177,32 @@ namespace IndustriesMeetsSunsetHarbor.UI
         protected override void OnSetTarget()
         {
             base.OnSetTarget();
+            foreach (var panel in m_tempInputs)
+            {
+                if (panel != null)
+                    Destroy(panel.gameObject);
+            }
+            m_tempInputs.Clear();
             m_inputItems = [];
             m_outputItems = [];
             ushort building = m_InstanceID.Building;
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[building];
             m_extendedUniqueFactoryAI = data.Info.m_buildingAI as ExtendedUniqueFactoryAI;
             m_inputResourceCount = GetInputResourceCount(ref m_inputItems, m_extendedUniqueFactoryAI);
+
+            if(m_inputResourceCount > 4)
+            {
+                component.width = 680f;
+            }
+            else if (m_inputResourceCount > 6)
+            {
+                component.width = 980f;
+            }
+            else
+            {
+                component.width = 580f;
+            }
+
             m_inputs.SetItemCount(m_inputResourceCount);
             m_outputResourceCount = GetOutputResourceCount(ref m_outputItems, m_extendedUniqueFactoryAI);
             m_outputs.SetItemCount(m_outputResourceCount);
@@ -261,23 +210,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 var transferReasons = GetInputResource(ref m_inputItems, i);
-                if (transferReasons != null && transferReasons.Length != 0)
+                if (transferReasons != null && transferReasons.Count(r => r != CustomTransferReason.Reason.None) != 0)
                 {
-                    UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
-                    UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
-
-                    if (transferReasons.Length == 1)
+                    int index = i + 1;
+                    m_inputs.items[i].name = "UniqueFactoryInputResource" + index;
+                    if (transferReasons.Count(r => r != CustomTransferReason.Reason.None) == 1)
                     {
+                        UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
+                        UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
                         uILabel.text = GetInputResourceName(transferReasons[0]);
-                        uISprite.atlas = UITextures.InGameAtlas;
-                        uISprite.spriteName = AtlasUtils.GetSpriteName(transferReasons[0]);
+                        uISprite.atlas = TransferManagerExtended.Util.AtlasUtils.GetResourceAtlas(transferReasons[0]);
+                        uISprite.spriteName = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(transferReasons[0]);
                     }
                     else
                     {
-                        uILabel.text = "Mixed Resources";
-                        uISprite.atlas = TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
-                        uISprite.spriteName = "MixedResources";
-                        MakeHoverDetail(m_inputs.items[i], transferReasons);
+                        m_inputs.items[i].Find<UIPanel>("Storage").Hide();
+                        MakeSplitedStorage(m_inputs.items[i], transferReasons);
                     }
                     UIPanel Storage = m_inputs.items[i].Find<UIPanel>("Storage");
                     UISprite Arrow = m_inputs.items[i].Find<UISprite>("Arrow");
@@ -310,7 +258,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_VariationPanel.isVisible = false;
             var IsCarFactory = false;
-            if(m_extendedUniqueFactoryAI.m_outputResource2 == ExtendedTransferManager.Cars)
+            if(m_extendedUniqueFactoryAI.m_outputResource2 == CustomTransferReason.Reason.Cars)
             {
                 IsCarFactory = true;
             }
@@ -342,7 +290,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private int GetInputResourceCount(ref List<string> items, ExtendedProcessingFacilityAI ai)
         {
             int count = 0;
-            if (ai.m_inputResource1.Length != 0)
+            if (ai.m_inputResource1.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if(!items.Contains("m_inputResource1"))
                 {
@@ -350,7 +298,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource2.Length != 0)
+            if (ai.m_inputResource2.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if(!items.Contains("m_inputResource2"))
                 {
@@ -358,7 +306,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource3.Length != 0)
+            if (ai.m_inputResource3.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if (!items.Contains("m_inputResource3"))
                 {
@@ -366,7 +314,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource4.Length != 0)
+            if (ai.m_inputResource4.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if (!items.Contains("m_inputResource4"))
                 {
@@ -374,7 +322,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource5.Length != 0)
+            if (ai.m_inputResource5.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if (!items.Contains("m_inputResource5"))
                 {
@@ -382,7 +330,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource6.Length != 0)
+            if (ai.m_inputResource6.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if (!items.Contains("m_inputResource6"))
                 {
@@ -390,7 +338,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource7.Length != 0)
+            if (ai.m_inputResource7.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if (!items.Contains("m_inputResource7"))
                 {
@@ -398,7 +346,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_inputResource8.Length != 0)
+            if (ai.m_inputResource8.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 if (!items.Contains("m_inputResource8"))
                 {
@@ -412,7 +360,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private int GetOutputResourceCount(ref List<string> items, ExtendedProcessingFacilityAI ai)
         {
             int count = 0;
-            if (ai.m_outputResource1 != TransferManager.TransferReason.None)
+            if (ai.m_outputResource1 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_outputResource1"))
                 {
@@ -420,7 +368,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if (ai.m_outputResource2 != ExtendedTransferManager.TransferReason.None)
+            if (ai.m_outputResource2 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_outputResource2"))
                 {
@@ -441,18 +389,6 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_Upkeep.text = LocaleFormatter.FormatUpkeep(extendedUniqueFactoryAI.GetResourceRate(buildingId, ref building, EconomyManager.Resource.Maintenance), isDistanceBased: false);
             m_status.text = extendedUniqueFactoryAI.GetLocalizedStatus(buildingId, ref building);
 
-            if (m_mainPanel != null)
-            {
-                if(m_inputResourceCount > 4)
-                {
-                     m_mainPanel.width = m_inputContainer.width + 22;
-                }
-                else
-                {
-                    m_mainPanel.width = 540;
-                }
-            }
-
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UIProgressBar uIProgressBar = m_inputs.items[i].Find<UIProgressBar>("ResourceBuffer");
@@ -460,21 +396,20 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
                 string text;
                 var transferReasons = GetInputResource(ref m_inputItems, i);
-                if (transferReasons != null && transferReasons.Length != 0)
+                if (transferReasons != null && transferReasons.Count(r => r != CustomTransferReason.Reason.None) != 0)
                 {
-                    var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, transferReasons[0]);
-                    text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
-                    if (transferReasons.Length == 1)
+                    var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, (TransferManager.TransferReason)transferReasons[0]);
+                    
+                    if (transferReasons.Count(r => r != CustomTransferReason.Reason.None) == 1)
                     {
-                        uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(transferReasons[0]);
-                        text = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", transferReasons[0].ToString()));
+                        uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)transferReasons[0]);
+                        text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
+                        uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", transferReasons[0].ToString()));
                     }
                     else
                     {
                         uIProgressBar.progressColor = new Color32(128, 128, 128, 255);
-                        text = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", "MixedResources"));
                     }
-                    uIProgressBar.tooltip = text;
                 }                
             }
             for (int i = 0; i < m_outputResourceCount; i++)
@@ -485,8 +420,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 var FormatResource = IndustryWorldInfoPanel.FormatResource((uint)amount);
                 string text;
                 var outputResource = GetOutputResource(ref m_outputItems, i);
-                var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, outputResource);
-                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(outputResource);
+                var formatResourceWithUnit = IndustryWorldInfoPanel.FormatResourceWithUnit((uint)capacity, (TransferManager.TransferReason)outputResource);
+                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)outputResource);
                 text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
                 uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", outputResource.ToString()));
                 productStorage.tooltip = text;
@@ -533,8 +468,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
 
             long outputs_income = 0;
-            outputs_income += building.m_education3 * extendedUniqueFactoryAI.m_outputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_outputResource1) / 10000;
-            outputs_income += building.m_education3 * extendedUniqueFactoryAI.m_outputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice(extendedUniqueFactoryAI.m_outputResource2) / 10000;
+            outputs_income += building.m_education3 * extendedUniqueFactoryAI.m_outputRate1 * 16 / 100 * IndustryBuildingAI.GetResourcePrice((TransferManager.TransferReason)extendedUniqueFactoryAI.m_outputResource1) / 10000;
+            outputs_income += building.m_education3 * extendedUniqueFactoryAI.m_outputRate2 * 16 / 100 * IndustryBuildingAI.GetResourcePrice((TransferManager.TransferReason)extendedUniqueFactoryAI.m_outputResource2) / 10000;
             m_income.text = outputs_income.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
 
             if (Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].m_productionRate > 0)
@@ -601,15 +536,15 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
         }
 
-        private int GetInputBufferAmount(TransferManager.TransferReason[] transferReasons)
+        private int GetInputBufferAmount(CustomTransferReason.Reason[] transferReasons)
         {
             int amount = 0;
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
-            if (transferReasons.Length != 0)
+            if (transferReasons.Count(r => r != CustomTransferReason.Reason.None) != 0)
             {
                 foreach (var inputResource in transferReasons)
                 {
-                    if (inputResource != TransferManager.TransferReason.None)
+                    if (inputResource != CustomTransferReason.Reason.None)
                     {
                         amount += (int)custom_buffers.Get((int)inputResource);
                     }
@@ -618,13 +553,13 @@ namespace IndustriesMeetsSunsetHarbor.UI
             return amount;
         }
 
-        private string GetInputResourceName(TransferManager.TransferReason reason)
+        private string GetInputResourceName(CustomTransferReason.Reason reason)
         {
-            if (reason != TransferManager.TransferReason.None)
+            if (reason != CustomTransferReason.Reason.None)
             {
-                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                if (reason >= CustomTransferReason.Reason.MealsDeliveryLow)
                 {
-                    return ExtendedTransferManager.GetTransferReasonName((int)reason);
+                    return TransferManagerUtils.GetTransferReasonName((int)reason);
                 }
             }
             return reason.ToString();
@@ -637,22 +572,22 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_outputResource1":
-                    name = extendedUniqueFactoryAI.m_outputResource1 >= ExtendedTransferManager.MealsDeliveryLow ? ExtendedTransferManager.GetTransferReasonName((int)extendedUniqueFactoryAI.m_outputResource1) : Locale.Get("WAREHOUSEPANEL_RESOURCE", extendedUniqueFactoryAI.m_outputResource1.ToString());
+                    name = extendedUniqueFactoryAI.m_outputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow ? TransferManagerUtils.GetTransferReasonName((int)extendedUniqueFactoryAI.m_outputResource1) : Locale.Get("WAREHOUSEPANEL_RESOURCE", extendedUniqueFactoryAI.m_outputResource1.ToString());
                     break;
                 case "m_outputResource2":
-                    name = extendedUniqueFactoryAI.m_outputResource2 >= ExtendedTransferManager.MealsDeliveryLow ? ExtendedTransferManager.GetTransferReasonName((int)extendedUniqueFactoryAI.m_outputResource2) : Locale.Get("WAREHOUSEPANEL_RESOURCE", extendedUniqueFactoryAI.m_outputResource2.ToString());
+                    name = extendedUniqueFactoryAI.m_outputResource2 >= CustomTransferReason.Reason.MealsDeliveryLow ? TransferManagerUtils.GetTransferReasonName((int)extendedUniqueFactoryAI.m_outputResource2) : Locale.Get("WAREHOUSEPANEL_RESOURCE", extendedUniqueFactoryAI.m_outputResource2.ToString());
                     break;
             }
             return name;
         }
 
-        private UITextureAtlas GetInputResourceAtlas(TransferManager.TransferReason reason)
+        private UITextureAtlas GetInputResourceAtlas(CustomTransferReason.Reason reason)
         {
-            if (reason != TransferManager.TransferReason.None)
+            if (reason != CustomTransferReason.Reason.None)
             {
-                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                if (reason >= CustomTransferReason.Reason.MealsDeliveryLow)
                 {
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
                 }
             }
             return UITextures.InGameAtlas;
@@ -661,11 +596,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private UITextureAtlas GetOutputResourceAtlas(ref List<string> items, int resourceIndex)
         {
             var reason = GetOutputResource(ref items, resourceIndex);
-            if (reason != TransferManager.TransferReason.None)
+            if (reason != CustomTransferReason.Reason.None)
             {
-                if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                if (reason >= CustomTransferReason.Reason.MealsDeliveryLow)
                 {
-                    return TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
                 }
             }
             return UITextures.InGameAtlas;
@@ -677,12 +612,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
             {
                 case "m_outputResource1":
                 case "m_outputResource2":
-                    return AtlasUtils.GetSpriteName(GetOutputResource(ref items, resourceIndex));;
+                    return TransferManagerExtended.Util.AtlasUtils.GetSpriteName(GetOutputResource(ref items, resourceIndex));;
             }
             return null;
         }
 
-        private TransferManager.TransferReason[] GetInputResource(ref List<string> items, int resourceIndex)
+        private CustomTransferReason.Reason[] GetInputResource(ref List<string> items, int resourceIndex)
         {
             ExtendedUniqueFactoryAI extendedUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedUniqueFactoryAI;
             return items[resourceIndex] switch
@@ -700,7 +635,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
             };
         }
 
-        private TransferManager.TransferReason GetOutputResource(ref List<string> items, int resourceIndex)
+        private CustomTransferReason.Reason GetOutputResource(ref List<string> items, int resourceIndex)
         {
             ExtendedUniqueFactoryAI extendedUniqueFactoryAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as ExtendedUniqueFactoryAI;
             switch (items[resourceIndex])
@@ -710,7 +645,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 case "m_outputResource2":
                     return extendedUniqueFactoryAI.m_outputResource2;
             }
-            return TransferManager.TransferReason.None;
+            return CustomTransferReason.Reason.None;
         }
 
         private void OnOnOffChanged(UIComponent comp, bool value)
@@ -950,81 +885,150 @@ namespace IndustriesMeetsSunsetHarbor.UI
             MovingPanel.Hide();
         }
 
-        private void MakeHoverDetail(UIPanel parent, TransferManager.TransferReason[] transferReasons)
+        private void MakeSplitedStorage(UIPanel parent, CustomTransferReason.Reason[] transferReasons)
         {
-            float itemW = 36f;
-            float padding = 6f;
-            float panelW = transferReasons.Length * itemW + (transferReasons.Length + 1) * padding;
-
             var custom_buffers = CustomBuffersManager.GetCustomBuffer(m_InstanceID.Building);
 
-            m_details = parent.AddUIComponent<UIPanel>();
-            m_details.backgroundSprite = "GenericPanelLight";
-            m_details.autoLayout = true;
-            m_details.autoLayoutDirection = LayoutDirection.Horizontal;
-            m_details.autoLayoutPadding = new RectOffset((int)padding, 0, 6, 0);
-            m_details.size = new Vector2(panelW, 76f);
-            m_details.relativePosition = new Vector3(0f, 68f);
-            m_details.isVisible = false;
-            m_details.zOrder = 9999;   // float above everything
-
-            var cx = 100f;
-            foreach (var reason in transferReasons)
+            var cx = -40f;
+            for (int i = 0; i < transferReasons.Length; i++)
             {
-                var label = "";
-                if (reason != TransferManager.TransferReason.None)
+                if (transferReasons[i] != CustomTransferReason.Reason.None)
                 {
-                    if (reason >= ExtendedTransferManager.MealsDeliveryLow)
+                    string label;
+                    if (transferReasons[i] >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
-                        label = ExtendedTransferManager.GetTransferReasonName((int)reason);
+                        label = TransferManagerUtils.GetTransferReasonName((int)transferReasons[i]);
                     }
                     else
                     {
-                        label = reason.ToString();
+                        label = transferReasons[i].ToString();
                     }
                     var go = new GameObject();
-                    MakeStorageBox(go, label, reason, cx, out UIProgressBar buffer);
-                    cx += 200f;
-                    buffer.value = custom_buffers.Get((int)reason);
+
+                    if (i == 1)
+                    {
+                        cx = 1f;
+                    }
+                    if (i == 2)
+                    {
+                        cx = 42f;
+                    }
+
+                    var tempStorage = MakeStorageBox(go, parent, label, transferReasons[i], cx, out UIProgressBar buffer);
+                    tempStorage.Show();
+                    m_tempInputs.Add(tempStorage);
+                    buffer.value = custom_buffers.Get((int)transferReasons[i]);
                 }
             }
-
-            // Show/hide on hover
-            parent.eventMouseEnter += (c, e) => { m_details.isVisible = true; m_details.BringToFront(); };
-            parent.eventMouseLeave += (c, e) => m_details.isVisible = false;
         }
 
-        private UIPanel MakeStorageBox(GameObject gameObject, string label, TransferManager.TransferReason transferReason, float cx, out UIProgressBar buffer)
+        private UIPanel MakeStorageBox(GameObject gameObject, UIPanel details, string label, CustomTransferReason.Reason transferReason, float cx, out UIProgressBar buffer)
         {
-            gameObject = Instantiate(Find<UIPanel>("StorageOil").gameObject, m_details.transform, false);
+            gameObject = Instantiate(Find<UIPanel>("Storage").gameObject, details.transform, false);
             var box = gameObject.GetComponent<UIPanel>();
             box.name = "Storage" + label.Replace("\n", "");
             box.anchor = UIAnchorStyle.None;
-            box.relativePosition = new Vector3(cx - 61f, 290f);
+            box.relativePosition = new Vector3(cx, 80f);
             box.autoLayout = false;
-            box.size = new Vector2(122f, 64f);
+            box.size = new Vector2(50f, 64f);
             box.backgroundSprite = "";
 
-            var icon = gameObject.transform.Find("ResourceIconOil").GetComponent<UISprite>();
-            icon.relativePosition = new Vector3(46f, 3f);
+            var icon = box.Find<UISprite>("ResourceIcon");
+            icon.relativePosition = new Vector3(65f, 10f);
             icon.size = new Vector2(30f, 30f);
             icon.atlas = GetInputResourceAtlas(transferReason);
-            icon.spriteName = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(transferReason, false);
+            icon.spriteName = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(transferReason, false);
 
-            buffer = gameObject.transform.Find("OilBuffer").GetComponent<UIProgressBar>();
+            buffer = box.Find<UIProgressBar>("ResourceBuffer");
             buffer.name = label.Replace("\n", "") + "Buffer";
             buffer.relativePosition = new Vector3(29f, -29f);
-            buffer.size = new Vector2(64f, 122f);
+            buffer.size = new Vector2(64f, 40f);
 
-            var lbl = gameObject.transform.Find("StorageOilLabel").GetComponent<UILabel>();
+            box.Find<UIPanel>("LayoutPanel").autoLayout = false;
+
+            var lbl = box.Find<UILabel>("ResourceLabel");
             lbl.text = label;
             lbl.name = "Storage" + label.Replace("\n", "") + "Label";
             lbl.relativePosition = new Vector3(0f, 35f);
-            lbl.textScale = 0.8125f;
+            lbl.textScale = 0.6f;
+            lbl.autoHeight = true;
+            lbl.wordWrap = true;
             lbl.textAlignment = UIHorizontalAlignment.Center;
 
             return box;
         }
 
+        private void SetupOutputTemplates()
+        {
+            var Diagram = Find<UIPanel>("Diagram");
+
+            GameObject outputContainer = Instantiate(m_inputContainer.gameObject, Diagram.transform);
+            m_outputContainer = outputContainer.GetComponent<UIPanel>();
+
+            m_outputContainer.relativePosition = new Vector3(m_inputContainer.relativePosition.x, 200);
+
+            var InputResource = m_outputContainer.Find<UIPanel>("UniqueFactoryInputResource");
+
+            GameObject outputResource = Instantiate(InputResource.gameObject, InputResource.transform);
+            outputResource.name = "UniqueFactoryOutputResource";
+
+            outputResource.transform.SetParent(outputContainer.transform);
+
+            m_outputContainer.AttachUIComponent(outputResource);
+
+            var outputResource_Panel = outputResource.GetComponent<UIPanel>();
+
+            outputResource_Panel.relativePosition = new Vector3(InputResource.relativePosition.x, 200);
+
+            DestroyImmediate(InputResource.gameObject);
+
+            var outputResourceArrow = outputResource_Panel.Find<UISprite>("Arrow");
+            DestroyImmediate(outputResourceArrow.gameObject);
+
+            var outputResourceStorage = outputResource_Panel.Find<UIPanel>("Storage");
+            DestroyImmediate(outputResourceStorage.gameObject);
+
+            var m_productStorage = Find<UIPanel>("ProductStorage");
+            var m_BigArrow = Find<UISprite>("Big Arrow");
+
+            m_productStorage.transform.SetParent(outputResource_Panel.transform);
+            m_BigArrow.transform.SetParent(outputResource_Panel.transform);
+
+            outputResource_Panel.AttachUIComponent(m_productStorage.gameObject);
+            outputResource_Panel.AttachUIComponent(m_BigArrow.gameObject);
+
+            UITemplateManager instance = Singleton<UITemplateManager>.instance;
+
+            var m_Templates = (Dictionary<string, UIComponent>)typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(instance);
+
+            m_Templates.Add("UniqueFactoryOutputResource", outputResource_Panel);
+
+            typeof(UITemplateManager).GetField("m_Templates", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(instance, m_Templates);
+
+            var UniqueFactoryInputResource = m_inputContainer.Find<UIPanel>("UniqueFactoryInputResource");
+
+            UniqueFactoryInputResource.transform.parent = null;
+
+            outputResource.transform.parent = null;
+        }
+
+        private void SetupVariationPanel()
+        {
+            var Diagram = Find<UIPanel>("Diagram");
+
+            var _cityServiceWorldInfoPanel = UIView.library.Get<CityServiceWorldInfoPanel>(typeof(CityServiceWorldInfoPanel).Name);
+
+            var City_VariationPanel = _cityServiceWorldInfoPanel.Find<UIPanel>("VariationPanel");
+
+            GameObject VariationPanel = Instantiate(City_VariationPanel.gameObject, Diagram.transform);
+
+            m_VariationPanel = VariationPanel.GetComponent<UIPanel>();
+
+            m_VariationPanel.transform.SetParent(Diagram.transform);
+
+            m_VariationPanel.relativePosition = new Vector3(100, 316);
+
+            Diagram.AttachUIComponent(m_VariationPanel.gameObject);
+        }
     }
 }

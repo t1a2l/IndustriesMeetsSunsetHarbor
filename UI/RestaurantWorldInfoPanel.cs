@@ -9,7 +9,7 @@ using IndustriesMeetsSunsetHarbor.AI;
 using IndustriesMeetsSunsetHarbor.Managers;
 using IndustriesMeetsSunsetHarbor.Utils;
 using System.Collections.Generic;
-using MoreTransferReasons;
+using TransferManagerCore;
 
 namespace IndustriesMeetsSunsetHarbor.UI
 {
@@ -232,10 +232,10 @@ namespace IndustriesMeetsSunsetHarbor.UI
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             m_inputResourceCount = GetInputResourceCount(ref items, restaurantAI);
             m_inputs.SetItemCount(m_inputResourceCount);
-            m_deliveryMealsType1Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(restaurantAI.m_outputResource1);
-            m_deliveryMealsType2Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(restaurantAI.m_outputResource1);
-            m_deliveryMealsType3Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(restaurantAI.m_outputResource1);
-            m_deliveryMealsType4Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(restaurantAI.m_outputResource1);
+            m_deliveryMealsType1Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)restaurantAI.m_outputResource1);
+            m_deliveryMealsType2Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)restaurantAI.m_outputResource1);
+            m_deliveryMealsType3Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)restaurantAI.m_outputResource1);
+            m_deliveryMealsType4Buffer.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)restaurantAI.m_outputResource1);
             for (int i = 0; i < m_inputResourceCount; i++)
             {
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
@@ -253,7 +253,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 UILabel uILabel = m_inputs.items[i].Find<UILabel>("ResourceLabel");
                 UISprite uISprite = m_inputs.items[i].Find<UISprite>("ResourceIcon");
                 uILabel.text = GetOutputResourceName(ref items, i);
-                var atlas = MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                var atlas = TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
                 if (atlas != null)
                 {
                     uISprite.atlas = atlas;
@@ -265,7 +265,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private int GetInputResourceCount(ref List<string> items, RestaurantAI ai)
         {
             int count = 0;
-            if(ai.m_inputResource1 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource1 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource1"))
                 {
@@ -273,7 +273,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource2 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource2 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource2"))
                 {
@@ -281,7 +281,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource3 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource3 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource3"))
                 {
@@ -289,7 +289,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource4 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource4 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource4"))
                 {
@@ -297,7 +297,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource5 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource5 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource5"))
                 {
@@ -305,7 +305,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource6 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource6 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource6"))
                 {
@@ -313,7 +313,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource7 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource7 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource7"))
                 {
@@ -321,7 +321,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 }
                 count++;
             }
-            if(ai.m_inputResource8 != TransferManager.TransferReason.None)
+            if(ai.m_inputResource8 != CustomTransferReason.Reason.None)
             {
                 if(!items.Contains("m_inputResource8"))
                 {
@@ -386,7 +386,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 var formatResourceWithUnit = FormatResourceWithUnit((uint)capacity);
                 string text = StringUtils.SafeFormat(Locale.Get("INDUSTRYPANEL_BUFFERTOOLTIP"), FormatResource, formatResourceWithUnit);
                 var inputResource = GetInputResource(ref items, i);
-                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor(inputResource);
+                uIProgressBar.progressColor = IndustryWorldInfoPanel.instance.GetResourceColor((TransferManager.TransferReason)inputResource);
                 uIProgressBar.tooltip = text + Environment.NewLine + Environment.NewLine + StringUtils.SafeFormat(Locale.Get("RESOURCEDESCRIPTION", inputResource.ToString()));
             }
             m_workplaces.text = StringUtils.SafeFormat(Locale.Get("UNIQUEFACTORYPANEL_WORKPLACES"), (restaurantAI.m_workPlaceCount0 + restaurantAI.m_workPlaceCount1 + restaurantAI.m_workPlaceCount2 + restaurantAI.m_workPlaceCount3).ToString());
@@ -404,14 +404,14 @@ namespace IndustriesMeetsSunsetHarbor.UI
             }
             m_generatedInfo.text = restaurantAI.GetLocalizedStats(buildingId, ref building);
             long inputs_expenses = 0;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource1) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource2) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource3) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource5) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
-            inputs_expenses += ExtendedTransferManager.GetResourcePrice(restaurantAI.m_inputResource8) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource1) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource2) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource3) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource4) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource5) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource6) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource7) / 10000;
+            inputs_expenses += TransferManagerUtils.GetResourcePrice(restaurantAI.m_inputResource8) / 10000;
             m_expenses.text = inputs_expenses.ToString(Settings.moneyFormatNoCents, LocaleManager.cultureInfo);
             m_expenses.tooltip = "Restaurant Expenses per week";
             m_materialCost.text = "EXPENSES";
@@ -433,36 +433,36 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    amount = restaurantAI.m_inputResource1 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource1) : 0;
-                    capacity = restaurantAI.m_inputResource1 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity1 : 0;
+                    amount = restaurantAI.m_inputResource1 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource1) : 0;
+                    capacity = restaurantAI.m_inputResource1 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity1 : 0;
                     break;
                 case "m_inputResource2":
-                    amount = restaurantAI.m_inputResource2 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource2) : 0;
-                    capacity = restaurantAI.m_inputResource2 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity2 : 0;
+                    amount = restaurantAI.m_inputResource2 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource2) : 0;
+                    capacity = restaurantAI.m_inputResource2 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity2 : 0;
                     break;
                 case "m_inputResource3":
-                    amount = restaurantAI.m_inputResource3 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource3) : 0;
-                    capacity = restaurantAI.m_inputResource3 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity3 : 0;
+                    amount = restaurantAI.m_inputResource3 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource3) : 0;
+                    capacity = restaurantAI.m_inputResource3 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity3 : 0;
                     break;
                 case "m_inputResource4":
-                    amount = restaurantAI.m_inputResource4 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource4) : 0;
-                    capacity = restaurantAI.m_inputResource4 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity4 : 0;
+                    amount = restaurantAI.m_inputResource4 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource4) : 0;
+                    capacity = restaurantAI.m_inputResource4 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity4 : 0;
                     break;
                 case "m_inputResource5":
-                    amount = restaurantAI.m_inputResource5 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource5) : 0;
-                    capacity = restaurantAI.m_inputResource5 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity5 : 0;
+                    amount = restaurantAI.m_inputResource5 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource5) : 0;
+                    capacity = restaurantAI.m_inputResource5 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity5 : 0;
                     break;
                 case "m_inputResource6":
-                    amount = restaurantAI.m_inputResource6 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource6) : 0;
-                    capacity = restaurantAI.m_inputResource6 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity6 : 0;
+                    amount = restaurantAI.m_inputResource6 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource6) : 0;
+                    capacity = restaurantAI.m_inputResource6 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity6 : 0;
                     break;
                 case "m_inputResource7":
-                    amount = restaurantAI.m_inputResource7 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource7) : 0;
-                    capacity = restaurantAI.m_inputResource7 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity7 : 0;
+                    amount = restaurantAI.m_inputResource7 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource7) : 0;
+                    capacity = restaurantAI.m_inputResource7 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity7 : 0;
                     break;
                 case "m_inputResource8":
-                    amount = restaurantAI.m_inputResource8 != TransferManager.TransferReason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource8) : 0;
-                    capacity = restaurantAI.m_inputResource8 != TransferManager.TransferReason.None ? restaurantAI.m_inputCapacity8 : 0;
+                    amount = restaurantAI.m_inputResource8 != CustomTransferReason.Reason.None ? custom_buffers.Get((int)restaurantAI.m_inputResource8) : 0;
+                    capacity = restaurantAI.m_inputResource8 != CustomTransferReason.Reason.None ? restaurantAI.m_inputCapacity8 : 0;
                     break;
             }
             return IndustryWorldInfoPanel.SafelyNormalize(amount, capacity);
@@ -475,57 +475,57 @@ namespace IndustriesMeetsSunsetHarbor.UI
             switch (items[resourceIndex])
             {
                 case "m_inputResource1":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource1);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource1);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource2":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource2);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource2);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource3":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource3);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource3);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource4":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource4);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource4);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource5":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource5);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource5);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource6":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource6);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource6);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource7":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource7);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource7);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
                     break;
                 case "m_inputResource8":
-                    key = MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource8);
-                    if (restaurantAI.m_inputResource1 >= ExtendedTransferManager.MealsDeliveryLow)
+                    key = TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_inputResource8);
+                    if (restaurantAI.m_inputResource1 >= CustomTransferReason.Reason.MealsDeliveryLow)
                     {
                         return key;
                     }
@@ -539,8 +539,8 @@ namespace IndustriesMeetsSunsetHarbor.UI
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             return items[resourceIndex] switch
             {
-                "m_outputResource1" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_outputResource1),
-                "m_outputResource2" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(restaurantAI.m_outputResource2),
+                "m_outputResource1" => TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_outputResource1),
+                "m_outputResource2" => TransferManagerExtended.Util.AtlasUtils.GetSpriteName(restaurantAI.m_outputResource2),
                 _ => null,
             };
         }
@@ -548,11 +548,11 @@ namespace IndustriesMeetsSunsetHarbor.UI
         private UITextureAtlas GetInputResourceAtlas(ref List<string> items, int resourceIndex)
         {
             var reason = GetInputResource(ref items, resourceIndex);
-            if(reason != TransferManager.TransferReason.None)
+            if(reason != CustomTransferReason.Reason.None)
             {
-                if(reason >= ExtendedTransferManager.MealsDeliveryLow)
+                if(reason >= CustomTransferReason.Reason.MealsDeliveryLow)
                 {
-                    return MoreTransferReasons.Utils.TextureUtils.GetAtlas("MoreTransferReasonsAtlas");
+                    return TransferManagerExtended.Util.TextureUtils.GetAtlas("IndustriesMeetsSunsetHarborAtlas");
                 }
             }
             return UITextures.InGameAtlas;
@@ -562,7 +562,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             return items[resourceIndex] switch
             {
-                "m_inputResource1" or "m_inputResource2" or "m_inputResource3" or "m_inputResource4" or "m_inputResource5" or "m_inputResource6" or "m_inputResource7" or "m_inputResource8" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex)),
+                "m_inputResource1" or "m_inputResource2" or "m_inputResource3" or "m_inputResource4" or "m_inputResource5" or "m_inputResource6" or "m_inputResource7" or "m_inputResource8" => TransferManagerExtended.Util.AtlasUtils.GetSpriteName((CustomTransferReason.Reason)GetInputResource(ref items, resourceIndex)),
                 _ => null,
             };
         }
@@ -571,12 +571,12 @@ namespace IndustriesMeetsSunsetHarbor.UI
         {
             return items[resourceIndex] switch
             {
-                "m_outputResource1" or "m_outputResource2" => MoreTransferReasons.Utils.AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex)),
+                "m_outputResource1" or "m_outputResource2" => TransferManagerExtended.Util.AtlasUtils.GetSpriteName(GetInputResource(ref items, resourceIndex)),
                 _ => null,
             };
         }
 
-        private TransferManager.TransferReason GetInputResource(ref List<string> items, int resourceIndex)
+        private CustomTransferReason.Reason GetInputResource(ref List<string> items, int resourceIndex)
         {
             RestaurantAI restaurantAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[m_InstanceID.Building].Info.m_buildingAI as RestaurantAI;
             return items[resourceIndex] switch
@@ -589,7 +589,7 @@ namespace IndustriesMeetsSunsetHarbor.UI
                 "m_inputResource6" => restaurantAI.m_inputResource6,
                 "m_inputResource7" => restaurantAI.m_inputResource7,
                 "m_inputResource8" => restaurantAI.m_inputResource8,
-                _ => TransferManager.TransferReason.None,
+                _ => CustomTransferReason.Reason.None,
             };
         }
 

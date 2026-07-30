@@ -1,7 +1,7 @@
 using ColossalFramework;
 using ColossalFramework.Math;
 using HarmonyLib;
-using MoreTransferReasons;
+using TransferManagerCore;
 using UnityEngine;
 
 namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
@@ -14,7 +14,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPriority(Priority.High)]
         public static bool ModifyMaterialBuffer(CommercialBuildingAI __instance, ushort buildingID, ref Building data, TransferManager.TransferReason material, ref int amountDelta)
         {
-            if (IsUniqueMaterialType(material))
+            if (IsUniqueMaterialType((CustomTransferReason.Reason)material))
             {
                 int width = data.Width;
                 int length = data.Length;
@@ -80,26 +80,26 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Entertainment, entertainmentBonus, buildingData.m_position, 100f);
         }
 
-        private static bool IsUniqueMaterialType(TransferManager.TransferReason material)
+        private static bool IsUniqueMaterialType(CustomTransferReason.Reason material)
         {
-            return material == ExtendedTransferManager.BakedGoods ||
-                material == ExtendedTransferManager.BeverageProducts ||
-                material == ExtendedTransferManager.CannedFish ||
-                material == ExtendedTransferManager.Cars ||
-                material == ExtendedTransferManager.ChemicalProducts ||
-                material == ExtendedTransferManager.Cloths ||
-                material == ExtendedTransferManager.ElectronicProducts ||
-                material == ExtendedTransferManager.FoodProducts ||
-                material == ExtendedTransferManager.Footwear ||
-                material == ExtendedTransferManager.Furnitures ||
-                material == ExtendedTransferManager.HouseParts ||
-                material == ExtendedTransferManager.IndustrialSteel ||
-                material == ExtendedTransferManager.PetroleumProducts ||
-                material == ExtendedTransferManager.PrintedProducts ||
-                material == ExtendedTransferManager.Toys ||
-                material == ExtendedTransferManager.TissuePaper ||
-                material == ExtendedTransferManager.Tupperware ||
-                material == TransferManager.TransferReason.LuxuryProducts;
+            return material == CustomTransferReason.Reason.BakedGoods ||
+                material == CustomTransferReason.Reason.BeverageProducts ||
+                material == CustomTransferReason.Reason.CannedFish ||
+                material == CustomTransferReason.Reason.Cars ||
+                material == CustomTransferReason.Reason.ChemicalProducts ||
+                material == CustomTransferReason.Reason.Cloths ||
+                material == CustomTransferReason.Reason.ElectronicProducts ||
+                material == CustomTransferReason.Reason.FoodProducts ||
+                material == CustomTransferReason.Reason.Footwear ||
+                material == CustomTransferReason.Reason.Furnitures ||
+                material == CustomTransferReason.Reason.HouseParts ||
+                material == CustomTransferReason.Reason.IndustrialSteel ||
+                material == CustomTransferReason.Reason.PetroleumProducts ||
+                material == CustomTransferReason.Reason.PrintedProducts ||
+                material == CustomTransferReason.Reason.Toys ||
+                material == CustomTransferReason.Reason.TissuePaper ||
+                material == CustomTransferReason.Reason.Tupperware ||
+                material == CustomTransferReason.Reason.LuxuryProducts;
         }
 
         private static void AccumulateQuality(ref Building data, byte incomingQuality, int amount, int bufferCapacity)

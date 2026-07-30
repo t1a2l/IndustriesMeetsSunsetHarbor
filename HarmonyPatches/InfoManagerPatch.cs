@@ -12,11 +12,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool SetMode(InfoMode mode, SubInfoMode subMode, ref InfoMode ___m_currentMode, ref SubInfoMode ___m_currentSubMode)
         {
-            if (mode == (InfoMode)41 && subMode == SubInfoMode.Default)
+            if (mode == (InfoMode)43 && subMode == SubInfoMode.Default)
             {
                 ___m_currentMode = mode;
                 ___m_currentSubMode = subMode;
-                Singleton<CoverageManager>.instance.SetMode((ItemClass.Service)28, ItemClass.SubService.None, ItemClass.SubService.None, ItemClass.Level.Level3, 500f, invertDirection: false);
+                Singleton<CoverageManager>.instance.SetMode((ItemClass.Service)29, ItemClass.SubService.None, ItemClass.SubService.None, ItemClass.Level.Level3, 500f, invertDirection: false);
                 return false;
             }
             return true;
@@ -32,11 +32,11 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
             }
             if (___m_currentMode != mode)
             {
-                if (___m_currentMode == (InfoMode)41)
+                if (___m_currentMode == (InfoMode)43)
                 {
                     UIView.library.Hide("RestaurantInfoViewPanel");
                 }
-                if(mode == (InfoMode)41)
+                if(mode == (InfoMode)43)
                 {
                     UIView.library.Show("RestaurantInfoViewPanel", bringToFront: true, onlyWhenInvisible: true);
                     return false;
@@ -49,7 +49,7 @@ namespace IndustriesMeetsSunsetHarbor.HarmonyPatches
         [HarmonyPrefix]
         public static bool IsInfoModeAvailable(InfoMode mode, ref bool __result)
         {
-            if(mode == (InfoMode)41)
+            if(mode == (InfoMode)43)
             {
                 __result = true;
                 return false;
